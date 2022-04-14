@@ -19,10 +19,10 @@ This module deploys Microsoft.Sql servers and optionally databases
 
 ## Outputs
 
-| Name | Type   | Description |
-| :--- | :----: | :---------- |
-| name | string |             |
-| id   | string |             |
+| Name | Type   | Description                       |
+| :--- | :----: | :-------------------------------- |
+| name | string | The name of the sql server        |
+| id   | string | The resource ID of the sql server |
 
 ## Examples
 

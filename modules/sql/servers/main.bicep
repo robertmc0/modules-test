@@ -88,5 +88,7 @@ resource deleteLock 'Microsoft.Authorization/locks@2016-09-01' = if (enableResou
 }
 
 // Output Resource Name and Resource Id as a standard to allow module referencing.
+@description('The name of the sql server')
 output name string = sqlServer.name
+@description('The resource ID of the sql server')
 output id string = sqlServer.id
