@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema#",
+  "name": "StorageAccounts",
+  "description": "This module deploys Microsoft.StorageAccount and child resources",
+  "owner": "Arinco"
+}
