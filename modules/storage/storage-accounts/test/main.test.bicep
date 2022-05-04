@@ -174,3 +174,15 @@ module storageAccountNfs '../main.bicep' = {
     diagnosticWorkspaceId: logAnalyticsWorkspace.id
   }
 }
+
+module storageAccountDataLake '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-datalake-storage-account'
+  params: {
+    // name is omitted to ensure uniqueness
+    location: location
+    allowBlobPublicAccess: false
+    supportsHttpsTrafficOnly: true
+    enableHierarchicalNamespace: true // Required for Datalake
+    lock: 'ReadOnly'
+  }
+}
