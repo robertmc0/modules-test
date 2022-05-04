@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.5.6.12127",
-      "templateHash": "5384285122533938805"
+      "templateHash": "1673389862438017152"
     }
   },
   "parameters": {
@@ -222,7 +222,7 @@
       "type": "string",
       "defaultValue": "[utcNow('u')]",
       "metadata": {
-        "description": "Generated. Do not provide a value! This date value is used to generate a SAS token to access the modules."
+        "description": "Generated. Do not provide a value!."
       }
     },
     "publicNetworkAccess": {
