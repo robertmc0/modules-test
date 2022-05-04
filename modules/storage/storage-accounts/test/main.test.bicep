@@ -11,12 +11,12 @@ param companyShortName string = 'arn'
 // Test Setup //
 // ========== //
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
-  name: '${companyShortName}-tst-law-${uniqueString('logAnalyticsWorkspace',location)}'
+  name: '${companyShortName}-tst-law-${uniqueString(deployment().name,'logAnalyticsWorkspace',location)}'
   location: location
 }
 
 resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
-  name: '${companyShortName}tstdiag${uniqueString('diagnosticsStorageAccount',location)}'
+  name: '${companyShortName}tstdiag${uniqueString(deployment().name,'diagnosticsStorageAccount',location)}'
   location: location
   kind: 'StorageV2'
   sku: {
@@ -25,7 +25,7 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
-  name: '${companyShortName}-tst-vnet-${uniqueString('vnet',location)}'
+  name: '${companyShortName}-tst-vnet-${uniqueString(deployment().name,'vnet',location)}'
   location: location
   properties: {
     addressSpace: {
@@ -56,6 +56,7 @@ module storageAccountMinimum '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-min-storage-account'
   params: {
     // name is omitted to ensure uniqueness
+    name: uniqueString(deployment().name, 'storageAccountMinimum', location)
     location: location
     allowBlobPublicAccess: false
   }
@@ -65,6 +66,7 @@ module storageAccount '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-storage-account'
   params: {
     // name is omitted to ensure uniqueness
+    name: uniqueString(deployment().name, 'storageAccount', location)
     location: location
     allowBlobPublicAccess: false
     publicNetworkAccess: 'Disabled'
@@ -156,6 +158,7 @@ module storageAccountNfs '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-nfs-storage-account'
   params: {
     // name is omitted to ensure uniqueness
+    name: uniqueString(deployment().name, 'storageAccountNfs', location)
     location: location
     allowBlobPublicAccess: false
     storageAccountSku: 'Premium_LRS'
@@ -179,8 +182,8 @@ module storageAccountDataLake '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-datalake-storage-account'
   params: {
     // name is omitted to ensure uniqueness
+    name: uniqueString(deployment().name, 'storageAccountDataLake', location)
     location: location
-    allowBlobPublicAccess: false
     supportsHttpsTrafficOnly: true
     enableHierarchicalNamespace: true // Required for Datalake
     lock: 'ReadOnly'
