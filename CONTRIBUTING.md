@@ -85,6 +85,25 @@ The `README.md` file is the documentation of the module. A large proportion of t
 The `version.json` file defines the MAJOR and MINOR version number of the module. Update the value of the `“version"` property to specify a version, e.g., `"1.0"`.
 
 Once you are done editing the files, run `brm generate` again to refresh `main.json` and `README.md`.
+### Usage of nested or extension resources
+
+When authoring a module, you may need to reference nested resources (Microsoft.storageAccounts/blob-services) or extension resources (Microsoft.insights/diagnosticsettings). The preferred approach is to include these resources as part of the module rather than generate a separate nested child module. An example is shown below. 
+
+```bicep
+resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' existing = {
+  name: sqlServerName
+ }
+
+ // Resource Definition
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' (for database in databases)= [{
+  parent: sqlServer
+  name: database.Name
+  ...
+}]
+```
+### Number of resources in a module
+
+Use caution to not bring in too many resources into the module as this will increase the size of the final ARM template. For example; resources such as role assignments or private endpoints should always be applied independently to a resource outside of the module.
 
 ## Updating an existing module
 
