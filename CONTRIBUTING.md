@@ -21,7 +21,6 @@ Add a new directory under the `modules` folder in your local arinco-bicep-module
 - `sql/database`
 - `web/containerized-web-app`
 
-
 ### Generating module files
 
 > Before generating module files, please make sure both Bicep CLI and Bicep registry module tool installed on your machine are up-to-date. This is to avoid any file content outdated errors in the pull request validation CI, since the CI always uses the latest versions of Bicep CLI and Bicep registry module tool.
@@ -85,9 +84,10 @@ The `README.md` file is the documentation of the module. A large proportion of t
 The `version.json` file defines the MAJOR and MINOR version number of the module. Update the value of the `“version"` property to specify a version, e.g., `"1.0"`.
 
 Once you are done editing the files, run `brm generate` again to refresh `main.json` and `README.md`.
+
 ### Usage of nested or extension resources
 
-When authoring a module, you may need to reference nested resources (Microsoft.storageAccounts/blob-services) or extension resources (Microsoft.insights/diagnosticsettings). The preferred approach is to include these resources as part of the module rather than generate a separate nested child module. An example is shown below. 
+When authoring a module, you may need to reference nested resources (Microsoft.storageAccounts/blob-services) or extension resources (Microsoft.insights/diagnosticsettings). The preferred approach is to include these resources as part of the module rather than generate a separate nested child module. An example is shown below.
 
 ```bicep
 resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' existing = {
@@ -101,6 +101,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' (for d
   ...
 }]
 ```
+
 ### Number of resources in a module
 
 Use caution to not bring in too many resources into the module as this will increase the size of the final ARM template. For example; resources such as role assignments or private endpoints should always be applied independently to a resource outside of the module.
@@ -175,7 +176,6 @@ az deployment group create --resource-group bicep-validation-rg --template-file 
 New-AzResourceGroup -Name "bicep-validation-rg" -Location "australiaeast"
 New-AzResourceGroupDeployment -ResourceGroupName 'bicep-validation-rg' -TemplateFile '.\test\main.test.bicep'
 ```
-
 
 ## Submitting a pull request
 
