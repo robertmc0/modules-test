@@ -12,17 +12,14 @@ The following instructions help guide you with the development of Arinco Bicep m
 
 ### Creating a directory for the new module
 
-Add a new directory under the `modules` folder in your local arinco-bicep-modules repository with the path in lowercase following the pattern `<ModuleGroup>/<ModuleName>`. Typical `<ModuleGroup>` names are Azure resource provider names without the `Microsoft.` prefix, but other names are also allowed as long as they make sense. `<ModuleName>` should be a singular noun or noun phrase. Child modules should be placed side by side with parent modules to maintain a flat file structure. For examples:
+Add a new directory under the `modules` folder in your local arinco-bicep-modules repository with the path in lowercase following the pattern `<ModuleGroup>/<ModuleName>`. Typical `<ModuleGroup>` names are Azure resource provider names without the `Microsoft.` prefix, but other names are also allowed as long as they make sense. `<ModuleName>` should be a singular noun or noun phrase. For examples:
 
 - `compute/vm-with-public-ip`
 - `network/private-endpoint`
 - `storage/storage-account`
-- `storage/storage-account-blob-services`
-- `storage/storage-account-file-services`
 - `sql/server`
 - `sql/database`
 - `web/containerized-web-app`
-- `web/containerized-web-app-config`
 
 
 ### Generating module files
