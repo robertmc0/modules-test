@@ -100,6 +100,16 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' (for d
   name: database.Name
   ...
 }]
+
+// Resource Lock
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+  name: lockName
+  properties: {
+    level: resourcelock
+    notes: (resourcelock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+  }
+  scope: sqlDatabase
+}
 ```
 
 ### Number of resources in a module
