@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema#",
+  "name": "Private Endpoints Module",
+  "description": "This module deploys Microsoft.Network privateEndpoints and associates with the given Private DNS Zone",
+  "owner": "Arinco"
+}
