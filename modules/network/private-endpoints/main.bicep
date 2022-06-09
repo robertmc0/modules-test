@@ -28,7 +28,6 @@ param privateDnsZoneId string
 @allowed([
   'CanNotDelete'
   'NotSpecified'
-  'ReadOnly'
 ])
 @description('Optional. Specify the type of lock.')
 param lock string = 'NotSpecified'
