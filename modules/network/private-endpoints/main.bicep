@@ -71,7 +71,7 @@ resource privateEndpoint_lock 'Microsoft.Authorization/locks@2017-04-01' = if (l
   name: '${privateEndpoint.name}-${lock}-lock'
   properties: {
     level: lock
-    notes: lock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: 'Cannot delete resource or child resources.'
   }
   scope: privateEndpoint
 }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.6.18.56646",
-      "templateHash": "3817052660963654782"
+      "templateHash": "17065243925955834787"
     }
   },
   "parameters": {
@@ -115,7 +115,7 @@
       "name": "[format('{0}-{1}-lock', format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type')), parameters('lock'))]",
       "properties": {
         "level": "[parameters('lock')]",
-        "notes": "[if(equals(parameters('lock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+        "notes": "Cannot delete resource or child resources."
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type')))]"
