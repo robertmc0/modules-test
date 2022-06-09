@@ -82,3 +82,17 @@ output name string = privateEndpoint.name
 
 @description('The resource ID of the private endpoint')
 output id string = privateEndpoint.id
+
+// Use a module to extract the network interface details of a private endpoint
+module nicInfo 'nicInfo.bicep' = {
+  name: 'nicInfo'
+  params: {
+    nicId: privateEndpoint.properties.networkInterfaces[0].id
+  }
+}
+@description('The private endpoint IP address')
+output ipAddress string = nicInfo.outputs.privateIPAddress
+
+@description('The private endpoint IP allocation method')
+output ipAllocationMethod string = nicInfo.outputs.privateIPAllocationMethod
+

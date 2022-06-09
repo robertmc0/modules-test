@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.6.18.56646",
-      "templateHash": "3898323864782847064"
+      "templateHash": "104421667661534778"
     }
   },
   "parameters": {
@@ -121,6 +121,52 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type')))]"
       ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "nicInfo",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "nicId": {
+            "value": "[reference(resourceId('Microsoft.Network/privateEndpoints', format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type')))).networkInterfaces[0].id]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "4908437536622455748"
+            }
+          },
+          "parameters": {
+            "nicId": {
+              "type": "string"
+            }
+          },
+          "resources": [],
+          "outputs": {
+            "privateIPAddress": {
+              "type": "string",
+              "value": "[reference(parameters('nicId'), '2021-08-01', 'Full').properties.ipConfigurations[0].properties.privateIPAddress]"
+            },
+            "privateIPAllocationMethod": {
+              "type": "string",
+              "value": "[reference(parameters('nicId'), '2021-08-01', 'Full').properties.ipConfigurations[0].properties.privateIPAllocationMethod]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type')))]"
+      ]
     }
   ],
   "outputs": {
@@ -136,6 +182,20 @@
       "value": "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type')))]",
       "metadata": {
         "description": "The resource ID of the private endpoint"
+      }
+    },
+    "ipAddress": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'nicInfo')).outputs.privateIPAddress.value]",
+      "metadata": {
+        "description": "The private endpoint IP address"
+      }
+    },
+    "ipAllocationMethod": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'nicInfo')).outputs.privateIPAllocationMethod.value]",
+      "metadata": {
+        "description": "The private endpoint IP allocation method"
       }
     }
   }

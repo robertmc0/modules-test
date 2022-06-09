@@ -16,10 +16,12 @@ This module deploys Microsoft.Network privateEndpoints and associates with the g
 
 ## Outputs
 
-| Name | Type   | Description                             |
-| :--- | :----: | :-------------------------------------- |
-| name | string | The name of the private endpoint        |
-| id   | string | The resource ID of the private endpoint |
+| Name               | Type   | Description                               |
+| :----------------- | :----: | :---------------------------------------- |
+| name               | string | The name of the private endpoint          |
+| id                 | string | The resource ID of the private endpoint   |
+| ipAddress          | string | The private endpoint IP address           |
+| ipAllocationMethod | string | The private endpoint IP allocation method |
 
 ## Examples
 
