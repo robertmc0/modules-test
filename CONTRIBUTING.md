@@ -122,9 +122,12 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
   param sslCertificates array = []
   ```
 
+#### Parameter Declarations
+- Ensure all parameter declarations have a clear description of the purpose and the sentence ends with a full stop.
+
 #### Output Parameters
 
-- use resourceId over id to be explicit as id is used to reference the id of a resource in Bicep and may get confusing.
+- Use resourceId over id to be explicit as id is used to reference the id of a resource in Bicep and may get confusing.
 
 #### Defaults parameter values
 
