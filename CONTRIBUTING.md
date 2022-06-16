@@ -85,6 +85,53 @@ The `version.json` file defines the MAJOR and MINOR version number of the module
 
 Once you are done editing the files, run `brm generate` again to refresh `main.json` and `README.md`.
 
+#### Resource Naming
+- current context when naming params in modules, e.g. name, sku, kind instead of storageSku, storageKind, storageName. prefix only required if multiple resources in a module use the similar naming definitions, e.g. storageSku and firewallSku. In these scenarios current context still applies to the storage and other resources use prefix, e.g sku and firewallSku. 
+
+- add code example for clarity
+
+- child resources such as arrays/objects to use current context naming as stated above, e.g. FileShares array to use name instead of fileShareName. 
+
+- param names should align to Microsoft ARM resource defintion names, e.g. NetworkACLs instead of NetworkRuleSets unless param name is unclear. 
+
+- all array and object params to have metadata descriptor defining the key values pairs required.
+
+#### Output Parameters
+- use resourceId over id to be explicit as id is used to reference the id of a resource in Bicep and may get confusing. 
+
+#### Defaults parameter values
+- Use opinionated default values where it makes sense.
+
+#### Managed Identity
+- Follow the convention below to support both 'SystemAssigned' and 'UserAssigned' identities for modules. The resource defintion should simply refer tp the identity variable.
+
+```bicep
+
+@description('Optional. Enables system assigned managed identity on the resource.')
+param systemAssignedIdentity bool = false
+
+@description('Optional. The ID(s) to assign to the resource.')
+param userAssignedIdentities object = {}
+
+var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+
+var identity = identityType != 'None' ? {
+  type: identityType
+  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+} : null
+
+
+resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
+  name: name
+  ...
+  identity: identity
+  properties: {
+    ...
+  }
+}
+
+```
+
 ### Usage of nested or extension resources
 
 When authoring a module, you may need to reference nested resources (Microsoft.storageAccounts/blob-services) or extension resources (Microsoft.insights/diagnosticsettings). The preferred approach is to include these resources as part of the module rather than generate a separate nested child module. An example is shown below.
@@ -111,6 +158,8 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != '
   scope: sqlDatabase
 }
 ```
+
+In situations where you hit a technical limitation (such as looping on nested resources) you may introduce nested resources as separate bicep files. 
 
 ### Number of resources in a module
 
