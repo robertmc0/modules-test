@@ -51,7 +51,7 @@ You should be able to see these files created in the module folder:
 
 The files that you need to edit are `metadata.json`, `main.bicep`, `test/main.test.bicep`, `README.md`, and `version.json`.
 
-The `metadata.json` file contains metadata of the module including `name`, `description`, and `owner`. You must provide the values for them. Below is a sample metadata file with the constraints of each property commented:
+The `metadata.json` file contains metadata of the module including `name`, `summary`, and `owner`. You must provide the values for them. Below is a sample metadata file with the constraints of each property commented:
 
 ```JSONC
 {
