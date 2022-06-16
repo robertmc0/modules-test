@@ -187,10 +187,6 @@ New-AzResourceGroup -Name "bicep-validation-rg" -Location "australiaeast"
 New-AzResourceGroupDeployment -ResourceGroupName 'bicep-validation-rg' -TemplateFile '.\test\main.test.bicep'
 ```
 
-## Submitting a pull request
-
-Once the module files are validated locally, you can commit your changes and open a pull request. You must link the new module proposal in the pull request description if you are trying to add a new module. Adding or updating multiple modules is not supported and will cause a failure in the pull request validation CI, so please only add or change one module at a time.
-
 ## Publishing a module
 
 Once your pull request is approved and merged to the `main` branch, a GitHub workflow will be triggered to publish the module to the Arinco Private registry automatically.
