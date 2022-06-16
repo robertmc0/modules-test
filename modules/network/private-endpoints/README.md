@@ -1,8 +1,14 @@
-# Private Endpoints Module
+# Private Endpoints Module.
+
+This module deploys Microsoft.Network privateEndpoints.
 
 ## Description
 
-This module deploys Microsoft.Network privateEndpoints and associates with the given Private DNS Zone.
+This module performs the following
+
+- Creates Microsoft.Network privateEndpoints resource.
+- Associates the private endpoint with the given Private DNS Zone.
+- Applys a lock to the private endpoint if the lock is specified.
 
 ## Parameters
 
