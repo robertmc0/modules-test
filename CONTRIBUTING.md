@@ -8,6 +8,12 @@ The following instructions help guide you with the development of Arinco Bicep m
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
 
+The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore if you intend to make changes to existing modules, ensure you have the latest version installed.
+
+To update the Bicep registry module tool, run the following:
+
+- `dotnet tool update --global azure.bicep.registrymoduletool`
+
 ## Creating a new module
 
 ### Creating a directory for the new module
