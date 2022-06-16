@@ -8,7 +8,7 @@ The following instructions help guide you with the development of Arinco Bicep m
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
 
-The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore if you intend to make changes to existing modules, ensure you have the latest version installed.
+The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore when making changes to existing modules, ensure you have the latest version installed.
 
 To update the Bicep registry module tool, run the following:
 
@@ -132,7 +132,7 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
 
 #### Managed Identity
 
-- Follow the convention below to support both 'SystemAssigned' and 'UserAssigned' identities for modules. The resource defintion should simply refer tp the identity variable.
+- Follow the convention below to support both 'SystemAssigned' and 'UserAssigned' identities for modules. The resource defintion should simply refer to the identity variable.
 
 ```bicep
 
