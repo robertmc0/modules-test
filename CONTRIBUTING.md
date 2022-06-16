@@ -58,8 +58,8 @@ The `metadata.json` file contains metadata of the module including `name`, `desc
   "$schema": "https://aka.ms/bicep-registry-module-metadata-schema#",
   // The name of the module (10 - 60 characters).
   "name": "Sample module",
-  // The description of the module (10 - 1000 characters).
-  "description": "Sample module description",
+  // The summary of the module (10 - 1000 characters).
+  "summary": "Sample module summary",
   // The owner of the module. Must be a GitHub username or a team under the Azure organization
   "owner": "sampleusername"
 }
@@ -113,7 +113,7 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
 - All array and object parameters to have metadata descriptor defining the key values pairs required.
 
   ```bicep
-  @description('Array containing ssl certificates')
+  @description('Array containing ssl certificates.')
   @metadata({
     name: 'Certificate name'
     keyVaultResourceId: 'Key vault resource id'
@@ -123,6 +123,7 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
   ```
 
 #### Parameter Declarations
+
 - Ensure all parameter declarations have a clear description of the purpose and the sentence ends with a full stop.
 
 #### Output Parameters
