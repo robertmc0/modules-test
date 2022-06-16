@@ -86,15 +86,34 @@ The `version.json` file defines the MAJOR and MINOR version number of the module
 Once you are done editing the files, run `brm generate` again to refresh `main.json` and `README.md`.
 
 #### Resource Naming
-- current context when naming params in modules, e.g. name, sku, kind instead of storageSku, storageKind, storageName. prefix only required if multiple resources in a module use the similar naming definitions, e.g. storageSku and firewallSku. In these scenarios current context still applies to the storage and other resources use prefix, e.g sku and firewallSku. 
+- When naming parameters in modules, use current context, e.g. name, sku, kind instead of storageSku, storageKind, storageName. prefix only required if multiple resources in a module use the similar naming definitions, e.g. storageSku and firewallSku.
 
-- add code example for clarity
+- Child resources such as arrays/objects to use current context naming as stated above, e.g. Properties that make up a File Share to use name instead of fileShareName, or tier instead of fileShareTier. 
 
-- child resources such as arrays/objects to use current context naming as stated above, e.g. FileShares array to use name instead of fileShareName. 
+  ```bicep
+  @description('Files shares to create in the storage account.')
+  @metadata({
+    name: 'File share name.'
+    tier: 'File share tier. Accepted values are Hot, Cool, TransactionOptimized or Premium.'
+    protocol: 'The authentication protocol that is used for the file share. Accepted values are SMB and NFS.'
+    quota: 'The maximum size of the share, in gigabytes.'
+  })
+  param fileShares array = []
+  ```
 
-- param names should align to Microsoft ARM resource defintion names, e.g. NetworkACLs instead of NetworkRuleSets unless param name is unclear. 
+- Parameter names should align to Microsoft ARM resource defintion names, e.g. NetworkACLs instead of NetworkRuleSets unless parameter name is unclear. 
 
-- all array and object params to have metadata descriptor defining the key values pairs required.
+- All array and object parameters to have metadata descriptor defining the key values pairs required.
+
+  ```bicep
+  @description('Array containing ssl certificates')
+  @metadata({
+    name: 'Certificate name'
+    keyVaultResourceId: 'Key vault resource id'
+    secretName: 'Secret name'
+  })
+  param sslCertificates array = []
+  ```
 
 #### Output Parameters
 - use resourceId over id to be explicit as id is used to reference the id of a resource in Bicep and may get confusing. 
