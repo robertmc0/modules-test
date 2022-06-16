@@ -3,7 +3,7 @@ Write deployment tests in this file. Any module that references the main
 module file is a deployment test. Make sure at least one test is added.
 */
 
-@description('The location to deploy resources to')
+@description('The location to deploy resources to.')
 param location string = 'australiasoutheast'
 
 var privateDnsZoneService = 'vault'

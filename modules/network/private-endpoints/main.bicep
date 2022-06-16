@@ -1,10 +1,10 @@
-@description('Name of the Resource for which to create the Private Endpoint')
+@description('Name of the Resource for which to create the Private Endpoint.')
 param targetResourceName string
 
-@description('Resource Id of the Resource for which to create the Private Endpoint')
+@description('Resource Id of the Resource for which to create the Private Endpoint.')
 param targetResourceId string
 
-@description('Private Endpoint types')
+@description('Private Endpoint type.')
 @allowed([
   'blob'
   'table'
@@ -19,21 +19,25 @@ param type string
 @description('Location of the resource.')
 param location string
 
-@description('Resource ID of the subnet that will host Private Endpoint.')
+@description('Resource ID of the subnet that will host the Private Endpoint.')
 param subnetId string
 
-@description('Resource ID of the Private DNS Zone to host Private Endpoint entry.')
+@description('Resource ID of the Private DNS Zone to host the Private Endpoint.')
 param privateDnsZoneId string
 
 @allowed([
   'CanNotDelete'
   'NotSpecified'
+  'ReadOnly'
 ])
 @description('Optional. Specify the type of lock.')
 param lock string = 'NotSpecified'
 
+var privateEndpointName = '${targetResourceName}-${type}-pe'
+var privateLinkServiceName = '${targetResourceName}-${type}-plink'
+
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2020-06-01' = {
-  name: '${targetResourceName}-${type}-pe'
+  name: privateEndpointName
   location: location
   properties: {
     subnet: {
@@ -41,7 +45,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2020-06-01' = {
     }
     privateLinkServiceConnections: [
       {
-        name: '${targetResourceName}-${type}-plink'
+        name: privateLinkServiceName
         properties: {
           privateLinkServiceId: targetResourceId
           groupIds: [
@@ -71,16 +75,16 @@ resource privateEndpoint_lock 'Microsoft.Authorization/locks@2017-04-01' = if (l
   name: '${privateEndpoint.name}-${lock}-lock'
   properties: {
     level: lock
-    notes: 'Cannot delete resource or child resources.'
+    notes: lock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
   scope: privateEndpoint
 }
 
-@description('The name of the private endpoint')
+@description('The name of the private endpoint.')
 output name string = privateEndpoint.name
 
-@description('The resource ID of the private endpoint')
-output id string = privateEndpoint.id
+@description('The resource ID of the private endpoint.')
+output resourceId string = privateEndpoint.id
 
 // Use a module to extract the network interface details of a private endpoint
 // This is required due to issues with using reference() against the private endpoint Nic
@@ -90,9 +94,9 @@ module nicInfo 'nicInfo.bicep' = {
     nicId: privateEndpoint.properties.networkInterfaces[0].id
   }
 }
-@description('The private endpoint IP address')
+@description('The private endpoint IP address.')
 output ipAddress string = nicInfo.outputs.privateIPAddress
 
-@description('The private endpoint IP allocation method')
+@description('The private endpoint IP allocation method.')
 output ipAllocationMethod string = nicInfo.outputs.privateIPAllocationMethod
 
