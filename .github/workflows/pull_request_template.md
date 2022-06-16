@@ -24,4 +24,3 @@ If you haven't already, read the full [contribution guide](../CONTRIBUTING.md). 
   - [ ] The PR contains backwards compatible bug fixes, and I have NOT bumped the MAJOR or MINOR version in `version.json`.
   - [ ] The PR contains backwards compatible feature updates, and I have bumped the MINOR version in `version.json`.
   - [ ] The PR contains breaking changes, and I have bumped the MAJOR version in `version.json`.
-

@@ -86,9 +86,10 @@ The `version.json` file defines the MAJOR and MINOR version number of the module
 Once you are done editing the files, run `brm generate` again to refresh `main.json` and `README.md`.
 
 #### Resource Naming
+
 - When naming parameters in modules, use current context, e.g. name, sku, kind instead of storageSku, storageKind, storageName. prefix only required if multiple resources in a module use the similar naming definitions, e.g. storageSku and firewallSku.
 
-- Child resources such as arrays/objects to use current context naming as stated above, e.g. Properties that make up a File Share to use name instead of fileShareName, or tier instead of fileShareTier. 
+- Child resources such as arrays/objects to use current context naming as stated above, e.g. Properties that make up a File Share to use name instead of fileShareName, or tier instead of fileShareTier.
 
   ```bicep
   @description('Files shares to create in the storage account.')
@@ -101,7 +102,7 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
   param fileShares array = []
   ```
 
-- Parameter names should align to Microsoft ARM resource defintion names, e.g. NetworkACLs instead of NetworkRuleSets unless parameter name is unclear. 
+- Parameter names should align to Microsoft ARM resource defintion names, e.g. NetworkACLs instead of NetworkRuleSets unless parameter name is unclear.
 
 - All array and object parameters to have metadata descriptor defining the key values pairs required.
 
@@ -116,12 +117,15 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
   ```
 
 #### Output Parameters
-- use resourceId over id to be explicit as id is used to reference the id of a resource in Bicep and may get confusing. 
+
+- use resourceId over id to be explicit as id is used to reference the id of a resource in Bicep and may get confusing.
 
 #### Defaults parameter values
+
 - Use opinionated default values where it makes sense.
 
 #### Managed Identity
+
 - Follow the convention below to support both 'SystemAssigned' and 'UserAssigned' identities for modules. The resource defintion should simply refer tp the identity variable.
 
 ```bicep
@@ -178,7 +182,7 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != '
 }
 ```
 
-In situations where you hit a technical limitation (such as looping on nested resources) you may introduce nested resources as separate bicep files. 
+In situations where you hit a technical limitation (such as looping on nested resources) you may introduce nested resources as separate bicep files.
 
 ### Number of resources in a module
 
