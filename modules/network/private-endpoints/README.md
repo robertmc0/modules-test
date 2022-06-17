@@ -1,4 +1,4 @@
-# Private Endpoints Module.
+# Private Endpoints Module
 
 This module deploys Microsoft.Network privateEndpoints.
 
