@@ -1,4 +1,22 @@
 @description('Optional. Additional datacenter locations of the API Management service.')
+@metadata({
+  doc:'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#additionallocation'
+  example: {
+    disableGateway: false
+    location: 'string'
+    publicIpAddressId: 'string'
+    sku: {
+      capacity: 1
+      name: 'string'
+    }
+    virtualNetworkConfiguration: {
+      subnetResourceId: 'string'
+    }
+    zones: [
+      'string'
+    ]
+  }
+})
 param additionalLocations array = []
 
 @description('Required. The name of the of the API Management service.')
@@ -6,9 +24,26 @@ param name string
 
 @description('Optional. List of Certificates that need to be installed in the API Management service. Max supported certificates that can be installed is 10.')
 @maxLength(10)
+@metadata({
+  doc:'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#certificateconfiguration'
+  example: {
+    certificate: {
+      expiry: 'string'
+      subject: 'string'
+      thumbprint: 'string'
+    }
+    certificatePassword: 'string'
+    encodedCertificate: 'string'
+    storeName: 'string'
+  }
+})
 param certificates array = []
 
 @description('Optional. Custom properties of the API Management service.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#apimanagementserviceproperties'
+  parameter: 'customProperties'
+})
 param customProperties object = {}
 
 @description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
@@ -33,11 +68,24 @@ param diagnosticEventHubName string = ''
 
 @description('Optional. Custom hostname configuration of the API Management service.')
 @metadata( {
-  type: 'host configuration type. Proxy or DeveloperPortal or Management'
-  hostName: 'full host name, including domain'
-  keyVaultId: 'Key vault certificate secret id'
-  negotiateClientCertificate: 'whether to negotiate client certificate'
-  identityClientId: 'client id of user identity'
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#hostnameconfiguration'
+  example: {
+    certificate: {
+      expiry: 'string'
+      subject: 'string'
+      thumbprint: 'string'
+    }
+    certificatePassword: 'string'
+    certificateSource: 'string'
+    certificateStatus: 'string'
+    defaultSslBinding: false
+    encodedCertificate: 'string'
+    hostName: 'string'
+    identityClientId: 'string'
+    keyVaultId: 'string'
+    negotiateClientCertificate: false
+    type: 'string'
+  }
 })
 param hostnameConfigurations array = []
 
