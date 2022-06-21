@@ -180,10 +180,10 @@ param namedValues array = []
 @description('Optional. The name of the diagnostic setting, if deployed.')
 param diagnosticSettingsName string = '${name}-diagnosticSettings'
 
-@description('Optional. Resource ID of the application insights resource.')
+@description('Resource ID of the application insights resource.')
 param applicationInsightsId string
 
-@description('Optional. The sample rate for the application insights logger.')
+@description('Optional. The sample rate for the application insights logger. Defaults to 10%')
 param loggerSamplingRate int = 10
 
 var diagnosticsLogs = [for category in diagnosticLogCategoriesToEnable: {

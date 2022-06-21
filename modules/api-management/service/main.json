@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "724029551324745737"
+      "templateHash": "16066086737651737010"
     }
   },
   "parameters": {
@@ -307,14 +307,14 @@
     "applicationInsightsId": {
       "type": "string",
       "metadata": {
-        "description": "Optional. Resource ID of the application insights resource."
+        "description": "Resource ID of the application insights resource."
       }
     },
     "loggerSamplingRate": {
       "type": "int",
       "defaultValue": 10,
       "metadata": {
-        "description": "Optional. The sample rate for the application insights logger."
+        "description": "Optional. The sample rate for the application insights logger. Defaults to 10%"
       }
     }
   },
