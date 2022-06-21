@@ -11,7 +11,6 @@ This module performs the following
 - Creates a default logger for all APIs which point to application insights.
 - Applys a lock to the API Management service if the lock is specified.
 
-
 ## Parameters
 
 | Name                                    | Type     | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                     |
