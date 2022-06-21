@@ -60,20 +60,19 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
 module storageAccountMinimum '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-min-storage-account'
   params: {
-    storageAccountName: uniqueString(deployment().name, 'storageAccountMinimum', location)
+    name: '${uniqueString(deployment().name, location)}minsa'
     location: location
-    //allowBlobPublicAccess: false
+    publicNetworkAccess: 'Disabled'
   }
 }
 
 module storageAccount '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-storage-account'
   params: {
-    storageAccountName: uniqueString(deployment().name, 'storageAccount', location)
+    name: '${uniqueString(deployment().name, location)}sa'
     location: location
-    //allowBlobPublicAccess: false
     publicNetworkAccess: 'Disabled'
-    //requireInfrastructureEncryption: true    
+    requireInfrastructureEncryption: true
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
@@ -90,31 +89,14 @@ module storageAccount '../main.bicep' = {
           }
       ]
     }
-    // blobServices: {
-    //   diagnosticLogsRetentionInDays: 7
-    //   diagnosticWorkspaceId: logAnalyticsWorkspace.id
-    //   containers: [
-    //       {
-    //           name: 'avdscripts'
-    //           publicAccess: 'None'
-    //       }
-    //       {
-    //           name: 'archivecontainer'
-    //           publicAccess: 'None'
-    //           enableWORM: true
-    //           WORMRetention: 666
-    //           allowProtectedAppendWrites: false
-    //       }
-    //   ]
-    // }
     
     containers: [
         {
-            containerName: 'avdscripts'
+            name: 'avdscripts'
             publicAccess: 'None'
         }
         {
-            containerName: 'archivecontainer'
+            name: 'archivecontainer'
             publicAccess: 'None'
             enableWORM: true
             WORMRetention: 666
@@ -122,86 +104,38 @@ module storageAccount '../main.bicep' = {
         }
     ]
 
-    // fileServices: {
-    //   diagnosticLogsRetentionInDays: 7
-    //   diagnosticStorageAccountId: diagnosticsStorageAccount.id
-    //   diagnosticWorkspaceId: logAnalyticsWorkspace.id
-    //   // diagnosticEventHubAuthorizationRuleId: "/subscriptions/<<subscriptionId>>/resourceGroups/validation-rg/providers/Microsoft.EventHub/namespaces/adp-<<namePrefix>>-az-evhns-x-001/AuthorizationRules/RootManageSharedAccessKey",
-    //   // diagnosticEventHubName: "adp-<<namePrefix>>-az-evh-x-001",
-    //   shares: [
-    //       {
-    //           name: 'avdprofiles'
-    //           shareQuota: 5120
-    //       }
-    //       {
-    //           name: 'avdprofiles2'
-    //           shareQuota: 5120
-    //       }
-    //   ]
-    // }
     fileShares: [
       {
-        fileShareName: 'avdprofiles'
-        fileShareQuota: 5120
+        name: 'avdprofiles'
+        quota: 5120
       }
       {
-        fileShareName: 'avdprofiles2'
-        fileShareQuota: 5120
+        name: 'avdprofiles2'
+        quota: 5120
       }
     ]
-
-    // tableServices: {
-    //   diagnosticLogsRetentionInDays: 7
-    //   diagnosticStorageAccountId: diagnosticsStorageAccount.id
-    //   diagnosticWorkspaceId: logAnalyticsWorkspace.id
-    //   // diagnosticEventHubAuthorizationRuleId: "/subscriptions/<<subscriptionId>>/resourceGroups/validation-rg/providers/Microsoft.EventHub/namespaces/adp-<<namePrefix>>-az-evhns-x-001/AuthorizationRules/RootManageSharedAccessKey",
-    //   // diagnosticEventHubName: "adp-<<namePrefix>>-az-evh-x-001",
-    //   tables: [
-    //     'table1'
-    //     'table2'
-    //   ]
-    // }
 
     tables: [
       {
-        tableName: 'table1'
+        name: 'table1'
       }
       {
-        tableName: 'table2'
+        name: 'table2'
       }
     ]
 
-    // queueServices: {
-    //   diagnosticLogsRetentionInDays: 7
-    //   diagnosticStorageAccountId: diagnosticsStorageAccount.id
-    //   diagnosticWorkspaceId: logAnalyticsWorkspace.id
-    //   // diagnosticEventHubAuthorizationRuleId: "/subscriptions/<<subscriptionId>>/resourceGroups/validation-rg/providers/Microsoft.EventHub/namespaces/adp-<<namePrefix>>-az-evhns-x-001/AuthorizationRules/RootManageSharedAccessKey",
-    //   // diagnosticEventHubName: "adp-<<namePrefix>>-az-evh-x-001",
-    //   queues: [
-    //       {
-    //           name: 'queue1'
-    //           metadata: {}
-    //       }
-    //       {
-    //           name: 'queue2'
-    //           metadata: {}
-    //       }
-    //   ]
-    // }
-
     queues: [
       {
-          queueName: 'queue1'
+          name: 'queue1'
           metadata: {}
       }
       {
-          queueName: 'queue2'
+          name: 'queue2'
           metadata: {}
       }
     ]
 
     diagnosticLogsRetentionInDays: 7
-    //diagnosticWorkspaceId: logAnalyticsWorkspace.id
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
   }
 }
@@ -209,32 +143,21 @@ module storageAccount '../main.bicep' = {
 module storageAccountNfs '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-nfs-storage-account'
   params: {
-    storageAccountName: uniqueString(deployment().name, 'storageAccountNfs', location)
+    name: '${uniqueString(deployment().name, location)}nfssa'
     location: location
-    //allowBlobPublicAccess: false
-    storageAccountSku: 'Premium_LRS'
-    storageAccountKind: 'FileStorage'
-
-    //supportsHttpsTrafficOnly: false
-    // fileServices: {
-    //   shares: [
-    //     {
-    //       name: 'nfsfileshare'
-    //       enabledProtocols: 'NFS'
-    //     }
-    //   ]
-    // }
+    publicNetworkAccess: 'Disabled'
+    sku: 'Premium_LRS'
+    kind: 'FileStorage'
 
     fileShares: [
       {
-        fileShareName: 'nfsfileshare'
-        fileShareProtocol: 'NFS'
+        name: 'nfsfileshare'
+        protocol: 'NFS'
       }
     ]
 
-    //systemAssignedIdentity: true
+    systemAssignedIdentity: true
     diagnosticLogsRetentionInDays: 7
-    //diagnosticWorkspaceId: logAnalyticsWorkspace.id
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
   }
 }
@@ -242,11 +165,9 @@ module storageAccountNfs '../main.bicep' = {
 module storageAccountDataLake '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-datalake-storage-account'
   params: {
-    storageAccountName: uniqueString(deployment().name, 'storageAccountDataLake', location)
+    name: '${uniqueString(deployment().name, location)}dlakesa'
     location: location
-    //supportsHttpsTrafficOnly: true
     enableHierarchicalNamespace: true // Required for Datalake
-    //lock: 'ReadOnly'
     resourcelock: 'CanNotDelete'
   }
 }

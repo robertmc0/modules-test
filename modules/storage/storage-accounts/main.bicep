@@ -55,6 +55,9 @@ param deleteRetentionPolicy int = 7
 @description('Optional. If true, enables Hierarchical Namespace for the storage account')
 param enableHierarchicalNamespace bool = false
 
+@description('Optional. A boolean indicating whether or not the service applies a secondary layer of encryption with platform managed keys for data at rest. For security reasons, it is recommended to set it to true.')
+param requireInfrastructureEncryption bool = true
+
 @description('Containers to create in the storage account.')
 @metadata({
   containerName: 'Container name.'
@@ -166,6 +169,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
           enabled: true
         } : null
       }
+      requireInfrastructureEncryption: kind != 'Storage' ? requireInfrastructureEncryption : null
     }
     networkAcls: networkAcls
     publicNetworkAccess: publicNetworkAccess
@@ -186,7 +190,7 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-04-01
 }
 
 resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = [for container in containers: {
-  name: container.containerName
+  name: container.name
   parent: blobServices
   properties: {
     publicAccess: container.publicAccess
@@ -222,7 +226,7 @@ resource queueServices 'Microsoft.Storage/storageAccounts/queueServices@2021-09-
 
 resource storageQueues 'Microsoft.Storage/storageAccounts/queueServices/queues@2021-09-01' = [for queue in queues: {
   parent: queueServices
-  name: queue.queueName
+  name: queue.name
   properties: {}
 }]
 
@@ -234,7 +238,7 @@ resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2021-09-
 
 resource storageTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2021-09-01' = [for table in tables: {
   parent: tableServices
-  name: table.tableName
+  name: table.name
   properties: {}
 }]
 

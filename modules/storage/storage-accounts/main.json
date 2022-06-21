@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "17007385625641532302"
+      "templateHash": "12649731360244491670"
     }
   },
   "parameters": {
@@ -102,6 +102,13 @@
       "defaultValue": false,
       "metadata": {
         "description": "Optional. If true, enables Hierarchical Namespace for the storage account"
+      }
+    },
+    "requireInfrastructureEncryption": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. A boolean indicating whether or not the service applies a secondary layer of encryption with platform managed keys for data at rest. For security reasons, it is recommended to set it to true."
       }
     },
     "containers": {
@@ -254,7 +261,8 @@
           "services": {
             "blob": "[if(variables('supportsBlobService'), createObject('enabled', true()), null())]",
             "file": "[if(variables('supportsFileService'), createObject('enabled', true()), null())]"
-          }
+          },
+          "requireInfrastructureEncryption": "[if(not(equals(parameters('kind'), 'Storage')), parameters('requireInfrastructureEncryption'), null())]"
         },
         "networkAcls": "[parameters('networkAcls')]",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
@@ -284,7 +292,7 @@
       },
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
       "apiVersion": "2021-08-01",
-      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('containers')[copyIndex()].containerName)]",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('containers')[copyIndex()].name)]",
       "properties": {
         "publicAccess": "[parameters('containers')[copyIndex()].publicAccess]"
       },
@@ -293,7 +301,7 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('fileShares')))]",
+      "condition": "[variables('supportsFileService')]",
       "type": "Microsoft.Storage/storageAccounts/fileServices",
       "apiVersion": "2021-08-01",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
@@ -341,7 +349,7 @@
       },
       "type": "Microsoft.Storage/storageAccounts/queueServices/queues",
       "apiVersion": "2021-09-01",
-      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('queues')[copyIndex()].queueName)]",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('queues')[copyIndex()].name)]",
       "properties": {},
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/queueServices', parameters('name'), 'default')]"
@@ -364,7 +372,7 @@
       },
       "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
       "apiVersion": "2021-09-01",
-      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('tables')[copyIndex()].tableName)]",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('tables')[copyIndex()].name)]",
       "properties": {},
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/tableServices', parameters('name'), 'default')]"
