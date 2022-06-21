@@ -4,7 +4,15 @@ This module deploys Microsoft.StorageAccounts and child resources
 
 ## Description
 
-{{ Add detailed description for the module. }}
+This module performs the following
+
+Creates Microsoft.StorageAccount resource.
+Creates blob containers if provided.
+Creates file shares if provided.
+Creates Storage queues if provided.
+Creates Storage tables if provided.
+Applies diagnostic settings.
+Applys a lock to the storage account if the lock is specified.
 
 ## Parameters
 
