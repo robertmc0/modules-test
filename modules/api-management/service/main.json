@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "16794083389611968123"
+      "templateHash": "724029551324745737"
     }
   },
   "parameters": {
@@ -13,6 +13,22 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#additionallocation",
+        "example": {
+          "disableGateway": false,
+          "location": "string",
+          "publicIpAddressId": "string",
+          "sku": {
+            "capacity": 1,
+            "name": "string"
+          },
+          "virtualNetworkConfiguration": {
+            "subnetResourceId": "string"
+          },
+          "zones": [
+            "string"
+          ]
+        },
         "description": "Optional. Additional datacenter locations of the API Management service."
       }
     },
@@ -25,15 +41,28 @@
     "certificates": {
       "type": "array",
       "defaultValue": [],
-      "maxLength": 10,
       "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#certificateconfiguration",
+        "example": {
+          "certificate": {
+            "expiry": "string",
+            "subject": "string",
+            "thumbprint": "string"
+          },
+          "certificatePassword": "string",
+          "encodedCertificate": "string",
+          "storeName": "string"
+        },
         "description": "Optional. List of Certificates that need to be installed in the API Management service. Max supported certificates that can be installed is 10."
-      }
+      },
+      "maxLength": 10
     },
     "customProperties": {
       "type": "object",
       "defaultValue": {},
       "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#apimanagementserviceproperties",
+        "parameter": "customProperties",
         "description": "Optional. Custom properties of the API Management service."
       }
     },
@@ -85,11 +114,24 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "type": "host configuration type. Proxy or DeveloperPortal or Management",
-        "hostName": "full host name, including domain",
-        "keyVaultId": "Key vault certificate secret id",
-        "negotiateClientCertificate": "whether to negotiate client certificate",
-        "identityClientId": "client id of user identity",
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#hostnameconfiguration",
+        "example": {
+          "certificate": {
+            "expiry": "string",
+            "subject": "string",
+            "thumbprint": "string"
+          },
+          "certificatePassword": "string",
+          "certificateSource": "string",
+          "certificateStatus": "string",
+          "defaultSslBinding": false,
+          "encodedCertificate": "string",
+          "hostName": "string",
+          "identityClientId": "string",
+          "keyVaultId": "string",
+          "negotiateClientCertificate": false,
+          "type": "string"
+        },
         "description": "Optional. Custom hostname configuration of the API Management service."
       }
     },
