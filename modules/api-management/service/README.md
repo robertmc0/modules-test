@@ -1,6 +1,10 @@
-# API Management
+# API Management Module
 
-This module deploys Microsoft.ApiManagement service
+This module deploys API Management resource.
+
+## Description
+
+This module deploys API Management and integrates application insights as the default logger for APIs.
 
 ## Parameters
 

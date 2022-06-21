@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.6.18.56646",
-      "templateHash": "12240859413705505479"
+      "version": "0.7.4.23292",
+      "templateHash": "989106529291085581"
     }
   },
   "parameters": {
@@ -338,13 +338,16 @@
       },
       "type": "Microsoft.ApiManagement/service/namedValues",
       "apiVersion": "2021-08-01",
-      "name": "[format('{0}/{1}', parameters('name'), parameters('namedValues')[copyIndex()].displayName)]",
+      "name": "[format('{0}/{1}', parameters('name'), format('{0}', parameters('namedValues')[copyIndex()].displayName))]",
       "properties": {
         "displayName": "[parameters('namedValues')[copyIndex()].displayName]",
         "keyVault": "[if(contains(parameters('namedValues')[copyIndex()], 'keyVault'), parameters('namedValues')[copyIndex()].keyVault, null())]",
         "secret": "[if(contains(parameters('namedValues')[copyIndex()], 'secret'), parameters('namedValues')[copyIndex()].secret, false())]",
         "value": "[if(contains(parameters('namedValues')[copyIndex()], 'value'), parameters('namedValues')[copyIndex()].value, null())]"
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+      ]
     },
     {
       "type": "Microsoft.ApiManagement/service/namedValues",
@@ -353,7 +356,7 @@
       "properties": {
         "displayName": "Logger-Credentials",
         "secret": true,
-        "value": "[reference(parameters('applicationInsightsId')).properties.InstrumentationKey]"
+        "value": "[reference(parameters('applicationInsightsId'), '2020-02-02', 'Full').properties.InstrumentationKey]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
@@ -383,7 +386,8 @@
         "resourceId": "[parameters('applicationInsightsId')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]",
+        "[resourceId('Microsoft.ApiManagement/service/namedValues', parameters('name'), 'Logger-Credentials')]"
       ]
     },
     {

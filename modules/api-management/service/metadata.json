@@ -1,6 +1,6 @@
 {
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema#",
-  "name": "API Management",
-  "description": "This module deploys Microsoft.ApiManagement service",
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "API Management Module",
+  "summary": "This module deploys API Management resource.",
   "owner": "Arinco"
 }
