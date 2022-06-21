@@ -232,7 +232,7 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
 }
 
 resource apimLoggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08-01' = {
-  name: 'applicationInsightsLoggerSettings'
+  name: 'applicationinsights'
   properties: {
     alwaysLog: 'allErrors'
     loggerId: apimLogger.id
