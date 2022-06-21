@@ -1,5 +1,7 @@
 # Storage Accounts
 
+This module deploys Microsoft.StorageAccounts and child resources
+
 ## Description
 
 {{ Add detailed description for the module. }}
