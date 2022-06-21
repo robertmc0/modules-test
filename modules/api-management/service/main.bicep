@@ -32,6 +32,13 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 param diagnosticEventHubName string = ''
 
 @description('Optional. Custom hostname configuration of the API Management service.')
+@metadata( {
+  type: 'host configuration type. Proxy or DeveloperPortal or Management'
+  hostName: 'full host name, including domain'
+  keyVaultId: 'Key vault certificate secret id'
+  negotiateClientCertificate: 'whether to negotiate client certificate'
+  identityClientId: 'client id of user identity'
+})
 param hostnameConfigurations array = []
 
 @description('Optional. Enables system assigned managed identity on the resource.')

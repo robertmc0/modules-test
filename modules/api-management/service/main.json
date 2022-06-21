@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "989106529291085581"
+      "templateHash": "16794083389611968123"
     }
   },
   "parameters": {
@@ -85,6 +85,11 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
+        "type": "host configuration type. Proxy or DeveloperPortal or Management",
+        "hostName": "full host name, including domain",
+        "keyVaultId": "Key vault certificate secret id",
+        "negotiateClientCertificate": "whether to negotiate client certificate",
+        "identityClientId": "client id of user identity",
         "description": "Optional. Custom hostname configuration of the API Management service."
       }
     },
@@ -393,7 +398,7 @@
     {
       "type": "Microsoft.ApiManagement/service/diagnostics",
       "apiVersion": "2021-08-01",
-      "name": "[format('{0}/{1}', parameters('name'), 'applicationInsightsLoggerSettings')]",
+      "name": "[format('{0}/{1}', parameters('name'), 'applicationinsights')]",
       "properties": {
         "alwaysLog": "allErrors",
         "loggerId": "[resourceId('Microsoft.ApiManagement/service/loggers', parameters('name'), 'applicationInsights')]",

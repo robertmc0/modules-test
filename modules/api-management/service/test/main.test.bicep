@@ -148,6 +148,10 @@ module apim '../main.bicep' = {
     userAssignedIdentities: {
       '${userIdentity.id}': {}
     }
+    // zones: [
+    //   '1'
+    //   '2'
+    // ]
     hostnameConfigurations: [
       {
         type: 'Proxy'

@@ -4,7 +4,13 @@ This module deploys API Management resource.
 
 ## Description
 
-This module deploys API Management and integrates application insights as the default logger for APIs.
+This module performs the following
+
+- Creates Microsoft.APIManagement service resource.
+- Links the provided application insights instance to the service.
+- Creates a default logger for all APIs which point to application insights.
+- Applys a lock to the API Management service if the lock is specified.
+
 
 ## Parameters
 
@@ -55,12 +61,4 @@ This module deploys API Management and integrates application insights as the de
 
 ## Examples
 
-### Example 1
-
-```bicep
-```
-
-### Example 2
-
-```bicep
-```
+See [Tests File](test/main.test.bicep)
