@@ -193,7 +193,7 @@ resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containe
   }
 }]
 
-resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-08-01' = if (!empty(fileShares)) {
+resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-08-01' = if (supportsFileService) {
   parent: storage
   name: 'default'
   properties: {
