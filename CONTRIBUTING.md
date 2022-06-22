@@ -177,7 +177,6 @@ resource diagnosticsStorage 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
 }
 ```
 
-
 #### Managed identity
 
 - Follow the convention below to support both 'SystemAssigned' and 'UserAssigned' identities for modules. The resource defintion should simply refer to the identity variable.
