@@ -91,7 +91,7 @@ The `version.json` file defines the MAJOR and MINOR version number of the module
 
 Once you are done editing the files, run `brm generate` again to refresh `main.json` and `README.md`.
 
-#### Resource Naming
+#### Resource naming
 
 - When naming parameters in modules, use current context, e.g. name, sku, kind instead of storageSku, storageKind, storageName. prefix only required if multiple resources in a module use the similar naming definitions, e.g. storageSku and firewallSku.
 
@@ -122,11 +122,11 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
   param sslCertificates array = []
   ```
 
-#### Parameter Declarations
+#### Parameter declarations
 
 - Ensure all parameter declarations have a clear description of the purpose and the sentence ends with a full stop.
 
-#### Output Parameters
+#### Output parameters
 
 - Use resourceId over id to be explicit as id is used to reference the id of a resource in Bicep and may get confusing.
 
@@ -134,7 +134,51 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
 
 - Use opinionated default values where it makes sense.
 
-#### Managed Identity
+#### Placement of scope and parent properties
+
+- Ensure **scope** or **parent** are specified at the top of the resources definition.
+
+```bicep
+resource storage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
+  name: name
+  location: location
+  sku: {
+    name: sku
+  }
+  kind: kind
+  identity: identity
+  properties: {
+    ...
+  }
+}
+
+resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-08-01' = if (supportsFileService) {
+  parent: storage
+  name: 'default'
+  properties: {
+    ...
+  }
+}
+
+resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2021-08-01' = [for fileShare in fileShares: {
+  parent: fileServices
+  name: fileShare.name
+  properties: {
+    ...
+  }
+}]
+
+resource diagnosticsStorage 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+  scope: storage
+  name: diagnosticsName
+  properties: {
+    ...
+  }
+}
+```
+
+
+#### Managed identity
 
 - Follow the convention below to support both 'SystemAssigned' and 'UserAssigned' identities for modules. The resource defintion should simply refer to the identity variable.
 
