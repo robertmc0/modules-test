@@ -60,7 +60,7 @@ param requireInfrastructureEncryption bool = true
 
 @description('Containers to create in the storage account.')
 @metadata({
-  containerName: 'Container name.'
+  name: 'Container name.'
   publicAccess: 'Specifies whether data in the container may be accessed publicly and the level of access. Accepted values: None, Blob, Container.'
 })
 param containers array = []
@@ -76,11 +76,14 @@ param fileShares array = []
 
 @description('Queue to create in the storage account.')
 @metadata({
-  queueName: 'Queue name.'
+  name: 'Queue name.'
 })
 param queues array = []
 
 @description('Optional. Tables to create.')
+@metadata({
+  name: 'Table name.'
+})
 param tables array = []
 
 @description('Rule definitions governing the Storage network access.')
@@ -190,8 +193,8 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-04-01
 }
 
 resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = [for container in containers: {
-  name: container.name
   parent: blobServices
+  name: container.name
   properties: {
     publicAccess: container.publicAccess
   }
@@ -209,8 +212,8 @@ resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-08-01
 }
 
 resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2021-08-01' = [for fileShare in fileShares: {
-  name: fileShare.name
   parent: fileServices
+  name: fileShare.name
   properties: {
     accessTier: contains(fileShare,'tier') ? fileShare.tier : null
     enabledProtocols: contains(fileShare,'protocol') ? fileShare.protocol : 'SMB'
@@ -243,12 +246,12 @@ resource storageTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2
 }]
 
 resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+  scope: storage
   name: lockName
   properties: {
     level: resourcelock
     notes: (resourcelock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
-  scope: storage
 }
 
 var diagnosticsMetricsRetentionPolicy = {

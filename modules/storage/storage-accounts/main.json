@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "12649731360244491670"
+      "templateHash": "8522592601837061761"
     }
   },
   "parameters": {
@@ -115,7 +115,7 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "containerName": "Container name.",
+        "name": "Container name.",
         "publicAccess": "Specifies whether data in the container may be accessed publicly and the level of access. Accepted values: None, Blob, Container.",
         "description": "Containers to create in the storage account."
       }
@@ -135,7 +135,7 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "queueName": "Queue name.",
+        "name": "Queue name.",
         "description": "Queue to create in the storage account."
       }
     },
@@ -143,6 +143,7 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
+        "name": "Table name.",
         "description": "Optional. Tables to create."
       }
     },
