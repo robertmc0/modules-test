@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "16066086737651737010"
+      "templateHash": "4126982651742904925"
     }
   },
   "parameters": {
@@ -146,14 +146,16 @@
       "type": "object",
       "defaultValue": {},
       "metadata": {
+        "example": {
+          "/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi": {}
+        },
         "description": "Optional. The ID(s) to assign to the resource."
       }
     },
     "location": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
       "metadata": {
-        "description": "Optional. Location for all Resources."
+        "description": "Location for all Resources."
       }
     },
     "lock": {
@@ -263,6 +265,10 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
+        "zones": [
+          "1",
+          "2"
+        ],
         "description": "Optional. A list of availability zones denoting where the resource needs to come from."
       }
     },
