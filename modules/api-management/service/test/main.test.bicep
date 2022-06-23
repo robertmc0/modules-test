@@ -1,10 +1,12 @@
-@description('The location to deploy resources to')
+@description('Optional. The environment')
 param environment string = 'tst'
 
-@description('The location to deploy resources to')
+@description('Optional. The location to deploy resources to')
 param location string = 'australiaeast'
 
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints')
+@minLength(1)
+@maxLength(3)
 param companyShortName string = 'arn'
 
 @description('Optional. The type of VPN in which API Management service needs to be configured in. None (Default Value) means the API Management service is not part of any Virtual Network, External means the API Management deployment is set up inside a Virtual Network having an internet Facing Endpoint, and Internal means that API Management deployment is setup inside a Virtual Network having an Intranet Facing Endpoint only.')
@@ -113,10 +115,6 @@ module kvCert 'br/public:deployment-scripts/create-kv-certificate:1.1.1' = {
 var sslCertSecretId = kvCert.outputs.certificateSecretIdUnversioned
 
 var nameValues = [
-  // {
-  //   displayName: 'app-gateway-public-ip'
-  //   value: appGatewayPublicIp.properties.ipAddress
-  // }
   {
     displayName: 'api-management-subscription-id'
     value: subscription().subscriptionId
@@ -148,10 +146,6 @@ module apim '../main.bicep' = {
     userAssignedIdentities: {
       '${userIdentity.id}': {}
     }
-    // zones: [
-    //   '1'
-    //   '2'
-    // ]
     hostnameConfigurations: [
       {
         type: 'Proxy'

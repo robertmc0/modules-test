@@ -93,10 +93,15 @@ param hostnameConfigurations array = []
 param systemAssignedIdentity bool = false
 
 @description('Optional. The ID(s) to assign to the resource.')
+@metadata({
+  example: {
+    '/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi': {}
+  }
+})
 param userAssignedIdentities object = {}
 
-@description('Optional. Location for all Resources.')
-param location string = resourceGroup().location
+@description('Location for all Resources.')
+param location string
 
 @allowed([
   'CanNotDelete'
@@ -156,6 +161,9 @@ param virtualNetworkType string = 'None'
 param diagnosticWorkspaceId string = ''
 
 @description('Optional. A list of availability zones denoting where the resource needs to come from.')
+@metadata({
+  zones: ['1','2']
+})
 param zones array = []
 
 @description('Optional. The name of logs that will be streamed.')
@@ -242,6 +250,7 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
 }
 
 resource nameValue 'Microsoft.ApiManagement/service/namedValues@2021-08-01' = [for namedValue in namedValues: {
+  parent: apiManagementService
   name: '${namedValue.displayName}'
   properties: {
     displayName: namedValue.displayName
@@ -249,28 +258,28 @@ resource nameValue 'Microsoft.ApiManagement/service/namedValues@2021-08-01' = [f
     secret: contains(namedValue, 'secret') ? namedValue.secret : false
     value: contains(namedValue, 'value') ? namedValue.value : null
   }
-  parent: apiManagementService
 }]
 
 resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2021-08-01' = {
+  parent: apiManagementService
   name: 'Logger-Credentials'
   properties: {
     displayName: 'Logger-Credentials'
     secret: true
     value: applicationInsights.properties.InstrumentationKey
   }
-  parent: apiManagementService
 }
 
 resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2021-08-01' = {
+  parent: apiManagementService
   name: 'signin'
   properties: {
     enabled: true // Redirect Anonymous users to the Sign-In page.
   }
-  parent: apiManagementService
 }
 
 resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
+  parent: apiManagementService
   name: 'applicationInsights'
   properties: {
     loggerType:  'applicationInsights'
@@ -280,13 +289,13 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
     }
     resourceId: applicationInsightsId
   }
-  parent: apiManagementService
   dependsOn: [
     loggerNameValue
   ]
 }
 
 resource apimLoggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08-01' = {
+  parent: apiManagementService
   name: 'applicationinsights'
   properties: {
     alwaysLog: 'allErrors'
@@ -296,19 +305,19 @@ resource apimLoggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08
       percentage: loggerSamplingRate
     }
   }
-  parent: apiManagementService
 }
 
-resource apiManagementService_lock 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
+resource apimLock 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
+  scope: apiManagementService
   name: '${apiManagementService.name}-${lock}-lock'
   properties: {
     level: lock
     notes: lock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
-  scope: apiManagementService
 }
 
-resource apiManagementService_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(diagnosticStorageAccountId) || !empty(diagnosticWorkspaceId) || !empty(diagnosticEventHubAuthorizationRuleId) || !empty(diagnosticEventHubName)) {
+resource apimDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(diagnosticStorageAccountId) || !empty(diagnosticWorkspaceId) || !empty(diagnosticEventHubAuthorizationRuleId) || !empty(diagnosticEventHubName)) {
+  scope: apiManagementService
   name: diagnosticSettingsName
   properties: {
     storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
@@ -319,7 +328,6 @@ resource apiManagementService_diagnosticSettings 'Microsoft.Insights/diagnosticS
     logs: diagnosticsLogs
     logAnalyticsDestinationType: 'Dedicated'
   }
-  scope: apiManagementService
 }
 
 @description('The name of the API management service')
