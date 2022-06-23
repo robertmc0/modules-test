@@ -278,7 +278,7 @@ resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2021-08-0
   }
 }
 
-resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
+resource logger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
   parent: apiManagementService
   name: 'applicationInsights'
   properties: {
@@ -294,12 +294,12 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
   ]
 }
 
-resource apimLoggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08-01' = {
+resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08-01' = {
   parent: apiManagementService
   name: 'applicationinsights'
   properties: {
     alwaysLog: 'allErrors'
-    loggerId: apimLogger.id
+    loggerId: logger.id
     sampling: {
       samplingType: 'fixed'
       percentage: loggerSamplingRate
@@ -307,7 +307,7 @@ resource apimLoggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08
   }
 }
 
-resource apimLock 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
+resource locks 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
   scope: apiManagementService
   name: '${apiManagementService.name}-${lock}-lock'
   properties: {
@@ -316,7 +316,7 @@ resource apimLock 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotS
   }
 }
 
-resource apimDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(diagnosticStorageAccountId) || !empty(diagnosticWorkspaceId) || !empty(diagnosticEventHubAuthorizationRuleId) || !empty(diagnosticEventHubName)) {
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(diagnosticStorageAccountId) || !empty(diagnosticWorkspaceId) || !empty(diagnosticEventHubAuthorizationRuleId) || !empty(diagnosticEventHubName)) {
   scope: apiManagementService
   name: diagnosticSettingsName
   properties: {
