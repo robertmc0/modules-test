@@ -288,6 +288,10 @@ If your change is non-breaking but does not require updating the MINOR version, 
 - Bumping the API version of a resource
 - Bumping the MINOR or PATCH version of a referenced public registry module
 
+### Resource API Version
+
+Its always good practice to update resource api versions regularly but keep in mind there can be breaking changes and will require bumping the MAJOR version. Automated testing will detect api verions that are 2 years old and require an update.
+
 ## Validating module files
 
 > Before running the command, don't forget to run `generate` to ensure all files are up-to-date.
