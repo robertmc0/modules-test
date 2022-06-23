@@ -1,0 +1,527 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.7.4.23292",
+      "templateHash": "4126982651742904925"
+    }
+  },
+  "parameters": {
+    "additionalLocations": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#additionallocation",
+        "example": {
+          "disableGateway": false,
+          "location": "string",
+          "publicIpAddressId": "string",
+          "sku": {
+            "capacity": 1,
+            "name": "string"
+          },
+          "virtualNetworkConfiguration": {
+            "subnetResourceId": "string"
+          },
+          "zones": [
+            "string"
+          ]
+        },
+        "description": "Optional. Additional datacenter locations of the API Management service."
+      }
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Required. The name of the of the API Management service."
+      }
+    },
+    "certificates": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#certificateconfiguration",
+        "example": {
+          "certificate": {
+            "expiry": "string",
+            "subject": "string",
+            "thumbprint": "string"
+          },
+          "certificatePassword": "string",
+          "encodedCertificate": "string",
+          "storeName": "string"
+        },
+        "description": "Optional. List of Certificates that need to be installed in the API Management service. Max supported certificates that can be installed is 10."
+      },
+      "maxLength": 10
+    },
+    "customProperties": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#apimanagementserviceproperties",
+        "parameter": "customProperties",
+        "description": "Optional. Custom properties of the API Management service."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic storage account."
+      }
+    },
+    "disableGateway": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Property only valid for an API Management service deployed in multiple locations. This can be used to disable the gateway in master region."
+      }
+    },
+    "enableClientCertificate": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Property only meant to be used for Consumption SKU Service. This enforces a client certificate to be presented on each request to the gateway. This also enables the ability to authenticate the certificate in the policy on the gateway."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+      }
+    },
+    "hostnameConfigurations": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#hostnameconfiguration",
+        "example": {
+          "certificate": {
+            "expiry": "string",
+            "subject": "string",
+            "thumbprint": "string"
+          },
+          "certificatePassword": "string",
+          "certificateSource": "string",
+          "certificateStatus": "string",
+          "defaultSslBinding": false,
+          "encodedCertificate": "string",
+          "hostName": "string",
+          "identityClientId": "string",
+          "keyVaultId": "string",
+          "negotiateClientCertificate": false,
+          "type": "string"
+        },
+        "description": "Optional. Custom hostname configuration of the API Management service."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi": {}
+        },
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for all Resources."
+      }
+    },
+    "lock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      },
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ]
+    },
+    "minApiVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Limit control plane API calls to API Management service with version equal to or newer than this value."
+      }
+    },
+    "notificationSenderEmail": {
+      "type": "string",
+      "defaultValue": "apimgmt-noreply@mail.windowsazure.com",
+      "metadata": {
+        "description": "Optional. The notification sender email address for the service."
+      }
+    },
+    "publisherEmail": {
+      "type": "string",
+      "metadata": {
+        "description": "Required. The email address of the owner of the service."
+      }
+    },
+    "publisherName": {
+      "type": "string",
+      "metadata": {
+        "description": "Required. The name of the owner of the service."
+      }
+    },
+    "restore": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Undelete API Management Service if it was previously soft-deleted. If this flag is specified and set to True all other properties will be ignored."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Developer",
+      "allowedValues": [
+        "Consumption",
+        "Developer",
+        "Basic",
+        "Standard",
+        "Premium"
+      ],
+      "metadata": {
+        "description": "Optional. The pricing tier of this API Management service."
+      }
+    },
+    "skuCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "allowedValues": [
+        1,
+        2
+      ],
+      "metadata": {
+        "description": "Optional. The instance size of this API Management service."
+      }
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The full resource ID of a subnet in a virtual network to deploy the API Management service in."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. Tags of the resource."
+      }
+    },
+    "virtualNetworkType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "External",
+        "Internal"
+      ],
+      "metadata": {
+        "description": "Optional. The type of VPN in which API Management service needs to be configured in. None (Default Value) means the API Management service is not part of any Virtual Network, External means the API Management deployment is set up inside a Virtual Network having an internet Facing Endpoint, and Internal means that API Management deployment is setup inside a Virtual Network having an Intranet Facing Endpoint only."
+      }
+    },
+    "diagnosticWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic log analytics workspace."
+      }
+    },
+    "zones": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "zones": [
+          "1",
+          "2"
+        ],
+        "description": "Optional. A list of availability zones denoting where the resource needs to come from."
+      }
+    },
+    "diagnosticLogCategoriesToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "GatewayLogs"
+      ],
+      "allowedValues": [
+        "GatewayLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of logs that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "namedValues": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. Named values."
+      }
+    },
+    "diagnosticSettingsName": {
+      "type": "string",
+      "defaultValue": "[format('{0}-diagnosticSettings', parameters('name'))]",
+      "metadata": {
+        "description": "Optional. The name of the diagnostic setting, if deployed."
+      }
+    },
+    "applicationInsightsId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the application insights resource."
+      }
+    },
+    "loggerSamplingRate": {
+      "type": "int",
+      "defaultValue": 10,
+      "metadata": {
+        "description": "Optional. The sample rate for the application insights logger. Defaults to 10%"
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoriesToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ApiManagement/service",
+      "apiVersion": "2021-08-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('sku')]",
+        "capacity": "[parameters('skuCount')]"
+      },
+      "zones": "[parameters('zones')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "publisherEmail": "[parameters('publisherEmail')]",
+        "publisherName": "[parameters('publisherName')]",
+        "notificationSenderEmail": "[parameters('notificationSenderEmail')]",
+        "hostnameConfigurations": "[parameters('hostnameConfigurations')]",
+        "additionalLocations": "[parameters('additionalLocations')]",
+        "customProperties": "[parameters('customProperties')]",
+        "certificates": "[parameters('certificates')]",
+        "enableClientCertificate": "[if(parameters('enableClientCertificate'), true(), null())]",
+        "disableGateway": "[parameters('disableGateway')]",
+        "virtualNetworkType": "[parameters('virtualNetworkType')]",
+        "virtualNetworkConfiguration": "[if(not(empty(parameters('subnetResourceId'))), json(format('{{\"subnetResourceId\": \"{0}\"}}', parameters('subnetResourceId'))), null())]",
+        "apiVersionConstraint": "[if(not(empty(parameters('minApiVersion'))), json(format('{{\"minApiVersion\": \"{0}\"}}', parameters('minApiVersion'))), null())]",
+        "restore": "[parameters('restore')]"
+      }
+    },
+    {
+      "copy": {
+        "name": "nameValue",
+        "count": "[length(parameters('namedValues'))]"
+      },
+      "type": "Microsoft.ApiManagement/service/namedValues",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/{1}', parameters('name'), format('{0}', parameters('namedValues')[copyIndex()].displayName))]",
+      "properties": {
+        "displayName": "[parameters('namedValues')[copyIndex()].displayName]",
+        "keyVault": "[if(contains(parameters('namedValues')[copyIndex()], 'keyVault'), parameters('namedValues')[copyIndex()].keyVault, null())]",
+        "secret": "[if(contains(parameters('namedValues')[copyIndex()], 'secret'), parameters('namedValues')[copyIndex()].secret, false())]",
+        "value": "[if(contains(parameters('namedValues')[copyIndex()], 'value'), parameters('namedValues')[copyIndex()].value, null())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/namedValues",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'Logger-Credentials')]",
+      "properties": {
+        "displayName": "Logger-Credentials",
+        "secret": true,
+        "value": "[reference(parameters('applicationInsightsId'), '2020-02-02', 'Full').properties.InstrumentationKey]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/portalsettings",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'signin')]",
+      "properties": {
+        "enabled": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/loggers",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'applicationInsights')]",
+      "properties": {
+        "loggerType": "applicationInsights",
+        "description": "Application Insights Logger",
+        "credentials": {
+          "instrumentationKey": "{{Logger-Credentials}}"
+        },
+        "resourceId": "[parameters('applicationInsightsId')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]",
+        "[resourceId('Microsoft.ApiManagement/service/namedValues', parameters('name'), 'Logger-Credentials')]"
+      ]
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/diagnostics",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'applicationinsights')]",
+      "properties": {
+        "alwaysLog": "allErrors",
+        "loggerId": "[resourceId('Microsoft.ApiManagement/service/loggers', parameters('name'), 'applicationInsights')]",
+        "sampling": {
+          "samplingType": "fixed",
+          "percentage": "[parameters('loggerSamplingRate')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]",
+        "[resourceId('Microsoft.ApiManagement/service/loggers', parameters('name'), 'applicationInsights')]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('lock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.ApiManagement/service/{0}', parameters('name'))]",
+      "name": "[format('{0}-{1}-lock', parameters('name'), parameters('lock'))]",
+      "properties": {
+        "level": "[parameters('lock')]",
+        "notes": "[if(equals(parameters('lock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[or(or(or(not(empty(parameters('diagnosticStorageAccountId'))), not(empty(parameters('diagnosticWorkspaceId')))), not(empty(parameters('diagnosticEventHubAuthorizationRuleId')))), not(empty(parameters('diagnosticEventHubName'))))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.ApiManagement/service/{0}', parameters('name'))]",
+      "name": "[parameters('diagnosticSettingsName')]",
+      "properties": {
+        "storageAccountId": "[if(not(empty(parameters('diagnosticStorageAccountId'))), parameters('diagnosticStorageAccountId'), null())]",
+        "workspaceId": "[if(not(empty(parameters('diagnosticWorkspaceId'))), parameters('diagnosticWorkspaceId'), null())]",
+        "eventHubAuthorizationRuleId": "[if(not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))), parameters('diagnosticEventHubAuthorizationRuleId'), null())]",
+        "eventHubName": "[if(not(empty(parameters('diagnosticEventHubName'))), parameters('diagnosticEventHubName'), null())]",
+        "metrics": "[variables('diagnosticsMetrics')]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "logAnalyticsDestinationType": "Dedicated"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the API management service"
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the API management service"
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "value": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The resource group the API management service was deployed into"
+      }
+    },
+    "systemAssignedPrincipalId": {
+      "type": "string",
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2021-08-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2021-08-01', 'full').identity.principalId, '')]",
+      "metadata": {
+        "description": "The principal ID of the system assigned identity."
+      }
+    }
+  }
+}
