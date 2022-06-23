@@ -382,8 +382,8 @@ resource diagnosticsQueueServices 'Microsoft.Insights/diagnosticSettings@2021-05
   }
 }
 
-@description('The name of the deployed storage account')
+@description('The name of the deployed storage account.')
 output name string = storage.name
 
-@description('The resource ID of the deployed storage account')
+@description('The resource ID of the deployed storage account.')
 output resourceId string = storage.id
