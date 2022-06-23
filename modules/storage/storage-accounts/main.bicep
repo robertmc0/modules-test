@@ -93,7 +93,7 @@ param tables array = []
   ipRules: [
     {
       action: 'Allow'
-      value: 'IPv4 address or CIDR range'
+      value: 'IPv4 address or CIDR range.'
     }
   ]
   virtualNetworkRules: [

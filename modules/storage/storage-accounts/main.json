@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "8522592601837061761"
+      "templateHash": "9806658003131233764"
     }
   },
   "parameters": {
@@ -156,7 +156,7 @@
         "ipRules": [
           {
             "action": "Allow",
-            "value": "IPv4 address or CIDR range"
+            "value": "IPv4 address or CIDR range."
           }
         ],
         "virtualNetworkRules": [
