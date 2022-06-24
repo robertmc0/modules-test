@@ -1,0 +1,344 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.7.4.23292",
+      "templateHash": "13065099474125932817"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "PerGB2018",
+      "metadata": {
+        "description": "Optional. The SKU of the workspace."
+      },
+      "allowedValues": [
+        "PerGB2018",
+        "Free",
+        "Standalone",
+        "PerNode",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "retentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 730,
+      "minValue": 7,
+      "metadata": {
+        "description": "Optional. The workspace data retention in days. Allowed values are per pricing plan. See pricing tiers documentation for details."
+      }
+    },
+    "solutions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Solution name.",
+        "product": "Product name, e.g. OMSGallery/AzureActivity.",
+        "publisher": "Publisher name.",
+        "promotionCode": "Promotion code if applicable.",
+        "description": "Optional. Solutions to add to workspace."
+      }
+    },
+    "automationAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource id of automation account to link to workspace."
+      }
+    },
+    "dataSources": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Data source name.",
+        "kind": "Data source kind.",
+        "properties": "The data source properties in raw json format, each kind of data source have its own schema.",
+        "description": "Optional. Datasources to add to workspace."
+      }
+    },
+    "savedSearches": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Saved search name.",
+        "category": "The category of the saved search.",
+        "displayName": "Saved search display name.",
+        "query": "The query expression for the saved search.",
+        "functionAlias": "The function alias if query serves as a function.",
+        "functionParameters": "The optional function parameters if query serves as a function.",
+        "description": "Optional. Saved searches to add to workspace."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logs"
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Audit"
+      ],
+      "allowedValues": [
+        "Audit",
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "diagnosticsName": "[format('{0}-dgs', parameters('name'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2021-06-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "sku": {
+          "name": "[parameters('sku')]"
+        },
+        "retentionInDays": "[parameters('retentionInDays')]"
+      }
+    },
+    {
+      "copy": {
+        "name": "logAnalyticsSolutions",
+        "count": "[length(parameters('solutions'))]"
+      },
+      "type": "Microsoft.OperationsManagement/solutions",
+      "apiVersion": "2015-11-01-preview",
+      "name": "[format('{0}({1})', parameters('solutions')[copyIndex()].name, parameters('name'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
+      },
+      "plan": {
+        "name": "[format('{0}({1})', parameters('solutions')[copyIndex()].name, parameters('name'))]",
+        "product": "[parameters('solutions')[copyIndex()].product]",
+        "publisher": "[parameters('solutions')[copyIndex()].publisher]",
+        "promotionCode": "[parameters('solutions')[copyIndex()].promotionCode]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('automationAccountId')))]",
+      "type": "Microsoft.OperationalInsights/workspaces/linkedServices",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/Automation', parameters('name'))]",
+      "properties": {
+        "resourceId": "[parameters('automationAccountId')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "logAnalyticsDataSource",
+        "count": "[length(parameters('dataSources'))]"
+      },
+      "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('dataSources')[copyIndex()].name)]",
+      "kind": "[parameters('dataSources')[copyIndex()].kind]",
+      "properties": "[parameters('dataSources')[copyIndex()].properties]",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "logAnalyticsSavedSearch",
+        "count": "[length(parameters('savedSearches'))]"
+      },
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('savedSearches')[copyIndex()].name)]",
+      "properties": {
+        "category": "[parameters('savedSearches')[copyIndex()].category]",
+        "displayName": "[parameters('savedSearches')[copyIndex()].displayName]",
+        "functionAlias": "[if(contains(parameters('savedSearches')[copyIndex()], 'functionAlias'), parameters('savedSearches')[copyIndex()].functionAlias, null())]",
+        "functionParameters": "[if(contains(parameters('savedSearches')[copyIndex()], 'functionParameters'), parameters('savedSearches')[copyIndex()].functionParameters, null())]",
+        "query": "[parameters('savedSearches')[copyIndex()].query]",
+        "version": "[if(contains(parameters('savedSearches')[copyIndex()], 'version'), parameters('savedSearches')[copyIndex()].version, 2)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed log analytics workspace."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed log analytics workspace."
+      }
+    }
+  }
+}
