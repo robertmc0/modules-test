@@ -27,7 +27,7 @@ Add a new directory under the `modules` folder in your local arinco-bicep-module
 - `sql/database`
 - `web/containerized-web-app`
 
-When naming a module or module group that contains two words, separate it with a `-`. Examples Below: 
+When naming a module or module group that contains two words, separate it with a `-`. Examples Below:
 
 - `operational-insights/workspaces`
 - `api-management/service`
