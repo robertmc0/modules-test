@@ -18,7 +18,7 @@ To update the Bicep registry module tool, run the following:
 
 ### Creating a directory for the new module
 
-Add a new directory under the `modules` folder in your local arinco-bicep-modules repository with the path in lowercase following the pattern `<ModuleGroup>/<ModuleName>`. Typical `<ModuleGroup>` names are Azure resource provider names without the `Microsoft.` prefix, but other names are also allowed as long as they make sense. `<ModuleName>` should be a singular noun or noun phrase. For examples:
+Add a new directory under the `modules` folder in your local arinco-bicep-modules repository with the path in lowercase following the pattern `<ModuleGroup>/<ModuleName>`. Typical `<ModuleGroup>` names are Azure resource provider names without the `Microsoft.` prefix, but other names are also allowed as long as they make sense. `<ModuleName>` should be a singular noun or noun phrase. Examples below:
 
 - `compute/vm-with-public-ip`
 - `network/private-endpoint`
@@ -26,6 +26,15 @@ Add a new directory under the `modules` folder in your local arinco-bicep-module
 - `sql/server`
 - `sql/database`
 - `web/containerized-web-app`
+
+When naming a module or module group that contains two words, separate it with a `-`. Examples Below: 
+
+- `operational-insights/workspaces`
+- `api-management/service`
+- `service-bus/namespaces`
+- `storage/storage-account`
+- `web/containerized-web-app`
+- `network/application-gateways`
 
 ### Generating module files
 
