@@ -4,7 +4,7 @@ A collection of opinionated Bicep modules, where functionality was not present o
 
 # Documentation
 
-After some guidance or some more information, check out the [wiki](https://github.com/arincoau/arinco-bicep-modules/wiki)
+After some guidance or some more information, check out the [wiki](https://github.com/arincoau/arinco-bicep-modules/wiki).
 
 # Contribute
 
