@@ -2,9 +2,9 @@
 
 The following instructions help guide you with the development of Arinco Bicep modules.
 
-## Prerequisite
+## Prerequisites
 
-- Install [.NET 6.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime)
+- Install [.NET 6.0 SDK](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks)
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
 
@@ -13,6 +13,22 @@ The build and deployment workflows associated with this repository will always u
 To update the Bicep registry module tool, run the following:
 
 - `dotnet tool update --global azure.bicep.registrymoduletool`
+
+## Branching
+
+To contribute create a branch off `main`, following the conventions below.
+
+- Branch names are to be all lower case.
+- Multiple words are to be separated by `-`, eg. `sql-db`.
+- Branch names should be short and descriptive.
+- Branches should be categorised and separated by directory as per below.
+
+| Type    | Description                                                                          | Example                    |
+| ------- | ------------------------------------------------------------------------------------ | -------------------------- |
+| bugfix  | Fix for a bug with a module.                                                         | `bugfix/sql-db-cache`      |
+| feature | Addition of a new feature to an existing module or the introduction of a new module. | `feature/storage-security` |
+
+Branches are to be short lived. Any stale branches older than 60 days will be deleted.
 
 ## Creating a new module
 
