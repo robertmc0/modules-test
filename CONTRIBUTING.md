@@ -23,10 +23,10 @@ To contribute create a branch off `main`, following the conventions below.
 - Branch names should be short and descriptive.
 - Branches should be categorised and separated by directory as per below.
 
-| Type    | Description                                                                          | Example                    |
-| ------- | ------------------------------------------------------------------------------------ | -------------------------- |
-| bugfix  | Fix for a bug with a module.                                                         | `bugfix/sql-db-cache`      |
-| feature | Addition of a new feature to an existing module or the introduction of a new module. | `feature/storage-security` |
+| Type    | Description                                                                                        | Example                    |
+| ------- | -------------------------------------------------------------------------------------------------- | -------------------------- |
+| bugfix  | Fix for a bug with a module.                                                                       | `bugfix/sql-db-cache`      |
+| feature | Addition of a new feature or an update to an existing module, or the introduction of a new module. | `feature/storage-security` |
 
 Branches are to be short lived. Any stale branches older than 60 days will be deleted.
 
