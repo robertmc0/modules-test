@@ -36,9 +36,9 @@ async function generateModulesTable(fs, path) {
     for (const moduleName of moduleNames) {
       const modulePath = `${moduleGroup}/${moduleName}`;
       const badgeUrl = new URL("https://img.shields.io/badge/dynamic/json");
-      const versionListUrl = `https://prdarincobicepmodulesacr.azurecr.io/bicep/${modulePath}/tags/list`;
+      const versionListUrl = `https://prdarincobicepmodulesacr.azurecr.io/bicep/${moduleGroup}/${modulePath}/tags/list`;
 
-      badgeUrl.searchParams.append("label", "mcr");
+      badgeUrl.searchParams.append("label", "acr");
       badgeUrl.searchParams.append("query", "$.tags[(@.length-1)]");
       badgeUrl.searchParams.append("url", versionListUrl);
 
