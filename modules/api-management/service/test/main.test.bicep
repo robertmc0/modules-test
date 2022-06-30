@@ -139,7 +139,8 @@ module apim '../main.bicep' = {
     publisherEmail: 'support@arinco.com.au'
     publisherName: 'ARINCO'
     tags: tags
-    diagnosticWorkspaceId: logAnalyticsWorkspace.id
+    enableDiagnostics:true
+    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticLogsRetentionInDays: 7
     virtualNetworkType: virtualNetworkType
     subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''
