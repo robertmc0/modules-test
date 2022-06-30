@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "16841325485944083779"
+      "templateHash": "4024182321767409739"
     }
   },
   "parameters": {
@@ -340,13 +340,6 @@
       "metadata": {
         "description": "Optional. Resource ID of the diagnostic storage account."
       }
-    },
-    "diagnosticSettingsName": {
-      "type": "string",
-      "defaultValue": "[format('{0}-dgs', parameters('name'))]",
-      "metadata": {
-        "description": "Optional. The name of the diagnostic setting, if deployed."
-      }
     }
   },
   "variables": {
@@ -377,6 +370,8 @@
         }
       }
     ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "diagnosticsName": "[format('{0}-dgs', parameters('name'))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
@@ -490,7 +485,7 @@
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2017-04-01",
       "scope": "[format('Microsoft.ApiManagement/service/{0}', parameters('name'))]",
-      "name": "[format('{0}-{1}-lock', parameters('name'), parameters('resourcelock'))]",
+      "name": "[variables('lockName')]",
       "properties": {
         "level": "[parameters('resourcelock')]",
         "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
@@ -504,7 +499,7 @@
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
       "scope": "[format('Microsoft.ApiManagement/service/{0}', parameters('name'))]",
-      "name": "[parameters('diagnosticSettingsName')]",
+      "name": "[variables('diagnosticsName')]",
       "properties": {
         "storageAccountId": "[if(not(empty(parameters('diagnosticStorageAccountId'))), parameters('diagnosticStorageAccountId'), null())]",
         "workspaceId": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), parameters('diagnosticLogAnalyticsWorkspaceId'), null())]",

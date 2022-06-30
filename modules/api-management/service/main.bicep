@@ -216,8 +216,9 @@ param diagnosticLogsRetentionInDays int = 365
 @description('Optional. Resource ID of the diagnostic storage account.')
 param diagnosticStorageAccountId string = ''
 
-@description('Optional. The name of the diagnostic setting, if deployed.')
-param diagnosticSettingsName string = '${name}-dgs'
+var lockName = toLower('${apiManagementService.name}-${resourcelock}-lck')
+
+var diagnosticsName = '${apiManagementService.name}-dgs'
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
@@ -334,7 +335,7 @@ resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08-01'
 
 resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock  != 'NotSpecified') {
   scope: apiManagementService
-  name: '${apiManagementService.name}-${resourcelock }-lock'
+  name: lockName
   properties: {
     level: resourcelock 
     notes: resourcelock  == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
@@ -343,7 +344,7 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock  != 
 
 resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
   scope: apiManagementService
-  name: diagnosticSettingsName
+  name: diagnosticsName
   properties: {
     storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
     workspaceId: !empty(diagnosticLogAnalyticsWorkspaceId) ? diagnosticLogAnalyticsWorkspaceId : null
@@ -351,7 +352,7 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
     eventHubName: !empty(diagnosticEventHubName) ? diagnosticEventHubName : null
     metrics: diagnosticsMetrics
     logs: diagnosticsLogs
-    logAnalyticsDestinationType: 'Dedicated'
+    logAnalyticsDestinationType: 'Dedicated' // Means use Resource Specific named log tables
   }
 }
 
