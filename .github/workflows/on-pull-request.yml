@@ -6,6 +6,23 @@ on:
       - main
 
 jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Branch Name
+        run: |
+          LC_ALL=C
+          local_branch=$GITHUB_HEAD_REF          
+          valid_branch_regex="^(feature|bugfix)\/[a-z0-9-]+$"
+          message="INVALID! branch name. Branch names in this repo must adhere to this regex convention: $valid_branch_regex. Branching conventions can be found here: https://github.com/arincoau/arinco-bicep-modules/blob/main/CONTRIBUTING.md. Your commit will be rejected. You should rename your branch to a valid name and try again."
+          if [[ ! $local_branch =~ $valid_branch_regex ]]
+          then
+              echo "$message"
+              exit 1
+          else
+            echo "Branch name valid"
+          fi
+
   get-module-to-validate:
     uses: ./.github/workflows/get-changed-module.yml
 
