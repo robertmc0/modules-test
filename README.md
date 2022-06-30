@@ -8,9 +8,9 @@ Below is a table containing all published modules. Each version badge shows the 
 
 <!-- Begin Module Table -->
 
-| Module | Version | Docs |
-| :----- | ------: | ---: |
-|        |         |      |
+| Module | Docs |
+| :----: | ---- |
+|        |      |
 
 <!-- End Module Table -->
 
