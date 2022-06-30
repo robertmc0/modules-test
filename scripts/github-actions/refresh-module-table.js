@@ -36,7 +36,7 @@ async function generateModulesTable(fs, path) {
     for (const moduleName of moduleNames) {
       const modulePath = `${moduleGroup}/${moduleName}`;
       const badgeUrl = new URL("https://img.shields.io/badge/dynamic/json");
-      const versionListUrl = `https://mcr.microsoft.com/v2/bicep/${modulePath}/tags/list`;
+      const versionListUrl = `https://prdarincobicepmodulesacr.azurecr.io/bicep/${modulePath}/tags/list`;
 
       badgeUrl.searchParams.append("label", "mcr");
       badgeUrl.searchParams.append("query", "$.tags[(@.length-1)]");
@@ -47,7 +47,7 @@ async function generateModulesTable(fs, path) {
       const module = `\`${modulePath}\``;
       const versionBadge = `<a href="${versionListUrl}"><image src="${badgeUrl.href}"></a>`;
 
-      const moduleRootUrl = `https://github.com/Azure/bicep-registry-modules/tree/main/modules/${modulePath}`;
+      const moduleRootUrl = `https://github.com/arincoau/arinco-bicep-modules/tree/main/modules/${modulePath}`;
       const codeLink = `[🦾 Code](${moduleRootUrl}/main.bicep)`;
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
       const docs = `${codeLink} ｜ ${readmeLink}`;
