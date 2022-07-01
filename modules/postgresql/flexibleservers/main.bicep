@@ -1,14 +1,18 @@
-// Module to deploy postgreSQL flsxible servers
-
-@description('Required. Name of your Azure PostgreSQL Flexible Server')
+@description('Name of your Azure PostgreSQL Flexible Server.')
 @minLength(5)
 @maxLength(50)
 param name string
 
 @description('Optional. Location for all resources.')
-param location string = resourceGroup().location
+param location string
 
-@description('Optional. Tags of the resource.')
+@description('Optional. Resource tags.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
 param tags object = {}
 
 @description('The name of the sku, typically, tier + family + cores, e.g. Standard_D4s_v3.')
@@ -65,13 +69,13 @@ param standbyAvailabilityZone string = ''
 ])
 param customWindow string = 'disabled'
 
-@description('day of week for maintenance window')
+@description('day of week for maintenance window.')
 param dayOfWeek int = 0
 
-@description('start hour for maintenance window')
+@description('start hour for maintenance window.')
 param startHour int = 0
 
-@description('start minute for maintenance window')
+@description('start minute for maintenance window.')
 param startMinute int = 0
 
 @description('Max storage allowed for a server.')
