@@ -4,7 +4,9 @@ Deploy Azure PostgreSQL Flexible Servers
 
 ## Description
 
-{{ Add detailed description for the module. }}
+This module performs the following
+
+Creates Microsoft.DBforPostgreSQL/flexibleServers resource
 
 ## Parameters
 

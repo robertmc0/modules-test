@@ -1,4 +1,4 @@
-// Module to deploy postgreSQL felxible servers
+// Module to deploy postgreSQL flsxible servers
 
 @description('Required. Name of your Azure PostgreSQL Flexible Server')
 @minLength(5)
