@@ -34,10 +34,13 @@ async function generateModulesTable(fs, path) {
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
     var moduleNames = getSubdirNames(fs, moduleGroupPath);
+    console.log(moduleGroupPath);
 
     for (const moduleName of moduleNames) {
       const modulePath = `${moduleGroup}/${moduleName}`;
       
+      console.log(modulePath);
+
       let version = await nbgv.getVersion(`modules/${modulePath}`);
 
       const badgeUrl = new URL(`https://img.shields.io/badge/${version.simpleVersion}-blue`);
