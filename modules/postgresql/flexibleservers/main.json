@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.7.4.23292",
-      "templateHash": "4696535788422101517"
+      "templateHash": "10866561914410524510"
     }
   },
   "parameters": {
@@ -14,12 +14,11 @@
       "maxLength": 50,
       "minLength": 5,
       "metadata": {
-        "description": "Required. Name of your Azure PostgreSQL Flexible Server"
+        "description": "Name of your Azure PostgreSQL Flexible Server."
       }
     },
     "location": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
       "metadata": {
         "description": "Optional. Location for all resources."
       }
@@ -28,7 +27,11 @@
       "type": "object",
       "defaultValue": {},
       "metadata": {
-        "description": "Optional. Tags of the resource."
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
       }
     },
     "skuName": {
@@ -123,21 +126,21 @@
       "type": "int",
       "defaultValue": 0,
       "metadata": {
-        "description": "day of week for maintenance window"
+        "description": "day of week for maintenance window."
       }
     },
     "startHour": {
       "type": "int",
       "defaultValue": 0,
       "metadata": {
-        "description": "start hour for maintenance window"
+        "description": "start hour for maintenance window."
       }
     },
     "startMinute": {
       "type": "int",
       "defaultValue": 0,
       "metadata": {
-        "description": "start minute for maintenance window"
+        "description": "start minute for maintenance window."
       }
     },
     "storageSizeGB": {
