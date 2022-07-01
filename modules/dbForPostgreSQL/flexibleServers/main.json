@@ -1,0 +1,197 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.7.4.23292",
+      "templateHash": "4696535788422101517"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 50,
+      "minLength": 5,
+      "metadata": {
+        "description": "Required. Name of your Azure PostgreSQL Flexible Server"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Optional. Location for all resources."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. Tags of the resource."
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the sku, typically, tier + family + cores, e.g. Standard_D4s_v3."
+      }
+    },
+    "skuTier": {
+      "type": "string",
+      "allowedValues": [
+        "Burstable",
+        "GeneralPurpose",
+        "MemoryOptimized"
+      ],
+      "metadata": {
+        "description": "The tier of the particular SKU, e.g. Burstable."
+      }
+    },
+    "administratorLogin": {
+      "type": "string",
+      "metadata": {
+        "description": "The administrators login name of a server. Can only be specified when the server is being created (and is required for creation)."
+      }
+    },
+    "administratorLoginPassword": {
+      "type": "secureString",
+      "metadata": {
+        "description": "The administrator login password (required for server creation)."
+      }
+    },
+    "backupRetentionDays": {
+      "type": "int",
+      "metadata": {
+        "description": "Backup retention days for the server."
+      }
+    },
+    "geoRedundantBackup": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
+      "metadata": {
+        "description": "A value indicating whether Geo-Redundant backup is enabled on the server."
+      }
+    },
+    "createMode": {
+      "type": "string",
+      "defaultValue": "Create",
+      "allowedValues": [
+        "Create",
+        "Default",
+        "PointInTimeRestore",
+        "Update"
+      ],
+      "metadata": {
+        "description": "The mode to create a new PostgreSQL server."
+      }
+    },
+    "highAvailabilityMode": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "ZoneRedundant"
+      ],
+      "metadata": {
+        "description": "The HA mode for the server."
+      }
+    },
+    "standbyAvailabilityZone": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "availability zone information of the standby."
+      }
+    },
+    "customWindow": {
+      "type": "string",
+      "defaultValue": "disabled",
+      "allowedValues": [
+        "disabled",
+        "enabled"
+      ],
+      "metadata": {
+        "description": "indicates whether custom window is enabled or disabled."
+      }
+    },
+    "dayOfWeek": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "day of week for maintenance window"
+      }
+    },
+    "startHour": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "start hour for maintenance window"
+      }
+    },
+    "startMinute": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "start minute for maintenance window"
+      }
+    },
+    "storageSizeGB": {
+      "type": "int",
+      "metadata": {
+        "description": "Max storage allowed for a server."
+      }
+    },
+    "version": {
+      "type": "string",
+      "allowedValues": [
+        "11",
+        "12",
+        "13"
+      ],
+      "metadata": {
+        "description": "The version of a server."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "apiVersion": "2021-06-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "tier": "[parameters('skuTier')]"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('administratorLogin')]",
+        "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+        "backup": {
+          "backupRetentionDays": "[parameters('backupRetentionDays')]",
+          "geoRedundantBackup": "[parameters('geoRedundantBackup')]"
+        },
+        "createMode": "[parameters('createMode')]",
+        "highAvailability": {
+          "mode": "[parameters('highAvailabilityMode')]",
+          "standbyAvailabilityZone": "[parameters('standbyAvailabilityZone')]"
+        },
+        "maintenanceWindow": {
+          "customWindow": "[parameters('customWindow')]",
+          "dayOfWeek": "[parameters('dayOfWeek')]",
+          "startHour": "[parameters('startHour')]",
+          "startMinute": "[parameters('startMinute')]"
+        },
+        "storage": {
+          "storageSizeGB": "[parameters('storageSizeGB')]"
+        },
+        "version": "[parameters('version')]"
+      }
+    }
+  ]
+}
