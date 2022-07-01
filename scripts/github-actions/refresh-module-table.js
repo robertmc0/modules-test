@@ -26,8 +26,9 @@ function getSubdirNames(fs, dir) {
  * @param {typeof import("path")} path
  */
 async function generateModulesTable(fs, path) {
- const tableData = [["Module","Docs"]];
-  // const tableData = [["Module", "Version", "Docs"]];
+  var nbgv = require('nerdbank-gitversioning')
+
+  const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
   for (const moduleGroup of moduleGroups) {
@@ -36,25 +37,21 @@ async function generateModulesTable(fs, path) {
 
     for (const moduleName of moduleNames) {
       const modulePath = `${moduleGroup}/${moduleName}`;
-      const badgeUrl = new URL("https://img.shields.io/badge/dynamic/json");
-      // const versionListUrl = `https://prdarincobicepmodulesacr.azurecr.io/v1/bicep/${modulePath}/tags/list`;
+      
+      let version = await nbgv.getVersion(`modules/${modulePath}`);
 
-      // badgeUrl.searchParams.append("label", "acr");
-      // badgeUrl.searchParams.append("query", "$.tags[(@.length-1)]");
-      // badgeUrl.searchParams.append("url", versionListUrl);
-
+      const badgeUrl = new URL(`https://img.shields.io/badge/${version.simpleVersion}-blue`);
       console.log(badgeUrl.href);
 
       const module = `\`${modulePath}\``;
-      // const versionBadge = `<a href="${versionListUrl}"><image src="${badgeUrl.href}"></a>`;
+      const versionBadge = `<image src="${badgeUrl.href}">`;
 
       const moduleRootUrl = `https://github.com/arincoau/arinco-bicep-modules/tree/main/modules/${modulePath}`;
       const codeLink = `[🦾 Code](${moduleRootUrl}/main.bicep)`;
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
       const docs = `${codeLink} ｜ ${readmeLink}`;
 
-      // tableData.push([module, versionBadge, docs]);
-      tableData.push([module, docs]);
+      tableData.push([module, versionBadge, docs]);
     }
   }
 
@@ -157,14 +154,16 @@ async function refreshModuleTable({ require, github, context, core }) {
       parser: "markdown",
     });
 
-    const prUrl = await createPullRequestToUpdateReadme(
-      github,
-      context,
-      newReadmeFormatted
-    );
-    core.info(
-      `The module table is outdated. A pull request ${prUrl} was created to update it.`
-    );
+    core.info(newTable);
+
+    // const prUrl = await createPullRequestToUpdateReadme(
+    //   github,
+    //   context,
+    //   newReadmeFormatted
+    // );
+    // core.info(
+    //   `The module table is outdated. A pull request ${prUrl} was created to update it.`
+    // );
   }
 }
 
