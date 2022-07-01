@@ -26,7 +26,7 @@ function getSubdirNames(fs, dir) {
  * @param {typeof import("path")} path
  */
 async function generateModulesTable(fs, path) {
- const tableData = [["Module","Docs"]];
+  const tableData = [["Module","Docs"]];
   // const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
