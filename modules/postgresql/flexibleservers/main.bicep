@@ -3,7 +3,7 @@
 @maxLength(50)
 param name string
 
-@description('Optional. Location for all resources.')
+@description('Location for all resources.')
 param location string
 
 @description('Optional. Resource tags.')
@@ -59,23 +59,29 @@ param createMode string = 'Create'
 ])
 param highAvailabilityMode string = 'Disabled'
 
-@description('availability zone information of the standby.')
+@description('Availability zone information of the standby.')
 param standbyAvailabilityZone string = ''
 
-@description('indicates whether custom window is enabled or disabled.')
+@description('Private dns zone arm resource id in which to create the Private DNS zone for this PostgreSQL server.')
+param privateDnsZoneArmResourceId string = ''
+
+@description('Delegated subnet arm resource id. Subnet must be dedicated to Azure PostgreSQL servers.')
+param delegatedSubnetResourceId string = ''
+
+@description('Indicates whether custom maintenance window is enabled or disabled.')
 @allowed([
   'disabled'
   'enabled'
 ])
 param customWindow string = 'disabled'
 
-@description('day of week for maintenance window.')
+@description('Day of week for maintenance window.')
 param dayOfWeek int = 0
 
-@description('start hour for maintenance window.')
+@description('Start hour for maintenance window.')
 param startHour int = 0
 
-@description('start minute for maintenance window.')
+@description('Start minute for maintenance window.')
 param startMinute int = 0
 
 @description('Max storage allowed for a server.')
@@ -89,7 +95,77 @@ param storageSizeGB int
 ])
 param version string
 
-resource symbolicname 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
+// Diagnostics
+@description('Optional. Enable diagnostic logs')
+param enableDiagnostics bool = false
+
+@description('Optional. The name of log category groups that will be streamed.')
+@allowed([
+  'Audit'
+  'AllLogs'
+])
+param diagnosticLogCategoryGroupsToEnable array = [
+  'Audit'
+]
+
+@description('Optional. The name of metrics that will be streamed.')
+@allowed([
+  'AllMetrics'
+])
+param diagnosticMetricsToEnable array = [
+  'AllMetrics'
+]
+
+@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
+@minValue(0)
+@maxValue(365)
+param diagnosticLogsRetentionInDays int = 365
+
+@description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
+param diagnosticStorageAccountId string = ''
+
+@description('Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.')
+param diagnosticLogAnalyticsWorkspaceId string = ''
+
+@description('Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.')
+param diagnosticEventHubAuthorizationRuleId string = ''
+
+@description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
+param diagnosticEventHubName string = ''
+
+var diagnosticsName = '${name}-dgs'
+
+var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+  categoryGroup: categoryGroup
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
+
+var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
+  category: metric
+  timeGrain: null
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
+
+// Resource Lock
+@description('Optional. Specify the type of resource lock.')
+@allowed([
+  'NotSpecified'
+  'ReadOnly'
+  'CanNotDelete'
+])
+param resourcelock string = 'NotSpecified'
+
+var lockName = toLower('${name}-${resourcelock}-lck')
+
+resource postgresql 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
   name: name
   location: location
   tags: tags
@@ -110,18 +186,40 @@ resource symbolicname 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
       standbyAvailabilityZone: standbyAvailabilityZone
     }
     maintenanceWindow: {
-      customWindow: customWindow
+      customWindow: customWindow 
       dayOfWeek: dayOfWeek
       startHour: startHour
       startMinute: startMinute
     }
-    // network: {
-    //   delegatedSubnetResourceId: 'string'
-    //   privateDnsZoneArmResourceId: 'string'
-    // }
+    network: {
+      delegatedSubnetResourceId: !empty(delegatedSubnetResourceId) ? delegatedSubnetResourceId : null
+      privateDnsZoneArmResourceId: !empty(privateDnsZoneArmResourceId) ? privateDnsZoneArmResourceId : null
+    }
     storage: {
       storageSizeGB: storageSizeGB
     }
     version: version
+  }
+}
+
+resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+  scope: postgresql
+  name: diagnosticsName
+  properties: {
+    workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
+    storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
+  }
+}
+
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+  scope: postgresql
+  name: lockName
+  properties: {
+    level: resourcelock
+    notes: (resourcelock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
 }
