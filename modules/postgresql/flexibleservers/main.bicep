@@ -95,7 +95,6 @@ param storageSizeGB int
 ])
 param version string
 
-// Diagnostics
 @description('Optional. Enable diagnostic logs')
 param enableDiagnostics bool = false
 
