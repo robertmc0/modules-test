@@ -165,7 +165,7 @@ param resourcelock string = 'NotSpecified'
 
 var lockName = toLower('${name}-${resourcelock}-lck')
 
-resource postgresql 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
+resource postgresql 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-preview' = {
   name: name
   location: location
   tags: tags
