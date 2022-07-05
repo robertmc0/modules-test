@@ -12,7 +12,7 @@ Creates Microsoft.DBforPostgreSQL/flexibleServers resource
 
 | Name                                    | Type           | Required | Description                                                                                                                       |
 | :-------------------------------------- | :------------: | :------: | :-------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                                  | `string`       | Yes      | Name of your Azure PostgreSQL Flexible Server.                                                                                    |
+| `name`                                  | `string`       | Yes      | Name of your Azure PostgreSQL Flexible Server - must include a "-" in it.                                                         |
 | `location`                              | `string`       | Yes      | Location for all resources.                                                                                                       |
 | `tags`                                  | `object`       | No       | Optional. Resource tags.                                                                                                          |
 | `skuName`                               | `string`       | Yes      | The name of the sku, typically, tier + family + cores, e.g. Standard_D4s_v3.                                                      |

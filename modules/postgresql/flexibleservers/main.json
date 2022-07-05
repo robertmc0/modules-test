@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.2.30886",
-      "templateHash": "740615204037043078"
+      "templateHash": "8012657863863164029"
     }
   },
   "parameters": {
@@ -14,7 +14,7 @@
       "maxLength": 50,
       "minLength": 5,
       "metadata": {
-        "description": "Name of your Azure PostgreSQL Flexible Server."
+        "description": "Name of your Azure PostgreSQL Flexible Server - must include a \"-\" in it."
       }
     },
     "location": {

@@ -1,4 +1,4 @@
-@description('Name of your Azure PostgreSQL Flexible Server.')
+@description('Name of your Azure PostgreSQL Flexible Server - must include a "-" in it.')
 @minLength(5)
 @maxLength(50)
 param name string
