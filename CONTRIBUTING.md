@@ -7,6 +7,9 @@ The following instructions help guide you with the development of Arinco Bicep m
 - Install [.NET 6.0 SDK](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks)
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
+- Install the following VSCode extensions as they are used code formatting:
+  - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep)
+  - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
 The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore when making changes to existing modules, ensure you have the latest version installed.
 
