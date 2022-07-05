@@ -132,6 +132,14 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 @description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
 param diagnosticEventHubName string = ''
 
+@description('Optional. Specify the type of resource lock.')
+@allowed([
+  'NotSpecified'
+  'ReadOnly'
+  'CanNotDelete'
+])
+param resourcelock string = 'NotSpecified'
+
 var diagnosticsName = '${name}-dgs'
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
@@ -152,15 +160,6 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
     days: diagnosticLogsRetentionInDays
   }
 }]
-
-// Resource Lock
-@description('Optional. Specify the type of resource lock.')
-@allowed([
-  'NotSpecified'
-  'ReadOnly'
-  'CanNotDelete'
-])
-param resourcelock string = 'NotSpecified'
 
 var lockName = toLower('${name}-${resourcelock}-lck')
 
