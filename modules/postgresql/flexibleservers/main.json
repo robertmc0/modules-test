@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.2.30886",
-      "templateHash": "8012657863863164029"
+      "templateHash": "586741067134713504"
     }
   },
   "parameters": {
@@ -14,7 +14,7 @@
       "maxLength": 50,
       "minLength": 5,
       "metadata": {
-        "description": "Name of your Azure PostgreSQL Flexible Server - must include a \"-\" in it."
+        "description": "Name of your Azure PostgreSQL Flexible Server - if error ServerGroupDropping is received during deployment then the server name is not avilable and must be changed to one that is. This can be checked by running a console deployment."
       }
     },
     "location": {

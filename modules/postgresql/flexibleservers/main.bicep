@@ -1,4 +1,4 @@
-@description('Name of your Azure PostgreSQL Flexible Server - must include a "-" in it.')
+@description('Name of your Azure PostgreSQL Flexible Server - if error ServerGroupDropping is received during deployment then the server name is not avilable and must be changed to one that is. This can be checked by running a console deployment.')
 @minLength(5)
 @maxLength(50)
 param name string
