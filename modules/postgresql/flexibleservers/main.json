@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.2.30886",
-      "templateHash": "586741067134713504"
+      "templateHash": "7656292321674902084"
     }
   },
   "parameters": {
@@ -178,7 +178,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enable diagnostic logs"
+        "description": "Optional. Enable diagnostic logs."
       }
     },
     "diagnosticLogCategoryGroupsToEnable": {

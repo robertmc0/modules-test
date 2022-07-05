@@ -95,7 +95,7 @@ param storageSizeGB int
 ])
 param version string
 
-@description('Optional. Enable diagnostic logs')
+@description('Optional. Enable diagnostic logs.')
 param enableDiagnostics bool = false
 
 @description('Optional. The name of log category groups that will be streamed.')
