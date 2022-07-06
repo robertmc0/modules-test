@@ -34,9 +34,9 @@ async function generateModulesTable(github, context, fs, path) {
   // const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
-  var tags =  await github.rest.repos.listTags(
+  const tags =  await github.rest.repos.listTags({
     ...context.repo
-  )
+  });
 
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
