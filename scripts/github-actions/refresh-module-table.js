@@ -26,6 +26,8 @@ function getSubdirNames(fs, dir) {
  * @param {typeof import("path")} path
  */
 async function generateModulesTable(fs, path) {
+  var nbgv = require("nerdbank-gitversioning");
+
   const tableData = [["Module", "Docs"]];
   // const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
@@ -33,20 +35,22 @@ async function generateModulesTable(fs, path) {
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
     var moduleNames = getSubdirNames(fs, moduleGroupPath);
+    console.log(moduleGroupPath);
 
     for (const moduleName of moduleNames) {
       const modulePath = `${moduleGroup}/${moduleName}`;
-      const badgeUrl = new URL("https://img.shields.io/badge/dynamic/json");
-      // const versionListUrl = `https://prdarincobicepmodulesacr.azurecr.io/v1/bicep/${modulePath}/tags/list`;
 
-      // badgeUrl.searchParams.append("label", "acr");
-      // badgeUrl.searchParams.append("query", "$.tags[(@.length-1)]");
-      // badgeUrl.searchParams.append("url", versionListUrl);
+      console.log(modulePath);
 
+      let version = await nbgv.getVersion(`modules/${modulePath}`);
+
+      const badgeUrl = new URL(
+        `https://img.shields.io/badge/${version.simpleVersion}-blue`
+      );
       console.log(badgeUrl.href);
 
       const module = `\`${modulePath}\``;
-      // const versionBadge = `<a href="${versionListUrl}"><image src="${badgeUrl.href}"></a>`;
+      const versionBadge = `<image src="${badgeUrl.href}">`;
 
       const moduleRootUrl = `https://github.com/arincoau/arinco-bicep-modules/tree/main/modules/${modulePath}`;
       const codeLink = `[🦾 Code](${moduleRootUrl}/main.bicep)`;
@@ -156,6 +160,8 @@ async function refreshModuleTable({ require, github, context, core }) {
     const newReadmeFormatted = prettier.format(newReadme, {
       parser: "markdown",
     });
+
+    core.info(newTable);
 
     const prUrl = await createPullRequestToUpdateReadme(
       github,
