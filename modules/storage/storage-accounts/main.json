@@ -4,21 +4,32 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.7.4.23292",
-      "templateHash": "9055914413354346057"
+      "version": "0.8.2.30886",
+      "templateHash": "7228014518952168952"
     }
   },
   "parameters": {
     "name": {
       "type": "string",
       "metadata": {
-        "description": "Storage account name."
+        "description": "The resource name."
       }
     },
     "location": {
       "type": "string",
       "metadata": {
-        "description": "Storage account location."
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
       }
     },
     "sku": {
@@ -35,7 +46,7 @@
         "Standard_RAGZRS"
       ],
       "metadata": {
-        "description": "Storage account sku."
+        "description": "Optional. The sku of the Storage Account."
       }
     },
     "kind": {
@@ -49,7 +60,7 @@
         "BlockBlobStorage"
       ],
       "metadata": {
-        "description": "Storage account kind."
+        "description": "Optional. The kind of Storage Account."
       }
     },
     "accessTier": {
@@ -60,7 +71,7 @@
         "Cool"
       ],
       "metadata": {
-        "description": "Storage account access tier, Hot for frequently accessed data or Cool for infreqently accessed data."
+        "description": "Optional. Storage Account access tier, Hot for frequently accessed data or Cool for infrequently accessed data."
       }
     },
     "systemAssignedIdentity": {
@@ -85,7 +96,7 @@
         "Disabled"
       ],
       "metadata": {
-        "description": "Allow or disallow public network access to Storage Account."
+        "description": "Optional. Allow or disallow public network access to Storage Account."
       }
     },
     "deleteRetentionPolicy": {
@@ -94,14 +105,14 @@
       "maxValue": 365,
       "minValue": 1,
       "metadata": {
-        "description": "Amount of days the soft deleted data is stored and available for recovery."
+        "description": "Optional. Amount of days the soft deleted data is stored and available for recovery."
       }
     },
     "enableHierarchicalNamespace": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. If true, enables Hierarchical Namespace for the storage account"
+        "description": "Optional. If true, enables Hierarchical Namespace for the Storage Account."
       }
     },
     "requireInfrastructureEncryption": {
@@ -117,7 +128,7 @@
       "metadata": {
         "name": "Container name.",
         "publicAccess": "Specifies whether data in the container may be accessed publicly and the level of access. Accepted values: None, Blob, Container.",
-        "description": "Containers to create in the storage account."
+        "description": "Optional. Containers to create in the Storage Account."
       }
     },
     "fileShares": {
@@ -128,7 +139,7 @@
         "tier": "File share tier. Accepted values are Hot, Cool, TransactionOptimized or Premium.",
         "protocol": "The authentication protocol that is used for the file share. Accepted values are SMB and NFS.",
         "quota": "The maximum size of the share, in gigabytes.",
-        "description": "Files shares to create in the storage account."
+        "description": "Optional. Files shares to create in the Storage Account."
       }
     },
     "queues": {
@@ -136,7 +147,7 @@
       "defaultValue": [],
       "metadata": {
         "name": "Queue name.",
-        "description": "Queue to create in the storage account."
+        "description": "Optional. Queue to create in the Storage Account."
       }
     },
     "tables": {
@@ -144,7 +155,7 @@
       "defaultValue": [],
       "metadata": {
         "name": "Table name.",
-        "description": "Optional. Tables to create."
+        "description": "Optional. Tables to create in the Storage Account."
       }
     },
     "networkAcls": {
@@ -171,14 +182,14 @@
             "tenantId": "Tenant Id."
           }
         ],
-        "description": "Rule definitions governing the Storage network access."
+        "description": "Optional. Rule definitions governing the Storage network access."
       }
     },
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
       "metadata": {
-        "description": "Specify the type of resource lock."
+        "description": "Optional. Specify the type of resource lock."
       },
       "allowedValues": [
         "CanNotDelete",
@@ -190,7 +201,35 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Enable diagnostic logs."
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoriesToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "StorageRead",
+        "StorageWrite",
+        "StorageDelete"
+      ],
+      "allowedValues": [
+        "StorageRead",
+        "StorageWrite",
+        "StorageDelete"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log categories that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Transaction"
+      ],
+      "allowedValues": [
+        "Transaction"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
       }
     },
     "diagnosticLogsRetentionInDays": {
@@ -206,42 +245,65 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Storage account resource id. Only required if enableDiagnostics is set to true."
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
       }
     },
     "diagnosticLogAnalyticsWorkspaceId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
       }
     },
     "diagnosticEventHubAuthorizationRuleId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
       }
     },
     "diagnosticEventHubName": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Event hub name. Only required if enableDiagnostics is set to true."
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
       }
     }
   },
   "variables": {
-    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
-    "diagnosticsName": "[format('{0}-dgs', parameters('name'))]",
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoriesToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
     "supportsBlobService": "[or(or(or(equals(parameters('kind'), 'BlockBlobStorage'), equals(parameters('kind'), 'BlobStorage')), equals(parameters('kind'), 'StorageV2')), equals(parameters('kind'), 'Storage'))]",
     "supportsFileService": "[or(or(equals(parameters('kind'), 'FileStorage'), equals(parameters('kind'), 'StorageV2')), equals(parameters('kind'), 'Storage'))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
-    "diagnosticsMetricsRetentionPolicy": {
-      "enabled": true,
-      "days": "[parameters('diagnosticLogsRetentionInDays')]"
-    }
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
   },
   "resources": [
     {
@@ -249,6 +311,7 @@
       "apiVersion": "2021-09-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
       "sku": {
         "name": "[parameters('sku')]"
       },
@@ -404,13 +467,7 @@
         "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
         "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
         "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
-        "metrics": [
-          {
-            "category": "Transaction",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          }
-        ]
+        "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
@@ -427,30 +484,8 @@
         "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
         "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
         "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
-        "logs": [
-          {
-            "category": "StorageRead",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          },
-          {
-            "category": "StorageWrite",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          },
-          {
-            "category": "StorageDelete",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          }
-        ],
-        "metrics": [
-          {
-            "category": "Transaction",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          }
-        ]
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('name'), 'default')]",
@@ -468,30 +503,8 @@
         "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
         "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
         "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
-        "logs": [
-          {
-            "category": "StorageRead",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          },
-          {
-            "category": "StorageWrite",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          },
-          {
-            "category": "StorageDelete",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          }
-        ],
-        "metrics": [
-          {
-            "category": "Transaction",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          }
-        ]
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('name'), 'default')]",
@@ -509,30 +522,8 @@
         "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
         "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
         "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
-        "logs": [
-          {
-            "category": "StorageRead",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          },
-          {
-            "category": "StorageWrite",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          },
-          {
-            "category": "StorageDelete",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          }
-        ],
-        "metrics": [
-          {
-            "category": "Transaction",
-            "enabled": true,
-            "retentionPolicy": "[variables('diagnosticsMetricsRetentionPolicy')]"
-          }
-        ]
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/queueServices', parameters('name'), 'default')]",
