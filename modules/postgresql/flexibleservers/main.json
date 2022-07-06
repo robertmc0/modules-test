@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.2.30886",
-      "templateHash": "7656292321674902084"
+      "templateHash": "10500194862264702804"
     }
   },
   "parameters": {
@@ -14,7 +14,7 @@
       "maxLength": 50,
       "minLength": 5,
       "metadata": {
-        "description": "Name of your Azure PostgreSQL Flexible Server - if error ServerGroupDropping is received during deployment then the server name is not avilable and must be changed to one that is. This can be checked by running a console deployment."
+        "description": "Name of your Azure PostgreSQL Flexible Server - if error ServerGroupDropping is received during deployment then the server name is not available and must be changed to one that is. This can be checked by running a console deployment."
       }
     },
     "location": {
@@ -178,7 +178,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enable diagnostic logs."
+        "description": "Optional. Enable diagnostic logging."
       }
     },
     "diagnosticLogCategoryGroupsToEnable": {
@@ -284,7 +284,7 @@
         }
       }
     ],
-    "diagnosticsName": "[format('{0}-dgs', parameters('name'))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]"
   },
   "resources": [
@@ -358,5 +358,21 @@
         "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('name'))]"
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed PostgreSQL Flexible Server."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed PostgreSQL Flexible Server."
+      }
+    }
+  }
 }

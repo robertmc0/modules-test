@@ -1,4 +1,4 @@
-@description('Name of your Azure PostgreSQL Flexible Server - if error ServerGroupDropping is received during deployment then the server name is not avilable and must be changed to one that is. This can be checked by running a console deployment.')
+@description('Name of your Azure PostgreSQL Flexible Server - if error ServerGroupDropping is received during deployment then the server name is not available and must be changed to one that is. This can be checked by running a console deployment.')
 @minLength(5)
 @maxLength(50)
 param name string
@@ -95,7 +95,7 @@ param storageSizeGB int
 ])
 param version string
 
-@description('Optional. Enable diagnostic logs.')
+@description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
 @description('Optional. The name of log category groups that will be streamed.')
@@ -140,7 +140,7 @@ param diagnosticEventHubName string = ''
 ])
 param resourcelock string = 'NotSpecified'
 
-var diagnosticsName = '${name}-dgs'
+var diagnosticsName = toLower('${postgresql.name}-dgs')
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
@@ -161,7 +161,7 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-var lockName = toLower('${name}-${resourcelock}-lck')
+var lockName = toLower('${postgresql.name}-${resourcelock}-lck')
 
 resource postgresql 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-preview' = {
   name: name
@@ -184,7 +184,7 @@ resource postgresql 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-previe
       standbyAvailabilityZone: standbyAvailabilityZone
     }
     maintenanceWindow: {
-      customWindow: customWindow 
+      customWindow: customWindow
       dayOfWeek: dayOfWeek
       startHour: startHour
       startMinute: startMinute
@@ -221,3 +221,9 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != '
     notes: (resourcelock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
 }
+
+@description('The name of the deployed PostgreSQL Flexible Server.')
+output name string = postgresql.name
+
+@description('The resource ID of the deployed PostgreSQL Flexible Server.')
+output resourceId string = postgresql.id
