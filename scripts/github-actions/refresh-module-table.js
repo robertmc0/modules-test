@@ -26,10 +26,10 @@ function getSubdirNames(fs, dir) {
  * @param {typeof import("path")} path
  */
 async function generateModulesTable(fs, path) {
-  var nbgv = require('nerdbank-gitversioning')
+  var nbgv = require("nerdbank-gitversioning");
 
   const tableData = [["Module", "Docs"]];
-  //const tableData = [["Module", "Version", "Docs"]];
+  // const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
   for (const moduleGroup of moduleGroups) {
@@ -39,12 +39,14 @@ async function generateModulesTable(fs, path) {
 
     for (const moduleName of moduleNames) {
       const modulePath = `${moduleGroup}/${moduleName}`;
-      
+
       console.log(modulePath);
 
       let version = await nbgv.getVersion(`modules/${modulePath}`);
 
-      const badgeUrl = new URL(`https://img.shields.io/badge/${version.simpleVersion}-blue`);
+      const badgeUrl = new URL(
+        `https://img.shields.io/badge/${version.simpleVersion}-blue`
+      );
       console.log(badgeUrl.href);
 
       const module = `\`${modulePath}\``;
@@ -55,8 +57,8 @@ async function generateModulesTable(fs, path) {
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
       const docs = `${codeLink} ｜ ${readmeLink}`;
 
-      tableData.push([module, docs]);
       //tableData.push([module, versionBadge, docs]);
+      tableData.push([module, docs]);
     }
   }
 
