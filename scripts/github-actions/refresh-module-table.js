@@ -38,6 +38,8 @@ async function generateModulesTable(github, context, fs, path) {
     ...context.repo
   });
 
+  tags.data.forEach(x => console.log(x.name));
+
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
     var moduleNames = getSubdirNames(fs, moduleGroupPath);
