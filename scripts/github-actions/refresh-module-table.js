@@ -38,7 +38,7 @@ async function generateModulesTable(github, context, fs, path) {
     ...context.repo
   });
 
-  tags.data.forEach(x => console.log(x.name));
+  tags.data.sort().forEach(x => console.log(x.name));
 
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
@@ -53,10 +53,9 @@ async function generateModulesTable(github, context, fs, path) {
       //let version = await nbgv.getVersion(`modules/${modulePath}`);
       var version = 'unknown'
 
-      var idx = tags.data.lastIndexOf(x => x.name.startsWith(modulePath))
-      if (idx != -1)
+      var tag = tags.data.find(x => x.name.startsWith(modulePath))
+      if (tag != null)
       {
-        var tag = tags.data.at(idx)
         version = tag.name.substring(modulePath.length + 1)
         console.log(version);
       }
