@@ -1,6 +1,6 @@
 @description('Optional. Additional datacenter locations of the API Management service.')
 @metadata({
-  doc:'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#additionallocation'
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#additionallocation'
   example: {
     disableGateway: false
     location: 'string'
@@ -22,7 +22,7 @@ param additionalLocations array = []
 @description('Optional. List of Certificates that need to be installed in the API Management service. Max supported certificates that can be installed is 10.')
 @maxLength(10)
 @metadata({
-  doc:'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#certificateconfiguration'
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#certificateconfiguration'
   example: {
     certificate: {
       expiry: 'string'
@@ -50,7 +50,7 @@ param disableGateway bool = false
 param enableClientCertificate bool = false
 
 @description('Optional. Custom hostname configuration of the API Management service.')
-@metadata( {
+@metadata({
   doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#hostnameconfiguration'
   example: {
     certificate: {
@@ -83,7 +83,7 @@ param name string
 
 @description('Optional. Named values.')
 @metadata({
-  doc:'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service/namedvalues?tabs=bicep#namedvaluecreatecontractpropertiesornamedvaluecontractproperties'
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service/namedvalues?tabs=bicep#namedvaluecreatecontractpropertiesornamedvaluecontractproperties'
   example: {
     displayName: 'string'
     keyVault: {
@@ -114,7 +114,7 @@ param publisherName string
   'ReadOnly'
 ])
 @description('Optional. Specify the type of lock.')
-param resourcelock  string = 'NotSpecified'
+param resourcelock string = 'NotSpecified'
 
 @description('Optional. Undelete API Management Service if it was previously soft-deleted. If this flag is specified and set to True all other properties will be ignored.')
 param restore bool = false
@@ -169,7 +169,7 @@ param virtualNetworkType string = 'None'
 
 @description('Optional. A list of availability zones denoting where the resource needs to come from.')
 @metadata({
-  zones: ['1','2']
+  zones: [ '1', '2' ]
 })
 param zones array = []
 
@@ -218,7 +218,7 @@ param diagnosticStorageAccountId string = ''
 
 var lockName = toLower('${apiManagementService.name}-${resourcelock}-lck')
 
-var diagnosticsName = '${apiManagementService.name}-dgs'
+var diagnosticsName = toLower('${apiManagementService.name}-dgs')
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
@@ -239,7 +239,7 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-var applicationInsights = reference(applicationInsightsId,'2020-02-02', 'Full')
+var applicationInsights = reference(applicationInsightsId, '2020-02-02', 'Full')
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
@@ -308,7 +308,7 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
   parent: apiManagementService
   name: 'applicationInsights'
   properties: {
-    loggerType:  'applicationInsights'
+    loggerType: 'applicationInsights'
     description: 'Application Insights Logger'
     credentials: {
       instrumentationKey: '{{Logger-Credentials}}' // refer to named value to prevent APIM generating a named value on every deployment
@@ -333,12 +333,12 @@ resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08-01'
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock  != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
   scope: apiManagementService
   name: lockName
   properties: {
-    level: resourcelock 
-    notes: resourcelock  == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    level: resourcelock
+    notes: resourcelock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
 }
 
