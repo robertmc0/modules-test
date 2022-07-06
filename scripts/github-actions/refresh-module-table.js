@@ -22,15 +22,21 @@ function getSubdirNames(fs, dir) {
 }
 
 /**
+ * @param {ReturnType<typeof import("@actions/github").getOctokit>} github
+ * @param {typeof import("@actions/github").context} context
  * @param {typeof import("fs")} fs
  * @param {typeof import("path")} path
  */
-async function generateModulesTable(fs, path) {
-  var nbgv = require("nerdbank-gitversioning");
+async function generateModulesTable(github, context, fs, path) {
+  //var nbgv = require("nerdbank-gitversioning");
 
   const tableData = [["Module", "Docs"]];
   // const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
+
+  var tags =  await github.rest.repos.listTags(
+    ...context.repo
+  )
 
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
@@ -42,10 +48,21 @@ async function generateModulesTable(fs, path) {
 
       console.log(modulePath);
 
-      let version = await nbgv.getVersion(`modules/${modulePath}`);
+      //let version = await nbgv.getVersion(`modules/${modulePath}`);
+      var version = 'unknown'
+
+      var idx = tags.data.lastIndexOf(x => x.name.startsWith(modulePath))
+      if (idx != -1)
+      {
+        var tag = tags.data.at(idx)
+        version = tag.name.substring(modulePath.length + 1)
+        console.log(version);
+      }
+      else
+        console.log(`unknown version - ${modulePath}`);
 
       const badgeUrl = new URL(
-        `https://img.shields.io/badge/${version.simpleVersion}-blue`
+        `https://img.shields.io/badge/${version}-blue`
       );
       console.log(badgeUrl.href);
 
@@ -148,7 +165,7 @@ async function refreshModuleTable({ require, github, context, core }) {
   }
 
   const oldTable = oldTableMatch[0].replace(/^\s+|\s+$/g, "");
-  const newTable = await generateModulesTable(fs, path);
+  const newTable = await generateModulesTable(github, context, fs, path);
 
   if (oldTable === newTable) {
     core.info("The module table is update-to-date.");
@@ -163,11 +180,11 @@ async function refreshModuleTable({ require, github, context, core }) {
 
     core.info(newTable);
 
-    const prUrl = await createPullRequestToUpdateReadme(
-      github,
-      context,
-      newReadmeFormatted
-    );
+    // const prUrl = await createPullRequestToUpdateReadme(
+    //   github,
+    //   context,
+    //   newReadmeFormatted
+    // );
     core.info(
       `The module table is outdated. A pull request ${prUrl} was created to update it.`
     );
