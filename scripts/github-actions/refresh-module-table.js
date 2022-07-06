@@ -28,7 +28,8 @@ function getSubdirNames(fs, dir) {
 async function generateModulesTable(fs, path) {
   var nbgv = require('nerdbank-gitversioning')
 
-  const tableData = [["Module", "Version", "Docs"]];
+  const tableData = [["Module", "Docs"]];
+  //const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
   for (const moduleGroup of moduleGroups) {
@@ -54,7 +55,8 @@ async function generateModulesTable(fs, path) {
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
       const docs = `${codeLink} ｜ ${readmeLink}`;
 
-      tableData.push([module, versionBadge, docs]);
+      tableData.push([module, docs]);
+      //tableData.push([module, versionBadge, docs]);
     }
   }
 
@@ -159,14 +161,14 @@ async function refreshModuleTable({ require, github, context, core }) {
 
     core.info(newTable);
 
-    // const prUrl = await createPullRequestToUpdateReadme(
-    //   github,
-    //   context,
-    //   newReadmeFormatted
-    // );
-    // core.info(
-    //   `The module table is outdated. A pull request ${prUrl} was created to update it.`
-    // );
+    const prUrl = await createPullRequestToUpdateReadme(
+      github,
+      context,
+      newReadmeFormatted
+    );
+    core.info(
+      `The module table is outdated. A pull request ${prUrl} was created to update it.`
+    );
   }
 }
 
