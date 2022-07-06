@@ -57,7 +57,7 @@ async function generateModulesTable(fs, path) {
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
       const docs = `${codeLink} ｜ ${readmeLink}`;
 
-      //tableData.push([module, versionBadge, docs]);
+      // tableData.push([module, versionBadge, docs]);
       tableData.push([module, docs]);
     }
   }
