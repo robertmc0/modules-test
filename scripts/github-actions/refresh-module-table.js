@@ -1,3 +1,5 @@
+const { URL } = require("url");
+
 function getTimestamp() {
   const now = new Date();
   const year = now.getFullYear();
@@ -28,17 +30,15 @@ function getSubdirNames(fs, dir) {
  * @param {typeof import("path")} path
  */
 async function generateModulesTable(github, context, fs, path) {
-  //var nbgv = require("nerdbank-gitversioning");
 
-  const tableData = [["Module", "Docs"]];
-  // const tableData = [["Module", "Version", "Docs"]];
+  const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
   const tags =  await github.rest.repos.listTags({
     ...context.repo
   });
 
-  tags.data.sort().forEach(x => console.log(x.name));
+  tags.data.forEach(x => console.log(x.name));
 
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
@@ -50,9 +50,7 @@ async function generateModulesTable(github, context, fs, path) {
 
       console.log(modulePath);
 
-      //let version = await nbgv.getVersion(`modules/${modulePath}`);
       var version = 'unknown'
-
       var tag = tags.data.find(x => x.name.startsWith(modulePath))
       if (tag != null)
       {
@@ -69,14 +67,15 @@ async function generateModulesTable(github, context, fs, path) {
 
       const module = `\`${modulePath}\``;
       const versionBadge = `<image src="${badgeUrl.href}">`;
+      
+      console.log(encodeURI(`https://portal.azure.com/#@arinco.com.au/resource/subscriptions/a0a284a3-f2e4-4a99-82e0-48838d891bfa/resourcegroups/adr-bicep-prd-rg/providers/Microsoft.ContainerRegistry/registries/prdarincobicepmodulesacr/repository/bicep/${modulePath}`))
 
       const moduleRootUrl = `https://github.com/arincoau/arinco-bicep-modules/tree/main/modules/${modulePath}`;
       const codeLink = `[🦾 Code](${moduleRootUrl}/main.bicep)`;
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
       const docs = `${codeLink} ｜ ${readmeLink}`;
 
-      // tableData.push([module, versionBadge, docs]);
-      tableData.push([module, docs]);
+      tableData.push([module, versionBadge, docs]);
     }
   }
 
