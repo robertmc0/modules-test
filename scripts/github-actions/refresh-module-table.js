@@ -30,15 +30,14 @@ function getSubdirNames(fs, dir) {
  * @param {typeof import("path")} path
  */
 async function generateModulesTable(github, context, fs, path) {
-
   const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
-  const tags =  await github.rest.repos.listTags({
-    ...context.repo
+  const tags = await github.rest.repos.listTags({
+    ...context.repo,
   });
 
-  tags.data.forEach(x => console.log(x.name));
+  tags.data.forEach((x) => console.log(x.name));
 
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
@@ -50,24 +49,19 @@ async function generateModulesTable(github, context, fs, path) {
 
       console.log(modulePath);
 
-      var version = 'unknown'
-      var tag = tags.data.find(x => x.name.startsWith(modulePath))
-      if (tag != null)
-      {
-        version = tag.name.substring(modulePath.length + 1)
+      var version = "unknown";
+      var tag = tags.data.find((x) => x.name.startsWith(modulePath));
+      if (tag != null) {
+        version = tag.name.substring(modulePath.length + 1);
         console.log(version);
-      }
-      else
-        console.log(`unknown version - ${modulePath}`);
+      } else console.log(`unknown version - ${modulePath}`);
 
-      const badgeUrl = new URL(
-        `https://img.shields.io/badge/${version}-blue`
-      );
+      const badgeUrl = new URL(`https://img.shields.io/badge/${version}-blue`);
       console.log(badgeUrl.href);
 
       const module = `\`${modulePath}\``;
       const versionBadge = `<image src="${badgeUrl.href}">`;
-      
+
       const moduleRootUrl = `https://github.com/arincoau/arinco-bicep-modules/tree/main/modules/${modulePath}`;
       const codeLink = `[🦾 Code](${moduleRootUrl}/main.bicep)`;
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
