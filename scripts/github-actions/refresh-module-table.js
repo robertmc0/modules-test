@@ -68,8 +68,6 @@ async function generateModulesTable(github, context, fs, path) {
       const module = `\`${modulePath}\``;
       const versionBadge = `<image src="${badgeUrl.href}">`;
       
-      console.log(encodeURI(`https://portal.azure.com/#@arinco.com.au/resource/subscriptions/a0a284a3-f2e4-4a99-82e0-48838d891bfa/resourcegroups/adr-bicep-prd-rg/providers/Microsoft.ContainerRegistry/registries/prdarincobicepmodulesacr/repository/bicep/${modulePath}`))
-
       const moduleRootUrl = `https://github.com/arincoau/arinco-bicep-modules/tree/main/modules/${modulePath}`;
       const codeLink = `[🦾 Code](${moduleRootUrl}/main.bicep)`;
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
