@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.7.4.23292",
-      "templateHash": "13065099474125932817"
+      "version": "0.8.2.30886",
+      "templateHash": "8303433647412711477"
     }
   },
   "parameters": {
@@ -113,7 +113,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enable diagnostic logs"
+        "description": "Optional. Enable diagnostic logging."
       }
     },
     "diagnosticLogCategoryGroupsToEnable": {
@@ -208,7 +208,7 @@
       }
     ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
-    "diagnosticsName": "[format('{0}-dgs', parameters('name'))]"
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
   },
   "resources": [
     {

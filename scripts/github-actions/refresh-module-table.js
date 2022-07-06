@@ -1,3 +1,5 @@
+const { URL } = require("url");
+
 function getTimestamp() {
   const now = new Date();
   const year = now.getFullYear();
@@ -22,39 +24,50 @@ function getSubdirNames(fs, dir) {
 }
 
 /**
+ * @param {ReturnType<typeof import("@actions/github").getOctokit>} github
+ * @param {typeof import("@actions/github").context} context
  * @param {typeof import("fs")} fs
  * @param {typeof import("path")} path
  */
-async function generateModulesTable(fs, path) {
- const tableData = [["Module","Docs"]];
-  // const tableData = [["Module", "Version", "Docs"]];
+async function generateModulesTable(github, context, fs, path) {
+  const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
+
+  const tags = await github.rest.repos.listTags({
+    ...context.repo,
+  });
+
+  tags.data.forEach((x) => console.log(x.name));
 
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
     var moduleNames = getSubdirNames(fs, moduleGroupPath);
+    console.log(moduleGroupPath);
 
     for (const moduleName of moduleNames) {
       const modulePath = `${moduleGroup}/${moduleName}`;
-      const badgeUrl = new URL("https://img.shields.io/badge/dynamic/json");
-      // const versionListUrl = `https://prdarincobicepmodulesacr.azurecr.io/v1/bicep/${modulePath}/tags/list`;
 
-      // badgeUrl.searchParams.append("label", "acr");
-      // badgeUrl.searchParams.append("query", "$.tags[(@.length-1)]");
-      // badgeUrl.searchParams.append("url", versionListUrl);
+      console.log(modulePath);
 
+      var version = "unknown";
+      var tag = tags.data.find((x) => x.name.startsWith(modulePath));
+      if (tag != null) {
+        version = tag.name.substring(modulePath.length + 1);
+        console.log(version);
+      } else console.log(`unknown version - ${modulePath}`);
+
+      const badgeUrl = new URL(`https://img.shields.io/badge/${version}-blue`);
       console.log(badgeUrl.href);
 
       const module = `\`${modulePath}\``;
-      // const versionBadge = `<a href="${versionListUrl}"><image src="${badgeUrl.href}"></a>`;
+      const versionBadge = `<image src="${badgeUrl.href}">`;
 
       const moduleRootUrl = `https://github.com/arincoau/arinco-bicep-modules/tree/main/modules/${modulePath}`;
       const codeLink = `[🦾 Code](${moduleRootUrl}/main.bicep)`;
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
       const docs = `${codeLink} ｜ ${readmeLink}`;
 
-      // tableData.push([module, versionBadge, docs]);
-      tableData.push([module, docs]);
+      tableData.push([module, versionBadge, docs]);
     }
   }
 
@@ -144,7 +157,7 @@ async function refreshModuleTable({ require, github, context, core }) {
   }
 
   const oldTable = oldTableMatch[0].replace(/^\s+|\s+$/g, "");
-  const newTable = await generateModulesTable(fs, path);
+  const newTable = await generateModulesTable(github, context, fs, path);
 
   if (oldTable === newTable) {
     core.info("The module table is update-to-date.");
@@ -156,6 +169,8 @@ async function refreshModuleTable({ require, github, context, core }) {
     const newReadmeFormatted = prettier.format(newReadme, {
       parser: "markdown",
     });
+
+    core.info(newTable);
 
     const prUrl = await createPullRequestToUpdateReadme(
       github,

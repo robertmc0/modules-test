@@ -68,7 +68,7 @@ param savedSearches array = []
 ])
 param resourcelock string = 'NotSpecified'
 
-@description('Optional. Enable diagnostic logs')
+@description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
 @description('Optional. The name of log category groups that will be streamed.')
@@ -107,7 +107,7 @@ param diagnosticEventHubName string = ''
 
 var lockName = toLower('${logAnalyticsWorkspace.name}-${resourcelock}-lck')
 
-var diagnosticsName = '${logAnalyticsWorkspace.name}-dgs'
+var diagnosticsName = toLower('${logAnalyticsWorkspace.name}-dgs')
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup

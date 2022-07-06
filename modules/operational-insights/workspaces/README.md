@@ -27,7 +27,7 @@ This module performs the following
 | `dataSources`                           | `array`  | No       | Optional. Datasources to add to workspace.                                                                                        |
 | `savedSearches`                         | `array`  | No       | Optional. Saved searches to add to workspace.                                                                                     |
 | `resourcelock`                          | `string` | No       | Optional. Specify the type of resource lock.                                                                                      |
-| `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logs                                                                                                  |
+| `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                              |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                  |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                              |
 | `diagnosticLogsRetentionInDays`         | `int`    | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.                    |

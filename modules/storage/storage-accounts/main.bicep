@@ -1,10 +1,19 @@
-@description('Storage account name.')
+@description('The resource name.')
 param name string
 
-@description('Storage account location.')
+@description('The geo-location where the resource lives.')
 param location string
 
-@description('Storage account sku.')
+@description('Optional. Resource tags.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
+param tags object = {}
+
+@description('Optional. The sku of the Storage Account.')
 @allowed([
   'Standard_LRS'
   'Standard_GRS'
@@ -17,7 +26,7 @@ param location string
 ])
 param sku string = 'Standard_GRS'
 
-@description('Storage account kind.')
+@description('Optional. The kind of Storage Account.')
 @allowed([
   'Storage'
   'StorageV2'
@@ -27,7 +36,7 @@ param sku string = 'Standard_GRS'
 ])
 param kind string = 'StorageV2'
 
-@description('Storage account access tier, Hot for frequently accessed data or Cool for infreqently accessed data.')
+@description('Optional. Storage Account access tier, Hot for frequently accessed data or Cool for infrequently accessed data.')
 @allowed([
   'Hot'
   'Cool'
@@ -40,32 +49,32 @@ param systemAssignedIdentity bool = false
 @description('Optional. The ID(s) to assign to the resource.')
 param userAssignedIdentities object = {}
 
-@description('Allow or disallow public network access to Storage Account.')
+@description('Optional. Allow or disallow public network access to Storage Account.')
 @allowed([
   'Enabled'
   'Disabled'
 ])
 param publicNetworkAccess string = 'Enabled'
 
-@description('Amount of days the soft deleted data is stored and available for recovery.')
+@description('Optional. Amount of days the soft deleted data is stored and available for recovery.')
 @minValue(1)
 @maxValue(365)
 param deleteRetentionPolicy int = 7
 
-@description('Optional. If true, enables Hierarchical Namespace for the storage account')
+@description('Optional. If true, enables Hierarchical Namespace for the Storage Account.')
 param enableHierarchicalNamespace bool = false
 
 @description('Optional. A boolean indicating whether or not the service applies a secondary layer of encryption with platform managed keys for data at rest. For security reasons, it is recommended to set it to true.')
 param requireInfrastructureEncryption bool = true
 
-@description('Containers to create in the storage account.')
+@description('Optional. Containers to create in the Storage Account.')
 @metadata({
   name: 'Container name.'
   publicAccess: 'Specifies whether data in the container may be accessed publicly and the level of access. Accepted values: None, Blob, Container.'
 })
 param containers array = []
 
-@description('Files shares to create in the storage account.')
+@description('Optional. Files shares to create in the Storage Account.')
 @metadata({
   name: 'File share name.'
   tier: 'File share tier. Accepted values are Hot, Cool, TransactionOptimized or Premium.'
@@ -74,19 +83,19 @@ param containers array = []
 })
 param fileShares array = []
 
-@description('Queue to create in the storage account.')
+@description('Optional. Queue to create in the Storage Account.')
 @metadata({
   name: 'Queue name.'
 })
 param queues array = []
 
-@description('Optional. Tables to create.')
+@description('Optional. Tables to create in the Storage Account.')
 @metadata({
   name: 'Table name.'
 })
 param tables array = []
 
-@description('Rule definitions governing the Storage network access.')
+@description('Optional. Rule definitions governing the Storage network access.')
 @metadata({
   bypass: 'Specifies whether traffic is bypassed for Logging/Metrics/AzureServices. Possible values are any combination of Logging, Metrics, AzureServices.'
   defaultAction: 'Specifies the default action of allow or deny when no other rules match. Accepted values: "Allow" or "Deny".'
@@ -116,44 +125,87 @@ param networkAcls object = {}
   'NotSpecified'
   'ReadOnly'
 ])
-@description('Specify the type of resource lock.')
+@description('Optional. Specify the type of resource lock.')
 param resourcelock string = 'NotSpecified'
 
-@description('Enable diagnostic logs.')
+@description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
+
+@description('Optional. The name of log categories that will be streamed.')
+@allowed([
+  'StorageRead'
+  'StorageWrite'
+  'StorageDelete'
+])
+param diagnosticLogCategoriesToEnable array = [
+  'StorageRead'
+  'StorageWrite'
+  'StorageDelete'
+]
+
+@description('Optional. The name of metrics that will be streamed.')
+@allowed([
+  'Transaction'
+])
+param diagnosticMetricsToEnable array = [
+  'Transaction'
+]
 
 @description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
 @minValue(0)
 @maxValue(365)
 param diagnosticLogsRetentionInDays int = 365
 
-@description('Storage account resource id. Only required if enableDiagnostics is set to true.')
+@description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticStorageAccountId string = ''
 
-@description('Log analytics workspace resource id. Only required if enableDiagnostics is set to true.')
+@description('Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticLogAnalyticsWorkspaceId string = ''
 
-@description('Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.')
+@description('Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.')
 param diagnosticEventHubAuthorizationRuleId string = ''
 
-@description('Event hub name. Only required if enableDiagnostics is set to true.')
+@description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
 param diagnosticEventHubName string = ''
 
-var lockName = toLower('${storage.name}-${resourcelock}-lck')
-var diagnosticsName = '${storage.name}-dgs'
-
 var supportsBlobService = kind == 'BlockBlobStorage' || kind == 'BlobStorage' || kind == 'StorageV2' || kind == 'Storage'
+
 var supportsFileService = kind == 'FileStorage' || kind == 'StorageV2' || kind == 'Storage'
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+
 var identity = identityType != 'None' ? {
   type: identityType
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
+var lockName = toLower('${storage.name}-${resourcelock}-lck')
+
+var diagnosticsName = toLower('${storage.name}-dgs')
+
+var diagnosticsLogs = [for category in diagnosticLogCategoriesToEnable: {
+  category: category
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
+
+var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
+  category: metric
+  timeGrain: null
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
+
 resource storage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: name
   location: location
+  tags: tags
   sku: {
     name: sku
   }
@@ -215,9 +267,9 @@ resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2021-0
   parent: fileServices
   name: fileShare.name
   properties: {
-    accessTier: contains(fileShare,'tier') ? fileShare.tier : null
-    enabledProtocols: contains(fileShare,'protocol') ? fileShare.protocol : 'SMB'
-    shareQuota: contains(fileShare,'quota') ? fileShare.quota : 5120
+    accessTier: contains(fileShare, 'tier') ? fileShare.tier : null
+    enabledProtocols: contains(fileShare, 'protocol') ? fileShare.protocol : 'SMB'
+    shareQuota: contains(fileShare, 'quota') ? fileShare.quota : 5120
   }
 }]
 
@@ -254,11 +306,6 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != '
   }
 }
 
-var diagnosticsMetricsRetentionPolicy = {
-  enabled: true
-  days: diagnosticLogsRetentionInDays
-}
-
 resource diagnosticsStorage 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
   scope: storage
   name: diagnosticsName
@@ -267,13 +314,7 @@ resource diagnosticsStorage 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
     eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-    ]
+    metrics: diagnosticsMetrics
   }
 }
 
@@ -285,30 +326,8 @@ resource diagnosticsBlobServices 'Microsoft.Insights/diagnosticSettings@2021-05-
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
     eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
-    logs: [
-      {
-        category: 'StorageRead'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-      {
-        category: 'StorageWrite'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-      {
-        category: 'StorageDelete'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-    ]
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-    ]
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
   }
 }
 
@@ -320,30 +339,8 @@ resource diagnosticsFileServices 'Microsoft.Insights/diagnosticSettings@2021-05-
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
     eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
-    logs: [
-      {
-        category: 'StorageRead'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-      {
-        category: 'StorageWrite'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-      {
-        category: 'StorageDelete'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-    ]
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-    ]
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
   }
 }
 
@@ -355,30 +352,8 @@ resource diagnosticsQueueServices 'Microsoft.Insights/diagnosticSettings@2021-05
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
     eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
-    logs: [
-      {
-        category: 'StorageRead'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-      {
-        category: 'StorageWrite'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-      {
-        category: 'StorageDelete'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-    ]
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy: diagnosticsMetricsRetentionPolicy
-      }
-    ]
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
   }
 }
 
