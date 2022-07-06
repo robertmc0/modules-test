@@ -178,11 +178,11 @@ async function refreshModuleTable({ require, github, context, core }) {
 
     core.info(newTable);
 
-    // const prUrl = await createPullRequestToUpdateReadme(
-    //   github,
-    //   context,
-    //   newReadmeFormatted
-    // );
+    const prUrl = await createPullRequestToUpdateReadme(
+      github,
+      context,
+      newReadmeFormatted
+    );
     core.info(
       `The module table is outdated. A pull request ${prUrl} was created to update it.`
     );
