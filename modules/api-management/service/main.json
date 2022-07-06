@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.7.4.23292",
-      "templateHash": "4024182321767409739"
+      "version": "0.8.2.30886",
+      "templateHash": "8306252154700615315"
     }
   },
   "parameters": {
@@ -371,7 +371,7 @@
       }
     ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
-    "diagnosticsName": "[format('{0}-dgs', parameters('name'))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
