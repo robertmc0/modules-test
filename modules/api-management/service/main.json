@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.2.30886",
-      "templateHash": "8306252154700615315"
+      "version": "0.8.9.13224",
+      "templateHash": "16670034497991414536"
     }
   },
   "parameters": {
@@ -301,7 +301,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enable diagnostic logs"
+        "description": "Optional. Enable diagnostic logging."
       }
     },
     "diagnosticLogAnalyticsWorkspaceId": {
