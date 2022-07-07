@@ -196,7 +196,7 @@ param applicationInsightsId string
 @description('Optional. The sample rate for the application insights logger. Defaults to 10%')
 param loggerSamplingRate int = 10
 
-@description('Optional. Enable diagnostic logs')
+@description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
 @description('Optional. Resource ID of the diagnostic log analytics workspace.')
