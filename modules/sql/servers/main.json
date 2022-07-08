@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.7.4.23292",
-      "templateHash": "13469185777314534669"
+      "version": "0.8.9.13224",
+      "templateHash": "4586327450582657699"
     }
   },
   "parameters": {
@@ -168,7 +168,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enable audit logs"
+        "description": "Optional. Enable audit logging."
       }
     },
     "auditLogAnalyticsWorkspaceId": {
@@ -245,7 +245,7 @@
       "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
       "FAILED_DATABASE_AUTHENTICATION_GROUP"
     ],
-    "diagnosticsName": "[format('{0}-dgs', parameters('name'))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "diagnosticLogCategoriesToEnable": [
       "DevOpsOperationsAudit",
       "SQLSecurityAuditEvents"
@@ -424,16 +424,22 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.7.4.23292",
-              "templateHash": "5147791110814635709"
+              "version": "0.8.9.13224",
+              "templateHash": "6455520508070411693"
             }
           },
           "parameters": {
             "storageAccountName": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "Storage account name."
+              }
             },
             "principalId": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "Principal ID of the identity to grant storage account permissions to."
+              }
             }
           },
           "variables": {
@@ -484,16 +490,22 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.7.4.23292",
-              "templateHash": "5147791110814635709"
+              "version": "0.8.9.13224",
+              "templateHash": "6455520508070411693"
             }
           },
           "parameters": {
             "storageAccountName": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "Storage account name."
+              }
             },
             "principalId": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "Principal ID of the identity to grant storage account permissions to."
+              }
             }
           },
           "variables": {
@@ -525,21 +537,21 @@
       "type": "string",
       "value": "[parameters('name')]",
       "metadata": {
-        "description": "The name of the sql server"
+        "description": "The name of the sql server."
       }
     },
     "resourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
       "metadata": {
-        "description": "The resource ID of the sql server"
+        "description": "The resource ID of the sql server."
       }
     },
     "resourceGroupName": {
       "type": "string",
       "value": "[resourceGroup().name]",
       "metadata": {
-        "description": "The resource group the API management service was deployed into"
+        "description": "The resource group the API management service was deployed into."
       }
     },
     "systemAssignedPrincipalId": {

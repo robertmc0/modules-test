@@ -15,11 +15,11 @@ param administratorLoginPassword string = ''
 
 @description('Optional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
 @metadata(
-  { 
+  {
     example: {
-        azureADOnlyAuthentication: true
-        login: 'joe.bloggs@microsoft.com'
-        objectId: '5be5d82b-4e7b-4c4a-8811-c51982b435e0'
+      azureADOnlyAuthentication: true
+      login: 'joe.bloggs@microsoft.com'
+      objectId: '5be5d82b-4e7b-4c4a-8811-c51982b435e0'
     }
     example2: {
       azureADOnlyAuthentication: true
@@ -30,7 +30,6 @@ param administratorLoginPassword string = ''
   }
 )
 param administrators object = {}
-
 
 @description('Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET.')
 @allowed([
@@ -77,7 +76,7 @@ param emailAddresses array = []
   'ReadOnly'
 ])
 @description('Optional. Specify the type of lock.')
-param resourcelock  string = 'NotSpecified'
+param resourcelock string = 'NotSpecified'
 
 @description('Optional. The full resource ID of a subnet in a virtual network to deploy the API Management service in.')
 param subnetResourceId string = ''
@@ -96,7 +95,7 @@ param threatDetectionRetentionDays int = 0
 })
 param userAssignedIdentities object = {}
 
-@description('Optional. Enable audit logs')
+@description('Optional. Enable audit logging.')
 param enableAudit bool = false
 
 @description('Optional. Resource ID of the audit log analytics workspace.')
@@ -122,7 +121,6 @@ param auditStorageResourceGroup string = resourceGroup().name
 @description('Subscription Id of Storage Account to store audit logs.')
 param auditStorageSubscriptionId string = subscription().subscriptionId
 
-
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
 var identity = identityType != 'None' ? {
@@ -138,12 +136,12 @@ var auditActionsAndGroups = [
   'FAILED_DATABASE_AUTHENTICATION_GROUP'
 ]
 
-var diagnosticsName = '${sqlServer.name}-dgs'
+var diagnosticsName = toLower('${sqlServer.name}-dgs')
 
 var diagnosticLogCategoriesToEnable = [
-    'DevOpsOperationsAudit'
-    'SQLSecurityAuditEvents'
-  ]
+  'DevOpsOperationsAudit'
+  'SQLSecurityAuditEvents'
+]
 
 var diagnosticsLogs = [for category in diagnosticLogCategoriesToEnable: {
   category: category
@@ -155,12 +153,12 @@ var diagnosticsLogs = [for category in diagnosticLogCategoriesToEnable: {
 }]
 
 resource vulnerabilityAssessmentStorage 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
-  scope: resourceGroup(vulnerabilityAssessmentStorageSubscriptionId,vulnerabilityAssessmentStorageResourceGroup)
+  scope: resourceGroup(vulnerabilityAssessmentStorageSubscriptionId, vulnerabilityAssessmentStorageResourceGroup)
   name: vulnerabilityAssessmentStorageAccountName
 }
 
 module vulnerabilityAssessmentRoleAssignment 'roleAssignment.bicep' = {
-  scope: resourceGroup(vulnerabilityAssessmentStorageSubscriptionId,vulnerabilityAssessmentStorageResourceGroup)
+  scope: resourceGroup(vulnerabilityAssessmentStorageSubscriptionId, vulnerabilityAssessmentStorageResourceGroup)
   name: 'vulnerabilityAssessmentRoleAssignment'
   params: {
     storageAccountName: vulnerabilityAssessmentStorageAccountName
@@ -168,11 +166,13 @@ module vulnerabilityAssessmentRoleAssignment 'roleAssignment.bicep' = {
   }
 }
 
-resource auditStorage 'Microsoft.Storage/storageAccounts@2021-09-01' existing =  {
-  scope: resourceGroup(auditStorageSubscriptionId,auditStorageResourceGroup)
+resource auditStorage 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
+  scope: resourceGroup(auditStorageSubscriptionId, auditStorageResourceGroup)
   name: auditStorageAccountName
 }
 
+// Grant the SQL server managed identity access to the storage account which will store the audit logs
+// A module is required to do this as the storage account may be in a different resource group or subscription.
 module auditStorageRoleAssignment 'roleAssignment.bicep' = {
   scope: resourceGroup(auditStorageSubscriptionId, auditStorageResourceGroup)
   name: 'auditStorageRoleAssignment'
@@ -192,7 +192,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
     administratorLoginPassword: !empty(administratorLoginPassword) ? administratorLoginPassword : null
     administrators: !empty(administrators) ? {
       administratorType: 'ActiveDirectory'
-      azureADOnlyAuthentication:  contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
+      azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
       login: administrators.login
       principalType: contains(administrators, 'principalType') ? administrators.principalType : null
       sid: administrators.objectId
@@ -248,7 +248,7 @@ resource vulnerabilityAssessments 'Microsoft.Sql/servers/vulnerabilityAssessment
   ]
 }
 
-resource auditSettings 'Microsoft.Sql/servers/auditingSettings@2021-11-01-preview' = if(enableAudit) {
+resource auditSettings 'Microsoft.Sql/servers/auditingSettings@2021-11-01-preview' = if (enableAudit) {
   parent: sqlServer
   name: 'default'
   properties: {
@@ -264,7 +264,7 @@ resource auditSettings 'Microsoft.Sql/servers/auditingSettings@2021-11-01-previe
   ]
 }
 
-resource microsoftSupportAuditSettings 'Microsoft.Sql/servers/devOpsAuditingSettings@2021-11-01-preview' = if(enableAudit) {
+resource microsoftSupportAuditSettings 'Microsoft.Sql/servers/devOpsAuditingSettings@2021-11-01-preview' = if (enableAudit) {
   parent: sqlServer
   name: 'default'
   properties: {
@@ -286,6 +286,7 @@ resource sqlServerMasterDatabase 'Microsoft.Sql/servers/databases@2021-11-01-pre
   properties: {}
 }
 
+// the diagnostics resource is used to enable audit logs to log analytcis or event hubs
 resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableAudit && (!empty(auditLogAnalyticsWorkspaceId) || (!empty(auditEventHubAuthorizationRuleId) || !empty(auditEventHubName)))) {
   scope: sqlServerMasterDatabase
   name: diagnosticsName
@@ -307,11 +308,11 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != '
   }
 }
 
-@description('The name of the sql server')
+@description('The name of the sql server.')
 output name string = sqlServer.name
-@description('The resource ID of the sql server')
+@description('The resource ID of the sql server.')
 output resourceId string = sqlServer.id
-@description('The resource group the API management service was deployed into')
+@description('The resource group the API management service was deployed into.')
 output resourceGroupName string = resourceGroup().name
 @description('The principal ID of the system assigned identity.')
 output systemAssignedPrincipalId string = systemAssignedIdentity && contains(sqlServer.identity, 'principalId') ? sqlServer.identity.principalId : ''

@@ -32,13 +32,8 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-09-01
   }
 }
 
-// resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
-//   scope: resourceGroup('saw-storage-rg')
-//   name: 'sawdemodata'
-// }
-
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: '${shortIdentifier}-tst-law-${uniqueString(deploymentName,'logAnalyticsWorkspace',location)}'
+  name: '${shortIdentifier}-tst-law-${uniqueString(deploymentName, 'logAnalyticsWorkspace', location)}'
   location: location
   properties: {
     sku: {
@@ -60,8 +55,6 @@ module azureSqlServer '../main.bicep' = {
     name: '${shortIdentifier}-tst-sql-${uniqueString(deploymentName, 'sqlserver', location)}'
     enableAudit: true
     auditStorageAccountName: diagnosticsStorageAccount.name
-    //auditStorageResourceGroup: 'another-storage-rg'
-    //auditStorageSubscriptionId: subscription().subscriptionId
     auditLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     auditLogsRetentionInDays: 7
     systemAssignedIdentity: true
@@ -71,8 +64,6 @@ module azureSqlServer '../main.bicep' = {
       objectId: '7d4930a7-f128-45af-9e70-07f1484c9c4a'
     }
     vulnerabilityAssessmentStorageAccountName: diagnosticsStorageAccount.name
-    //vulnerabilityAssessmentStorageResourceGroup: 'another-storage-rg'
-    //vulnerabilityAssessmentStorageSubscriptionId: subscription().subscriptionId
     emailAddresses: [
       'joe.bloggs@hotmail.com'
     ]

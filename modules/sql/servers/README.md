@@ -34,7 +34,7 @@ This module performs the following
 | `systemAssignedIdentity`                       | `bool`         | No       | Optional. Enables system assigned managed identity on the resource.                                                                                      |
 | `threatDetectionRetentionDays`                 | `int`          | No       | Optional. Specifies the number of days to keep in the audit logs. Zero means keep forever.                                                               |
 | `userAssignedIdentities`                       | `object`       | No       | Optional. The ID(s) to assign to the resource.                                                                                                           |
-| `enableAudit`                                  | `bool`         | No       | Optional. Enable audit logs                                                                                                                              |
+| `enableAudit`                                  | `bool`         | No       | Optional. Enable audit logging.                                                                                                                          |
 | `auditLogAnalyticsWorkspaceId`                 | `string`       | No       | Optional. Resource ID of the audit log analytics workspace.                                                                                              |
 | `auditEventHubAuthorizationRuleId`             | `string`       | No       | Optional. Resource ID of the audit event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.    |
 | `auditEventHubName`                            | `string`       | No       | Optional. Name of the audit event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.      |
@@ -45,12 +45,12 @@ This module performs the following
 
 ## Outputs
 
-| Name                      | Type   | Description                                                     |
-| :------------------------ | :----: | :-------------------------------------------------------------- |
-| name                      | string | The name of the sql server                                      |
-| resourceId                | string | The resource ID of the sql server                               |
-| resourceGroupName         | string | The resource group the API management service was deployed into |
-| systemAssignedPrincipalId | string | The principal ID of the system assigned identity.               |
+| Name                      | Type   | Description                                                      |
+| :------------------------ | :----: | :--------------------------------------------------------------- |
+| name                      | string | The name of the sql server.                                      |
+| resourceId                | string | The resource ID of the sql server.                               |
+| resourceGroupName         | string | The resource group the API management service was deployed into. |
+| systemAssignedPrincipalId | string | The principal ID of the system assigned identity.                |
 
 ## Examples
 
