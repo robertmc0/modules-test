@@ -8,7 +8,7 @@ This module performs the following
 
 - Creates Microsoft.Network privateEndpoints resource.
 - Associates the private endpoint with the given Private DNS Zone.
-- Applys a lock to the private endpoint if the lock is specified.
+- Applies a lock to the private endpoint if the lock is specified.
 
 ## Parameters
 
