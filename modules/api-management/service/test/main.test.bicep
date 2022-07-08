@@ -1,3 +1,6 @@
+/*======================================================================
+GLOBAL CONFIGURATION
+======================================================================*/
 @description('Optional. The environment')
 param environment string = 'tst'
 
@@ -20,6 +23,9 @@ param virtualNetworkType string = 'None'
 @description('Resource Tags')
 param tags object = {}
 
+/*======================================================================
+TEST PREREQUISITES
+======================================================================*/
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${companyShortName}-tst-law-${uniqueString(deployment().name,'logAnalyticsWorkspace',location)}'
   location: location
@@ -129,6 +135,9 @@ var nameValues = [
   }
 ]
 
+/*======================================================================
+TEST EXECUTION
+======================================================================*/
 module apim '../main.bicep' = {
   name: 'deployApim'
   params: {
@@ -139,7 +148,8 @@ module apim '../main.bicep' = {
     publisherEmail: 'support@arinco.com.au'
     publisherName: 'ARINCO'
     tags: tags
-    diagnosticWorkspaceId: logAnalyticsWorkspace.id
+    enableDiagnostics:true
+    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticLogsRetentionInDays: 7
     virtualNetworkType: virtualNetworkType
     subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''

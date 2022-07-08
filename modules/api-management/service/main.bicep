@@ -1,6 +1,6 @@
 @description('Optional. Additional datacenter locations of the API Management service.')
 @metadata({
-  doc:'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#additionallocation'
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#additionallocation'
   example: {
     disableGateway: false
     location: 'string'
@@ -19,13 +19,10 @@
 })
 param additionalLocations array = []
 
-@description('Required. The name of the of the API Management service.')
-param name string
-
 @description('Optional. List of Certificates that need to be installed in the API Management service. Max supported certificates that can be installed is 10.')
 @maxLength(10)
 @metadata({
-  doc:'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#certificateconfiguration'
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#certificateconfiguration'
   example: {
     certificate: {
       expiry: 'string'
@@ -46,28 +43,14 @@ param certificates array = []
 })
 param customProperties object = {}
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
-@description('Optional. Resource ID of the diagnostic storage account.')
-param diagnosticStorageAccountId string = ''
-
 @description('Optional. Property only valid for an API Management service deployed in multiple locations. This can be used to disable the gateway in master region.')
 param disableGateway bool = false
 
 @description('Optional. Property only meant to be used for Consumption SKU Service. This enforces a client certificate to be presented on each request to the gateway. This also enables the ability to authenticate the certificate in the policy on the gateway.')
 param enableClientCertificate bool = false
 
-@description('Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.')
-param diagnosticEventHubAuthorizationRuleId string = ''
-
-@description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.')
-param diagnosticEventHubName string = ''
-
 @description('Optional. Custom hostname configuration of the API Management service.')
-@metadata( {
+@metadata({
   doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#hostnameconfiguration'
   example: {
     certificate: {
@@ -89,19 +72,41 @@ param diagnosticEventHubName string = ''
 })
 param hostnameConfigurations array = []
 
-@description('Optional. Enables system assigned managed identity on the resource.')
-param systemAssignedIdentity bool = false
-
-@description('Optional. The ID(s) to assign to the resource.')
-@metadata({
-  example: {
-    '/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi': {}
-  }
-})
-param userAssignedIdentities object = {}
-
 @description('Location for all Resources.')
 param location string
+
+@description('Optional. Limit control plane API calls to API Management service with version equal to or newer than this value.')
+param minApiVersion string = ''
+
+@description('The name of the of the API Management service.')
+param name string
+
+@description('Optional. Named values.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service/namedvalues?tabs=bicep#namedvaluecreatecontractpropertiesornamedvaluecontractproperties'
+  example: {
+    displayName: 'string'
+    keyVault: {
+      identityClientId: 'string'
+      secretIdentifier: 'string'
+    }
+    secret: false
+    tags: [
+      'string'
+    ]
+    value: 'string'
+  }
+})
+param namedValues array = []
+
+@description('Optional. The notification sender email address for the service.')
+param notificationSenderEmail string = 'apimgmt-noreply@mail.windowsazure.com'
+
+@description('The email address of the owner of the service.')
+param publisherEmail string
+
+@description('The name of the owner of the service.')
+param publisherName string
 
 @allowed([
   'CanNotDelete'
@@ -109,19 +114,7 @@ param location string
   'ReadOnly'
 ])
 @description('Optional. Specify the type of lock.')
-param lock string = 'NotSpecified'
-
-@description('Optional. Limit control plane API calls to API Management service with version equal to or newer than this value.')
-param minApiVersion string = ''
-
-@description('Optional. The notification sender email address for the service.')
-param notificationSenderEmail string = 'apimgmt-noreply@mail.windowsazure.com'
-
-@description('Required. The email address of the owner of the service.')
-param publisherEmail string
-
-@description('Required. The name of the owner of the service.')
-param publisherName string
+param resourcelock string = 'NotSpecified'
 
 @description('Optional. Undelete API Management Service if it was previously soft-deleted. If this flag is specified and set to True all other properties will be ignored.')
 param restore bool = false
@@ -146,8 +139,25 @@ param skuCount int = 1
 @description('Optional. The full resource ID of a subnet in a virtual network to deploy the API Management service in.')
 param subnetResourceId string = ''
 
-@description('Optional. Tags of the resource.')
+@description('Optional. Enables system assigned managed identity on the resource.')
+param systemAssignedIdentity bool = false
+
+@description('Optional. Resource tags.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
 param tags object = {}
+
+@description('Optional. The ID(s) to assign to the resource.')
+@metadata({
+  example: {
+    '/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi': {}
+  }
+})
+param userAssignedIdentities object = {}
 
 @description('Optional. The type of VPN in which API Management service needs to be configured in. None (Default Value) means the API Management service is not part of any Virtual Network, External means the API Management deployment is set up inside a Virtual Network having an internet Facing Endpoint, and Internal means that API Management deployment is setup inside a Virtual Network having an Intranet Facing Endpoint only.')
 @allowed([
@@ -157,21 +167,19 @@ param tags object = {}
 ])
 param virtualNetworkType string = 'None'
 
-@description('Optional. Resource ID of the diagnostic log analytics workspace.')
-param diagnosticWorkspaceId string = ''
-
 @description('Optional. A list of availability zones denoting where the resource needs to come from.')
 @metadata({
-  zones: ['1','2']
+  zones: [ '1', '2' ]
 })
 param zones array = []
 
-@description('Optional. The name of logs that will be streamed.')
+@description('Optional. The name of log category groups that will be streamed.')
 @allowed([
-  'GatewayLogs'
+  'Audit'
+  'AllLogs'
 ])
-param diagnosticLogCategoriesToEnable array = [
-  'GatewayLogs'
+param diagnosticLogCategoryGroupsToEnable array = [
+  'Audit'
 ]
 
 @description('Optional. The name of metrics that will be streamed.')
@@ -182,20 +190,38 @@ param diagnosticMetricsToEnable array = [
   'AllMetrics'
 ]
 
-@description('Optional. Named values.')
-param namedValues array = []
-
-@description('Optional. The name of the diagnostic setting, if deployed.')
-param diagnosticSettingsName string = '${name}-diagnosticSettings'
-
 @description('Resource ID of the application insights resource.')
 param applicationInsightsId string
 
 @description('Optional. The sample rate for the application insights logger. Defaults to 10%')
 param loggerSamplingRate int = 10
 
-var diagnosticsLogs = [for category in diagnosticLogCategoriesToEnable: {
-  category: category
+@description('Optional. Enable diagnostic logging.')
+param enableDiagnostics bool = false
+
+@description('Optional. Resource ID of the diagnostic log analytics workspace.')
+param diagnosticLogAnalyticsWorkspaceId string = ''
+
+@description('Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.')
+param diagnosticEventHubAuthorizationRuleId string = ''
+
+@description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.')
+param diagnosticEventHubName string = ''
+
+@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
+@minValue(0)
+@maxValue(365)
+param diagnosticLogsRetentionInDays int = 365
+
+@description('Optional. Resource ID of the diagnostic storage account.')
+param diagnosticStorageAccountId string = ''
+
+var lockName = toLower('${apiManagementService.name}-${resourcelock}-lck')
+
+var diagnosticsName = toLower('${apiManagementService.name}-dgs')
+
+var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+  categoryGroup: categoryGroup
   enabled: true
   retentionPolicy: {
     enabled: true
@@ -213,7 +239,7 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-var applicationInsights = reference(applicationInsightsId,'2020-02-02', 'Full')
+var applicationInsights = reference(applicationInsightsId, '2020-02-02', 'Full')
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
@@ -282,7 +308,7 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
   parent: apiManagementService
   name: 'applicationInsights'
   properties: {
-    loggerType:  'applicationInsights'
+    loggerType: 'applicationInsights'
     description: 'Application Insights Logger'
     credentials: {
       instrumentationKey: '{{Logger-Credentials}}' // refer to named value to prevent APIM generating a named value on every deployment
@@ -307,26 +333,26 @@ resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08-01'
   }
 }
 
-resource locks 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
   scope: apiManagementService
-  name: '${apiManagementService.name}-${lock}-lock'
+  name: lockName
   properties: {
-    level: lock
-    notes: lock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    level: resourcelock
+    notes: resourcelock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
 }
 
-resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(diagnosticStorageAccountId) || !empty(diagnosticWorkspaceId) || !empty(diagnosticEventHubAuthorizationRuleId) || !empty(diagnosticEventHubName)) {
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
   scope: apiManagementService
-  name: diagnosticSettingsName
+  name: diagnosticsName
   properties: {
     storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
-    workspaceId: !empty(diagnosticWorkspaceId) ? diagnosticWorkspaceId : null
+    workspaceId: !empty(diagnosticLogAnalyticsWorkspaceId) ? diagnosticLogAnalyticsWorkspaceId : null
     eventHubAuthorizationRuleId: !empty(diagnosticEventHubAuthorizationRuleId) ? diagnosticEventHubAuthorizationRuleId : null
     eventHubName: !empty(diagnosticEventHubName) ? diagnosticEventHubName : null
     metrics: diagnosticsMetrics
     logs: diagnosticsLogs
-    logAnalyticsDestinationType: 'Dedicated'
+    logAnalyticsDestinationType: 'Dedicated' // Means use Resource Specific named log tables
   }
 }
 

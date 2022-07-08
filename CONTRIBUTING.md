@@ -7,6 +7,9 @@ The following instructions help guide you with the development of Arinco Bicep m
 - Install [.NET 6.0 SDK](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks)
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
+- Install the following VSCode extensions as they are used for code formatting:
+  - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep)
+  - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
 The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore when making changes to existing modules, ensure you have the latest version installed.
 
@@ -34,7 +37,7 @@ Branches are to be short lived. Any stale branches older than 60 days will be de
 
 ### Creating a directory for the new module
 
-Add a new directory under the `modules` folder in your local arinco-bicep-modules repository with the path in lowercase following the pattern `<ModuleGroup>/<ModuleName>`. Typical `<ModuleGroup>` names are Azure resource provider names without the `Microsoft.` prefix, but other names are also allowed as long as they make sense. `<ModuleName>` should be a singular noun or noun phrase. Examples below:
+Add a new directory under the `modules` folder in your local arinco-bicep-modules repository with the path in lowercase following the pattern `<modulegroup>/<modulename>`. Typical `<modulegroup>` names are Azure resource provider names without the `Microsoft.` prefix, but other names are also allowed as long as they make sense. `<modulename>` should be a singular noun or noun phrase. Examples below:
 
 - `compute/vm-with-public-ip`
 - `network/private-endpoint`
@@ -85,8 +88,8 @@ The `metadata.json` file contains metadata of the module including `name`, `summ
   "name": "Sample module",
   // The summary of the module (10 - 1000 characters).
   "summary": "Sample module summary",
-  // The owner of the module. Must be a GitHub username or a team under the Azure organization
-  "owner": "sampleusername"
+  // The owner of the module. Must be set to Arinco.
+  "owner": "Arinco"
 }
 
 ```
@@ -133,7 +136,7 @@ Once you are done editing the files, run `brm generate` again to refresh `main.j
   param fileShares array = []
   ```
 
-- Parameter names should align to Microsoft ARM resource defintion names, e.g. NetworkACLs instead of NetworkRuleSets unless parameter name is unclear.
+- Parameter names should align to Microsoft ARM resource definition names, e.g. NetworkACLs instead of NetworkRuleSets unless parameter name is unclear.
 
 - All array and object parameters to have metadata descriptor defining the key values pairs required.
 
@@ -204,7 +207,7 @@ resource diagnosticsStorage 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
 
 #### Managed identity
 
-- Follow the convention below to support both 'SystemAssigned' and 'UserAssigned' identities for modules. The resource defintion should simply refer to the identity variable.
+- Follow the convention below to support both 'SystemAssigned' and 'UserAssigned' identities for modules. The resource definition should simply refer to the identity variable.
 
 ```bicep
 
@@ -315,7 +318,7 @@ If your change is non-breaking but does not require updating the MINOR version, 
 
 ### Resource API Version
 
-Its always good practice to update resource api versions regularly but keep in mind there can be breaking changes and will require bumping the MAJOR version. Automated testing will detect api verions that are 2 years old and require an update.
+Its always good practice to update resource api versions regularly but keep in mind there can be breaking changes and will require bumping the MAJOR version. Automated testing will detect api versions that are 2 years old and require an update.
 
 ## Validating module files
 
@@ -329,7 +332,7 @@ brm validate
 
 ## Running deployment tests
 
-The `brm validate` command mentioned in the above step does not deploy the `test/main.test.bicep` file. Its envisaged that in a future revision, it will be deployed to a temporary resource group as part of the pull request merge validation CI pipeline once you submit a pull request. For now, you must run test deployments locally using Azure CLI or Azure Powershell before submitting a pull request.
+The `brm validate` command mentioned in the above step does not deploy the `test/main.test.bicep` file. Its envisaged that in a future revision, it will be deployed to a temporary resource group as part of the pull request merge validation CI pipeline once you submit a pull request. For now, you must run test deployments locally using Azure CLI or Azure PowerShell before submitting a pull request.
 
 ```
 az group create --name bicep-validation-rg --location australiaeast
