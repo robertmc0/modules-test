@@ -4,21 +4,21 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.7.4.23292",
-      "templateHash": "5638446180085667746"
+      "version": "0.8.2.30886",
+      "templateHash": "9819322906013989278"
     }
   },
   "parameters": {
     "targetResourceName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the Resource for which to create the Private Endpoint."
+        "description": "Name of the target resource for which to create the Private Endpoint."
       }
     },
     "targetResourceId": {
       "type": "string",
       "metadata": {
-        "description": "Resource Id of the Resource for which to create the Private Endpoint."
+        "description": "Resource Id of the target resource for which to create the Private Endpoint."
       }
     },
     "type": {
@@ -54,11 +54,11 @@
         "description": "Resource ID of the Private DNS Zone to host the Private Endpoint."
       }
     },
-    "lock": {
+    "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
       "metadata": {
-        "description": "Optional. Specify the type of lock."
+        "description": "Optional. Specify the type of resource lock."
       },
       "allowedValues": [
         "CanNotDelete",
@@ -68,8 +68,9 @@
     }
   },
   "variables": {
-    "privateEndpointName": "[format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type'))]",
-    "privateLinkServiceName": "[format('{0}-{1}-plink', parameters('targetResourceName'), parameters('type'))]"
+    "lockName": "[toLower(format('{0}-{1}-lck', variables('privateEndpointName'), parameters('resourcelock')))]",
+    "privateEndpointName": "[toLower(format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type')))]",
+    "privateLinkServiceName": "[toLower(format('{0}-{1}-plink', parameters('targetResourceName'), parameters('type')))]"
   },
   "resources": [
     {
@@ -113,14 +114,14 @@
       ]
     },
     {
-      "condition": "[not(equals(parameters('lock'), 'NotSpecified'))]",
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2017-04-01",
       "scope": "[format('Microsoft.Network/privateEndpoints/{0}', variables('privateEndpointName'))]",
-      "name": "[format('{0}-{1}-lock', variables('privateEndpointName'), parameters('lock'))]",
+      "name": "[variables('lockName')]",
       "properties": {
-        "level": "[parameters('lock')]",
-        "notes": "[if(equals(parameters('lock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
@@ -146,8 +147,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.7.4.23292",
-              "templateHash": "6528292354301534969"
+              "version": "0.8.2.30886",
+              "templateHash": "9440652144743443389"
             }
           },
           "parameters": {
