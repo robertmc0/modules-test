@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "897999499306518089"
+      "templateHash": "3577266222987415818"
     }
   },
   "parameters": {
@@ -25,6 +25,25 @@
       "type": "string",
       "metadata": {
         "description": "Location of resource."
+      }
+    },
+    "createMode": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Copy",
+        "Default",
+        "OnlineSecondary",
+        "PointInTimeRestore",
+        "Recovery",
+        "Restore",
+        "RestoreExternalBackup",
+        "RestoreExternalBackupSecondary",
+        "RestoreLongTermRetentionBackup",
+        "Secondary"
+      ],
+      "metadata": {
+        "description": "Specifies the mode of database creation."
       }
     },
     "skuType": {
@@ -50,7 +69,7 @@
       "type": "string",
       "defaultValue": "0.5",
       "metadata": {
-        "description": "Min vCore allocation. Applicable for vCore Serverless model only. Feed as string to handle floats."
+        "description": "Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals."
       }
     },
     "maxDbSize": {
@@ -289,7 +308,8 @@
         "readScale": "[parameters('readScaleOut')]",
         "minCapacity": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('skuMinCapacity'), json('null'))]",
         "autoPauseDelay": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('autoPauseDelay'), json('null'))]",
-        "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]"
+        "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
+        "createMode": "[parameters('createMode')]"
       }
     },
     {
@@ -315,8 +335,7 @@
         "eventHubAuthorizationRuleId": "[if(not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))), parameters('diagnosticEventHubAuthorizationRuleId'), null())]",
         "eventHubName": "[if(not(empty(parameters('diagnosticEventHubName'))), parameters('diagnosticEventHubName'), null())]",
         "metrics": "[variables('diagnosticsMetrics')]",
-        "logs": "[variables('diagnosticsLogs')]",
-        "logAnalyticsDestinationType": "Dedicated"
+        "logs": "[variables('diagnosticsLogs')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('databaseName'))]"

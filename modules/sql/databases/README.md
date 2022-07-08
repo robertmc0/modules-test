@@ -1,5 +1,7 @@
 # Sql Server Database
 
+This module deploys Microsoft.Sql.Server databases
+
 ## Description
 
 {{ Add detailed description for the module. }}
@@ -11,9 +13,10 @@
 | `sqlServerName`                         | `string` | Yes      | Name of existing Azure SQL Server.                                                                                                                         |
 | `databaseName`                          | `string` | Yes      | Name of Database to create.                                                                                                                                |
 | `location`                              | `string` | Yes      | Location of resource.                                                                                                                                      |
+| `createMode`                            | `string` | No       | Specifies the mode of database creation.                                                                                                                   |
 | `skuType`                               | `string` | Yes      | A predefined set of SkuTypes. Currently template not configured to support Hyper-Scale or Business Critical.                                               |
 | `skuCapacity`                           | `int`    | Yes      | If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless).                                                          |
-| `skuMinCapacity`                        | `string` | No       | Min vCore allocation. Applicable for vCore Serverless model only. Feed as string to handle floats.                                                         |
+| `skuMinCapacity`                        | `string` | No       | Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals.                                                      |
 | `maxDbSize`                             | `int`    | Yes      | Maximum database size in bytes for allocation.                                                                                                             |
 | `autoPauseDelay`                        | `int`    | No       | Minutes before Auto Pause. Applicable for vCore Serverless model only.                                                                                     |
 | `retentionPeriod`                       | `int`    | No       | Defines the short term retention period.  Maximum of 35 days.                                                                                              |
