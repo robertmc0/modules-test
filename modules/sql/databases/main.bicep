@@ -1,11 +1,26 @@
-@description('Name of existing Azure SQL Server')
+@description('Name of existing Azure SQL Server.')
 param sqlServerName string
 
-@description('Name of Database to create')
+@description('Name of Database to create.')
 param databaseName string
 
-@description('Location of resource')
-param location string = resourceGroup().location
+@description('Location of resource.')
+param location string
+
+@description('Specifies the mode of database creation.')
+@allowed([
+  'Copy'
+  'Default'
+  'OnlineSecondary'
+  'PointInTimeRestore'
+  'Recovery'
+  'Restore'
+  'RestoreExternalBackup'
+  'RestoreExternalBackupSecondary'
+  'RestoreLongTermRetentionBackup'
+  'Secondary'
+])
+param createMode string = 'Default'
 
 @description('A predefined set of SkuTypes. Currently template not configured to support Hyper-Scale or Business Critical.')
 @allowed([
@@ -17,16 +32,16 @@ param location string = resourceGroup().location
 ])
 param skuType string
 
-@description('If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless)')
+@description('If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless).')
 param skuCapacity int
 
-@description('Min vCore allocation. Applicable for vCore Serverless model only. Feed as string to handle floats.')
+@description('Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals.')
 param skuMinCapacity string = '0.5'
 
 @description('Maximum database size in bytes for allocation.')
 param maxDbSize int
 
-@description('Minutes before Auto Pause. Applicable for vCore Serverless model only')
+@description('Minutes before Auto Pause. Applicable for vCore Serverless model only.')
 param autoPauseDelay int = 60
 
 @description('Defines the short term retention period.  Maximum of 35 days.')
@@ -38,27 +53,95 @@ param databaseCollation string = 'SQL_Latin1_General_CP1_CI_AS'
 @description('Whether the databases are zone redundant. Only supported in some regions.')
 param zoneRedundant bool = false
 
-@description('For Azure Hybrid Benefit, use BasePrice')
+@description('For Azure Hybrid Benefit, use BasePrice.')
 @allowed([
   'BasePrice'
   'LicenseIncluded'
 ])
 param licenseType string = 'LicenseIncluded'
 
-@description('Allow ReadOnly from secondary endpoints')
+@description('Allow ReadOnly from secondary endpoints.')
 param readScaleOut string = 'Disabled'
 
-@description('Set location of backups, geo, local or zone')
+@description('Set location of backups, geo, local or zone.')
 param requestedBackupStorageRedundancy string = 'Geo'
 
-@description('Object containing resource tags.')
+@description('Optional. Resource tags.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
 param tags object = {}
 
-@description('Enable a Can Not Delete Resource Lock.  Useful for production workloads.')
-param enableResourceLock bool = false
+@allowed([
+  'CanNotDelete'
+  'NotSpecified'
+  'ReadOnly'
+])
+@description('Optional. Specify the type of lock.')
+param resourcelock string = 'NotSpecified'
 
-@description('Object containing diagnostics settings. If not provided diagnostics will not be set.')
-param diagSettings object = {}
+@description('Optional. Enable diagnostic logging.')
+param enableDiagnostics bool = false
+
+@description('Optional. Resource ID of the diagnostic log analytics workspace.')
+param diagnosticLogAnalyticsWorkspaceId string = ''
+
+@description('Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.')
+param diagnosticEventHubAuthorizationRuleId string = ''
+
+@description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.')
+param diagnosticEventHubName string = ''
+
+@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
+@minValue(0)
+@maxValue(365)
+param diagnosticLogsRetentionInDays int = 365
+
+@description('Optional. Resource ID of the diagnostic storage account.')
+param diagnosticStorageAccountId string = ''
+
+@description('Optional. The name of log category groups that will be streamed.')
+@allowed([
+  'Audit'
+  'AllLogs'
+])
+param diagnosticLogCategoryGroupsToEnable array = [
+  'Audit'
+]
+
+@description('Optional. The name of metrics that will be streamed.')
+@allowed([
+  'AllMetrics'
+])
+param diagnosticMetricsToEnable array = [
+  'AllMetrics'
+]
+
+var lockName = toLower('${sqlDatabase.name}-${resourcelock}-lck')
+
+var diagnosticsName = toLower('${sqlDatabase.name}-dgs')
+
+var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+  categoryGroup: categoryGroup
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
+
+var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
+  category: metric
+  timeGrain: null
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
 
 // Object map to help set SKU properties for database
 var skuMap = {
@@ -97,14 +180,14 @@ var skuMap = {
 // Existing Azure SQL Server
 resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' existing = {
   name: sqlServerName
- }
+}
 
- // Resource Definition
+// Resource Definition
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
   parent: sqlServer
   name: databaseName
   location: location
-  tags: !empty(tags) ? tags : json('null')
+  tags: tags
   sku: {
     name: skuMap[skuType].name
     tier: skuMap[skuType].tier
@@ -118,8 +201,9 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
     licenseType: licenseType
     readScale: readScaleOut
     minCapacity: skuType == 'vCoreGen5Serverless' ? any(skuMinCapacity) : json('null')
-    autoPauseDelay:  skuType == 'vCoreGen5Serverless' ? autoPauseDelay : json('null')
+    autoPauseDelay: skuType == 'vCoreGen5Serverless' ? autoPauseDelay : json('null')
     requestedBackupStorageRedundancy: requestedBackupStorageRedundancy
+    createMode: createMode
   }
 }
 
@@ -132,97 +216,29 @@ resource retention 'Microsoft.Sql/servers/databases/backupShortTermRetentionPoli
   }
 }
 
-// Diagnostics
-resource diagnostics 'Microsoft.insights/diagnosticsettings@2017-05-01-preview' = if (!empty(diagSettings)) {
-  name: empty(diagSettings) ? 'dummy-value' : diagSettings.name
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
   scope: sqlDatabase
+  name: diagnosticsName
   properties: {
-    workspaceId: empty(diagSettings.workspaceId) ? json('null') : diagSettings.workspaceId
-    storageAccountId: empty(diagSettings.storageAccountId) ? json('null') : diagSettings.storageAccountId
-    eventHubAuthorizationRuleId: empty(diagSettings.eventHubAuthorizationRuleId) ? json('null') : diagSettings.eventHubAuthorizationRuleId
-    eventHubName: empty(diagSettings.eventHubName) ? json('null') : diagSettings.eventHubName
-    
-    logs: [
-      {
-        category: 'SQLInsights'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'AutomaticTuning'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'QueryStoreRuntimeStatistics'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'QueryStoreWaitStatistics'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'Errors'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'DatabaseWaitStatistics'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'Timeouts'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'Blocks'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'Deadlocks'
-        enabled: diagSettings.enableLogs
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-    ]
-
-    metrics: [
-      {
-        category: 'Basic'
-        enabled: diagSettings.enableMetrics
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'InstanceAndAppAdvanced'
-        enabled: diagSettings.enableMetrics
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }
-      {
-        category: 'WorkloadManagement'
-        enabled: diagSettings.enableMetrics
-        retentionPolicy: empty(diagSettings.retentionPolicy) ? json('null') : diagSettings.retentionPolicy
-      }            
-    ]
+    storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
+    workspaceId: !empty(diagnosticLogAnalyticsWorkspaceId) ? diagnosticLogAnalyticsWorkspaceId : null
+    eventHubAuthorizationRuleId: !empty(diagnosticEventHubAuthorizationRuleId) ? diagnosticEventHubAuthorizationRuleId : null
+    eventHubName: !empty(diagnosticEventHubName) ? diagnosticEventHubName : null
+    metrics: diagnosticsMetrics
+    logs: diagnosticsLogs
   }
 }
 
-// Resource Lock
-resource deleteLock 'Microsoft.Authorization/locks@2016-09-01' = if (enableResourceLock) {
-  name: '${databaseName}-delete-lock'
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
   scope: sqlDatabase
+  name: lockName
   properties: {
-    level: 'CanNotDelete'
-    notes: 'Enabled as part of IaC Deployment'
+    level: resourcelock
+    notes: resourcelock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
 }
 
-// Output Resource Name and Resource Id as a standard to allow module referencing.
-
-@description('The name of the sql database')
+@description('The name of the sql database.')
 output name string = sqlDatabase.name
-@description('The resource ID of the sql database')
-output id string = sqlDatabase.id
+@description('The resource ID of the sql database.')
+output resourceId string = sqlDatabase.id
