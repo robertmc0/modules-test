@@ -123,6 +123,8 @@ The `version.json` file defines the MAJOR and MINOR version number of the module
 
 Once you are done editing the files, run `brm generate` again to refresh `main.json` and `README.md`.
 
+For more information on how to structure a Bicep module, see our [wiki](https://github.com/arincoau/arinco-bicep-modules/wiki/Bicep-Modules).
+
 #### Resource naming
 
 - When naming parameters in modules, use current context, e.g. name, sku, kind instead of storageSku, storageKind, storageName. prefix only required if multiple resources in a module use the similar naming definitions, e.g. storageSku and firewallSku.
