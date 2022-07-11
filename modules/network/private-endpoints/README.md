@@ -8,19 +8,19 @@ This module performs the following
 
 - Creates Microsoft.Network privateEndpoints resource.
 - Associates the private endpoint with the given Private DNS Zone.
-- Applys a lock to the private endpoint if the lock is specified.
+- Applies a lock to the private endpoint if the lock is specified.
 
 ## Parameters
 
-| Name                 | Type     | Required | Description                                                           |
-| :------------------- | :------: | :------: | :-------------------------------------------------------------------- |
-| `targetResourceName` | `string` | Yes      | Name of the Resource for which to create the Private Endpoint.        |
-| `targetResourceId`   | `string` | Yes      | Resource Id of the Resource for which to create the Private Endpoint. |
-| `type`               | `string` | Yes      | Private Endpoint type.                                                |
-| `location`           | `string` | Yes      | Location of the resource.                                             |
-| `subnetId`           | `string` | Yes      | Resource ID of the subnet that will host the Private Endpoint.        |
-| `privateDnsZoneId`   | `string` | Yes      | Resource ID of the Private DNS Zone to host the Private Endpoint.     |
-| `lock`               | `string` | No       | Optional. Specify the type of lock.                                   |
+| Name                 | Type     | Required | Description                                                                  |
+| :------------------- | :------: | :------: | :--------------------------------------------------------------------------- |
+| `targetResourceName` | `string` | Yes      | Name of the target resource for which to create the Private Endpoint.        |
+| `targetResourceId`   | `string` | Yes      | Resource Id of the target resource for which to create the Private Endpoint. |
+| `type`               | `string` | Yes      | Private Endpoint type.                                                       |
+| `location`           | `string` | Yes      | Location of the resource.                                                    |
+| `subnetId`           | `string` | Yes      | Resource ID of the subnet that will host the Private Endpoint.               |
+| `privateDnsZoneId`   | `string` | Yes      | Resource ID of the Private DNS Zone to host the Private Endpoint.            |
+| `resourcelock`       | `string` | No       | Optional. Specify the type of resource lock.                                 |
 
 ## Outputs
 

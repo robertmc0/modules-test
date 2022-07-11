@@ -1,14 +1,16 @@
-/*
-Write deployment tests in this file. Any module that references the main
-module file is a deployment test. Make sure at least one test is added.
-*/
-
+/*======================================================================
+GLOBAL CONFIGURATION
+======================================================================*/
 @description('The location to deploy resources to.')
-param location string = 'australiasoutheast'
+param location string = resourceGroup().location
 
 var privateDnsZoneService = 'vault'
+
 var privateDnsZoneDns = 'privatelink.vaultcore.azure.net'
 
+/*======================================================================
+TEST PREREQUISITES
+======================================================================*/
 resource keyVault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
   name: 'arincokv'
   location: location
@@ -49,12 +51,15 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   }
 }
 
+/*======================================================================
+TEST EXECUTION
+======================================================================*/
 module privateEndpoint '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-private-endpoint'
   params: {
     location: location
     type: privateDnsZoneService
-    lock: 'CanNotDelete'
+    resourcelock: 'CanNotDelete'
     targetResourceId: keyVault.id
     targetResourceName: keyVault.name
     subnetId: vnet.properties.subnets[0].id

@@ -1,7 +1,7 @@
-@description('Name of the Resource for which to create the Private Endpoint.')
+@description('Name of the target resource for which to create the Private Endpoint.')
 param targetResourceName string
 
-@description('Resource Id of the Resource for which to create the Private Endpoint.')
+@description('Resource Id of the target resource for which to create the Private Endpoint.')
 param targetResourceId string
 
 @description('Private Endpoint type.')
@@ -30,11 +30,14 @@ param privateDnsZoneId string
   'NotSpecified'
   'ReadOnly'
 ])
-@description('Optional. Specify the type of lock.')
-param lock string = 'NotSpecified'
+@description('Optional. Specify the type of resource lock.')
+param resourcelock string = 'NotSpecified'
 
-var privateEndpointName = '${targetResourceName}-${type}-pe'
-var privateLinkServiceName = '${targetResourceName}-${type}-plink'
+var lockName = toLower('${privateEndpoint.name}-${resourcelock}-lck')
+
+var privateEndpointName = toLower('${targetResourceName}-${type}-pe')
+
+var privateLinkServiceName = toLower('${targetResourceName}-${type}-plink')
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2020-06-01' = {
   name: privateEndpointName
@@ -71,15 +74,14 @@ resource privateDNSZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneG
   }
 }
 
-resource privateEndpoint_lock 'Microsoft.Authorization/locks@2017-04-01' = if (lock != 'NotSpecified') {
-  name: '${privateEndpoint.name}-${lock}-lock'
-  properties: {
-    level: lock
-    notes: lock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
-  }
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
   scope: privateEndpoint
+  name: lockName
+  properties: {
+    level: resourcelock
+    notes: (resourcelock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+  }
 }
-
 @description('The name of the private endpoint.')
 output name string = privateEndpoint.name
 
@@ -99,4 +101,3 @@ output ipAddress string = nicInfo.outputs.privateIPAddress
 
 @description('The private endpoint IP allocation method.')
 output ipAllocationMethod string = nicInfo.outputs.privateIPAllocationMethod
-
