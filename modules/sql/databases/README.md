@@ -4,7 +4,12 @@ This module deploys Microsoft.Sql.Server databases
 
 ## Description
 
-{{ Add detailed description for the module. }}
+This module performs the following
+
+- Creates SQL database against an existing SQL Server.
+- Configures short term period.
+- Applies diagnostic settings if specified.
+- Applies a lock to the sql database if specified.
 
 ## Parameters
 
@@ -63,7 +68,7 @@ var diagSettings = {
   eventHubName: ''
   enableLogs: true
   enableMetrics: false
-  retentionPolicy: {    
+  retentionPolicy: {
     days: 0
     enabled: false
   }
