@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "3577266222987415818"
+      "templateHash": "5057328327908281729"
     }
   },
   "parameters": {
@@ -43,7 +43,7 @@
         "Secondary"
       ],
       "metadata": {
-        "description": "Specifies the mode of database creation."
+        "description": "Optional. Specifies the mode of database creation."
       }
     },
     "skuType": {
@@ -69,7 +69,7 @@
       "type": "string",
       "defaultValue": "0.5",
       "metadata": {
-        "description": "Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals."
+        "description": "Optional. Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals."
       }
     },
     "maxDbSize": {
@@ -82,28 +82,28 @@
       "type": "int",
       "defaultValue": 60,
       "metadata": {
-        "description": "Minutes before Auto Pause. Applicable for vCore Serverless model only."
+        "description": "Optional. Minutes before Auto Pause. Applicable for vCore Serverless model only."
       }
     },
     "retentionPeriod": {
       "type": "int",
       "defaultValue": 35,
       "metadata": {
-        "description": "Defines the short term retention period.  Maximum of 35 days."
+        "description": "Optional. Defines the short term retention period.  Maximum of 35 days."
       }
     },
     "databaseCollation": {
       "type": "string",
       "defaultValue": "SQL_Latin1_General_CP1_CI_AS",
       "metadata": {
-        "description": "The SQL database Collation."
+        "description": "Optional. The SQL database Collation."
       }
     },
     "zoneRedundant": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Whether the databases are zone redundant. Only supported in some regions."
+        "description": "Optional. Whether the databases are zone redundant. Only supported in some regions."
       }
     },
     "licenseType": {
@@ -114,21 +114,21 @@
         "LicenseIncluded"
       ],
       "metadata": {
-        "description": "For Azure Hybrid Benefit, use BasePrice."
+        "description": "Optional. For Azure Hybrid Benefit, use BasePrice."
       }
     },
     "readScaleOut": {
       "type": "string",
       "defaultValue": "Disabled",
       "metadata": {
-        "description": "Allow ReadOnly from secondary endpoints."
+        "description": "Optional. Allow ReadOnly from secondary endpoints."
       }
     },
     "requestedBackupStorageRedundancy": {
       "type": "string",
       "defaultValue": "Geo",
       "metadata": {
-        "description": "Set location of backups, geo, local or zone."
+        "description": "Optional. Set location of backups, geo, local or zone."
       }
     },
     "tags": {

@@ -7,7 +7,7 @@ param databaseName string
 @description('Location of resource.')
 param location string
 
-@description('Specifies the mode of database creation.')
+@description('Optional. Specifies the mode of database creation.')
 @allowed([
   'Copy'
   'Default'
@@ -35,35 +35,35 @@ param skuType string
 @description('If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless).')
 param skuCapacity int
 
-@description('Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals.')
+@description('Optional. Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals.')
 param skuMinCapacity string = '0.5'
 
 @description('Maximum database size in bytes for allocation.')
 param maxDbSize int
 
-@description('Minutes before Auto Pause. Applicable for vCore Serverless model only.')
+@description('Optional. Minutes before Auto Pause. Applicable for vCore Serverless model only.')
 param autoPauseDelay int = 60
 
-@description('Defines the short term retention period.  Maximum of 35 days.')
+@description('Optional. Defines the short term retention period.  Maximum of 35 days.')
 param retentionPeriod int = 35
 
-@description('The SQL database Collation.')
+@description('Optional. The SQL database Collation.')
 param databaseCollation string = 'SQL_Latin1_General_CP1_CI_AS'
 
-@description('Whether the databases are zone redundant. Only supported in some regions.')
+@description('Optional. Whether the databases are zone redundant. Only supported in some regions.')
 param zoneRedundant bool = false
 
-@description('For Azure Hybrid Benefit, use BasePrice.')
+@description('Optional. For Azure Hybrid Benefit, use BasePrice.')
 @allowed([
   'BasePrice'
   'LicenseIncluded'
 ])
 param licenseType string = 'LicenseIncluded'
 
-@description('Allow ReadOnly from secondary endpoints.')
+@description('Optional. Allow ReadOnly from secondary endpoints.')
 param readScaleOut string = 'Disabled'
 
-@description('Set location of backups, geo, local or zone.')
+@description('Optional. Set location of backups, geo, local or zone.')
 param requestedBackupStorageRedundancy string = 'Geo'
 
 @description('Optional. Resource tags.')
@@ -177,12 +177,10 @@ var skuMap = {
   }
 }
 
-// Existing Azure SQL Server
 resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' existing = {
   name: sqlServerName
 }
 
-// Resource Definition
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
   parent: sqlServer
   name: databaseName
@@ -207,7 +205,6 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
   }
 }
 
-// Short Term Retention Policy
 resource retention 'Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies@2021-02-01-preview' = {
   parent: sqlDatabase
   name: 'default'
