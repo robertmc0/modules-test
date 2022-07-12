@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "7240362358521778606"
+      "templateHash": "14023823067224504717"
     }
   },
   "parameters": {
@@ -118,7 +118,7 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "Array of e-mail addresses to which the alert and vulnerability scans are sent."
+        "description": "Optional. Array of e-mail addresses to which the alert and vulnerability scans are sent."
       }
     },
     "resourcelock": {

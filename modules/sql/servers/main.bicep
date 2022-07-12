@@ -67,7 +67,7 @@ param vulnerabilityAssessmentStorageSubscriptionId string = subscription().subsc
 @description('Optional. Specifies that the alert is sent to the account/subscription administrators.')
 param emailAccountAdmins bool = false
 
-@description('Array of e-mail addresses to which the alert and vulnerability scans are sent.')
+@description('Optional. Array of e-mail addresses to which the alert and vulnerability scans are sent.')
 param emailAddresses array = []
 
 @allowed([
