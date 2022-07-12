@@ -136,14 +136,14 @@ var auditActionsAndGroups = [
   'FAILED_DATABASE_AUTHENTICATION_GROUP'
 ]
 
-var diagnosticsName = toLower('${sqlServer.name}-dgs')
+var auditDiagnosticsName = toLower('${sqlServer.name}-dgs')
 
-var diagnosticLogCategoriesToEnable = [
+var auditLogCategoriesToEnable = [
   'DevOpsOperationsAudit'
   'SQLSecurityAuditEvents'
 ]
 
-var diagnosticsLogs = [for category in diagnosticLogCategoriesToEnable: {
+var auditDiagnosticsLogs = [for category in auditLogCategoriesToEnable: {
   category: category
   enabled: true
   retentionPolicy: {
@@ -288,13 +288,13 @@ resource sqlServerMasterDatabase 'Microsoft.Sql/servers/databases@2021-11-01-pre
 
 resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableAudit && (!empty(auditLogAnalyticsWorkspaceId) || (!empty(auditEventHubAuthorizationRuleId) || !empty(auditEventHubName)))) {
   scope: sqlServerMasterDatabase
-  name: diagnosticsName
+  name: auditDiagnosticsName
   properties: {
     workspaceId: empty(auditLogAnalyticsWorkspaceId) ? null : auditLogAnalyticsWorkspaceId
     storageAccountId: empty(auditStorage) ? null : auditStorage.id
     eventHubAuthorizationRuleId: empty(auditEventHubAuthorizationRuleId) ? null : auditEventHubAuthorizationRuleId
     eventHubName: empty(auditEventHubName) ? null : auditEventHubName
-    logs: diagnosticsLogs
+    logs: auditDiagnosticsLogs
   }
 }
 

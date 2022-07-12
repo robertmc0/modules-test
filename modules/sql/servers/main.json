@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "16407304859939800088"
+      "templateHash": "17676307585450339550"
     }
   },
   "parameters": {
@@ -225,10 +225,10 @@
   "variables": {
     "copy": [
       {
-        "name": "diagnosticsLogs",
-        "count": "[length(variables('diagnosticLogCategoriesToEnable'))]",
+        "name": "auditDiagnosticsLogs",
+        "count": "[length(variables('auditLogCategoriesToEnable'))]",
         "input": {
-          "category": "[variables('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
+          "category": "[variables('auditLogCategoriesToEnable')[copyIndex('auditDiagnosticsLogs')]]",
           "enabled": true,
           "retentionPolicy": {
             "enabled": true,
@@ -245,8 +245,8 @@
       "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
       "FAILED_DATABASE_AUTHENTICATION_GROUP"
     ],
-    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
-    "diagnosticLogCategoriesToEnable": [
+    "auditDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "auditLogCategoriesToEnable": [
       "DevOpsOperationsAudit",
       "SQLSecurityAuditEvents"
     ]
@@ -372,13 +372,13 @@
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
       "scope": "[format('Microsoft.Sql/servers/{0}/databases/{1}', parameters('name'), 'master')]",
-      "name": "[variables('diagnosticsName')]",
+      "name": "[variables('auditDiagnosticsName')]",
       "properties": {
         "workspaceId": "[if(empty(parameters('auditLogAnalyticsWorkspaceId')), null(), parameters('auditLogAnalyticsWorkspaceId'))]",
         "storageAccountId": "[if(empty(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01', 'full')), null(), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')))]",
         "eventHubAuthorizationRuleId": "[if(empty(parameters('auditEventHubAuthorizationRuleId')), null(), parameters('auditEventHubAuthorizationRuleId'))]",
         "eventHubName": "[if(empty(parameters('auditEventHubName')), null(), parameters('auditEventHubName'))]",
-        "logs": "[variables('diagnosticsLogs')]"
+        "logs": "[variables('auditDiagnosticsLogs')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
