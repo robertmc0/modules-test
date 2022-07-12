@@ -4,46 +4,53 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.5.6.12127",
-      "templateHash": "6678932903195450811"
+      "version": "0.8.9.13224",
+      "templateHash": "14023823067224504717"
     }
   },
   "parameters": {
-    "sqlServerName": {
+    "name": {
       "type": "string",
       "metadata": {
-        "description": "Name of the Azure SQL resource"
+        "description": "Name of the Azure SQL resource."
       }
     },
     "location": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
       "metadata": {
         "description": "Location of the resource."
       }
     },
-    "sqlAdminLogin": {
-      "type": "secureString",
-      "metadata": {
-        "description": "SQL Administrator credentials - Username"
-      }
-    },
-    "sqlAdminPassword": {
-      "type": "secureString",
-      "metadata": {
-        "description": "SQL Administrator credentials - Password"
-      }
-    },
-    "aadAdminLogin": {
+    "administratorLogin": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Name of the AAD User or Group to grant as SQL Admin via AAD."
+        "description": "Optional. Administrator username for the server. Required if no `administrators` object for AAD authentication is provided."
       }
     },
-    "aadAdminObjectId": {
-      "type": "string",
+    "administratorLoginPassword": {
+      "type": "secureString",
+      "defaultValue": "",
       "metadata": {
-        "description": "Object ID of the AAD User or Group to grant as SQL Admin via AAD.  Must be defined if aadAdminLogin defined."
+        "description": "Optional. The administrator login password. Required if no `administrators` object for AAD authentication is provided."
+      }
+    },
+    "administrators": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "azureADOnlyAuthentication": true,
+          "login": "joe.bloggs@microsoft.com",
+          "objectId": "5be5d82b-4e7b-4c4a-8811-c51982b435e0"
+        },
+        "example2": {
+          "azureADOnlyAuthentication": true,
+          "login": "Group Name",
+          "principalType": "Group",
+          "objectId": "3c1060a3-7f8a-47bc-8fb0-375d3bfff7a1"
+        },
+        "description": "Optional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided."
       }
     },
     "publicNetworkAccess": {
@@ -54,7 +61,7 @@
         "Disabled"
       ],
       "metadata": {
-        "description": "Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET."
+        "description": "Optional. Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET."
       }
     },
     "connectionType": {
@@ -66,95 +73,492 @@
         "Redirect"
       ],
       "metadata": {
-        "description": "The server connection type. - Default, Proxy, Redirect.  Note private link requires Proxy."
+        "description": "Optional. The server connection type. - Default, Proxy, Redirect.  Note private link requires Proxy."
       }
     },
     "tags": {
       "type": "object",
       "defaultValue": {},
       "metadata": {
-        "description": "Object containing resource tags."
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
       }
     },
-    "enableResourceLock": {
+    "vulnerabilityAssessmentStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Storage Account to store Vulnerability Assessments."
+      }
+    },
+    "vulnerabilityAssessmentStorageResourceGroup": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Optional. Resource Group of Storage Account to store Vulnerability Assessments."
+      }
+    },
+    "vulnerabilityAssessmentStorageSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Optional. Subscription Id of Storage Account to store Vulnerability Assessments."
+      }
+    },
+    "emailAccountAdmins": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Enable a Can Not Delete Resource Lock.  Useful for production workloads."
+        "description": "Optional. Specifies that the alert is sent to the account/subscription administrators."
+      }
+    },
+    "emailAddresses": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. Array of e-mail addresses to which the alert and vulnerability scans are sent."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      },
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ]
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The full resource ID of a subnet in a virtual network to deploy the API Management service in."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "threatDetectionRetentionDays": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days to keep in the audit logs. Zero means keep forever."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi": {}
+        },
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "enableAudit": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable audit logging."
+      }
+    },
+    "auditLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the audit log analytics workspace."
+      }
+    },
+    "auditEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the audit event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+      }
+    },
+    "auditEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Name of the audit event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+      }
+    },
+    "auditLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "auditStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Storage Account to store audit logs."
+      }
+    },
+    "auditStorageResourceGroup": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Optional. Resource Group of Storage Account to store audit logs."
+      }
+    },
+    "auditStorageSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Optional. Subscription Id of Storage Account to store audit logs."
       }
     }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "auditDiagnosticsLogs",
+        "count": "[length(variables('auditLogCategoriesToEnable'))]",
+        "input": {
+          "category": "[variables('auditLogCategoriesToEnable')[copyIndex('auditDiagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('auditLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "auditActionsAndGroups": [
+      "BATCH_COMPLETED_GROUP",
+      "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
+      "FAILED_DATABASE_AUTHENTICATION_GROUP"
+    ],
+    "auditDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "auditLogCategoriesToEnable": [
+      "DevOpsOperationsAudit",
+      "SQLSecurityAuditEvents"
+    ]
   },
   "resources": [
     {
       "type": "Microsoft.Sql/servers",
-      "apiVersion": "2019-06-01-preview",
-      "name": "[parameters('sqlServerName')]",
+      "apiVersion": "2021-05-01-preview",
+      "name": "[parameters('name')]",
       "location": "[parameters('location')]",
-      "tags": "[if(not(empty(parameters('tags'))), parameters('tags'), json('null'))]",
-      "identity": {
-        "type": "SystemAssigned"
-      },
+      "tags": "[parameters('tags')]",
+      "identity": "[variables('identity')]",
       "properties": {
-        "administratorLogin": "[parameters('sqlAdminLogin')]",
-        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+        "administratorLogin": "[if(not(empty(parameters('administratorLogin'))), parameters('administratorLogin'), null())]",
+        "administratorLoginPassword": "[if(not(empty(parameters('administratorLoginPassword'))), parameters('administratorLoginPassword'), null())]",
+        "administrators": "[if(not(empty(parameters('administrators'))), createObject('administratorType', 'ActiveDirectory', 'azureADOnlyAuthentication', if(contains(parameters('administrators'), 'azureADOnlyAuthentication'), parameters('administrators').azureADOnlyAuthentication, true()), 'login', parameters('administrators').login, 'principalType', if(contains(parameters('administrators'), 'principalType'), parameters('administrators').principalType, null()), 'sid', parameters('administrators').objectId, 'tenantId', if(contains(parameters('administrators'), 'tenantId'), parameters('administrators').tenantId, subscription().tenantId)), null())]",
         "version": "12.0",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
         "minimalTlsVersion": "1.2"
       }
     },
     {
+      "condition": "[not(empty(parameters('subnetResourceId')))]",
+      "type": "Microsoft.Sql/servers/virtualNetworkRules",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "virtualNetworkSubnetId": "[parameters('subnetResourceId')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
+    },
+    {
       "type": "Microsoft.Sql/servers/connectionPolicies",
-      "apiVersion": "2014-04-01",
-      "name": "[format('{0}/{1}', parameters('sqlServerName'), 'default')]",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {
         "connectionType": "[parameters('connectionType')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
       ]
     },
     {
-      "type": "Microsoft.Sql/servers/administrators",
-      "apiVersion": "2021-02-01-preview",
-      "name": "[format('{0}/{1}', parameters('sqlServerName'), 'ActiveDirectory')]",
+      "type": "Microsoft.Sql/servers/securityAlertPolicies",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'Default')]",
       "properties": {
-        "administratorType": "ActiveDirectory",
-        "login": "[parameters('aadAdminLogin')]",
-        "sid": "[parameters('aadAdminObjectId')]",
-        "tenantId": "[subscription().tenantId]"
+        "state": "Enabled",
+        "emailAccountAdmins": "[parameters('emailAccountAdmins')]",
+        "emailAddresses": "[parameters('emailAddresses')]",
+        "retentionDays": "[parameters('threatDetectionRetentionDays')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
       ]
     },
     {
-      "condition": "[parameters('enableResourceLock')]",
+      "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "storageContainerPath": "[format('{0}vulnerability-assessment', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('vulnerabilityAssessmentStorageSubscriptionId'), parameters('vulnerabilityAssessmentStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('vulnerabilityAssessmentStorageAccountName')), '2021-09-01').primaryEndpoints.blob)]",
+        "recurringScans": {
+          "isEnabled": true,
+          "emailSubscriptionAdmins": "[parameters('emailAccountAdmins')]",
+          "emails": "[parameters('emailAddresses')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/securityAlertPolicies', parameters('name'), 'Default')]",
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('vulnerabilityAssessmentStorageSubscriptionId'), parameters('vulnerabilityAssessmentStorageResourceGroup')), 'Microsoft.Resources/deployments', 'vulnerabilityAssessmentRoleAssignment')]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableAudit')]",
+      "type": "Microsoft.Sql/servers/auditingSettings",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "state": "Enabled",
+        "auditActionsAndGroups": "[variables('auditActionsAndGroups')]",
+        "isAzureMonitorTargetEnabled": true,
+        "isDevopsAuditEnabled": true,
+        "storageEndpoint": "[if(not(empty(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01', 'full'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01').primaryEndpoints.blob, null())]",
+        "storageAccountSubscriptionId": "[parameters('auditStorageSubscriptionId')]"
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Resources/deployments', 'auditStorageRoleAssignment')]",
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableAudit')]",
+      "type": "Microsoft.Sql/servers/devOpsAuditingSettings",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "state": "Enabled",
+        "isAzureMonitorTargetEnabled": true,
+        "storageEndpoint": "[if(not(empty(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01', 'full'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01').primaryEndpoints.blob, null())]",
+        "storageAccountSubscriptionId": "[parameters('auditStorageSubscriptionId')]"
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Resources/deployments', 'auditStorageRoleAssignment')]",
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'master')]",
+      "location": "[parameters('location')]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[and(parameters('enableAudit'), or(not(empty(parameters('auditLogAnalyticsWorkspaceId'))), or(not(empty(parameters('auditEventHubAuthorizationRuleId'))), not(empty(parameters('auditEventHubName'))))))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Sql/servers/{0}/databases/{1}', parameters('name'), 'master')]",
+      "name": "[variables('auditDiagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('auditLogAnalyticsWorkspaceId')), null(), parameters('auditLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01', 'full')), null(), extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('auditEventHubAuthorizationRuleId')), null(), parameters('auditEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('auditEventHubName')), null(), parameters('auditEventHubName'))]",
+        "logs": "[variables('auditDiagnosticsLogs')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('name'), 'master')]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2016-09-01",
-      "scope": "[format('Microsoft.Sql/servers/{0}', parameters('sqlServerName'))]",
-      "name": "[format('{0}-delete-lock', parameters('sqlServerName'))]",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Sql/servers/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
       "properties": {
-        "level": "CanNotDelete",
-        "notes": "Enabled as part of IaC Deployment"
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "vulnerabilityAssessmentRoleAssignment",
+      "subscriptionId": "[parameters('vulnerabilityAssessmentStorageSubscriptionId')]",
+      "resourceGroup": "[parameters('vulnerabilityAssessmentStorageResourceGroup')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "storageAccountName": {
+            "value": "[parameters('vulnerabilityAssessmentStorageAccountName')]"
+          },
+          "principalId": {
+            "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-05-01-preview', 'full').identity.principalId]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.8.9.13224",
+              "templateHash": "6455520508070411693"
+            }
+          },
+          "parameters": {
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Storage account name."
+              }
+            },
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Principal ID of the identity to grant storage account permissions to."
+              }
+            }
+          },
+          "variables": {
+            "storageBlobContributorRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+            "storageBlobContributorRoleDefinitionId": "[guid(parameters('storageAccountName'), variables('storageBlobContributorRoleId'), parameters('principalId'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+              "name": "[variables('storageBlobContributorRoleDefinitionId')]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[variables('storageBlobContributorRoleId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "auditStorageRoleAssignment",
+      "subscriptionId": "[parameters('auditStorageSubscriptionId')]",
+      "resourceGroup": "[parameters('auditStorageResourceGroup')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "storageAccountName": {
+            "value": "[parameters('auditStorageAccountName')]"
+          },
+          "principalId": {
+            "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-05-01-preview', 'full').identity.principalId]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.8.9.13224",
+              "templateHash": "6455520508070411693"
+            }
+          },
+          "parameters": {
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Storage account name."
+              }
+            },
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Principal ID of the identity to grant storage account permissions to."
+              }
+            }
+          },
+          "variables": {
+            "storageBlobContributorRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+            "storageBlobContributorRoleDefinitionId": "[guid(parameters('storageAccountName'), variables('storageBlobContributorRoleId'), parameters('principalId'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+              "name": "[variables('storageBlobContributorRoleDefinitionId')]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[variables('storageBlobContributorRoleId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
       ]
     }
   ],
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('sqlServerName')]",
+      "value": "[parameters('name')]",
       "metadata": {
-        "description": "The name of the sql server"
+        "description": "The name of the sql server."
       }
     },
-    "id": {
+    "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]",
+      "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
       "metadata": {
-        "description": "The resource ID of the sql server"
+        "description": "The resource ID of the sql server."
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "value": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The resource group the API management service was deployed into."
+      }
+    },
+    "systemAssignedPrincipalId": {
+      "type": "string",
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-05-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-05-01-preview', 'full').identity.principalId, '')]",
+      "metadata": {
+        "description": "The principal ID of the system assigned identity."
       }
     }
   }
