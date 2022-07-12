@@ -4,28 +4,46 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.5.6.12127",
-      "templateHash": "14757851759388394342"
+      "version": "0.8.9.13224",
+      "templateHash": "5057328327908281729"
     }
   },
   "parameters": {
     "sqlServerName": {
       "type": "string",
       "metadata": {
-        "description": "Name of existing Azure SQL Server"
+        "description": "Name of existing Azure SQL Server."
       }
     },
     "databaseName": {
       "type": "string",
       "metadata": {
-        "description": "Name of Database to create"
+        "description": "Name of Database to create."
       }
     },
     "location": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
       "metadata": {
-        "description": "Location of resource"
+        "description": "Location of resource."
+      }
+    },
+    "createMode": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Copy",
+        "Default",
+        "OnlineSecondary",
+        "PointInTimeRestore",
+        "Recovery",
+        "Restore",
+        "RestoreExternalBackup",
+        "RestoreExternalBackupSecondary",
+        "RestoreLongTermRetentionBackup",
+        "Secondary"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies the mode of database creation."
       }
     },
     "skuType": {
@@ -44,14 +62,14 @@
     "skuCapacity": {
       "type": "int",
       "metadata": {
-        "description": "If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless)"
+        "description": "If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless)."
       }
     },
     "skuMinCapacity": {
       "type": "string",
       "defaultValue": "0.5",
       "metadata": {
-        "description": "Min vCore allocation. Applicable for vCore Serverless model only. Feed as string to handle floats."
+        "description": "Optional. Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals."
       }
     },
     "maxDbSize": {
@@ -64,28 +82,28 @@
       "type": "int",
       "defaultValue": 60,
       "metadata": {
-        "description": "Minutes before Auto Pause. Applicable for vCore Serverless model only"
+        "description": "Optional. Minutes before Auto Pause. Applicable for vCore Serverless model only."
       }
     },
     "retentionPeriod": {
       "type": "int",
       "defaultValue": 35,
       "metadata": {
-        "description": "Defines the short term retention period.  Maximum of 35 days."
+        "description": "Optional. Defines the short term retention period.  Maximum of 35 days."
       }
     },
     "databaseCollation": {
       "type": "string",
       "defaultValue": "SQL_Latin1_General_CP1_CI_AS",
       "metadata": {
-        "description": "The SQL database Collation."
+        "description": "Optional. The SQL database Collation."
       }
     },
     "zoneRedundant": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Whether the databases are zone redundant. Only supported in some regions."
+        "description": "Optional. Whether the databases are zone redundant. Only supported in some regions."
       }
     },
     "licenseType": {
@@ -96,46 +114,146 @@
         "LicenseIncluded"
       ],
       "metadata": {
-        "description": "For Azure Hybrid Benefit, use BasePrice"
+        "description": "Optional. For Azure Hybrid Benefit, use BasePrice."
       }
     },
     "readScaleOut": {
       "type": "string",
       "defaultValue": "Disabled",
       "metadata": {
-        "description": "Allow ReadOnly from secondary endpoints"
+        "description": "Optional. Allow ReadOnly from secondary endpoints."
       }
     },
     "requestedBackupStorageRedundancy": {
       "type": "string",
       "defaultValue": "Geo",
       "metadata": {
-        "description": "Set location of backups, geo, local or zone"
+        "description": "Optional. Set location of backups, geo, local or zone."
       }
     },
     "tags": {
       "type": "object",
       "defaultValue": {},
       "metadata": {
-        "description": "Object containing resource tags."
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
       }
     },
-    "enableResourceLock": {
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      },
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ]
+    },
+    "enableDiagnostics": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Enable a Can Not Delete Resource Lock.  Useful for production workloads."
+        "description": "Optional. Enable diagnostic logging."
       }
     },
-    "diagSettings": {
-      "type": "object",
-      "defaultValue": {},
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Object containing diagnostics settings. If not provided diagnostics will not be set."
+        "description": "Optional. Resource ID of the diagnostic log analytics workspace."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic storage account."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Audit"
+      ],
+      "allowedValues": [
+        "Audit",
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
       }
     }
   },
   "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('databaseName'), parameters('resourcelock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('databaseName')))]",
     "skuMap": {
       "vCoreGen5": {
         "name": "GP_S_Gen5",
@@ -175,7 +293,7 @@
       "apiVersion": "2021-02-01-preview",
       "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
       "location": "[parameters('location')]",
-      "tags": "[if(not(empty(parameters('tags'))), parameters('tags'), json('null'))]",
+      "tags": "[parameters('tags')]",
       "sku": {
         "name": "[variables('skuMap')[parameters('skuType')].name]",
         "tier": "[variables('skuMap')[parameters('skuType')].tier]",
@@ -190,7 +308,8 @@
         "readScale": "[parameters('readScaleOut')]",
         "minCapacity": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('skuMinCapacity'), json('null'))]",
         "autoPauseDelay": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('autoPauseDelay'), json('null'))]",
-        "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]"
+        "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
+        "createMode": "[parameters('createMode')]"
       }
     },
     {
@@ -205,94 +324,32 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('diagSettings')))]",
+      "condition": "[parameters('enableDiagnostics')]",
       "type": "Microsoft.Insights/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
+      "apiVersion": "2021-05-01-preview",
       "scope": "[format('Microsoft.Sql/servers/{0}/databases/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
-      "name": "[if(empty(parameters('diagSettings')), 'dummy-value', parameters('diagSettings').name)]",
+      "name": "[variables('diagnosticsName')]",
       "properties": {
-        "workspaceId": "[if(empty(parameters('diagSettings').workspaceId), json('null'), parameters('diagSettings').workspaceId)]",
-        "storageAccountId": "[if(empty(parameters('diagSettings').storageAccountId), json('null'), parameters('diagSettings').storageAccountId)]",
-        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagSettings').eventHubAuthorizationRuleId), json('null'), parameters('diagSettings').eventHubAuthorizationRuleId)]",
-        "eventHubName": "[if(empty(parameters('diagSettings').eventHubName), json('null'), parameters('diagSettings').eventHubName)]",
-        "logs": [
-          {
-            "category": "SQLInsights",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "AutomaticTuning",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "QueryStoreRuntimeStatistics",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "QueryStoreWaitStatistics",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "Errors",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "DatabaseWaitStatistics",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "Timeouts",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "Blocks",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "Deadlocks",
-            "enabled": "[parameters('diagSettings').enableLogs]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          }
-        ],
-        "metrics": [
-          {
-            "category": "Basic",
-            "enabled": "[parameters('diagSettings').enableMetrics]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "InstanceAndAppAdvanced",
-            "enabled": "[parameters('diagSettings').enableMetrics]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          },
-          {
-            "category": "WorkloadManagement",
-            "enabled": "[parameters('diagSettings').enableMetrics]",
-            "retentionPolicy": "[if(empty(parameters('diagSettings').retentionPolicy), json('null'), parameters('diagSettings').retentionPolicy)]"
-          }
-        ]
+        "storageAccountId": "[if(not(empty(parameters('diagnosticStorageAccountId'))), parameters('diagnosticStorageAccountId'), null())]",
+        "workspaceId": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), parameters('diagnosticLogAnalyticsWorkspaceId'), null())]",
+        "eventHubAuthorizationRuleId": "[if(not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))), parameters('diagnosticEventHubAuthorizationRuleId'), null())]",
+        "eventHubName": "[if(not(empty(parameters('diagnosticEventHubName'))), parameters('diagnosticEventHubName'), null())]",
+        "metrics": "[variables('diagnosticsMetrics')]",
+        "logs": "[variables('diagnosticsLogs')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('databaseName'))]"
       ]
     },
     {
-      "condition": "[parameters('enableResourceLock')]",
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2016-09-01",
+      "apiVersion": "2017-04-01",
       "scope": "[format('Microsoft.Sql/servers/{0}/databases/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
-      "name": "[format('{0}-delete-lock', parameters('databaseName'))]",
+      "name": "[variables('lockName')]",
       "properties": {
-        "level": "CanNotDelete",
-        "notes": "Enabled as part of IaC Deployment"
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('databaseName'))]"
@@ -304,14 +361,14 @@
       "type": "string",
       "value": "[parameters('databaseName')]",
       "metadata": {
-        "description": "The name of the sql database"
+        "description": "The name of the sql database."
       }
     },
-    "id": {
+    "resourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('databaseName'))]",
       "metadata": {
-        "description": "The resource ID of the sql database"
+        "description": "The resource ID of the sql database."
       }
     }
   }

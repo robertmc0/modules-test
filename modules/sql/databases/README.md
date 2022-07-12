@@ -2,34 +2,51 @@
 
 This module deploys Microsoft.Sql.Server databases
 
+## Description
+
+This module performs the following
+
+- Creates SQL database against an existing SQL Server.
+- Configures short term period.
+- Applies diagnostic settings if specified.
+- Applies a lock to the sql database if specified.
+
 ## Parameters
 
-| Name                               | Type     | Required | Description                                                                                                  |
-| :--------------------------------- | :------: | :------: | :----------------------------------------------------------------------------------------------------------- |
-| `sqlServerName`                    | `string` | Yes      | Name of existing Azure SQL Server                                                                            |
-| `databaseName`                     | `string` | Yes      | Name of Database to create                                                                                   |
-| `location`                         | `string` | No       | Location of resource                                                                                         |
-| `skuType`                          | `string` | Yes      | A predefined set of SkuTypes. Currently template not configured to support Hyper-Scale or Business Critical. |
-| `skuCapacity`                      | `int`    | Yes      | If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless)             |
-| `skuMinCapacity`                   | `string` | No       | Min vCore allocation. Applicable for vCore Serverless model only. Feed as string to handle floats.           |
-| `maxDbSize`                        | `int`    | Yes      | Maximum database size in bytes for allocation.                                                               |
-| `autoPauseDelay`                   | `int`    | No       | Minutes before Auto Pause. Applicable for vCore Serverless model only                                        |
-| `retentionPeriod`                  | `int`    | No       | Defines the short term retention period.  Maximum of 35 days.                                                |
-| `databaseCollation`                | `string` | No       | The SQL database Collation.                                                                                  |
-| `zoneRedundant`                    | `bool`   | No       | Whether the databases are zone redundant. Only supported in some regions.                                    |
-| `licenseType`                      | `string` | No       | For Azure Hybrid Benefit, use BasePrice                                                                      |
-| `readScaleOut`                     | `string` | No       | Allow ReadOnly from secondary endpoints                                                                      |
-| `requestedBackupStorageRedundancy` | `string` | No       | Set location of backups, geo, local or zone                                                                  |
-| `tags`                             | `object` | No       | Object containing resource tags.                                                                             |
-| `enableResourceLock`               | `bool`   | No       | Enable a Can Not Delete Resource Lock.  Useful for production workloads.                                     |
-| `diagSettings`                     | `object` | No       | Object containing diagnostics settings. If not provided diagnostics will not be set.                         |
+| Name                                    | Type     | Required | Description                                                                                                                                                |
+| :-------------------------------------- | :------: | :------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sqlServerName`                         | `string` | Yes      | Name of existing Azure SQL Server.                                                                                                                         |
+| `databaseName`                          | `string` | Yes      | Name of Database to create.                                                                                                                                |
+| `location`                              | `string` | Yes      | Location of resource.                                                                                                                                      |
+| `createMode`                            | `string` | No       | Optional. Specifies the mode of database creation.                                                                                                         |
+| `skuType`                               | `string` | Yes      | A predefined set of SkuTypes. Currently template not configured to support Hyper-Scale or Business Critical.                                               |
+| `skuCapacity`                           | `int`    | Yes      | If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless).                                                          |
+| `skuMinCapacity`                        | `string` | No       | Optional. Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals.                                            |
+| `maxDbSize`                             | `int`    | Yes      | Maximum database size in bytes for allocation.                                                                                                             |
+| `autoPauseDelay`                        | `int`    | No       | Optional. Minutes before Auto Pause. Applicable for vCore Serverless model only.                                                                           |
+| `retentionPeriod`                       | `int`    | No       | Optional. Defines the short term retention period.  Maximum of 35 days.                                                                                    |
+| `databaseCollation`                     | `string` | No       | Optional. The SQL database Collation.                                                                                                                      |
+| `zoneRedundant`                         | `bool`   | No       | Optional. Whether the databases are zone redundant. Only supported in some regions.                                                                        |
+| `licenseType`                           | `string` | No       | Optional. For Azure Hybrid Benefit, use BasePrice.                                                                                                         |
+| `readScaleOut`                          | `string` | No       | Optional. Allow ReadOnly from secondary endpoints.                                                                                                         |
+| `requestedBackupStorageRedundancy`      | `string` | No       | Optional. Set location of backups, geo, local or zone.                                                                                                     |
+| `tags`                                  | `object` | No       | Optional. Resource tags.                                                                                                                                   |
+| `resourcelock`                          | `string` | No       | Optional. Specify the type of lock.                                                                                                                        |
+| `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                                                       |
+| `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Resource ID of the diagnostic log analytics workspace.                                                                                           |
+| `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to. |
+| `diagnosticEventHubName`                | `string` | No       | Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.   |
+| `diagnosticLogsRetentionInDays`         | `int`    | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.                                             |
+| `diagnosticStorageAccountId`            | `string` | No       | Optional. Resource ID of the diagnostic storage account.                                                                                                   |
+| `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                                           |
+| `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                                                       |
 
 ## Outputs
 
-| Name | Type   | Description                         |
-| :--- | :----: | :---------------------------------- |
-| name | string | The name of the sql database        |
-| id   | string | The resource ID of the sql database |
+| Name       | Type   | Description                          |
+| :--------- | :----: | :----------------------------------- |
+| name       | string | The name of the sql database.        |
+| resourceId | string | The resource ID of the sql database. |
 
 ## Examples
 
@@ -51,7 +68,7 @@ var diagSettings = {
   eventHubName: ''
   enableLogs: true
   enableMetrics: false
-  retentionPolicy: {    
+  retentionPolicy: {
     days: 0
     enabled: false
   }
