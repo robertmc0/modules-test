@@ -157,6 +157,8 @@ resource vulnerabilityAssessmentStorage 'Microsoft.Storage/storageAccounts@2021-
   name: vulnerabilityAssessmentStorageAccountName
 }
 
+// Grant the SQL server managed identity access to the storage account which will store the vulnerability assessment logs
+// A module is required to do this as the storage account may be in a different resource group or subscription.
 module vulnerabilityAssessmentRoleAssignment 'roleAssignment.bicep' = {
   scope: resourceGroup(vulnerabilityAssessmentStorageSubscriptionId, vulnerabilityAssessmentStorageResourceGroup)
   name: 'vulnerabilityAssessmentRoleAssignment'
@@ -254,7 +256,7 @@ resource auditSettings 'Microsoft.Sql/servers/auditingSettings@2021-11-01-previe
   properties: {
     state: 'Enabled'
     auditActionsAndGroups: auditActionsAndGroups
-    isAzureMonitorTargetEnabled: empty(auditStorage) ? true : false
+    isAzureMonitorTargetEnabled: true
     isDevopsAuditEnabled: true
     storageEndpoint: !empty(auditStorage) ? auditStorage.properties.primaryEndpoints.blob : null
     storageAccountSubscriptionId: auditStorageSubscriptionId
@@ -269,7 +271,7 @@ resource microsoftSupportAuditSettings 'Microsoft.Sql/servers/devOpsAuditingSett
   name: 'default'
   properties: {
     state: 'Enabled'
-    isAzureMonitorTargetEnabled: empty(auditStorage) ? true : false
+    isAzureMonitorTargetEnabled: true
     storageEndpoint: !empty(auditStorage) ? auditStorage.properties.primaryEndpoints.blob : null
     storageAccountSubscriptionId: auditStorageSubscriptionId
   }

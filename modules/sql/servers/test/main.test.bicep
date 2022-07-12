@@ -42,6 +42,19 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
   }
 }
 
+resource eventHub 'Microsoft.EventHub/namespaces@2022-01-01-preview' = {
+  name: '${shortIdentifier}-tst-ehub-${uniqueString(deploymentName, 'eventHub', location)}'
+  location: location
+  properties: {
+    minimumTlsVersion: '1.2'
+  }
+}
+
+resource eventHubRootManageSharedAccessKey 'Microsoft.EventHub/namespaces/authorizationRules@2022-01-01-preview' existing = {
+  name: 'RootManageSharedAccessKey'
+  parent: eventHub
+}
+
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -57,6 +70,8 @@ module azureSqlServer '../main.bicep' = {
     auditStorageAccountName: diagnosticsStorageAccount.name
     auditLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     auditLogsRetentionInDays: 7
+    auditEventHubName: eventHub.name
+    auditEventHubAuthorizationRuleId: eventHubRootManageSharedAccessKey.id
     systemAssignedIdentity: true
     administrators: {
       login: 'DSG - All Consultants'
