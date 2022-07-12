@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "4586327450582657699"
+      "templateHash": "16407304859939800088"
     }
   },
   "parameters": {
@@ -61,7 +61,7 @@
         "Disabled"
       ],
       "metadata": {
-        "description": "Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET."
+        "description": "Optional. Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET."
       }
     },
     "connectionType": {
@@ -97,14 +97,14 @@
       "type": "string",
       "defaultValue": "[resourceGroup().name]",
       "metadata": {
-        "description": "Resource Group of Storage Account to store Vulnerability Assessments."
+        "description": "Optional. Resource Group of Storage Account to store Vulnerability Assessments."
       }
     },
     "vulnerabilityAssessmentStorageSubscriptionId": {
       "type": "string",
       "defaultValue": "[subscription().subscriptionId]",
       "metadata": {
-        "description": "Subscription Id of Storage Account to store Vulnerability Assessments."
+        "description": "Optional. Subscription Id of Storage Account to store Vulnerability Assessments."
       }
     },
     "emailAccountAdmins": {
@@ -211,14 +211,14 @@
       "type": "string",
       "defaultValue": "[resourceGroup().name]",
       "metadata": {
-        "description": "Resource Group of Storage Account to store audit logs."
+        "description": "Optional. Resource Group of Storage Account to store audit logs."
       }
     },
     "auditStorageSubscriptionId": {
       "type": "string",
       "defaultValue": "[subscription().subscriptionId]",
       "metadata": {
-        "description": "Subscription Id of Storage Account to store audit logs."
+        "description": "Optional. Subscription Id of Storage Account to store audit logs."
       }
     }
   },

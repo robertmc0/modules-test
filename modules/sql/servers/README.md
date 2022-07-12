@@ -21,12 +21,12 @@ This module performs the following
 | `administratorLogin`                           | `string`       | No       | Optional. Administrator username for the server. Required if no `administrators` object for AAD authentication is provided.                              |
 | `administratorLoginPassword`                   | `secureString` | No       | Optional. The administrator login password. Required if no `administrators` object for AAD authentication is provided.                                   |
 | `administrators`                               | `object`       | No       | Optional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided. |
-| `publicNetworkAccess`                          | `string`       | No       | Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET.                                           |
+| `publicNetworkAccess`                          | `string`       | No       | Optional. Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET.                                 |
 | `connectionType`                               | `string`       | No       | Optional. The server connection type. - Default, Proxy, Redirect.  Note private link requires Proxy.                                                     |
 | `tags`                                         | `object`       | No       | Optional. Resource tags.                                                                                                                                 |
 | `vulnerabilityAssessmentStorageAccountName`    | `string`       | Yes      | Name of Storage Account to store Vulnerability Assessments.                                                                                              |
-| `vulnerabilityAssessmentStorageResourceGroup`  | `string`       | No       | Resource Group of Storage Account to store Vulnerability Assessments.                                                                                    |
-| `vulnerabilityAssessmentStorageSubscriptionId` | `string`       | No       | Subscription Id of Storage Account to store Vulnerability Assessments.                                                                                   |
+| `vulnerabilityAssessmentStorageResourceGroup`  | `string`       | No       | Optional. Resource Group of Storage Account to store Vulnerability Assessments.                                                                          |
+| `vulnerabilityAssessmentStorageSubscriptionId` | `string`       | No       | Optional. Subscription Id of Storage Account to store Vulnerability Assessments.                                                                         |
 | `emailAccountAdmins`                           | `bool`         | No       | Optional. Specifies that the alert is sent to the account/subscription administrators.                                                                   |
 | `emailAddresses`                               | `array`        | No       | Array of e-mail addresses to which the alert and vulnerability scans are sent.                                                                           |
 | `resourcelock`                                 | `string`       | No       | Optional. Specify the type of lock.                                                                                                                      |
@@ -40,8 +40,8 @@ This module performs the following
 | `auditEventHubName`                            | `string`       | No       | Optional. Name of the audit event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.      |
 | `auditLogsRetentionInDays`                     | `int`          | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.                                           |
 | `auditStorageAccountName`                      | `string`       | Yes      | Name of Storage Account to store audit logs.                                                                                                             |
-| `auditStorageResourceGroup`                    | `string`       | No       | Resource Group of Storage Account to store audit logs.                                                                                                   |
-| `auditStorageSubscriptionId`                   | `string`       | No       | Subscription Id of Storage Account to store audit logs.                                                                                                  |
+| `auditStorageResourceGroup`                    | `string`       | No       | Optional. Resource Group of Storage Account to store audit logs.                                                                                         |
+| `auditStorageSubscriptionId`                   | `string`       | No       | Optional. Subscription Id of Storage Account to store audit logs.                                                                                        |
 
 ## Outputs
 

@@ -31,7 +31,7 @@ param administratorLoginPassword string = ''
 )
 param administrators object = {}
 
-@description('Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET.')
+@description('Optional. Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET.')
 @allowed([
   'Enabled'
   'Disabled'
@@ -58,10 +58,10 @@ param tags object = {}
 @description('Name of Storage Account to store Vulnerability Assessments.')
 param vulnerabilityAssessmentStorageAccountName string
 
-@description('Resource Group of Storage Account to store Vulnerability Assessments.')
+@description('Optional. Resource Group of Storage Account to store Vulnerability Assessments.')
 param vulnerabilityAssessmentStorageResourceGroup string = resourceGroup().name
 
-@description('Subscription Id of Storage Account to store Vulnerability Assessments.')
+@description('Optional. Subscription Id of Storage Account to store Vulnerability Assessments.')
 param vulnerabilityAssessmentStorageSubscriptionId string = subscription().subscriptionId
 
 @description('Optional. Specifies that the alert is sent to the account/subscription administrators.')
@@ -115,10 +115,10 @@ param auditLogsRetentionInDays int = 365
 @description('Name of Storage Account to store audit logs.')
 param auditStorageAccountName string
 
-@description('Resource Group of Storage Account to store audit logs.')
+@description('Optional. Resource Group of Storage Account to store audit logs.')
 param auditStorageResourceGroup string = resourceGroup().name
 
-@description('Subscription Id of Storage Account to store audit logs.')
+@description('Optional. Subscription Id of Storage Account to store audit logs.')
 param auditStorageSubscriptionId string = subscription().subscriptionId
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
@@ -286,7 +286,6 @@ resource sqlServerMasterDatabase 'Microsoft.Sql/servers/databases@2021-11-01-pre
   properties: {}
 }
 
-// the diagnostics resource is used to enable audit logs to log analytcis or event hubs
 resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableAudit && (!empty(auditLogAnalyticsWorkspaceId) || (!empty(auditEventHubAuthorizationRuleId) || !empty(auditEventHubName)))) {
   scope: sqlServerMasterDatabase
   name: diagnosticsName
