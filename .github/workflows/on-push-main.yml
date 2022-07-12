@@ -61,3 +61,8 @@ jobs:
       PUBLISH_TENANT_ID: ${{ secrets.PUBLISH_TENANT_ID }}
       PUBLISH_SUBSCRIPTION_ID: ${{ secrets.PUBLISH_SUBSCRIPTION_ID }}
       PUBLISH_REGISTRY_SERVER: ${{ secrets.PUBLISH_REGISTRY_SERVER }}
+
+  refresh-module-table:
+    needs: create-tag
+    if: needs.create-tag.outputs.tag
+    uses: ./.github/workflows/refresh-module-table.yml
