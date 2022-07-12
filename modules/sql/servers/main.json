@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "17676307585450339550"
+      "templateHash": "7240362358521778606"
     }
   },
   "parameters": {
@@ -331,7 +331,7 @@
       "properties": {
         "state": "Enabled",
         "auditActionsAndGroups": "[variables('auditActionsAndGroups')]",
-        "isAzureMonitorTargetEnabled": "[if(empty(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01', 'full')), true(), false())]",
+        "isAzureMonitorTargetEnabled": true,
         "isDevopsAuditEnabled": true,
         "storageEndpoint": "[if(not(empty(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01', 'full'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01').primaryEndpoints.blob, null())]",
         "storageAccountSubscriptionId": "[parameters('auditStorageSubscriptionId')]"
@@ -348,7 +348,7 @@
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {
         "state": "Enabled",
-        "isAzureMonitorTargetEnabled": "[if(empty(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01', 'full')), true(), false())]",
+        "isAzureMonitorTargetEnabled": true,
         "storageEndpoint": "[if(not(empty(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01', 'full'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('auditStorageSubscriptionId'), parameters('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', parameters('auditStorageAccountName')), '2021-09-01').primaryEndpoints.blob, null())]",
         "storageAccountSubscriptionId": "[parameters('auditStorageSubscriptionId')]"
       },
