@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "11594771853972807686"
+      "templateHash": "9411029693847123434"
     }
   },
   "parameters": {
@@ -42,6 +42,7 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworks?tabs=bicep#dhcpoptions",
         "example": [
           "10.0.6.4",
           "10.0.6.5",
@@ -53,6 +54,7 @@
     "subnets": {
       "type": "array",
       "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworks?tabs=bicep#subnet",
         "example": [
           {
             "name": "Subnet name.",
@@ -73,7 +75,7 @@
         "description": "A list of subnets associated to the virtual network."
       }
     },
-    "ddosProtectionPlan": {
+    "ddosProtectionPlanId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -225,8 +227,8 @@
         "dhcpOptions": {
           "dnsServers": "[parameters('dnsServers')]"
         },
-        "enableDdosProtection": "[if(not(empty(parameters('ddosProtectionPlan'))), true(), null())]",
-        "ddosProtectionPlan": "[if(not(empty(parameters('ddosProtectionPlan'))), createObject('id', parameters('ddosProtectionPlan')), null())]"
+        "enableDdosProtection": "[if(not(empty(parameters('ddosProtectionPlanId'))), true(), null())]",
+        "ddosProtectionPlan": "[if(not(empty(parameters('ddosProtectionPlanId'))), createObject('id', parameters('ddosProtectionPlanId')), null())]"
       }
     },
     {

@@ -18,6 +18,7 @@ param addressPrefixes array
 
 @description('Optional. DNS servers associated to the virtual network. Leave blank if using Azure DNS.')
 @metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworks?tabs=bicep#dhcpoptions'
   example: [
     '10.0.6.4'
     '10.0.6.5'
@@ -28,6 +29,7 @@ param dnsServers array = []
 
 @description('A list of subnets associated to the virtual network.')
 @metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworks?tabs=bicep#subnet'
   example: [
     {
       name: 'Subnet name.'
@@ -49,7 +51,7 @@ param dnsServers array = []
 param subnets array
 
 @description('Optional. The resource ID of the DDoS protection plan associated with the virtual network.')
-param ddosProtectionPlan string = ''
+param ddosProtectionPlanId string = ''
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -129,9 +131,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
     dhcpOptions: {
       dnsServers: dnsServers
     }
-    enableDdosProtection: !empty(ddosProtectionPlan) ? true : null
-    ddosProtectionPlan: !empty(ddosProtectionPlan) ? {
-      id: ddosProtectionPlan
+    enableDdosProtection: !empty(ddosProtectionPlanId) ? true : null
+    ddosProtectionPlan: !empty(ddosProtectionPlanId) ? {
+      id: ddosProtectionPlanId
     } : null
     subnets: [for subnet in subnets: {
       name: subnet.name

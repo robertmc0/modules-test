@@ -85,7 +85,7 @@ module virtualNetwork '../main.bicep' = {
       '10.0.0.4'
       '172.60.0.4'
     ]
-    ddosProtectionPlan: ddosProtectionPlan.id
+    ddosProtectionPlanId: ddosProtectionPlan.id
     subnets: [
       {
         name: 'subnet1'
@@ -94,9 +94,9 @@ module virtualNetwork '../main.bicep' = {
       {
         name: 'subnet2'
         addressPrefix: '10.0.1.0/24'
-        networkSecurityGroup: nsg.id
-        routeTable: routeTable.id
-        natGateway: natGateway.id
+        networkSecurityGroupId: nsg.id
+        routeTableId: routeTable.id
+        natGatewayId: natGateway.id
         privateEndpointNetworkPolicies: 'Disabled'
         privateLinkServiceNetworkPolicies: 'Disabled'
         delegations: 'Microsoft.Web/serverFarms'

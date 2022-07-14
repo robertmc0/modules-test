@@ -28,7 +28,7 @@ This module performs the following
 | `addressPrefixes`                       | `array`  | Yes      | The address space that contains an array of IP address ranges that can be used by subnets.                              |
 | `dnsServers`                            | `array`  | No       | Optional. DNS servers associated to the virtual network. Leave blank if using Azure DNS.                                |
 | `subnets`                               | `array`  | Yes      | A list of subnets associated to the virtual network.                                                                    |
-| `ddosProtectionPlan`                    | `string` | No       | Optional. The resource ID of the DDoS protection plan associated with the virtual network.                              |
+| `ddosProtectionPlanId`                  | `string` | No       | Optional. The resource ID of the DDoS protection plan associated with the virtual network.                              |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                    |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                        |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                    |
