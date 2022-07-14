@@ -39,7 +39,7 @@ param dnsServers array = []
       natGatewayId: 'The resource ID of the Nat gateway.'
       privateEndpointNetworkPolicies: 'Enable or disable apply network policies on private end point in the subnet.'
       privateLinkServiceNetworkPolicies: 'Enable or Disable apply network policies on private link service in the subnet.'
-      delegations: 'The name of the service to whom the subnet should be delegated (e.g. Microsoft.Web/serverFarms).'
+      delegation: 'The name of the service to whom the subnet should be delegated (e.g. Microsoft.Web/serverFarms).'
       serviceEndpoints: [
         {
           service: 'The type of the endpoint service (e.g. Microsoft.Web).'
@@ -151,11 +151,11 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
         privateEndpointNetworkPolicies: contains(subnet, 'privateEndpointNetworkPolicies') ? subnet.privateEndpointNetworkPolicies : 'Enabled'
         privateLinkServiceNetworkPolicies: contains(subnet, 'privateLinkServiceNetworkPolicies') ? subnet.privateLinkServiceNetworkPolicies : 'Enabled'
         serviceEndpoints: contains(subnet, 'serviceEndpoints') ? subnet.serviceEndpoints : null
-        delegations: contains(subnet, 'delegations') ? [
+        delegations: contains(subnet, 'delegation') ? [
           {
-            name: subnet.delegations
+            name: subnet.delegation
             properties: {
-              serviceName: subnet.delegations
+              serviceName: subnet.delegation
             }
           }
         ] : []

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "9411029693847123434"
+      "templateHash": "10643003244300394758"
     }
   },
   "parameters": {
@@ -64,7 +64,7 @@
             "natGatewayId": "The resource ID of the Nat gateway.",
             "privateEndpointNetworkPolicies": "Enable or disable apply network policies on private end point in the subnet.",
             "privateLinkServiceNetworkPolicies": "Enable or Disable apply network policies on private link service in the subnet.",
-            "delegations": "The name of the service to whom the subnet should be delegated (e.g. Microsoft.Web/serverFarms).",
+            "delegation": "The name of the service to whom the subnet should be delegated (e.g. Microsoft.Web/serverFarms).",
             "serviceEndpoints": [
               {
                 "service": "The type of the endpoint service (e.g. Microsoft.Web)."
@@ -216,7 +216,7 @@
                 "privateEndpointNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateEndpointNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateEndpointNetworkPolicies, 'Enabled')]",
                 "privateLinkServiceNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateLinkServiceNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateLinkServiceNetworkPolicies, 'Enabled')]",
                 "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, null())]",
-                "delegations": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'delegations'), createArray(createObject('name', parameters('subnets')[copyIndex('subnets')].delegations, 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegations))), createArray())]"
+                "delegations": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'delegation'), createArray(createObject('name', parameters('subnets')[copyIndex('subnets')].delegation, 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegation))), createArray())]"
               }
             }
           }

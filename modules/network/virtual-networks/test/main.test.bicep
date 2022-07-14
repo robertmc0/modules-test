@@ -99,7 +99,7 @@ module virtualNetwork '../main.bicep' = {
         natGatewayId: natGateway.id
         privateEndpointNetworkPolicies: 'Disabled'
         privateLinkServiceNetworkPolicies: 'Disabled'
-        delegations: 'Microsoft.Web/serverFarms'
+        delegation: 'Microsoft.Web/serverFarms'
         serviceEndpoints: [
           {
             service: 'Microsoft.Web'
