@@ -32,9 +32,9 @@ param dnsServers array = []
     {
       name: 'Subnet name.'
       addressPrefix: 'The address prefix for the subnet.'
-      networkSecurityGroup: 'The resource ID of the network security group.'
-      routeTable: 'The resource ID of the route table.'
-      natGateway: 'The resource ID of the Nat gateway.'
+      networkSecurityGroupId: 'The resource ID of the network security group.'
+      routeTableId: 'The resource ID of the route table.'
+      natGatewayId: 'The resource ID of the Nat gateway.'
       privateEndpointNetworkPolicies: 'Enable or disable apply network policies on private end point in the subnet.'
       privateLinkServiceNetworkPolicies: 'Enable or Disable apply network policies on private link service in the subnet.'
       delegations: 'The name of the service to whom the subnet should be delegated (e.g. Microsoft.Web/serverFarms).'
@@ -137,14 +137,14 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
       name: subnet.name
       properties: {
         addressPrefix: subnet.addressPrefix
-        natGateway: contains(subnet, 'natGateway') ? {
-          id: subnet.natGateway
+        natGateway: contains(subnet, 'natGatewayId') ? {
+          id: subnet.natGatewayId
         } : null
-        networkSecurityGroup: contains(subnet, 'networkSecurityGroup') ? {
-          id: subnet.networkSecurityGroup
+        networkSecurityGroup: contains(subnet, 'networkSecurityGroupId') ? {
+          id: subnet.networkSecurityGroupId
         } : null
-        routeTable: contains(subnet, 'routeTable') ? {
-          id: subnet.routeTable
+        routeTable: contains(subnet, 'routeTableId') ? {
+          id: subnet.routeTableId
         } : null
         privateEndpointNetworkPolicies: contains(subnet, 'privateEndpointNetworkPolicies') ? subnet.privateEndpointNetworkPolicies : 'Enabled'
         privateLinkServiceNetworkPolicies: contains(subnet, 'privateLinkServiceNetworkPolicies') ? subnet.privateLinkServiceNetworkPolicies : 'Enabled'

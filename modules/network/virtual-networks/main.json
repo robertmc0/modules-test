@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "7676912782661264532"
+      "templateHash": "11594771853972807686"
     }
   },
   "parameters": {
@@ -57,9 +57,9 @@
           {
             "name": "Subnet name.",
             "addressPrefix": "The address prefix for the subnet.",
-            "networkSecurityGroup": "The resource ID of the network security group.",
-            "routeTable": "The resource ID of the route table.",
-            "natGateway": "The resource ID of the Nat gateway.",
+            "networkSecurityGroupId": "The resource ID of the network security group.",
+            "routeTableId": "The resource ID of the route table.",
+            "natGatewayId": "The resource ID of the Nat gateway.",
             "privateEndpointNetworkPolicies": "Enable or disable apply network policies on private end point in the subnet.",
             "privateLinkServiceNetworkPolicies": "Enable or Disable apply network policies on private link service in the subnet.",
             "delegations": "The name of the service to whom the subnet should be delegated (e.g. Microsoft.Web/serverFarms).",
@@ -208,9 +208,9 @@
               "name": "[parameters('subnets')[copyIndex('subnets')].name]",
               "properties": {
                 "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].addressPrefix]",
-                "natGateway": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'natGateway'), createObject('id', parameters('subnets')[copyIndex('subnets')].natGateway), null())]",
-                "networkSecurityGroup": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroup'), createObject('id', parameters('subnets')[copyIndex('subnets')].networkSecurityGroup), null())]",
-                "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTable'), createObject('id', parameters('subnets')[copyIndex('subnets')].routeTable), null())]",
+                "natGateway": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'natGatewayId'), createObject('id', parameters('subnets')[copyIndex('subnets')].natGatewayId), null())]",
+                "networkSecurityGroup": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupId'), createObject('id', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupId), null())]",
+                "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableId'), createObject('id', parameters('subnets')[copyIndex('subnets')].routeTableId), null())]",
                 "privateEndpointNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateEndpointNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateEndpointNetworkPolicies, 'Enabled')]",
                 "privateLinkServiceNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateLinkServiceNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateLinkServiceNetworkPolicies, 'Enabled')]",
                 "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, null())]",
