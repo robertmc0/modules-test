@@ -108,6 +108,7 @@ module virtualNetwork '../main.bicep' = {
       }
     ]
     enableDiagnostics: true
+    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticStorageAccountId: diagnosticsStorageAccount.id
     diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
     resourceLock: 'CanNotDelete'
