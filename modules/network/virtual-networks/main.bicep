@@ -48,6 +48,9 @@ param dnsServers array = []
 })
 param subnets array
 
+@description('Optional. The resource ID of the DDoS protection plan associated with the virtual network.')
+param ddosProtectionPlan string = ''
+
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
@@ -126,6 +129,10 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
     dhcpOptions: {
       dnsServers: dnsServers
     }
+    enableDdosProtection: !empty(ddosProtectionPlan) ? true : null
+    ddosProtectionPlan: !empty(ddosProtectionPlan) ? {
+      id: ddosProtectionPlan
+    } : null
     subnets: [for subnet in subnets: {
       name: subnet.name
       properties: {

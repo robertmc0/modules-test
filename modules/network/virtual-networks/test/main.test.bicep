@@ -35,6 +35,11 @@ resource routeTable 'Microsoft.Network/routeTables@2022-01-01' = {
   location: location
 }
 
+resource ddosProtectionPlan 'Microsoft.Network/ddosProtectionPlans@2021-02-01' = {
+  name: '${shortIdentifier}-tst-ddos-${uniqueString(deployment().name, 'ddosProtectionPlan', location)}'
+  location: location
+}
+
 resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsStorageAccount', location)}'
   location: location
@@ -80,6 +85,7 @@ module virtualNetwork '../main.bicep' = {
       '10.0.0.4'
       '172.60.0.4'
     ]
+    ddosProtectionPlan: ddosProtectionPlan.id
     subnets: [
       {
         name: 'subnet1'
