@@ -1,0 +1,296 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.8.9.13224",
+      "templateHash": "10643003244300394758"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "addressPrefixes": {
+      "type": "array",
+      "metadata": {
+        "description": "The address space that contains an array of IP address ranges that can be used by subnets."
+      }
+    },
+    "dnsServers": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworks?tabs=bicep#dhcpoptions",
+        "example": [
+          "10.0.6.4",
+          "10.0.6.5",
+          "10.1.2.3"
+        ],
+        "description": "Optional. DNS servers associated to the virtual network. Leave blank if using Azure DNS."
+      }
+    },
+    "subnets": {
+      "type": "array",
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworks?tabs=bicep#subnet",
+        "example": [
+          {
+            "name": "Subnet name.",
+            "addressPrefix": "The address prefix for the subnet.",
+            "networkSecurityGroupId": "The resource ID of the network security group.",
+            "routeTableId": "The resource ID of the route table.",
+            "natGatewayId": "The resource ID of the Nat gateway.",
+            "privateEndpointNetworkPolicies": "Enable or disable apply network policies on private end point in the subnet.",
+            "privateLinkServiceNetworkPolicies": "Enable or Disable apply network policies on private link service in the subnet.",
+            "delegation": "The name of the service to whom the subnet should be delegated (e.g. Microsoft.Web/serverFarms).",
+            "serviceEndpoints": [
+              {
+                "service": "The type of the endpoint service (e.g. Microsoft.Web)."
+              }
+            ]
+          }
+        ],
+        "description": "A list of subnets associated to the virtual network."
+      }
+    },
+    "ddosProtectionPlanId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The resource ID of the DDoS protection plan associated with the virtual network."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllLogs"
+      ],
+      "allowedValues": [
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2022-01-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "copy": [
+          {
+            "name": "subnets",
+            "count": "[length(parameters('subnets'))]",
+            "input": {
+              "name": "[parameters('subnets')[copyIndex('subnets')].name]",
+              "properties": {
+                "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].addressPrefix]",
+                "natGateway": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'natGatewayId'), createObject('id', parameters('subnets')[copyIndex('subnets')].natGatewayId), null())]",
+                "networkSecurityGroup": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupId'), createObject('id', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupId), null())]",
+                "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableId'), createObject('id', parameters('subnets')[copyIndex('subnets')].routeTableId), null())]",
+                "privateEndpointNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateEndpointNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateEndpointNetworkPolicies, 'Enabled')]",
+                "privateLinkServiceNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateLinkServiceNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateLinkServiceNetworkPolicies, 'Enabled')]",
+                "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, null())]",
+                "delegations": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'delegation'), createArray(createObject('name', parameters('subnets')[copyIndex('subnets')].delegation, 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegation))), createArray())]"
+              }
+            }
+          }
+        ],
+        "addressSpace": {
+          "addressPrefixes": "[parameters('addressPrefixes')]"
+        },
+        "dhcpOptions": {
+          "dnsServers": "[parameters('dnsServers')]"
+        },
+        "enableDdosProtection": "[if(not(empty(parameters('ddosProtectionPlanId'))), true(), null())]",
+        "ddosProtectionPlan": "[if(not(empty(parameters('ddosProtectionPlanId'))), createObject('id', parameters('ddosProtectionPlanId')), null())]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Network/virtualNetworks/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/virtualNetworks/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed virtual network."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed virtual network."
+      }
+    },
+    "subnets": {
+      "type": "array",
+      "copy": {
+        "count": "[length(parameters('subnets'))]",
+        "input": {
+          "name": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name'))).subnets[copyIndex()].name]",
+          "id": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name'))).subnets[copyIndex()].id]"
+        }
+      },
+      "metadata": {
+        "description": "List of subnets associated to the virtual network."
+      }
+    }
+  }
+}
