@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "10643003244300394758"
+      "templateHash": "2309988155643198810"
     }
   },
   "parameters": {
@@ -210,10 +210,10 @@
               "name": "[parameters('subnets')[copyIndex('subnets')].name]",
               "properties": {
                 "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].addressPrefix]",
-                "natGateway": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'natGatewayId'), createObject('id', parameters('subnets')[copyIndex('subnets')].natGatewayId), null())]",
-                "networkSecurityGroup": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupId'), createObject('id', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupId), null())]",
-                "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableId'), createObject('id', parameters('subnets')[copyIndex('subnets')].routeTableId), null())]",
-                "privateEndpointNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateEndpointNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateEndpointNetworkPolicies, 'Enabled')]",
+                "natGateway": "[if(and(contains(parameters('subnets')[copyIndex('subnets')], 'natGatewayId'), not(equals(parameters('subnets')[copyIndex('subnets')].natGatewayId, null()))), createObject('id', parameters('subnets')[copyIndex('subnets')].natGatewayId), null())]",
+                "networkSecurityGroup": "[if(and(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupId'), not(equals(parameters('subnets')[copyIndex('subnets')].networkSecurityGroupId, null()))), createObject('id', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupId), null())]",
+                "routeTable": "[if(and(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableId'), not(equals(parameters('subnets')[copyIndex('subnets')].routeTableId, null()))), createObject('id', parameters('subnets')[copyIndex('subnets')].routeTableId), null())]",
+                "privateEndpointNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateEndpointNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateEndpointNetworkPolicies, 'Disabled')]",
                 "privateLinkServiceNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateLinkServiceNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateLinkServiceNetworkPolicies, 'Enabled')]",
                 "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, null())]",
                 "delegations": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'delegation'), createArray(createObject('name', parameters('subnets')[copyIndex('subnets')].delegation, 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegation))), createArray())]"
