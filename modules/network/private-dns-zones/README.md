@@ -18,7 +18,6 @@ This module performs the following
 | `name`                      | `string` | Yes      | The resource name.                                                                                             |
 | `location`                  | `string` | Yes      | The geo-location where the resource lives.                                                                     |
 | `tags`                      | `object` | No       | Optional. Resource tags.                                                                                       |
-| `enableVirtualNeworkLink`   | `bool`   | No       | Optional. Link Private DNS zone to an existing virtual network.                                                |
 | `virtualNetworkResourceIds` | `array`  | No       | Optional. Existing virtual network resource ID(s). Only required if enableVirtualNeworkLink equals true.       |
 | `registrationEnabled`       | `bool`   | No       | Optional. Enable auto-registration of virtual machine records in the virtual network for the Private DNS zone. |
 | `resourceLock`              | `string` | No       | Optional. Specify the type of resource lock.                                                                   |

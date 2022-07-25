@@ -9,7 +9,10 @@ param location string = resourceGroup().location
 @maxLength(5)
 param shortIdentifier string = 'arn'
 
-var privateDnsZoneName = 'privatelink.vaultcore.azure.net'
+var privateDnsZoneNames = [
+  'privatelink.vaultcore.azure.net'
+  'privatelink.monitor.azure.com'
+]
 
 /*======================================================================
 TEST PREREQUISITES
@@ -56,17 +59,24 @@ resource vnet2 'Microsoft.Network/virtualNetworks@2021-05-01' = {
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
-module privateEndpoint '../main.bicep' = {
+module privateDnsZoneMinimum '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-min-private-dns-zone'
+  params: {
+    name: privateDnsZoneNames[0]
+    location: 'global'
+  }
+}
+
+module privateDnsZone '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-private-dns-zone'
   params: {
-    name: privateDnsZoneName
+    name: privateDnsZoneNames[1]
     location: 'global'
     registrationEnabled: true
     virtualNetworkResourceIds: [
       vnet1.id
       vnet2.id
     ]
-    enableVirtualNeworkLink: true
     resourceLock: 'CanNotDelete'
   }
 }

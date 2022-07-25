@@ -13,9 +13,6 @@ param location string
 })
 param tags object = {}
 
-@description('Optional. Link Private DNS zone to an existing virtual network.')
-param enableVirtualNeworkLink bool = false
-
 @description('Optional. Existing virtual network resource ID(s). Only required if enableVirtualNeworkLink equals true.')
 param virtualNetworkResourceIds array = []
 
@@ -31,7 +28,18 @@ param registrationEnabled bool = false
 param resourceLock string = 'NotSpecified'
 
 var lockName = toLower('${privateDnsZone.name}-${resourceLock}-lck')
+
 var vnetLinkSuffix = '-vlnk'
+
+var vnetLinks = [for virtualNetworkResourceId in virtualNetworkResourceIds: {
+  name: '${last(split(virtualNetworkResourceId, '/'))}${vnetLinkSuffix}'
+  properties: {
+    registrationEnabled: registrationEnabled
+    virtualNetwork: {
+      id: virtualNetworkResourceId
+    }
+  }
+}]
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: name
@@ -39,16 +47,11 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   tags: tags
 }
 
-resource privateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = [for virtualNetworkResourceId in virtualNetworkResourceIds: if (enableVirtualNeworkLink) {
+resource privateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = [for vnetLink in vnetLinks: {
   parent: privateDnsZone
-  name: '${last(split(virtualNetworkResourceId, '/'))}${vnetLinkSuffix}'
+  name: vnetLink.name
   location: location
-  properties: {
-    registrationEnabled: registrationEnabled
-    virtualNetwork: {
-      id: virtualNetworkResourceId
-    }
-  }
+  properties: vnetLink.properties
 }]
 
 resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
