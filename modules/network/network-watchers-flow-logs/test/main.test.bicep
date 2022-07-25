@@ -48,6 +48,7 @@ module flowLog '../main.bicep' = {
     networkSecurityGroupId: nsg.id
     networkWatcherName: networkWatcher.name
     storageAccountId: storageAccount.id
+    enableTrafficAnalytics: true
     logAnalyticsWorkspaceId: logAnalyticsWorkspace.id
   }
 }

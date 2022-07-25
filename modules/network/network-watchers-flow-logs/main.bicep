@@ -19,6 +19,12 @@ param networkWatcherName string
 @description('Optional. Number of days to retain flow log records.')
 param retention int = 60
 
+@description('Optional. Flag to enable/disable flow logging.')
+param enableFlowLogs bool = true
+
+@description('Optional. Flag to enable/disable traffic analytics.')
+param enableTrafficAnalytics bool = false
+
 @description('Optional. The interval in minutes which would decide how frequently TA service should do flow analytics.')
 @allowed([
   60
@@ -35,19 +41,25 @@ param storageAccountId string
 @description('Optional. Resource ID of the log analytics workspace which is used to store the flow log.')
 param logAnalyticsWorkspaceId string = ''
 
+var flowAnalyticsConfiguration = enableTrafficAnalytics ? {
+  networkWatcherFlowAnalyticsConfiguration: {
+    enabled: true
+    trafficAnalyticsInterval: trafficAnalyticsInterval
+    workspaceResourceId: logAnalyticsWorkspaceId
+  }
+} : {
+  networkWatcherFlowAnalyticsConfiguration: {
+    enabled: false
+  }
+}
+
 resource flowLog 'Microsoft.Network/networkWatchers/flowLogs@2021-02-01' = {
   name: '${networkWatcherName}/${name}'
   location: location
   tags: tags
   properties: {
-    enabled: true
-    flowAnalyticsConfiguration: {
-      networkWatcherFlowAnalyticsConfiguration: {
-        enabled: empty(logAnalyticsWorkspaceId) ? false : true
-        trafficAnalyticsInterval: trafficAnalyticsInterval
-        workspaceResourceId: empty(logAnalyticsWorkspaceId) ? null : logAnalyticsWorkspaceId
-      }
-    }
+    enabled: enableFlowLogs
+    flowAnalyticsConfiguration: flowAnalyticsConfiguration
     format: {
       type: 'JSON'
       version: 2

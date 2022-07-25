@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "4243378402137464318"
+      "templateHash": "15150273862968962723"
     }
   },
   "parameters": {
@@ -45,6 +45,20 @@
         "description": "Optional. Number of days to retain flow log records."
       }
     },
+    "enableFlowLogs": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Flag to enable/disable flow logging."
+      }
+    },
+    "enableTrafficAnalytics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Flag to enable/disable traffic analytics."
+      }
+    },
     "trafficAnalyticsInterval": {
       "type": "int",
       "defaultValue": 60,
@@ -76,6 +90,9 @@
       }
     }
   },
+  "variables": {
+    "flowAnalyticsConfiguration": "[if(parameters('enableTrafficAnalytics'), createObject('networkWatcherFlowAnalyticsConfiguration', createObject('enabled', true(), 'trafficAnalyticsInterval', parameters('trafficAnalyticsInterval'), 'workspaceResourceId', parameters('logAnalyticsWorkspaceId'))), createObject('networkWatcherFlowAnalyticsConfiguration', createObject('enabled', false())))]"
+  },
   "resources": [
     {
       "type": "Microsoft.Network/networkWatchers/flowLogs",
@@ -84,14 +101,8 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": {
-        "enabled": true,
-        "flowAnalyticsConfiguration": {
-          "networkWatcherFlowAnalyticsConfiguration": {
-            "enabled": "[if(empty(parameters('logAnalyticsWorkspaceId')), false(), true())]",
-            "trafficAnalyticsInterval": "[parameters('trafficAnalyticsInterval')]",
-            "workspaceResourceId": "[if(empty(parameters('logAnalyticsWorkspaceId')), null(), parameters('logAnalyticsWorkspaceId'))]"
-          }
-        },
+        "enabled": "[parameters('enableFlowLogs')]",
+        "flowAnalyticsConfiguration": "[variables('flowAnalyticsConfiguration')]",
         "format": {
           "type": "JSON",
           "version": 2
