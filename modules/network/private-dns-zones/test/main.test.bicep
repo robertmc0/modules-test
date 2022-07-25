@@ -14,8 +14,8 @@ var privateDnsZoneName = 'privatelink.vaultcore.azure.net'
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
-  name: '${shortIdentifier}-tst-vnet-${uniqueString(deployment().name, 'virtualNetworks', location)}'
+resource vnet1 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+  name: '${shortIdentifier}-tst-vnet1-${uniqueString(deployment().name, 'virtualNetworks', location)}'
   location: location
   properties: {
     addressSpace: {
@@ -33,6 +33,26 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
     ]
   }
 }
+
+resource vnet2 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+  name: '${shortIdentifier}-tst-vnet2-${uniqueString(deployment().name, 'virtualNetworks', location)}'
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '10.50.0.0/16'
+      ]
+    }
+    subnets: [
+      {
+        name: 'subnet1'
+        properties: {
+          addressPrefix: '10.50.0.0/24'
+        }
+      }
+    ]
+  }
+}
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -42,7 +62,10 @@ module privateEndpoint '../main.bicep' = {
     name: privateDnsZoneName
     location: 'global'
     registrationEnabled: true
-    virtualNetworkResourceId: vnet.id
+    virtualNetworkResourceIds: [
+      vnet1.id
+      vnet2.id
+    ]
     enableVirtualNeworkLink: true
     resourceLock: 'CanNotDelete'
   }

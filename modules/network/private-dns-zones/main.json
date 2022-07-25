@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "10842270833354811119"
+      "templateHash": "18174098487994023230"
     }
   },
   "parameters": {
@@ -39,11 +39,11 @@
         "description": "Optional. Link Private DNS zone to an existing virtual network."
       }
     },
-    "virtualNetworkResourceId": {
-      "type": "string",
-      "defaultValue": "",
+    "virtualNetworkResourceIds": {
+      "type": "array",
+      "defaultValue": [],
       "metadata": {
-        "description": "Optional. Existing virtual network resource ID. Only required if enableVirtualNeworkLink equals true."
+        "description": "Optional. Existing virtual network resource ID(s). Only required if enableVirtualNeworkLink equals true."
       }
     },
     "registrationEnabled": {
@@ -79,14 +79,18 @@
     },
     {
       "condition": "[parameters('enableVirtualNeworkLink')]",
+      "copy": {
+        "name": "privateDnsZoneVnetLink",
+        "count": "[length(parameters('virtualNetworkResourceIds'))]"
+      },
       "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/{1}', parameters('name'), toLower(split(parameters('virtualNetworkResourceId'), '/')[8]))]",
+      "name": "[format('{0}/{1}', parameters('name'), last(split(parameters('virtualNetworkResourceIds')[copyIndex()], '/')))]",
       "location": "[parameters('location')]",
       "properties": {
         "registrationEnabled": "[parameters('registrationEnabled')]",
         "virtualNetwork": {
-          "id": "[parameters('virtualNetworkResourceId')]"
+          "id": "[parameters('virtualNetworkResourceIds')[copyIndex()]]"
         }
       },
       "dependsOn": [
