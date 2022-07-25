@@ -139,16 +139,16 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
       name: subnet.name
       properties: {
         addressPrefix: subnet.addressPrefix
-        natGateway: contains(subnet, 'natGatewayId') ? {
+        natGateway: contains(subnet, 'natGatewayId') && subnet.natGatewayId != null ? {
           id: subnet.natGatewayId
         } : null
-        networkSecurityGroup: contains(subnet, 'networkSecurityGroupId') ? {
+        networkSecurityGroup: contains(subnet, 'networkSecurityGroupId') && subnet.networkSecurityGroupId != null ? {
           id: subnet.networkSecurityGroupId
         } : null
-        routeTable: contains(subnet, 'routeTableId') ? {
+        routeTable: contains(subnet, 'routeTableId') && subnet.routeTableId != null ? {
           id: subnet.routeTableId
         } : null
-        privateEndpointNetworkPolicies: contains(subnet, 'privateEndpointNetworkPolicies') ? subnet.privateEndpointNetworkPolicies : 'Enabled'
+        privateEndpointNetworkPolicies: contains(subnet, 'privateEndpointNetworkPolicies') ? subnet.privateEndpointNetworkPolicies : 'Disabled'
         privateLinkServiceNetworkPolicies: contains(subnet, 'privateLinkServiceNetworkPolicies') ? subnet.privateLinkServiceNetworkPolicies : 'Enabled'
         serviceEndpoints: contains(subnet, 'serviceEndpoints') ? subnet.serviceEndpoints : null
         delegations: contains(subnet, 'delegation') ? [
