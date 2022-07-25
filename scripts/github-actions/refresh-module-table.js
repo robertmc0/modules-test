@@ -50,7 +50,7 @@ async function generateModulesTable(github, context, fs, path) {
       console.log(modulePath);
 
       var version = "unknown";
-      var tag = tags.data.find((x) => x.name.startsWith(modulePath));
+      var tag = tags.data.find((x) => x.name.startsWith(`${modulePath}/`));
       if (tag != null) {
         version = tag.name.substring(modulePath.length + 1);
         console.log(version);
