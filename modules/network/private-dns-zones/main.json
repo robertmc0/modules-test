@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "18174098487994023230"
+      "templateHash": "8234807244945276485"
     }
   },
   "parameters": {
@@ -67,7 +67,8 @@
     }
   },
   "variables": {
-    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "vnetLinkSuffix": "-vlnk"
   },
   "resources": [
     {
@@ -85,7 +86,7 @@
       },
       "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/{1}', parameters('name'), last(split(parameters('virtualNetworkResourceIds')[copyIndex()], '/')))]",
+      "name": "[format('{0}/{1}', parameters('name'), format('{0}{1}', last(split(parameters('virtualNetworkResourceIds')[copyIndex()], '/')), variables('vnetLinkSuffix')))]",
       "location": "[parameters('location')]",
       "properties": {
         "registrationEnabled": "[parameters('registrationEnabled')]",
