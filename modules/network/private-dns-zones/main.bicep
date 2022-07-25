@@ -31,6 +31,7 @@ param registrationEnabled bool = false
 param resourceLock string = 'NotSpecified'
 
 var lockName = toLower('${privateDnsZone.name}-${resourceLock}-lck')
+var vnetLinkSuffix = '-vlnk'
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: name
@@ -40,7 +41,7 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 
 resource privateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = [for virtualNetworkResourceId in virtualNetworkResourceIds: if (enableVirtualNeworkLink) {
   parent: privateDnsZone
-  name: last(split(virtualNetworkResourceId, '/'))
+  name: '${last(split(virtualNetworkResourceId, '/'))}${vnetLinkSuffix}'
   location: location
   properties: {
     registrationEnabled: registrationEnabled
