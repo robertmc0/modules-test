@@ -38,7 +38,8 @@
 ##===================================================================================#>
 ### Possible improvement to dynmaically get the download URL ###
 $dotnetFilename = "dotnet_installer.exe"
-$dotnetRemoteURL = "https://download.visualstudio.microsoft.com/download/pr/175ea216-cfde-4fab-8184-c19ce4c1e349/05f550b728c9f53e3e14ec54f40f42aa/dotnet-runtime-6.0.7-win-x64.exe"
+$dotnetRemoteURL = "https://download.visualstudio.microsoft.com/download/pr/c246f2b8-da39-4b12-b87d-bf89b6b51298/2d43d4ded4b6a0c4d1a0b52f0b9a3b30/dotnet-sdk-6.0.302-win-x64.exe
+"
 
 $npmFilename = "npm_installer.msi"
 $npmRemoteURL = "https://nodejs.org/dist/v16.16.0/node-v16.16.0-x64.msi"
@@ -55,9 +56,15 @@ function install_dotnet() {
       Install dotnet
   #>
   try {
-    $version = dotnet --version
-    if ($version[0] -ne '6') {
-      throw "incorrect version"
+    $versionCheck = $false
+    $versions = dotnet --list-sdks
+    foreach ($version in $versions) {
+      if ($version[0] -eq '6') {
+        $versionCheck = $true
+      }
+    }
+    if (!$versionCheck) {
+      throw ".NET version 6 not found"
     }
   }
   catch {
