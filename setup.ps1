@@ -36,7 +36,7 @@
 <##====================================================================================
 	GLOBAL VARIABLES
 ##===================================================================================#>
-### variables ###
+### Possible improvement to dynmaically get the download URL ###
 $dotnetFilename = "dotnet_installer.exe"
 $dotnetRemoteURL = "https://download.visualstudio.microsoft.com/download/pr/175ea216-cfde-4fab-8184-c19ce4c1e349/05f550b728c9f53e3e14ec54f40f42aa/dotnet-runtime-6.0.7-win-x64.exe"
 
