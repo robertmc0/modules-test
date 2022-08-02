@@ -19,15 +19,15 @@ To update the Bicep registry module tool, run the following:
 
 In rare occasions where VS studio was installed before .NET framework, the nuget pacakge source configuration can be pointing to the wrong area.  In which case, you will see the following error:
 
-![GitHub Flow](docs/media/nuget-offline-package.png)
+![Nuget Offline Package](docs/media/nuget-offline-package.png)
 
 To resolve this, navigate to the nuget options configuration within VS studio as per following diagram:
 
-![GitHub Flow](docs/media/vs-options-nuget-package-source-missing.png)
+![Nuget Package Source Missing](docs/media/vs-options-nuget-package-source-missing.png)
 
 Add the entry for Nuget API as per the following diagram.  The latest configuration is available at this [link](https://docs.microsoft.com/en-us/nuget/consume-packages/configuring-nuget-behavior)
 
-![GitHub Flow](docs/media/vs-options-nuget-package-source-online.png)
+![Nuget Package Source Added](docs/media/vs-options-nuget-package-source-online.png)
 
 To update the Bicep CLI, run the following:
 
