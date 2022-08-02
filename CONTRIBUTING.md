@@ -14,7 +14,7 @@ The following instructions help guide you with the development of Arinco Bicep m
 - Install relevant NPM packages by running:
   - 'npm install' **in the repo's root directory**
 
-There's a [setup](.scripts/setup.ps1) script which will install all items above with the **default** options.
+There's a [setup](./scripts/setup.ps1) script which will install all items above with the **default** options.
 
 The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore when contributing, ensure you have the latest version of the Bicep registry module tool and Bicep CLI installed.
 
