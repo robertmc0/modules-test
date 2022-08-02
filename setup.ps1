@@ -81,7 +81,6 @@ function install_npm() {
   #>
   try {
     npm --version
-    throw "test error"
   }
   catch {
     Write-Output "npm not found, downloading and installing"
