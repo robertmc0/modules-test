@@ -13,4 +13,5 @@
   "files.insertFinalNewline": false,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
+  "prettier.prettierPath": "%USERPROFILE%\\.vscode\\extensions\\esbenp.prettier-vscode-9.5.0\\node_modules\\prettier"
 }

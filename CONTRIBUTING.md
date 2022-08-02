@@ -10,9 +10,6 @@ The following instructions help guide you with the development of Arinco Bicep m
 - Install the following VSCode extensions as they are used for code formatting:
   - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep)
   - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-- Install [NPM](https://nodejs.org/en/download/)
-- Install relevant NPM packages by running:
-  - 'npm install' **in the repo's root directory**
 
 The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore when contributing, ensure you have the latest version of the Bicep registry module tool and Bicep CLI installed.
 
