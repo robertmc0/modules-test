@@ -123,7 +123,11 @@ function cleanup() {
 <##====================================================================================
 	MAIN CODE
 ##===================================================================================#>
-install_dotnet
-install_npm
-install_vscode_extension
-cleanup
+try {
+  install_dotnet
+  install_npm
+  install_vscode_extension
+}
+finally {
+  cleanup
+}
