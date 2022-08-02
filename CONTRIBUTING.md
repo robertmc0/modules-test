@@ -17,6 +17,18 @@ To update the Bicep registry module tool, run the following:
 
 - `dotnet tool update --global azure.bicep.registrymoduletool`
 
+In rare occasions where VS studio was installed before .NET framework, the nuget pacakge source configuration can be pointing to the wrong area.  In which case, you will see the following error:
+
+![GitHub Flow](docs/media/nuget-offline-package.png)
+
+To resolve this, navigate to the nuget options configuration within VS studio as per following diagram:
+
+![GitHub Flow](docs/media/vs-otpions-nuget-pacakge-source-missing.png)
+
+Add the entry for Nuget API as per the following diagram:
+
+![GitHub Flow](docs/media/vs-otpions-nuget-pacakge-source-online.png)
+
 To update the Bicep CLI, run the following:
 
 - `az bicep upgrade`
