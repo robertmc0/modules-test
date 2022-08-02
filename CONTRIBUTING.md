@@ -23,11 +23,11 @@ In rare occasions where VS studio was installed before .NET framework, the nuget
 
 To resolve this, navigate to the nuget options configuration within VS studio as per following diagram:
 
-![GitHub Flow](docs/media/vs-otpions-nuget-pacakge-source-missing.png)
+![GitHub Flow](docs/media/vs-options-nuget-package-source-missing.png)
 
 Add the entry for Nuget API as per the following diagram:
 
-![GitHub Flow](docs/media/vs-otpions-nuget-pacakge-source-online.png)
+![GitHub Flow](docs/media/vs-otpions-nuget-package-source-online.png)
 
 To update the Bicep CLI, run the following:
 
