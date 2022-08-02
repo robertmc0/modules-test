@@ -1,0 +1,216 @@
+@description('The resource name.')
+param name string
+
+@description('The geo-location where the resource lives.')
+param location string
+
+@description('Optional. Resource tags.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
+param tags object = {}
+
+@description('The sku of this virtual network gateway.')
+@allowed([
+  'Basic'
+  'ErGw1AZ'
+  'ErGw2AZ'
+  'ErGw3AZ'
+  'HighPerformance'
+  'Standard'
+  'UltraPerformance'
+  'VpnGw1'
+  'VpnGw1AZ'
+  'VpnGw2'
+  'VpnGw2AZ'
+  'VpnGw3'
+  'VpnGw3AZ'
+  'VpnGw4'
+  'VpnGw4AZ'
+  'VpnGw5'
+  'VpnGw5AZ'
+])
+param sku string
+
+@description('The type of this virtual network gateway.')
+@allowed([
+  'ExpressRoute'
+  'LocalGateway'
+  'Vpn'
+])
+param gatewayType string
+
+@description('Optional. The type of this virtual network gateway.')
+@allowed([
+  'PolicyBased'
+  'RouteBased'
+])
+param vpnType string = 'RouteBased'
+
+@description('Name of the virtual network gateway public IP address.')
+param publicIpAddressName string
+
+@description('Optional. A list of availability zones denoting the zone in which the virtual network gateway public IP address should be deployed.')
+@allowed([
+  '1'
+  '2'
+  '3'
+])
+param availabilityZones array = []
+
+@description('Resource ID of the virtual network gateway subnet.')
+param subnetResourceId string
+
+@description('Optional. Enable diagnostic logging.')
+param enableDiagnostics bool = false
+
+@description('Optional. The name of log category groups that will be streamed.')
+@allowed([
+  'Audit'
+  'AllLogs'
+])
+param diagnosticLogCategoryGroupsToEnable array = [
+  'Audit'
+]
+
+@description('Optional. The name of metrics that will be streamed.')
+@allowed([
+  'AllMetrics'
+])
+param diagnosticMetricsToEnable array = [
+  'AllMetrics'
+]
+
+@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
+@minValue(0)
+@maxValue(365)
+param diagnosticLogsRetentionInDays int = 365
+
+@description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
+param diagnosticStorageAccountId string = ''
+
+@description('Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.')
+param diagnosticLogAnalyticsWorkspaceId string = ''
+
+@description('Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.')
+param diagnosticEventHubAuthorizationRuleId string = ''
+
+@description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
+param diagnosticEventHubName string = ''
+
+@description('Optional. Specify the type of resource lock.')
+@allowed([
+  'NotSpecified'
+  'ReadOnly'
+  'CanNotDelete'
+])
+param resourceLock string = 'NotSpecified'
+
+var lockName = toLower('${virtualNetworkGateway.name}-${resourceLock}-lck')
+
+var vnetGatewayDiagnosticsName = toLower('${virtualNetworkGateway.name}-dgs')
+
+var publicIpDiagnosticsName = toLower('${publicIp.name}-dgs')
+
+var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+  categoryGroup: categoryGroup
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
+
+var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
+  category: metric
+  timeGrain: null
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
+
+resource publicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+  name: publicIpAddressName
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+  }
+  zones: availabilityZones
+}
+
+resource diagnosticsPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+  scope: virtualNetworkGateway
+  name: publicIpDiagnosticsName
+  properties: {
+    workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
+    storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
+  }
+}
+
+resource virtualNetworkGateway 'Microsoft.Network/virtualNetworkGateways@2022-01-01' = {
+  name: name
+  location: location
+  tags: tags
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'default'
+        properties: {
+          privateIPAllocationMethod: 'Dynamic'
+          subnet: {
+            id: subnetResourceId
+          }
+          publicIPAddress: {
+            id: publicIp.id
+          }
+        }
+      }
+    ]
+    sku: {
+      name: sku
+      tier: sku
+    }
+    gatewayType: gatewayType
+    vpnType: vpnType
+  }
+}
+
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+  scope: virtualNetworkGateway
+  name: lockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+  }
+}
+
+resource diagnosticsVnetGateway 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+  scope: virtualNetworkGateway
+  name: vnetGatewayDiagnosticsName
+  properties: {
+    workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
+    storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
+  }
+}
+
+@description('The name of the deployed virtual network gateway.')
+output name string = virtualNetworkGateway.name
+
+@description('The resource ID of the deployed virtual network gateway.')
+output resourceId string = virtualNetworkGateway.id
