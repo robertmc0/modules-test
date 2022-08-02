@@ -25,7 +25,7 @@ To resolve this, navigate to the nuget options configuration within VS studio as
 
 ![GitHub Flow](docs/media/vs-options-nuget-package-source-missing.png)
 
-Add the entry for Nuget API as per the following diagram:
+Add the entry for Nuget API as per the following diagram.  The latest configuration is available at this [link](https://docs.microsoft.com/en-us/nuget/consume-packages/configuring-nuget-behavior)
 
 ![GitHub Flow](docs/media/vs-options-nuget-package-source-online.png)
 
