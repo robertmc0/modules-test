@@ -93,7 +93,9 @@ param resourceLock string = 'NotSpecified'
 
 var lockName = toLower('${bastion.name}-${resourceLock}-lck')
 
-var diagnosticsName = toLower('${bastion.name}-dgs')
+var bastionDiagnosticsName = toLower('${bastion.name}-dgs')
+
+var publicIpDiagnosticsName = toLower('${publicIp.name}-dgs')
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
@@ -122,6 +124,19 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   }
   properties: {
     publicIPAllocationMethod: 'Static'
+  }
+}
+
+resource diagnosticsPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+  scope: publicIp
+  name: publicIpDiagnosticsName
+  properties: {
+    workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
+    storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
   }
 }
 
@@ -165,9 +180,9 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != '
   }
 }
 
-resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+resource diagnosticsBastion 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
   scope: bastion
-  name: diagnosticsName
+  name: bastionDiagnosticsName
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId

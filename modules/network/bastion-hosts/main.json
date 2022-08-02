@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "18292115739539180518"
+      "templateHash": "9794441130269673086"
     }
   },
   "parameters": {
@@ -214,7 +214,8 @@
       }
     ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
-    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+    "bastionDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "publicIpDiagnosticsName": "[toLower(format('{0}-dgs', parameters('publicIpAddressName')))]"
   },
   "resources": [
     {
@@ -228,6 +229,24 @@
       "properties": {
         "publicIPAllocationMethod": "Static"
       }
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', parameters('publicIpAddressName'))]",
+      "name": "[variables('publicIpDiagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
+      ]
     },
     {
       "type": "Microsoft.Network/bastionHosts",
@@ -283,7 +302,7 @@
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
       "scope": "[format('Microsoft.Network/bastionHosts/{0}', parameters('name'))]",
-      "name": "[variables('diagnosticsName')]",
+      "name": "[variables('bastionDiagnosticsName')]",
       "properties": {
         "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
         "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
