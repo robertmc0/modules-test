@@ -27,7 +27,7 @@ To resolve this, navigate to the nuget options configuration within VS studio as
 
 Add the entry for Nuget API as per the following diagram:
 
-![GitHub Flow](docs/media/vs-otpions-nuget-package-source-online.png)
+![GitHub Flow](docs/media/vs-options-nuget-package-source-online.png)
 
 To update the Bicep CLI, run the following:
 
