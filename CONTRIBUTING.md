@@ -10,6 +10,7 @@ The following instructions help guide you with the development of Arinco Bicep m
 - Install the following VSCode extensions as they are used for code formatting:
   - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep)
   - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+    - make sure _prettier path_ in VS code's setting is set to `""`
 
 The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore when contributing, ensure you have the latest version of the Bicep registry module tool and Bicep CLI installed.
 
@@ -20,6 +21,8 @@ To update the Bicep registry module tool, run the following:
 To update the Bicep CLI, run the following:
 
 - `az bicep upgrade`
+
+If you run into any issues during installation, please refer to [Troubleshooting](./TROUBLESHOOTING.md) for information
 
 ## Branching
 
