@@ -61,6 +61,7 @@ function install_dotnet() {
     foreach ($version in $versions) {
       if ($version[0] -eq '6') {
         $versionCheck = $true
+        break
       }
     }
     if (!$versionCheck) {
