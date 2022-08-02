@@ -18,7 +18,7 @@ To update the Bicep registry module tool, run the following:
 
 - `dotnet tool update --global azure.bicep.registrymoduletool`
 
-In rare occasions where VS studio was installed before .NET framework, the nuget pacakge source configuration can be pointing to the wrong area. In which case, you will see the following error:
+In rare occasions where VS studio was installed before .NET framework, the nuget package source configuration can be pointing to the wrong area. In which case, you will see the following error:
 
 ![Nuget Offline Package](docs/media/nuget-offline-package.png)
 
