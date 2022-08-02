@@ -10,6 +10,7 @@ The following instructions help guide you with the development of Arinco Bicep m
 - Install the following VSCode extensions as they are used for code formatting:
   - [Bicep](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep)
   - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+    - make sure _prettier path_ in VS code's setting is set to '""'
 
 The build and deployment workflows associated with this repository will always use the latest version of bicep. Therefore when contributing, ensure you have the latest version of the Bicep registry module tool and Bicep CLI installed.
 
@@ -17,7 +18,7 @@ To update the Bicep registry module tool, run the following:
 
 - `dotnet tool update --global azure.bicep.registrymoduletool`
 
-In rare occasions where VS studio was installed before .NET framework, the nuget pacakge source configuration can be pointing to the wrong area.  In which case, you will see the following error:
+In rare occasions where VS studio was installed before .NET framework, the nuget pacakge source configuration can be pointing to the wrong area. In which case, you will see the following error:
 
 ![Nuget Offline Package](docs/media/nuget-offline-package.png)
 
@@ -25,7 +26,7 @@ To resolve this, navigate to the nuget options configuration within VS studio as
 
 ![Nuget Package Source Missing](docs/media/vs-options-nuget-package-source-missing.png)
 
-Add the entry for Nuget API as per the following diagram.  The latest configuration is available at this [link](https://docs.microsoft.com/en-us/nuget/consume-packages/configuring-nuget-behavior)
+Add the entry for Nuget API as per the following diagram. The latest configuration is available at this [link](https://docs.microsoft.com/en-us/nuget/consume-packages/configuring-nuget-behavior)
 
 ![Nuget Package Source Added](docs/media/vs-options-nuget-package-source-online.png)
 
