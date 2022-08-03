@@ -4,17 +4,24 @@ param targetResourceName string
 @description('Resource Id of the target resource for which to create the Private Endpoint.')
 param targetResourceId string
 
-@description('Private Endpoint type.')
-@allowed([
-  'blob'
-  'table'
-  'queue'
-  'file'
-  'web'
-  'dfs'
-  'vault'
-])
-param type string
+@description('The type of sub-resource for the target resource that the private endpoint will be able to access.')
+@metadata({
+  examples: [
+    'blob'
+    'table'
+    'queue'
+    'file'
+    'web'
+    'dfs'
+    'vault'
+    'sqlServer'
+    'searchService'
+    'gateway'
+    'namespace'
+    'managedInstance'
+  ]
+})
+param targetSubResourceType string
 
 @description('Location of the resource.')
 param location string
@@ -24,6 +31,9 @@ param subnetId string
 
 @description('Resource ID of the Private DNS Zone to host the Private Endpoint.')
 param privateDnsZoneId string
+
+@description('Optional. Private endpoint DNS Group Name. Defaults to default.')
+param privateDNSZoneGroupName string = 'default'
 
 @allowed([
   'CanNotDelete'
@@ -35,42 +45,45 @@ param resourcelock string = 'NotSpecified'
 
 var lockName = toLower('${privateEndpoint.name}-${resourcelock}-lck')
 
-var privateEndpointName = toLower('${targetResourceName}-${type}-pe')
+var privateEndpointName = toLower('${targetResourceName}-${toLower(targetSubResourceType)}-pe')
 
-var privateLinkServiceName = toLower('${targetResourceName}-${type}-plink')
+var privateLinkServiceName = toLower('${targetResourceName}-${toLower(targetSubResourceType)}-plink')
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2020-06-01' = {
+var networkInterfaceName = '${privateEndpointName}-nic'
+
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
   name: privateEndpointName
   location: location
   properties: {
     subnet: {
       id: subnetId
     }
+    customNetworkInterfaceName: networkInterfaceName
     privateLinkServiceConnections: [
       {
         name: privateLinkServiceName
         properties: {
           privateLinkServiceId: targetResourceId
           groupIds: [
-            type
+            targetSubResourceType
           ]
         }
       }
     ]
   }
-}
 
-resource privateDNSZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-06-01' = {
-  name: '${privateEndpoint.name}/default'
-  properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: 'default'
-        properties: {
-          privateDnsZoneId: privateDnsZoneId
+  resource privateDNSZoneGroup 'privateDnsZoneGroups@2022-01-01' = {
+    name: privateDNSZoneGroupName
+    properties: {
+      privateDnsZoneConfigs: [
+        {
+          name: privateDNSZoneGroupName
+          properties: {
+            privateDnsZoneId: privateDnsZoneId
+          }
         }
-      }
-    ]
+      ]
+    }
   }
 }
 
