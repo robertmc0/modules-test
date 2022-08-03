@@ -101,8 +101,6 @@ output name string = privateEndpoint.name
 @description('The resource ID of the private endpoint.')
 output resourceId string = privateEndpoint.id
 
-//var ipConfig = reference(networkInterfaceName, '2021-08-01', 'Full').properties.ipConfigurations[0]
-
 // Use a module to extract the network interface details of a private endpoint
 // This is required due to issues with using reference() against the private endpoint Nic
 module nicInfo 'nicInfo.bicep' = {
