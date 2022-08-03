@@ -4,8 +4,6 @@ GLOBAL CONFIGURATION
 @description('The location to deploy resources to.')
 param location string = resourceGroup().location
 
-var privateDnsZoneService = 'vault'
-
 var privateDnsZoneDns = 'privatelink.vaultcore.azure.net'
 
 /*======================================================================
@@ -58,10 +56,10 @@ module privateEndpoint '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-private-endpoint'
   params: {
     location: location
-    type: privateDnsZoneService
     resourcelock: 'CanNotDelete'
     targetResourceId: keyVault.id
     targetResourceName: keyVault.name
+    targetSubResourceType: 'vault'
     subnetId: vnet.properties.subnets[0].id
     privateDnsZoneId: privateDnsZone.id
   }
