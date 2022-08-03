@@ -1,0 +1,141 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.9.1.41621",
+      "templateHash": "9537314422364111698"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "bgpSettings": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "asn": "Integer containing the BGP speaker ASN.",
+        "bgpPeeringAddress": "The BGP peering address and BGP identifier of this BGP speaker.",
+        "bgpPeeringAddresses": [
+          {
+            "customBgpIpAddresses": [
+              "The list of custom BGP peering addresses which belong to IP configuration."
+            ],
+            "ipconfigurationId": "The ID of IP configuration which belongs to gateway."
+          }
+        ],
+        "peerWeight": "Integer containing the weight added to routes learned from this BGP speaker.",
+        "description": "Optional. Local network gateway BGP speaker settings."
+      }
+    },
+    "addressPrefixes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "A list of address blocks reserved for this virtual network in CIDR notation."
+      }
+    },
+    "endpointType": {
+      "type": "string",
+      "allowedValues": [
+        "fqdn",
+        "ipAddress"
+      ],
+      "metadata": {
+        "description": "The endpoint type of the local network gateway."
+      }
+    },
+    "endpoint": {
+      "type": "string",
+      "metadata": {
+        "fqdn": "FQDN of local network gateway",
+        "ipAddress": "IP address of local network gateway.",
+        "description": "The endpoint of the local network gateway. Either FQDN or IpAddress."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      },
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ]
+    }
+  },
+  "variables": {
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/localNetworkGateways",
+      "apiVersion": "2022-01-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "bgpSettings": "[parameters('bgpSettings')]",
+        "fqdn": "[if(equals(parameters('endpointType'), 'fqdn'), parameters('endpoint'), null())]",
+        "gatewayIpAddress": "[if(equals(parameters('endpointType'), 'ipAddress'), parameters('endpoint'), null())]",
+        "localNetworkAddressSpace": {
+          "addressPrefixes": "[parameters('addressPrefixes')]"
+        }
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Network/localNetworkGateways/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/localNetworkGateways', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed local network gateway."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/localNetworkGateways', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed local network gateway."
+      }
+    }
+  }
+}
