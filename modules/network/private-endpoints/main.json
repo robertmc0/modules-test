@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.8.9.13224",
-      "templateHash": "12057828048644255719"
+      "templateHash": "9387876821232475737"
     }
   },
   "parameters": {
@@ -21,19 +21,24 @@
         "description": "Resource Id of the target resource for which to create the Private Endpoint."
       }
     },
-    "type": {
+    "targetSubResourceType": {
       "type": "string",
-      "allowedValues": [
-        "blob",
-        "table",
-        "queue",
-        "file",
-        "web",
-        "dfs",
-        "vault"
-      ],
       "metadata": {
-        "description": "Private Endpoint type."
+        "examples": [
+          "blob",
+          "table",
+          "queue",
+          "file",
+          "web",
+          "dfs",
+          "vault",
+          "sqlServer",
+          "searchService",
+          "gateway",
+          "namespace",
+          "managedInstance"
+        ],
+        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access."
       }
     },
     "location": {
@@ -54,6 +59,13 @@
         "description": "Resource ID of the Private DNS Zone to host the Private Endpoint."
       }
     },
+    "privateDNSZoneGroupName": {
+      "type": "string",
+      "defaultValue": "default",
+      "metadata": {
+        "description": "Optional. Private endpoint DNS Group Name. Defaults to default."
+      }
+    },
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
@@ -69,40 +81,19 @@
   },
   "variables": {
     "lockName": "[toLower(format('{0}-{1}-lck', variables('privateEndpointName'), parameters('resourcelock')))]",
-    "privateEndpointName": "[toLower(format('{0}-{1}-pe', parameters('targetResourceName'), parameters('type')))]",
-    "privateLinkServiceName": "[toLower(format('{0}-{1}-plink', parameters('targetResourceName'), parameters('type')))]"
+    "privateEndpointName": "[toLower(format('{0}-{1}-pe', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
+    "privateLinkServiceName": "[toLower(format('{0}-{1}-plink', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
+    "networkInterfaceName": "[format('{0}-nic', variables('privateEndpointName'))]"
   },
   "resources": [
     {
-      "type": "Microsoft.Network/privateEndpoints",
-      "apiVersion": "2020-06-01",
-      "name": "[variables('privateEndpointName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "subnet": {
-          "id": "[parameters('subnetId')]"
-        },
-        "privateLinkServiceConnections": [
-          {
-            "name": "[variables('privateLinkServiceName')]",
-            "properties": {
-              "privateLinkServiceId": "[parameters('targetResourceId')]",
-              "groupIds": [
-                "[parameters('type')]"
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
       "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
-      "apiVersion": "2020-06-01",
-      "name": "[format('{0}/default', variables('privateEndpointName'))]",
+      "apiVersion": "2022-01-01",
+      "name": "[format('{0}/{1}', variables('privateEndpointName'), parameters('privateDNSZoneGroupName'))]",
       "properties": {
         "privateDnsZoneConfigs": [
           {
-            "name": "default",
+            "name": "[parameters('privateDNSZoneGroupName')]",
             "properties": {
               "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
             }
@@ -112,6 +103,29 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
       ]
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2021-08-01",
+      "name": "[variables('privateEndpointName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "subnet": {
+          "id": "[parameters('subnetId')]"
+        },
+        "customNetworkInterfaceName": "[variables('networkInterfaceName')]",
+        "privateLinkServiceConnections": [
+          {
+            "name": "[variables('privateLinkServiceName')]",
+            "properties": {
+              "privateLinkServiceId": "[parameters('targetResourceId')]",
+              "groupIds": [
+                "[parameters('targetSubResourceType')]"
+              ]
+            }
+          }
+        ]
+      }
     },
     {
       "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
