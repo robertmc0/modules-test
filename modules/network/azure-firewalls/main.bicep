@@ -266,3 +266,6 @@ output name string = firewall.name
 
 @description('The resource ID of the deployed Azure firewall.')
 output resourceId string = firewall.id
+
+@description('Private IP address of the deployed Azure firewall.')
+output privateIpAddress string = firewall.properties.ipConfigurations[0].properties.privateIPAddress

@@ -41,10 +41,11 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                                     |
-| :--------- | :----: | :---------------------------------------------- |
-| name       | string | The name of the deployed Azure firewall.        |
-| resourceId | string | The resource ID of the deployed Azure firewall. |
+| Name             | Type   | Description                                        |
+| :--------------- | :----: | :------------------------------------------------- |
+| name             | string | The name of the deployed Azure firewall.           |
+| resourceId       | string | The resource ID of the deployed Azure firewall.    |
+| privateIpAddress | string | Private IP address of the deployed Azure firewall. |
 
 ## Examples
 

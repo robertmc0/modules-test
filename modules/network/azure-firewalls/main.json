@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "17413684833936503594"
+      "templateHash": "6775599810287980968"
     }
   },
   "parameters": {
@@ -392,6 +392,13 @@
       "value": "[resourceId('Microsoft.Network/azureFirewalls', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed Azure firewall."
+      }
+    },
+    "privateIpAddress": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/azureFirewalls', parameters('name'))).ipConfigurations[0].properties.privateIPAddress]",
+      "metadata": {
+        "description": "Private IP address of the deployed Azure firewall."
       }
     }
   }
