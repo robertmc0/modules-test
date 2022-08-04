@@ -1,0 +1,92 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.9.1.41621",
+      "templateHash": "13291829956867478569"
+    }
+  },
+  "parameters": {
+    "firewallPolicyName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing firewall policy."
+      }
+    },
+    "rules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/firewallpolicies/rulecollectiongroups?tabs=bicep",
+        "example": {
+          "ruleCollectionGroupName": "string",
+          "priority": "int",
+          "ruleCollections": [
+            {
+              "name": "string",
+              "action": {
+                "type": "string"
+              },
+              "priority": "int",
+              "ruleCollectionType": "string",
+              "rules": [
+                {
+                  "ruleType": "string",
+                  "name": "string",
+                  "ipProtocols": [
+                    "string"
+                  ],
+                  "sourceAddresses": [
+                    "string"
+                  ],
+                  "destinationAddresses": [
+                    "string"
+                  ],
+                  "destinationPorts": [
+                    "string"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "description": "Optional. Firewall policy rules."
+      }
+    }
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "ruleCollectionGroups",
+        "count": "[length(parameters('rules'))]",
+        "mode": "serial",
+        "batchSize": 1
+      },
+      "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+      "apiVersion": "2022-01-01",
+      "name": "[format('{0}/{1}', parameters('firewallPolicyName'), parameters('rules')[copyIndex()].ruleCollectionGroupName)]",
+      "properties": {
+        "priority": "[parameters('rules')[copyIndex()].priority]",
+        "ruleCollections": "[parameters('rules')[copyIndex()].ruleCollections]"
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('firewallPolicyName')]",
+      "metadata": {
+        "description": "The name of the deployed firewall policy."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicyName'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed firewall policy."
+      }
+    }
+  }
+}
