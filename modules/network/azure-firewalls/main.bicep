@@ -34,14 +34,18 @@ param subnetResourceId string
 @description('Name of the Azure firewall public IP address.')
 param publicIpAddressName string
 
-@description('Optional. Resource ID of the Azure firewall management subnet.')
-param mgmtSubnetResourceId string = ''
-
-@description('Optional. Name of the Azure firewall management public IP address.')
-param mgmtPublicIpAddressName string = ''
+@description('Optional. IP configuration of the Azure Firewall used for management traffic.')
+@metadata({
+  subnetResourceId: 'Resource ID of the Azure firewall management subnet.'
+  publicIpAddressName: 'Name of the Azure firewall management public IP address.'
+})
+param firewallManagementConfiguration object = {}
 
 @description('Firewall policy name.')
 param policyName string
+
+@description('Optional. The operation mode for Threat Intelligence.')
+param threatIntelMode string = 'Alert'
 
 @description('Optional. Enable DNS Proxy on Firewalls attached to the Firewall Policy.')
 param enableDnsProxy bool = false
@@ -105,7 +109,7 @@ var lockName = toLower('${firewall.name}-${resourceLock}-lck')
 
 var publicIpFirewallDiagnosticsName = toLower('${publicIpFirewall.name}-dgs')
 
-var publicIpFirewallMgmtDiagnosticsName = !empty(mgmtPublicIpAddressName) ? toLower('${publicIpFirewallMgmt.name}-dgs') : 'placeholder' //placeholder value added as name cannot be null or empty and is evaulated.
+var publicIpFirewallMgmtDiagnosticsName = toLower('${publicIpFirewallMgmt.name}-dgs')
 
 var firewallDiagnosticsName = toLower('${firewall.name}-dgs')
 
@@ -154,8 +158,8 @@ resource diagnosticsPublicIpFirewall 'Microsoft.Insights/diagnosticSettings@2021
   }
 }
 
-resource publicIpFirewallMgmt 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (!empty(mgmtPublicIpAddressName)) {
-  name: !empty(mgmtPublicIpAddressName) ? mgmtPublicIpAddressName : 'placeholder' //placeholder value added as name cannot be null or empty and is evaulated.
+resource publicIpFirewallMgmt 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (!empty(firewallManagementConfiguration)) {
+  name: !empty(firewallManagementConfiguration) ? firewallManagementConfiguration.publicIpAddressName : 'placeholder' //placeholder value added as name cannot be null or empty and is evaulated.
   location: location
   tags: tags
   sku: {
@@ -167,7 +171,7 @@ resource publicIpFirewallMgmt 'Microsoft.Network/publicIPAddresses@2022-01-01' =
   zones: availabilityZones
 }
 
-resource diagnosticsPublicIpFirewallMgmt 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(mgmtPublicIpAddressName) && (enableDiagnostics)) {
+resource diagnosticsPublicIpFirewallMgmt 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(firewallManagementConfiguration) && (enableDiagnostics)) {
   scope: publicIpFirewallMgmt
   name: publicIpFirewallMgmtDiagnosticsName
   properties: {
@@ -202,11 +206,11 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
         }
       }
     ]
-    managementIpConfiguration: !empty(mgmtSubnetResourceId) && !empty(mgmtPublicIpAddressName) ? {
+    managementIpConfiguration: !empty(firewallManagementConfiguration) ? {
       name: publicIpFirewallMgmt.name
       properties: {
         subnet: {
-          id: mgmtSubnetResourceId
+          id: firewallManagementConfiguration.subnetResourceId
         }
         publicIPAddress: {
           id: publicIpFirewallMgmt.id
@@ -228,6 +232,7 @@ resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' = {
       enableProxy: enableDnsProxy
       servers: customDnsServers
     }
+    threatIntelMode: threatIntelMode
     sku: {
       tier: tier
     }

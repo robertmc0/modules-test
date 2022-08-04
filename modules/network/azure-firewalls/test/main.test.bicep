@@ -100,8 +100,10 @@ module firewall '../main.bicep' = {
     subnetResourceId: '${vnet2.id}/subnets/AzureFirewallSubnet'
     publicIpAddressName: '${uniqueString(deployment().name, location)}-firewall-pip'
     policyName: '${uniqueString(deployment().name, location)}-firewall-tst-afwp'
-    mgmtPublicIpAddressName: '${uniqueString(deployment().name, location)}-firewallmgmt-pip'
-    mgmtSubnetResourceId: '${vnet2.id}/subnets/AzureFirewallManagementSubnet'
+    firewallManagementConfiguration: {
+      publicIpAddressName: '${uniqueString(deployment().name, location)}-firewallmgmt-pip'
+      subnetResourceId: '${vnet2.id}/subnets/AzureFirewallManagementSubnet'
+    }
     enableDnsProxy: true
     customDnsServers: [
       '10.1.2.3'

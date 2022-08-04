@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "14797933936573761592"
+      "templateHash": "17413684833936503594"
     }
   },
   "parameters": {
@@ -66,24 +66,26 @@
         "description": "Name of the Azure firewall public IP address."
       }
     },
-    "mgmtSubnetResourceId": {
-      "type": "string",
-      "defaultValue": "",
+    "firewallManagementConfiguration": {
+      "type": "object",
+      "defaultValue": {},
       "metadata": {
-        "description": "Optional. Resource ID of the Azure firewall management subnet."
-      }
-    },
-    "mgmtPublicIpAddressName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Name of the Azure firewall management public IP address."
+        "subnetResourceId": "Resource ID of the Azure firewall management subnet.",
+        "publicIpAddressName": "Name of the Azure firewall management public IP address.",
+        "description": "Optional. IP configuration of the Azure Firewall used for management traffic."
       }
     },
     "policyName": {
       "type": "string",
       "metadata": {
         "description": "Firewall policy name."
+      }
+    },
+    "threatIntelMode": {
+      "type": "string",
+      "defaultValue": "Alert",
+      "metadata": {
+        "description": "Optional. The operation mode for Threat Intelligence."
       }
     },
     "enableDnsProxy": {
@@ -223,7 +225,7 @@
     ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "publicIpFirewallDiagnosticsName": "[toLower(format('{0}-dgs', parameters('publicIpAddressName')))]",
-    "publicIpFirewallMgmtDiagnosticsName": "[if(not(empty(parameters('mgmtPublicIpAddressName'))), toLower(format('{0}-dgs', if(not(empty(parameters('mgmtPublicIpAddressName'))), parameters('mgmtPublicIpAddressName'), 'placeholder'))), 'placeholder')]",
+    "publicIpFirewallMgmtDiagnosticsName": "[toLower(format('{0}-dgs', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder')))]",
     "firewallDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
   },
   "resources": [
@@ -260,10 +262,10 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('mgmtPublicIpAddressName')))]",
+      "condition": "[not(empty(parameters('firewallManagementConfiguration')))]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2022-01-01",
-      "name": "[if(not(empty(parameters('mgmtPublicIpAddressName'))), parameters('mgmtPublicIpAddressName'), 'placeholder')]",
+      "name": "[if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {
@@ -275,10 +277,10 @@
       "zones": "[parameters('availabilityZones')]"
     },
     {
-      "condition": "[and(not(empty(parameters('mgmtPublicIpAddressName'))), parameters('enableDiagnostics'))]",
+      "condition": "[and(not(empty(parameters('firewallManagementConfiguration'))), parameters('enableDiagnostics'))]",
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
-      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', if(not(empty(parameters('mgmtPublicIpAddressName'))), parameters('mgmtPublicIpAddressName'), 'placeholder'))]",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'))]",
       "name": "[variables('publicIpFirewallMgmtDiagnosticsName')]",
       "properties": {
         "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
@@ -289,7 +291,7 @@
         "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('mgmtPublicIpAddressName'))), parameters('mgmtPublicIpAddressName'), 'placeholder'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'))]"
       ]
     },
     {
@@ -316,7 +318,7 @@
             }
           }
         ],
-        "managementIpConfiguration": "[if(and(not(empty(parameters('mgmtSubnetResourceId'))), not(empty(parameters('mgmtPublicIpAddressName')))), createObject('name', if(not(empty(parameters('mgmtPublicIpAddressName'))), parameters('mgmtPublicIpAddressName'), 'placeholder'), 'properties', createObject('subnet', createObject('id', parameters('mgmtSubnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('mgmtPublicIpAddressName'))), parameters('mgmtPublicIpAddressName'), 'placeholder'))))), null())]",
+        "managementIpConfiguration": "[if(not(empty(parameters('firewallManagementConfiguration'))), createObject('name', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'), 'properties', createObject('subnet', createObject('id', parameters('firewallManagementConfiguration').subnetResourceId), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'))))), null())]",
         "firewallPolicy": {
           "id": "[resourceId('Microsoft.Network/firewallPolicies', parameters('policyName'))]"
         }
@@ -324,7 +326,7 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/firewallPolicies', parameters('policyName'))]",
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]",
-        "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('mgmtPublicIpAddressName'))), parameters('mgmtPublicIpAddressName'), 'placeholder'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'))]"
       ]
     },
     {
@@ -338,6 +340,7 @@
           "enableProxy": "[parameters('enableDnsProxy')]",
           "servers": "[parameters('customDnsServers')]"
         },
+        "threatIntelMode": "[parameters('threatIntelMode')]",
         "sku": {
           "tier": "[parameters('tier')]"
         }
