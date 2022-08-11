@@ -35,6 +35,7 @@ async function generateModulesTable(github, context, fs, path) {
 
   const tags = await github.rest.repos.listTags({
     ...context.repo,
+    per_page: 100,
   });
 
   tags.data.forEach((x) => console.log(x.name));
