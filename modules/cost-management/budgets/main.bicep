@@ -1,3 +1,5 @@
+targetScope = 'subscription' // required for subscription level budgets
+
 @description('The resource name.')
 param name string
 

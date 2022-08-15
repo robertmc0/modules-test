@@ -1,8 +1,10 @@
 /*======================================================================
 GLOBAL CONFIGURATION
 ======================================================================*/
+targetScope = 'subscription'
+
 @description('Optional. The geo-location where the resource lives.')
-param location string = resourceGroup().location
+param location string = deployment().location
 
 /*======================================================================
 TEST EXECUTION

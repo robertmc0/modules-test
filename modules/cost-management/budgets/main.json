@@ -1,11 +1,11 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "14284707392718454437"
+      "templateHash": "6572002225584562965"
     }
   },
   "parameters": {
@@ -109,7 +109,7 @@
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.CostManagement/budgets', parameters('name'))]",
+      "value": "[subscriptionResourceId('Microsoft.CostManagement/budgets', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed budget."
       }
