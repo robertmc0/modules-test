@@ -1,0 +1,94 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.9.1.41621",
+      "templateHash": "7623032284917242518"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "keyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the existing key vault."
+      }
+    },
+    "value": {
+      "type": "string",
+      "metadata": {
+        "description": "The value of the secret."
+      }
+    },
+    "attributes": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "enabled": "Determines whether the object is enabled. Accepted values are \"true\" or \"false\".",
+        "exp": "Expiry date in seconds since 1970-01-01T00:00:00Z. Date/time format in epoch/ticks https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-date#datetimetoepoch.",
+        "nbf": "Not before date in seconds since 1970-01-01T00:00:00Z. Date/time format in epoch/ticks https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-date#datetimetoepoch.",
+        "description": "Optional. The attributes of the secret."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('name'))]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "value": "[parameters('value')]",
+        "attributes": "[parameters('attributes')]"
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed secret."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed secret."
+      }
+    },
+    "uri": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))).secretUri]",
+      "metadata": {
+        "description": "The uri of the deployed secret."
+      }
+    },
+    "uriWithVersion": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))).secretUriWithVersion]",
+      "metadata": {
+        "description": "The uri with version of the deployed secret."
+      }
+    }
+  }
+}
