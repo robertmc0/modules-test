@@ -425,7 +425,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = [for i 
     storageProfile: {
       imageReference: imageReference
       osDisk: {
-        name: '${name}${format('{0:D2}', i)}${osDiskSuffix}'
+        name: '${name}${format('{0:D2}', i + 1)}${osDiskSuffix}'
         createOption: 'FromImage'
         managedDisk: {
           storageAccountType: osStorageAccountType
