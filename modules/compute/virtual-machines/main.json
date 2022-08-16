@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "11272652787805355867"
+      "templateHash": "6045543022120098692"
     }
   },
   "parameters": {
@@ -422,10 +422,10 @@
     }
   },
   "variables": {
-    "lockSuffix": "lck",
-    "networkInterfaceSuffix": "nic",
-    "osDiskSuffix": "osdisk",
-    "dataDiskSuffix": "disk",
+    "lockSuffix": "-lck",
+    "networkInterfaceSuffix": "-nic",
+    "osDiskSuffix": "-osdisk",
+    "dataDiskSuffix": "-disk-",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
@@ -437,7 +437,7 @@
       },
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2022-01-01",
-      "name": "[format('{0}{1}-{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('networkInterfaceSuffix'))]",
+      "name": "[format('{0}{1}{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('networkInterfaceSuffix'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": {
@@ -486,12 +486,12 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}{1}-{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('networkInterfaceSuffix')))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}{1}{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('networkInterfaceSuffix')))]"
             }
           ]
         },
         "osProfile": {
-          "computerName": "[format('{0}{1}', parameters('name'), format('{0:D2}', range(0, parameters('instanceCount'))[copyIndex()]))]",
+          "computerName": "[format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "windowsConfiguration": "[if(not(empty(parameters('windowsConfiguration'))), parameters('windowsConfiguration'), null())]",
@@ -507,7 +507,7 @@
               "name": "dataDisks",
               "count": "[length(parameters('dataDisks'))]",
               "input": {
-                "name": "[format('{0}{1}-{2}{3}', parameters('name'), format('{0:D2}', range(0, parameters('instanceCount'))[copyIndex()]), variables('dataDiskSuffix'), format('{0:D3}', add(copyIndex('dataDisks'), 1)))]",
+                "name": "[format('{0}{1}{2}{3}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('dataDiskSuffix'), format('{0:D3}', add(copyIndex('dataDisks'), 1)))]",
                 "diskSizeGB": "[parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB]",
                 "lun": "[copyIndex('dataDisks')]",
                 "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
@@ -520,7 +520,7 @@
           ],
           "imageReference": "[parameters('imageReference')]",
           "osDisk": {
-            "name": "[format('{0}{1}_{2}', parameters('name'), format('{0:D2}', range(0, parameters('instanceCount'))[copyIndex()]), variables('osDiskSuffix'))]",
+            "name": "[format('{0}{1}{2}', parameters('name'), format('{0:D2}', range(0, parameters('instanceCount'))[copyIndex()]), variables('osDiskSuffix'))]",
             "createOption": "FromImage",
             "managedDisk": {
               "storageAccountType": "[parameters('osStorageAccountType')]"

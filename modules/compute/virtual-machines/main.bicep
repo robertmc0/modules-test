@@ -412,7 +412,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = [for i 
       ]
     }
     osProfile: {
-      computerName: '${name}${format('{0:D2}', i)}'
+      computerName: '${name}${format('{0:D2}', i + 1)}'
       adminUsername: adminUsername
       adminPassword: adminPassword
       windowsConfiguration: !empty(windowsConfiguration) ? windowsConfiguration : null
@@ -432,7 +432,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = [for i 
         }
       }
       dataDisks: [for (disk, index) in dataDisks: {
-        name: '${name}${format('{0:D2}', i)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
+        name: '${name}${format('{0:D2}', i + 1)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
         diskSizeGB: disk.diskSizeGB
         lun: index
         caching: disk.caching
