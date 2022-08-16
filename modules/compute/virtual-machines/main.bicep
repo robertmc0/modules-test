@@ -344,13 +344,13 @@ param antiMalwareConfiguration object = {}
 ])
 param resourceLock string = 'NotSpecified'
 
-var lockSuffix = 'lck'
+var lockSuffix = '-lck'
 
-var networkInterfaceSuffix = 'nic'
+var networkInterfaceSuffix = '-nic'
 
-var osDiskSuffix = 'osdisk'
+var osDiskSuffix = '-osdisk'
 
-var dataDiskSuffix = 'disk'
+var dataDiskSuffix = '-disk-'
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
@@ -360,7 +360,7 @@ var identity = identityType != 'None' ? {
 } : null
 
 resource networkInterface 'Microsoft.Network/networkInterfaces@2022-01-01' = [for i in range(0, instanceCount): {
-  name: '${name}${format('{0:D2}', i + 1)}-${networkInterfaceSuffix}'
+  name: '${name}${format('{0:D2}', i + 1)}${networkInterfaceSuffix}'
   location: location
   tags: tags
   properties: {
@@ -407,7 +407,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = [for i 
     networkProfile: {
       networkInterfaces: [
         {
-          id: az.resourceId('Microsoft.Network/networkInterfaces', '${name}${format('{0:D2}', i + 1)}-${networkInterfaceSuffix}')
+          id: az.resourceId('Microsoft.Network/networkInterfaces', '${name}${format('{0:D2}', i + 1)}${networkInterfaceSuffix}')
         }
       ]
     }
@@ -425,14 +425,14 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = [for i 
     storageProfile: {
       imageReference: imageReference
       osDisk: {
-        name: '${name}${format('{0:D2}', i)}_${osDiskSuffix}'
+        name: '${name}${format('{0:D2}', i)}${osDiskSuffix}'
         createOption: 'FromImage'
         managedDisk: {
           storageAccountType: osStorageAccountType
         }
       }
       dataDisks: [for (disk, index) in dataDisks: {
-        name: '${name}${format('{0:D2}', i)}-${dataDiskSuffix}${format('{0:D3}', index + 1)}'
+        name: '${name}${format('{0:D2}', i)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
         diskSizeGB: disk.diskSizeGB
         lun: index
         caching: disk.caching
