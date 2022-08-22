@@ -63,8 +63,6 @@ async function generateModulesTable(github, context, fs, path) {
     parameters
   )) {
     response.data.forEach((x) => {
-      console.log(`tag: ${x.name}`);
-
       const lastSlash = x.name.lastIndexOf("/");
       const name = x.name.substring(0, lastSlash);
       const version = x.name.substring(lastSlash + 1);
@@ -72,14 +70,13 @@ async function generateModulesTable(github, context, fs, path) {
       console.log(`tag: ${name} ${version}`);
 
       if (tagMap.has(name)) {
-        console.log(`checkVersion: ${version} ${tagMap.get(name)}`);
         if (checkVersion(version, tagMap.get(name)) == 1)
           tagMap.set(name, version);
       } else tagMap.set(name, version);
     });
   }
 
-  // print tags
+  console.log("Module versions");
   tagMap.forEach((v, k) => console.log(`${k}: ${v}`));
 
   for (const moduleGroup of moduleGroups) {
@@ -94,8 +91,7 @@ async function generateModulesTable(github, context, fs, path) {
 
       var version = "unknown";
       if (tagMap.has(modulePath)) {
-        version = tagMap[modulePath];
-        console.log(version);
+        version = tagMap.get(modulePath);
       } else console.log(`version missing for module: ${modulePath}`);
 
       const badgeUrl = new URL(`https://img.shields.io/badge/${version}-blue`);
