@@ -73,7 +73,8 @@ async function generateModulesTable(github, context, fs, path) {
 
       if (tagMap.has(name)) {
         console.log(`checkVersion: ${version} ${tagMap.get(name)}`);
-        if (checkVersion(version, tagMap[name]) == 1) tagMap.set(name, version);
+        if (checkVersion(version, tagMap.get(name)) == 1)
+          tagMap.set(name, version);
       } else tagMap.set(name, version);
     });
   }
