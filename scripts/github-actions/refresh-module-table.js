@@ -69,9 +69,10 @@ async function generateModulesTable(github, context, fs, path) {
       const name = x.name.substring(0, lastSlash);
       const version = x.name.substring(lastSlash + 1);
 
-      console.log(`tag: ${name}: ${version}`);
+      console.log(`tag: ${name} ${version}`);
 
       if (tagMap.has(name)) {
+        console.log(`checkVersion: ${version} ${tagMap[name]}`);
         if (checkVersion(version, tagMap[name]) == 1) tagMap.set(name, version);
       } else tagMap.set(name, version);
     });
