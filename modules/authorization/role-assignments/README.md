@@ -1,6 +1,6 @@
 # Role Assignments Module
 
-This module deploys Microsoft.Authorization roleAssignments
+This module deploys Microsoft.Authorization roleAssignments at the subscription level
 
 ## Description
 
