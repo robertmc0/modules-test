@@ -50,7 +50,7 @@ async function generateModulesTable(github, context, fs, path) {
   const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
-  const parameters = {
+  const listTagsParameters = {
     ...context.repo,
   };
 
@@ -60,7 +60,7 @@ async function generateModulesTable(github, context, fs, path) {
   // a tag is expected to be in the format moduleGroup/moduleName/major.minor.delta
   for await (const response of github.paginate.iterator(
     github.rest.repos.listTags,
-    parameters
+    listTagsParameters
   )) {
     response.data.forEach((x) => {
       const lastSlash = x.name.lastIndexOf("/");
@@ -160,16 +160,15 @@ async function createPullRequestToUpdateReadme(github, context, newReadme) {
   });
 
   // Create a pull request.
-  // const { data: prData } = await github.rest.pulls.create({
-  //   ...context.repo,
-  //   title: "🤖 Refresh module table",
-  //   head: branch,
-  //   base: "main",
-  //   maintainer_can_modify: true,
-  // });
+  const { data: prData } = await github.rest.pulls.create({
+    ...context.repo,
+    title: "🤖 Refresh module table",
+    head: branch,
+    base: "main",
+    maintainer_can_modify: true,
+  });
 
-  // return prData.html_url;
-  return "https://tempuri";
+  return prData.html_url;
 }
 
 /**
