@@ -23,6 +23,23 @@ function getSubdirNames(fs, dir) {
     .map((x) => x.name);
 }
 
+function checkVersion(a, b) {
+  const x = a.split(".").map((e) => parseInt(e, 10));
+  const y = b.split(".").map((e) => parseInt(e, 10));
+
+  for (const i in x) {
+    y[i] = y[i] || 0;
+    if (x[i] === y[i]) {
+      continue;
+    } else if (x[i] > y[i]) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
+  return y.length > x.length ? -1 : 0;
+}
+
 /**
  * @param {ReturnType<typeof import("@actions/github").getOctokit>} github
  * @param {typeof import("@actions/github").context} context
@@ -33,12 +50,31 @@ async function generateModulesTable(github, context, fs, path) {
   const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
-  const tags = await github.rest.repos.listTags({
+  const parameters = {
     ...context.repo,
-    per_page: 100,
-  });
+  };
 
-  tags.data.forEach((x) => console.log(x.name));
+  const tagMap = new Map();
+
+  // iterate through each page of tags and collect latest versioned tag by moduleGroup/moduleName
+  // a tag is expected to be in the format moduleGroup/moduleName/major.minor.delta
+  for await (const response of github.paginate.iterator(
+    github.rest.repos.listTags,
+    parameters
+  )) {
+    response.data.forEach((x) => {
+      const lastSlash = x.name.lastIndexOf("/");
+      const name = x.name.substring(0, lastSlash);
+      const version = x.name.substring(lastSlash + 1);
+
+      if (tagMap.has(name)) {
+        if (checkVersion(version, tagMap[name]) == 1) tagMap.set(name, version);
+      } else tagMap.set(name, version);
+    });
+  }
+
+  // print tags
+  tagMap.forEach((v, k) => console.log(`${k}: ${v}`));
 
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
@@ -51,11 +87,10 @@ async function generateModulesTable(github, context, fs, path) {
       console.log(modulePath);
 
       var version = "unknown";
-      var tag = tags.data.find((x) => x.name.startsWith(`${modulePath}/`));
-      if (tag != null) {
-        version = tag.name.substring(modulePath.length + 1);
+      if (tagMap.has(modulePath)) {
+        version = tagMap[modulePath];
         console.log(version);
-      } else console.log(`unknown version - ${modulePath}`);
+      } else console.log(`version missing for module: ${modulePath}`);
 
       const badgeUrl = new URL(`https://img.shields.io/badge/${version}-blue`);
       console.log(badgeUrl.href);
@@ -123,15 +158,16 @@ async function createPullRequestToUpdateReadme(github, context, newReadme) {
   });
 
   // Create a pull request.
-  const { data: prData } = await github.rest.pulls.create({
-    ...context.repo,
-    title: "🤖 Refresh module table",
-    head: branch,
-    base: "main",
-    maintainer_can_modify: true,
-  });
+  // const { data: prData } = await github.rest.pulls.create({
+  //   ...context.repo,
+  //   title: "🤖 Refresh module table",
+  //   head: branch,
+  //   base: "main",
+  //   maintainer_can_modify: true,
+  // });
 
-  return prData.html_url;
+  // return prData.html_url;
+  return "https://tempuri";
 }
 
 /**
