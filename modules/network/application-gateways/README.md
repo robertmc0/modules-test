@@ -30,6 +30,7 @@ This module performs the following
 | `publicIpAddressName`                   | `string` | Yes      | Name of the application gateway public IP address.                                                                         |
 | `subnetResourceId`                      | `string` | Yes      | Resource ID of the application gateway subnet.                                                                             |
 | `sslCertificates`                       | `array`  | No       | Optional. SSL certificates of the application gateway resource.                                                            |
+| `sslPolicy`                             | `object` | No       | Optional. SSL policy of the application gateway resource.                                                                  |
 | `trustedRootCertificates`               | `array`  | No       | Optional. Trusted root certificates of the application gateway resource.                                                   |
 | `httpListeners`                         | `array`  | Yes      | Http listeners of the application gateway resource.                                                                        |
 | `backendAddressPools`                   | `array`  | No       | Optional. Backend address pool of the application gateway resource.                                                        |

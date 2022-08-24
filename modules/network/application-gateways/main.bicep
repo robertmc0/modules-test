@@ -61,6 +61,29 @@ param subnetResourceId string
 })
 param sslCertificates array = []
 
+@description('Optional. SSL policy of the application gateway resource.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways?pivots=deployment-language-bicep#applicationgatewaysslpolicy'
+  example: {
+    cipherSuites: [
+      'string'
+    ]
+    disabledSslProtocols: [
+      'string'
+    ]
+    minProtocolVersion: 'string'
+    policyName: 'string'
+    policyType: 'string'
+  }
+
+})
+param sslPolicy object = {
+  value: {
+    policyName: 'AppGwSslPolicy20170401S'
+    policyType: 'Predefined'
+  }
+}
+
 @description('Optional. Trusted root certificates of the application gateway resource.')
 @metadata({
   name: 'Name of the SSL certificate that is unique within an application gateway.'
@@ -487,6 +510,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         keyVaultSecretId: '${reference(sslCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${sslCertificate.secretName}'
       }
     }]
+    sslPolicy: sslPolicy
     backendHttpSettingsCollection: [for backendHttpSetting in backendHttpSettings: {
       name: backendHttpSetting.name
       properties: {

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "7347900034084489760"
+      "templateHash": "8513872494658132771"
     }
   },
   "parameters": {
@@ -104,6 +104,30 @@
         "keyVaultResourceId": "Resource ID of key vault resource containing (base-64 encoded unencrypted pfx) \"Secret\" or \"Certificate\" object.",
         "secretName": "Key vault secret name.",
         "description": "Optional. SSL certificates of the application gateway resource."
+      }
+    },
+    "sslPolicy": {
+      "type": "object",
+      "defaultValue": {
+        "value": {
+          "policyName": "AppGwSslPolicy20170401S",
+          "policyType": "Predefined"
+        }
+      },
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways?pivots=deployment-language-bicep#applicationgatewaysslpolicy",
+        "example": {
+          "cipherSuites": [
+            "string"
+          ],
+          "disabledSslProtocols": [
+            "string"
+          ],
+          "minProtocolVersion": "string",
+          "policyName": "string",
+          "policyType": "string"
+        },
+        "description": "Optional. SSL policy of the application gateway resource."
       }
     },
     "trustedRootCertificates": {
@@ -710,7 +734,8 @@
             }
           }
         ],
-        "firewallPolicy": "[if(not(empty(parameters('webApplicationFirewallConfig'))), createObject('id', resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', if(not(empty(parameters('webApplicationFirewallConfig'))), parameters('firewallPolicyName'), 'placeholder'))), null())]"
+        "firewallPolicy": "[if(not(empty(parameters('webApplicationFirewallConfig'))), createObject('id', resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', if(not(empty(parameters('webApplicationFirewallConfig'))), parameters('firewallPolicyName'), 'placeholder'))), null())]",
+        "sslPolicy": "[parameters('sslPolicy')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', if(not(empty(parameters('webApplicationFirewallConfig'))), parameters('firewallPolicyName'), 'placeholder'))]",
