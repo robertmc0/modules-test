@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "Policy Set Definitions Module",
+  "summary": "This module deploys Microsoft.Authorization policySetDefinitions",
+  "owner": "Arinco"
+}
