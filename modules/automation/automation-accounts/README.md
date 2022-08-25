@@ -9,6 +9,7 @@ This module performs the following
 - Creates Microsoft.Automation automationAccounts resource.
 - Imports modules into automation account if specified.
 - Imports runbooks into automation account if specified.
+- Creates a deployment update schedule if specified.
 - Applies diagnostic settings.
 - Applies a lock to the bastion host if the lock is specified.
 
@@ -24,6 +25,7 @@ This module performs the following
 | `runbooks`                              | `array`  | No       | Runbooks to import into automation account.                                                                             |
 | `systemAssignedIdentity`                | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                     |
 | `userAssignedIdentities`                | `object` | No       | Optional. The ID(s) to assign to the resource.                                                                          |
+| `updateScheduleConfig`                  | `array`  | No       | Optional. Update schedule configuration.                                                                                |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                    |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                        |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                    |
