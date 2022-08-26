@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "13471703930160275920"
+      "templateHash": "4054477639339902360"
     }
   },
   "parameters": {
@@ -144,7 +144,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "nicInfo",
+      "name": "[format('nicInfo-{0}-{1}', variables('privateEndpointName'), uniqueString(variables('privateEndpointName'), resourceGroup().name))]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -214,14 +214,14 @@
     },
     "ipAddress": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'nicInfo')).outputs.privateIPAddress.value]",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('nicInfo-{0}-{1}', variables('privateEndpointName'), uniqueString(variables('privateEndpointName'), resourceGroup().name)))).outputs.privateIPAddress.value]",
       "metadata": {
         "description": "The private endpoint IP address."
       }
     },
     "ipAllocationMethod": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'nicInfo')).outputs.privateIPAllocationMethod.value]",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('nicInfo-{0}-{1}', variables('privateEndpointName'), uniqueString(variables('privateEndpointName'), resourceGroup().name)))).outputs.privateIPAllocationMethod.value]",
       "metadata": {
         "description": "The private endpoint IP allocation method."
       }
