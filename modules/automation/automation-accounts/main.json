@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "8689223199836863933"
+      "templateHash": "8301734963570591160"
     }
   },
   "parameters": {
@@ -77,6 +77,42 @@
       "defaultValue": {},
       "metadata": {
         "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "updateScheduleConfig": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.automation/automationaccounts/softwareupdateconfigurations?pivots=deployment-language-bicep#property-values",
+        "example": {
+          "name": "string",
+          "scheduleInfo": {
+            "startTime": "string",
+            "frequency": "string",
+            "timeZone": "string",
+            "interval": "int"
+          },
+          "updateConfiguration": {
+            "operatingSystem": "string",
+            "duration": "string",
+            "targets": {
+              "azureQueries": [
+                {
+                  "locations": [
+                    "string"
+                  ],
+                  "scope": [
+                    "string"
+                  ]
+                }
+              ]
+            },
+            "windows": {
+              "includedUpdateClassifications": "string, string"
+            }
+          }
+        },
+        "description": "Optional. Update schedule configuration."
       }
     },
     "enableDiagnostics": {
@@ -244,6 +280,19 @@
           "uri": "[parameters('runbooks')[copyIndex()].runbookUri]"
         }
       },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "updateConfiguration",
+        "count": "[length(parameters('updateScheduleConfig'))]"
+      },
+      "type": "Microsoft.Automation/automationAccounts/softwareUpdateConfigurations",
+      "apiVersion": "2019-06-01",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('updateScheduleConfig')[copyIndex()].name)]",
+      "properties": "[parameters('updateScheduleConfig')[copyIndex()]]",
       "dependsOn": [
         "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
       ]

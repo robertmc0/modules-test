@@ -44,6 +44,40 @@ param systemAssignedIdentity bool = false
 @description('Optional. The ID(s) to assign to the resource.')
 param userAssignedIdentities object = {}
 
+@description('Optional. Update schedule configuration.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.automation/automationaccounts/softwareupdateconfigurations?pivots=deployment-language-bicep#property-values'
+  example: {
+    name: 'string'
+    scheduleInfo: {
+      startTime: 'string'
+      frequency: 'string'
+      timeZone: 'string'
+      interval: 'int'
+    }
+    updateConfiguration: {
+      operatingSystem: 'string'
+      duration: 'string'
+      targets: {
+        azureQueries: [
+          {
+            locations: [
+              'string'
+            ]
+            scope: [
+              'string'
+            ]
+          }
+        ]
+      }
+      windows: {
+        includedUpdateClassifications: 'string, string'
+      }
+    }
+  }
+})
+param updateScheduleConfig array = []
+
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
@@ -154,6 +188,12 @@ resource runbook 'Microsoft.Automation/automationAccounts/runbooks@2019-06-01' =
       uri: runbook.runbookUri
     }
   }
+}]
+
+resource updateConfiguration 'Microsoft.Automation/automationAccounts/softwareUpdateConfigurations@2019-06-01' = [for updateConfig in updateScheduleConfig: {
+  parent: automationAccount
+  name: updateConfig.name
+  properties: updateConfig
 }]
 
 resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
