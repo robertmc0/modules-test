@@ -71,6 +71,13 @@ param systemAssignedIdentity bool = false
 @description('Optional. The ID(s) to assign to the resource.')
 param userAssignedIdentities object = {}
 
+@description('Optional. Add existing Azure virtual machine(s) to backup policy.')
+@metadata({
+  resourceId: 'Azure virtual machine resource id.'
+  backupPolicyName: 'Backup policy name.'
+})
+param addVmToBackupPolicy array = []
+
 @allowed([
   'CanNotDelete'
   'NotSpecified'
@@ -114,13 +121,6 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 
 @description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
 param diagnosticEventHubName string = ''
-
-@description('Optional. Add existing Azure virtual machine(s) to backup policy.')
-@metadata({
-  resourceId: 'Azure virtual machine resource id.'
-  backupPolicyName: 'Backup policy name.'
-})
-param addVmToBackupPolicy array = []
 
 var vmBackupConfig = [for vm in addVmToBackupPolicy: {
   backupPolicyName: vm.backupPolicyName
