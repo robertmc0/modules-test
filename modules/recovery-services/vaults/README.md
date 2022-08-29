@@ -10,6 +10,7 @@ This module performs the following
 - Configures storage replication type.
 - Configures backup policies if specified.
 - Enable cross region restore if specified.
+- Adds existing Azure virtual machines to backup policy if specified.
 - Applies diagnostic settings.
 - Applies a lock to the bastion host if the lock is specified.
 
@@ -35,6 +36,7 @@ This module performs the following
 | `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                       |
 | `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true. |
 | `diagnosticEventHubName`                | `string` | No       | Optional. Event hub name. Only required if enableDiagnostics is set to true.                                            |
+| `addVmToBackupPolicy`                   | `array`  | No       | Optional. Add existing Azure virtual machine(s) to backup policy.                                                       |
 
 ## Outputs
 

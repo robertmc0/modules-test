@@ -115,6 +115,21 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 @description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
 param diagnosticEventHubName string = ''
 
+@description('Optional. Add existing Azure virtual machine(s) to backup policy.')
+@metadata({
+  resourceId: 'Azure virtual machine resource id.'
+  backupPolicyName: 'Backup policy name.'
+})
+param addVmToBackupPolicy array = []
+
+var vmBackupConfig = [for vm in addVmToBackupPolicy: {
+  backupPolicyName: vm.backupPolicyName
+  resourceId: vm.resourceId
+  backupFabric: 'Azure'
+  protectionContainer: 'iaasvmcontainer;iaasvmcontainerv2;${split(vm.resourceId, '/')[4]};${last(split(vm.resourceId, '/'))}'
+  protectedItem: 'vm;iaasvmcontainerv2;${split(vm.resourceId, '/')[4]};${last(split(vm.resourceId, '/'))}'
+}]
+
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
 var identity = identityType != 'None' ? {
@@ -172,6 +187,15 @@ resource vaultConfig 'Microsoft.RecoveryServices/vaults/backupstorageconfig@2022
     storageType: storageType
   }
 }
+
+resource vaultProtectedItem 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems@2022-03-01' = [for vm in vmBackupConfig: {
+  name: '${vault.name}/${vm.backupFabric}/${vm.protectionContainer}/${vm.protectedItem}'
+  properties: {
+    protectedItemType: 'Microsoft.Compute/virtualMachines'
+    policyId: '${vault.id}/backupPolicies/${vm.backupPolicyName}'
+    sourceResourceId: vm.resourceId
+  }
+}]
 
 resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
   scope: vault
