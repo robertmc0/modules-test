@@ -27,6 +27,7 @@ This module performs the following
 | `backupPolicies`                        | `array`  | No       | Optional. Backup policies.                                                                                              |
 | `systemAssignedIdentity`                | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                     |
 | `userAssignedIdentities`                | `object` | No       | Optional. The ID(s) to assign to the resource.                                                                          |
+| `addVmToBackupPolicy`                   | `array`  | No       | Optional. Add existing Azure virtual machine(s) to backup policy.                                                       |
 | `resourceLock`                          | `string` | No       | Optional. Specify the type of resource lock.                                                                            |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                    |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                        |
@@ -36,7 +37,6 @@ This module performs the following
 | `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                       |
 | `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true. |
 | `diagnosticEventHubName`                | `string` | No       | Optional. Event hub name. Only required if enableDiagnostics is set to true.                                            |
-| `addVmToBackupPolicy`                   | `array`  | No       | Optional. Add existing Azure virtual machine(s) to backup policy.                                                       |
 
 ## Outputs
 

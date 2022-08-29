@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "11338772063233595403"
+      "templateHash": "3380183901820924845"
     }
   },
   "parameters": {
@@ -112,6 +112,15 @@
         "description": "Optional. The ID(s) to assign to the resource."
       }
     },
+    "addVmToBackupPolicy": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "resourceId": "Azure virtual machine resource id.",
+        "backupPolicyName": "Backup policy name.",
+        "description": "Optional. Add existing Azure virtual machine(s) to backup policy."
+      }
+    },
     "resourceLock": {
       "type": "string",
       "defaultValue": "NotSpecified",
@@ -190,15 +199,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
-      }
-    },
-    "addVmToBackupPolicy": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "resourceId": "Azure virtual machine resource id.",
-        "backupPolicyName": "Backup policy name.",
-        "description": "Optional. Add existing Azure virtual machine(s) to backup policy."
       }
     }
   },
