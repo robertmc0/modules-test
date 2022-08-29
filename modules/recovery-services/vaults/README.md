@@ -10,6 +10,7 @@ This module performs the following
 - Configures storage replication type.
 - Configures backup policies if specified.
 - Enable cross region restore if specified.
+- Adds existing Azure virtual machines to backup policy if specified.
 - Applies diagnostic settings.
 - Applies a lock to the bastion host if the lock is specified.
 
@@ -26,6 +27,7 @@ This module performs the following
 | `backupPolicies`                        | `array`  | No       | Optional. Backup policies.                                                                                              |
 | `systemAssignedIdentity`                | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                     |
 | `userAssignedIdentities`                | `object` | No       | Optional. The ID(s) to assign to the resource.                                                                          |
+| `addVmToBackupPolicy`                   | `array`  | No       | Optional. Add existing Azure virtual machine(s) to backup policy.                                                       |
 | `resourceLock`                          | `string` | No       | Optional. Specify the type of resource lock.                                                                            |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                    |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                        |
