@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "14124302424211149619"
+      "templateHash": "16966751522738489882"
     }
   },
   "parameters": {
@@ -194,6 +194,11 @@
     "resourceLock": {
       "type": "string",
       "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
       "metadata": {
         "description": "Optional. Specify the type of resource lock."
       }
