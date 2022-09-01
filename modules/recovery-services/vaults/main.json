@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "6061117093707810469"
+      "templateHash": "3380183901820924845"
     }
   },
   "parameters": {
@@ -112,6 +112,15 @@
         "description": "Optional. The ID(s) to assign to the resource."
       }
     },
+    "addVmToBackupPolicy": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "resourceId": "Azure virtual machine resource id.",
+        "backupPolicyName": "Backup policy name.",
+        "description": "Optional. Add existing Azure virtual machine(s) to backup policy."
+      }
+    },
     "resourceLock": {
       "type": "string",
       "defaultValue": "NotSpecified",
@@ -196,6 +205,17 @@
   "variables": {
     "copy": [
       {
+        "name": "vmBackupConfig",
+        "count": "[length(parameters('addVmToBackupPolicy'))]",
+        "input": {
+          "backupPolicyName": "[parameters('addVmToBackupPolicy')[copyIndex('vmBackupConfig')].backupPolicyName]",
+          "resourceId": "[parameters('addVmToBackupPolicy')[copyIndex('vmBackupConfig')].resourceId]",
+          "backupFabric": "Azure",
+          "protectionContainer": "[format('iaasvmcontainer;iaasvmcontainerv2;{0};{1}', split(parameters('addVmToBackupPolicy')[copyIndex('vmBackupConfig')].resourceId, '/')[4], last(split(parameters('addVmToBackupPolicy')[copyIndex('vmBackupConfig')].resourceId, '/')))]",
+          "protectedItem": "[format('vm;iaasvmcontainerv2;{0};{1}', split(parameters('addVmToBackupPolicy')[copyIndex('vmBackupConfig')].resourceId, '/')[4], last(split(parameters('addVmToBackupPolicy')[copyIndex('vmBackupConfig')].resourceId, '/')))]"
+        }
+      },
+      {
         "name": "diagnosticsLogs",
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
@@ -261,6 +281,23 @@
       "properties": {
         "crossRegionRestoreFlag": "[parameters('enablecrossRegionRestore')]",
         "storageType": "[parameters('storageType')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.RecoveryServices/vaults', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "vaultProtectedItem",
+        "count": "[length(variables('vmBackupConfig'))]"
+      },
+      "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+      "apiVersion": "2022-03-01",
+      "name": "[format('{0}/{1}/{2}/{3}', parameters('name'), variables('vmBackupConfig')[copyIndex()].backupFabric, variables('vmBackupConfig')[copyIndex()].protectionContainer, variables('vmBackupConfig')[copyIndex()].protectedItem)]",
+      "properties": {
+        "protectedItemType": "Microsoft.Compute/virtualMachines",
+        "policyId": "[format('{0}/backupPolicies/{1}', resourceId('Microsoft.RecoveryServices/vaults', parameters('name')), variables('vmBackupConfig')[copyIndex()].backupPolicyName)]",
+        "sourceResourceId": "[variables('vmBackupConfig')[copyIndex()].resourceId]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.RecoveryServices/vaults', parameters('name'))]"
