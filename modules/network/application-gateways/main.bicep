@@ -78,10 +78,8 @@ param sslCertificates array = []
 
 })
 param sslPolicy object = {
-  value: {
-    policyName: 'AppGwSslPolicy20170401S'
-    policyType: 'Predefined'
-  }
+  policyName: 'AppGwSslPolicy20170401S'
+  policyType: 'Predefined'
 }
 
 @description('Optional. Trusted root certificates of the application gateway resource.')
@@ -221,103 +219,8 @@ param userAssignedIdentities object = {}
 })
 param webApplicationFirewallConfig object = {}
 
-@description('Optional. Firewall policy name. Only required if webApplicationFirewallConfig is set.')
-param firewallPolicyName string = ''
-
-@description('Optional. Firewall policy settings. Only required if webApplicationFirewallConfig is set.')
-@metadata({
-  requestBodyCheck: 'Whether allow WAF to check request Body. Acceptable values are "true" or "false".'
-  maxRequestBodySizeInKb: 'Maximum request body size in Kb for WAF.'
-  fileUploadLimitInMb: 'Maximum file upload size in Mb for WAF.'
-  state: 'The state of the policy. Acceptable values are "Enabled" or "Disabled".'
-  mode: 'The mode of the policy. Acceptable values are "Detection" or "Prevention".'
-})
-param firewallPolicySettings object = {
-  requestBodyCheck: true
-  maxRequestBodySizeInKb: 128
-  fileUploadLimitInMb: 100
-  state: 'Enabled'
-  mode: 'Detection'
-}
-
-@description('Optional. The custom rules inside the policy. Only required if webApplicationFirewallConfig is set.')
-@metadata({
-  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgatewaywebapplicationfirewallpolicies?tabs=bicep#webapplicationfirewallcustomrule'
-  example: {
-    action: 'Allow'
-    matchConditions: [
-      {
-        matchValues: [
-          'string'
-        ]
-        matchVariables: [
-          {
-            selector: 'string'
-            variableName: 'RequestBody'
-          }
-        ]
-        negationConditon: true
-        operator: 'Contains'
-        transforms: [
-          'Lowercase'
-        ]
-      }
-    ]
-    name: 'string'
-    priority: 100
-    ruleType: 'MatchRule'
-  }
-})
-param firewallPolicyCustomRules array = []
-
-@description('Optional. The managed rule sets that are associated with the policy. Only required if webApplicationFirewallConfig is set.')
-@metadata({
-  ruleGroupOverrides: [
-    {
-      ruleGroupName: 'The managed rule group to override.'
-      rules: [ {
-          ruleId: 'Identifier for the managed rule.'
-          state: 'The state of the managed rule. Defaults to Disabled. Acceptable values are "Enabled" or "Disabled".'
-        }
-      ]
-    }
-  ]
-  ruleSetType: 'Defines the rule set type to use.'
-  ruleSetVersion: 'Defines the version of the rule set to use.'
-})
-param firewallPolicyManagedRuleSets array = [
-  {
-    ruleSetType: 'OWASP'
-    ruleSetVersion: '3.0'
-  }
-]
-
-@description('Optional. The Exclusions that are applied on the policy. Only required if webApplicationFirewallConfig is set.')
-@metadata({
-  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgatewaywebapplicationfirewallpolicies?tabs=bicep#owaspcrsexclusionentry'
-  example: {
-    exclusionManagedRuleSets: [
-      {
-        ruleGroups: [
-          {
-            ruleGroupName: 'string'
-            rules: [
-              {
-                ruleId: 'string'
-              }
-            ]
-          }
-        ]
-        ruleSetType: 'string'
-        ruleSetVersion: 'string'
-      }
-    ]
-    matchVariable: 'RequestArgNames'
-    selector: 'string'
-    selectorMatchOperator: 'Contains'
-  }
-})
-param firewallPolicyManagedRuleExclusions array = []
+@description('Optional. Resource ID of the firewall policy.')
+param firewallPolicyId string = ''
 
 @description('Optional. A list of availability zones denoting where the resource should be deployed.')
 @allowed([
@@ -495,8 +398,8 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         backendAddresses: backendAddressPool.backendAddresses
       }
     }]
-    firewallPolicy: !empty(webApplicationFirewallConfig) ? {
-      id: firewallPolicy.id
+    firewallPolicy: !empty(firewallPolicyId) ? {
+      id: firewallPolicyId
     } : null
     trustedRootCertificates: [for trustedRootCertificate in trustedRootCertificates: {
       name: trustedRootCertificate.name
@@ -549,7 +452,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         hostName: contains(httpListener, 'hostName') ? httpListener.hostName : null
         requireServerNameIndication: contains(httpListener, 'requireServerNameIndication') ? httpListener.requireServerNameIndication : false
         firewallPolicy: contains(httpListener, 'firewallPolicy') ? {
-          id: firewallPolicy.id
+          id: firewallPolicyId
         } : null
       }
     }]
@@ -610,19 +513,6 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != '
   properties: {
     level: resourceLock
     notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
-  }
-}
-
-resource firewallPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2022-01-01' = if (!empty(webApplicationFirewallConfig)) {
-  name: !empty(webApplicationFirewallConfig) ? firewallPolicyName : 'placeholder' //placeholder value added as name cannot be null or empty and is evaluated.
-  location: location
-  properties: {
-    customRules: firewallPolicyCustomRules
-    policySettings: firewallPolicySettings
-    managedRules: {
-      managedRuleSets: firewallPolicyManagedRuleSets
-      exclusions: firewallPolicyManagedRuleExclusions
-    }
   }
 }
 

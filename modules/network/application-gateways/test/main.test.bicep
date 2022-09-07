@@ -32,6 +32,25 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
+resource firewallPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2022-01-01' = {
+  name: '${shortIdentifier}-tst-apgw-waf-pol-${uniqueString(deployment().name, 'applicationGateways', location)}'
+  location: location
+  properties: {
+    policySettings: {
+      state: 'Enabled'
+      mode: 'Detection'
+    }
+    managedRules: {
+      managedRuleSets: [
+        {
+          ruleSetType: 'OWASP'
+          ruleSetVersion: '3.2'
+        }
+      ]
+    }
+  }
+}
+
 resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   name: '${shortIdentifier}-tst-umi-${uniqueString(deployment().name, 'umi', location)}'
   location: location
@@ -407,33 +426,7 @@ module appGatewayWaf '../main.bicep' = {
       ruleSetType: 'OWASP'
       ruleSetVersion: '3.2'
     }
-    firewallPolicyName: '${shortIdentifier}-tst-apgw-waf-pol-${uniqueString(deployment().name, 'applicationGateways', location)}'
-    firewallPolicyManagedRuleSets: [
-      {
-        ruleSetType: 'OWASP'
-        ruleSetVersion: '3.2'
-      }
-    ]
-    firewallPolicyCustomRules: [
-      {
-        name: 'myapp-block-ip-rule'
-        priority: 100
-        ruleType: 'MatchRule'
-        action: 'Block'
-        matchConditions: [
-          {
-            matchValues: [
-              '172.70.0.1'
-            ]
-            matchVariables: [
-              {
-                variableName: 'RemoteAddr'
-              }
-            ]
-          }
-        ]
-      }
-    ]
+    firewallPolicyId: firewallPolicy.id
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticStorageAccountId: diagnosticsStorageAccount.id

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "8513872494658132771"
+      "templateHash": "13239731457219120746"
     }
   },
   "parameters": {
@@ -109,10 +109,8 @@
     "sslPolicy": {
       "type": "object",
       "defaultValue": {
-        "value": {
-          "policyName": "AppGwSslPolicy20170401S",
-          "policyType": "Predefined"
-        }
+        "policyName": "AppGwSslPolicy20170401S",
+        "policyType": "Predefined"
       },
       "metadata": {
         "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways?pivots=deployment-language-bicep#applicationgatewaysslpolicy",
@@ -290,115 +288,11 @@
         "description": "Optional. Web application firewall configuration."
       }
     },
-    "firewallPolicyName": {
+    "firewallPolicyId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. Firewall policy name. Only required if webApplicationFirewallConfig is set."
-      }
-    },
-    "firewallPolicySettings": {
-      "type": "object",
-      "defaultValue": {
-        "requestBodyCheck": true,
-        "maxRequestBodySizeInKb": 128,
-        "fileUploadLimitInMb": 100,
-        "state": "Enabled",
-        "mode": "Detection"
-      },
-      "metadata": {
-        "requestBodyCheck": "Whether allow WAF to check request Body. Acceptable values are \"true\" or \"false\".",
-        "maxRequestBodySizeInKb": "Maximum request body size in Kb for WAF.",
-        "fileUploadLimitInMb": "Maximum file upload size in Mb for WAF.",
-        "state": "The state of the policy. Acceptable values are \"Enabled\" or \"Disabled\".",
-        "mode": "The mode of the policy. Acceptable values are \"Detection\" or \"Prevention\".",
-        "description": "Optional. Firewall policy settings. Only required if webApplicationFirewallConfig is set."
-      }
-    },
-    "firewallPolicyCustomRules": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgatewaywebapplicationfirewallpolicies?tabs=bicep#webapplicationfirewallcustomrule",
-        "example": {
-          "action": "Allow",
-          "matchConditions": [
-            {
-              "matchValues": [
-                "string"
-              ],
-              "matchVariables": [
-                {
-                  "selector": "string",
-                  "variableName": "RequestBody"
-                }
-              ],
-              "negationConditon": true,
-              "operator": "Contains",
-              "transforms": [
-                "Lowercase"
-              ]
-            }
-          ],
-          "name": "string",
-          "priority": 100,
-          "ruleType": "MatchRule"
-        },
-        "description": "Optional. The custom rules inside the policy. Only required if webApplicationFirewallConfig is set."
-      }
-    },
-    "firewallPolicyManagedRuleSets": {
-      "type": "array",
-      "defaultValue": [
-        {
-          "ruleSetType": "OWASP",
-          "ruleSetVersion": "3.0"
-        }
-      ],
-      "metadata": {
-        "ruleGroupOverrides": [
-          {
-            "ruleGroupName": "The managed rule group to override.",
-            "rules": [
-              {
-                "ruleId": "Identifier for the managed rule.",
-                "state": "The state of the managed rule. Defaults to Disabled. Acceptable values are \"Enabled\" or \"Disabled\"."
-              }
-            ]
-          }
-        ],
-        "ruleSetType": "Defines the rule set type to use.",
-        "ruleSetVersion": "Defines the version of the rule set to use.",
-        "description": "Optional. The managed rule sets that are associated with the policy. Only required if webApplicationFirewallConfig is set."
-      }
-    },
-    "firewallPolicyManagedRuleExclusions": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgatewaywebapplicationfirewallpolicies?tabs=bicep#owaspcrsexclusionentry",
-        "example": {
-          "exclusionManagedRuleSets": [
-            {
-              "ruleGroups": [
-                {
-                  "ruleGroupName": "string",
-                  "rules": [
-                    {
-                      "ruleId": "string"
-                    }
-                  ]
-                }
-              ],
-              "ruleSetType": "string",
-              "ruleSetVersion": "string"
-            }
-          ],
-          "matchVariable": "RequestArgNames",
-          "selector": "string",
-          "selectorMatchOperator": "Contains"
-        },
-        "description": "Optional. The Exclusions that are applied on the policy. Only required if webApplicationFirewallConfig is set."
+        "description": "Optional. Resource ID of the firewall policy."
       }
     },
     "availabilityZones": {
@@ -666,7 +560,7 @@
                 "hostNames": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'hostNames'), parameters('httpListeners')[copyIndex('httpListeners')].hostNames, null())]",
                 "hostName": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'hostName'), parameters('httpListeners')[copyIndex('httpListeners')].hostName, null())]",
                 "requireServerNameIndication": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'requireServerNameIndication'), parameters('httpListeners')[copyIndex('httpListeners')].requireServerNameIndication, false())]",
-                "firewallPolicy": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'firewallPolicy'), createObject('id', resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', if(not(empty(parameters('webApplicationFirewallConfig'))), parameters('firewallPolicyName'), 'placeholder'))), null())]"
+                "firewallPolicy": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'firewallPolicy'), createObject('id', parameters('firewallPolicyId')), null())]"
               }
             }
           },
@@ -734,11 +628,10 @@
             }
           }
         ],
-        "firewallPolicy": "[if(not(empty(parameters('webApplicationFirewallConfig'))), createObject('id', resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', if(not(empty(parameters('webApplicationFirewallConfig'))), parameters('firewallPolicyName'), 'placeholder'))), null())]",
+        "firewallPolicy": "[if(not(empty(parameters('firewallPolicyId'))), createObject('id', parameters('firewallPolicyId')), null())]",
         "sslPolicy": "[parameters('sslPolicy')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', if(not(empty(parameters('webApplicationFirewallConfig'))), parameters('firewallPolicyName'), 'placeholder'))]",
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
       ]
     },
@@ -773,21 +666,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/applicationGateways', parameters('name'))]"
       ]
-    },
-    {
-      "condition": "[not(empty(parameters('webApplicationFirewallConfig')))]",
-      "type": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
-      "apiVersion": "2022-01-01",
-      "name": "[if(not(empty(parameters('webApplicationFirewallConfig'))), parameters('firewallPolicyName'), 'placeholder')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "customRules": "[parameters('firewallPolicyCustomRules')]",
-        "policySettings": "[parameters('firewallPolicySettings')]",
-        "managedRules": {
-          "managedRuleSets": "[parameters('firewallPolicyManagedRuleSets')]",
-          "exclusions": "[parameters('firewallPolicyManagedRuleExclusions')]"
-        }
-      }
     }
   ],
   "outputs": {
