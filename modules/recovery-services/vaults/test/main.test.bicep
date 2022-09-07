@@ -9,9 +9,90 @@ param location string = resourceGroup().location
 @maxLength(5)
 param shortIdentifier string = 'arn'
 
+@description('Optional. Admin username for virtual machine.')
+param adminUser string = 'azureuser'
+
+@description('Optional. Admin password for virtual machine.')
+@secure()
+param adminPassword string = '${toUpper(uniqueString(resourceGroup().id))}-${newGuid()}'
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
+resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+  name: '${shortIdentifier}-tst-vnet-${uniqueString(deployment().name, 'virtualNetworks', location)}'
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '10.0.0.0/16'
+      ]
+    }
+    subnets: [
+      {
+        name: 'default'
+        properties: {
+          addressPrefix: '10.0.0.0/24'
+        }
+      }
+    ]
+  }
+}
+
+resource networkInterface 'Microsoft.Network/networkInterfaces@2022-01-01' = {
+  name: '${shortIdentifier}tstvm${uniqueString(deployment().name, 'virtualMachines', location)}-nic'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          subnet: {
+            id: '${vnet.id}/subnets/default'
+          }
+          privateIPAllocationMethod: 'Dynamic'
+        }
+      }
+    ]
+  }
+}
+
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
+  name: '${shortIdentifier}tstvm${uniqueString(deployment().name, 'virtualMachines', location)}'
+  location: location
+  properties: {
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: networkInterface.id
+        }
+      ]
+    }
+    osProfile: {
+      computerName: '${shortIdentifier}tstvm${uniqueString(deployment().name, 'virtualMachines', location)}'
+      adminUsername: adminUser
+      adminPassword: adminPassword
+    }
+    hardwareProfile: {
+      vmSize: 'Standard_B1s'
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: 'canonical'
+        offer: '0001-com-ubuntu-server-focal'
+        sku: '20_04-lts'
+        version: 'latest'
+      }
+      osDisk: {
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: 'StandardSSD_LRS'
+        }
+      }
+    }
+  }
+}
+
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
   location: location
@@ -49,7 +130,6 @@ module vault '../main.bicep' = {
     location: location
     storageType: 'GeoRedundant'
     enablecrossRegionRestore: true
-
     backupPolicies: [
       {
         name: 'Policy-Example1'
@@ -178,6 +258,13 @@ module vault '../main.bicep' = {
             retentionPolicyType: 'LongTermRetentionPolicy'
           }
         }
+      }
+    ]
+    addVmToBackupPolicy: [
+      {
+        resourceId: virtualMachine.id
+        backupPolicyName: 'Policy-Example1'
+
       }
     ]
     enableDiagnostics: true

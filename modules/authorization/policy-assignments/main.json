@@ -1,0 +1,144 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.9.1.41621",
+      "templateHash": "1203477347654308270"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 24,
+      "minLength": 1,
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "displayName": {
+      "type": "string",
+      "metadata": {
+        "description": "The display name of the policy assignment."
+      }
+    },
+    "description": {
+      "type": "string",
+      "metadata": {
+        "description": "This message will be part of response in case of policy violation."
+      }
+    },
+    "enforcementMode": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Default",
+        "DoNotEnforce"
+      ],
+      "metadata": {
+        "description": "Optional. The policy assignment enforcement mode."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "nonComplianceMessage": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The message that describe why a resource is non-compliant with the policy."
+      }
+    },
+    "notScopes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. The policy excluded scopes."
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. The parameter values for the assigned policy rule. The keys are the parameter names."
+      }
+    },
+    "policyDefinitionId": {
+      "type": "string",
+      "metadata": {
+        "description": "The ID of the policy definition or policy set definition being assigned."
+      }
+    }
+  },
+  "variables": {
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "roleDefinitionId": "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/policyAssignments",
+      "apiVersion": "2021-06-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "description": "[parameters('description')]",
+        "displayName": "[parameters('displayName')]",
+        "enforcementMode": "[parameters('enforcementMode')]",
+        "nonComplianceMessages": "[if(not(empty(parameters('nonComplianceMessage'))), createArray(createObject('message', parameters('nonComplianceMessage'))), null())]",
+        "notScopes": "[parameters('notScopes')]",
+        "parameters": "[parameters('parameters')]",
+        "policyDefinitionId": "[parameters('policyDefinitionId')]"
+      }
+    },
+    {
+      "condition": "[not(empty(variables('identity')))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(parameters('name'), 'Microsoft.Authorization/policyAssignments', extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name')))]",
+      "properties": {
+        "principalId": "[reference(extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name')), '2021-06-01', 'full').identity.principalId]",
+        "roleDefinitionId": "[variables('roleDefinitionId')]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the policy assignment."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the policy assignment."
+      }
+    }
+  }
+}

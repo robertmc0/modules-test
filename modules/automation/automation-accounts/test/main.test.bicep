@@ -70,6 +70,66 @@ module automationAccount '../main.bicep' = {
         logVerbose: false
       }
     ]
+    updateScheduleConfig: [
+      {
+        name: 'windows-updates'
+        scheduleInfo: {
+          startTime: '2022-09-01T21:00:00Z'
+          frequency: 'Month'
+          timeZone: 'AUS Eastern Standard Time'
+          interval: 1
+        }
+        updateConfiguration: {
+          operatingSystem: 'Windows'
+          duration: 'PT5H'
+          targets: {
+            azureQueries: [
+              {
+                locations: [
+                  'australiaeast'
+                  'australiasoutheast'
+                ]
+                scope: [
+                  'subscriptions/${subscription().subscriptionId}'
+                ]
+              }
+            ]
+          }
+          windows: {
+            includedUpdateClassifications: 'Critical, Security'
+          }
+        }
+      }
+      {
+        name: 'linux-updates'
+        scheduleInfo: {
+          startTime: '2022-10-01T21:00:00Z'
+          frequency: 'Week'
+          timeZone: 'AUS Eastern Standard Time'
+          interval: 4
+        }
+        updateConfiguration: {
+          operatingSystem: 'Linux'
+          duration: 'PT5H'
+          targets: {
+            azureQueries: [
+              {
+                locations: [
+                  'australiaeast'
+                  'australiasoutheast'
+                ]
+                scope: [
+                  'subscriptions/${subscription().subscriptionId}'
+                ]
+              }
+            ]
+          }
+          linux: {
+            includedPackageClassifications: 'Critical, Security'
+          }
+        }
+      }
+    ]
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticStorageAccountId: diagnosticsStorageAccount.id

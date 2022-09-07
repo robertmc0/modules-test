@@ -104,7 +104,7 @@ output resourceId string = privateEndpoint.id
 // Use a module to extract the network interface details of a private endpoint
 // This is required due to issues with using reference() against the private endpoint Nic
 module nicInfo 'nicInfo.bicep' = {
-  name: 'nicInfo'
+  name: 'nicInfo-${privateEndpoint.name}-${uniqueString(privateEndpoint.name, resourceGroup().name)}'
   params: {
     nicId: privateEndpoint.properties.networkInterfaces[0].id
   }

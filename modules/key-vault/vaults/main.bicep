@@ -141,6 +141,11 @@ param accessPolicies array = []
 param networkAcls object = {}
 
 @description('Optional. Specify the type of resource lock.')
+@allowed([
+  'NotSpecified'
+  'ReadOnly'
+  'CanNotDelete'
+])
 param resourceLock string = 'NotSpecified'
 
 @description('Optional. Enable diagnostic logging.')
