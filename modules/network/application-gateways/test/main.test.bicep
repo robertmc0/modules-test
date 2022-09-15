@@ -32,8 +32,27 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
-resource firewallPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2022-01-01' = {
+resource firewallPolicyDefault 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2022-01-01' = {
   name: '${shortIdentifier}-tst-apgw-waf-pol-${uniqueString(deployment().name, 'applicationGateways', location)}'
+  location: location
+  properties: {
+    policySettings: {
+      state: 'Enabled'
+      mode: 'Detection'
+    }
+    managedRules: {
+      managedRuleSets: [
+        {
+          ruleSetType: 'OWASP'
+          ruleSetVersion: '3.2'
+        }
+      ]
+    }
+  }
+}
+
+resource firewallPolicyListener 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2022-01-01' = {
+  name: '${shortIdentifier}-tst-apgw-waf-pol-lstn-${uniqueString(deployment().name, 'applicationGateways', location)}'
   location: location
   properties: {
     policySettings: {
@@ -324,7 +343,7 @@ module appGatewayWaf '../main.bicep' = {
         hostNames: [
           '*.${environmentHostingDomain}'
         ]
-        firewallPolicyId: firewallPolicy.id
+        firewallPolicyId: firewallPolicyListener.id
       }
       {
         name: 'http-80-listener'
@@ -426,7 +445,7 @@ module appGatewayWaf '../main.bicep' = {
       ruleSetType: 'OWASP'
       ruleSetVersion: '3.2'
     }
-    firewallPolicyId: firewallPolicy.id
+    firewallPolicyId: firewallPolicyDefault.id
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticStorageAccountId: diagnosticsStorageAccount.id
