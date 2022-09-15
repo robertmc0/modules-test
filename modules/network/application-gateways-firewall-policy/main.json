@@ -1,0 +1,202 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.9.1.41621",
+      "templateHash": "7582481679825073577"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "policySettings": {
+      "type": "object",
+      "defaultValue": {
+        "requestBodyCheck": true,
+        "maxRequestBodySizeInKb": 128,
+        "fileUploadLimitInMb": 100,
+        "state": "Enabled",
+        "mode": "Detection"
+      },
+      "metadata": {
+        "requestBodyCheck": "Whether allow WAF to check request Body. Acceptable values are \"true\" or \"false\".",
+        "maxRequestBodySizeInKb": "Maximum request body size in Kb for WAF.",
+        "fileUploadLimitInMb": "Maximum file upload size in Mb for WAF.",
+        "state": "The state of the policy. Acceptable values are \"Enabled\" or \"Disabled\".",
+        "mode": "The mode of the policy. Acceptable values are \"Detection\" or \"Prevention\".",
+        "description": "Optional. Firewall policy settings."
+      }
+    },
+    "customRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgatewaywebapplicationfirewallpolicies?tabs=bicep#webapplicationfirewallcustomrule",
+        "example": {
+          "action": "Allow",
+          "matchConditions": [
+            {
+              "matchValues": [
+                "string"
+              ],
+              "matchVariables": [
+                {
+                  "selector": "string",
+                  "variableName": "RequestBody"
+                }
+              ],
+              "negationConditon": true,
+              "operator": "Contains",
+              "transforms": [
+                "Lowercase"
+              ]
+            }
+          ],
+          "name": "string",
+          "priority": 100,
+          "ruleType": "MatchRule"
+        },
+        "description": "Optional. The custom rules inside the policy."
+      }
+    },
+    "managedRuleSets": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "ruleSetType": "OWASP",
+          "ruleSetVersion": "3.0"
+        }
+      ],
+      "metadata": {
+        "ruleGroupOverrides": [
+          {
+            "ruleGroupName": "The managed rule group to override.",
+            "rules": [
+              {
+                "ruleId": "Identifier for the managed rule.",
+                "state": "The state of the managed rule. Defaults to Disabled. Acceptable values are \"Enabled\" or \"Disabled\"."
+              }
+            ]
+          }
+        ],
+        "ruleSetType": "Defines the rule set type to use.",
+        "ruleSetVersion": "Defines the version of the rule set to use.",
+        "description": "Optional. The managed rule sets that are associated with the policy."
+      }
+    },
+    "managedRuleExclusions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgatewaywebapplicationfirewallpolicies?tabs=bicep#owaspcrsexclusionentry",
+        "example": {
+          "exclusionManagedRuleSets": [
+            {
+              "ruleGroups": [
+                {
+                  "ruleGroupName": "string",
+                  "rules": [
+                    {
+                      "ruleId": "string"
+                    }
+                  ]
+                }
+              ],
+              "ruleSetType": "string",
+              "ruleSetVersion": "string"
+            }
+          ],
+          "matchVariable": "RequestArgNames",
+          "selector": "string",
+          "selectorMatchOperator": "Contains"
+        },
+        "description": "Optional. The Exclusions that are applied on the policy."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
+      "apiVersion": "2022-01-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "customRules": "[parameters('customRules')]",
+        "policySettings": "[parameters('policySettings')]",
+        "managedRules": {
+          "managedRuleSets": "[parameters('managedRuleSets')]",
+          "exclusions": "[parameters('managedRuleExclusions')]"
+        }
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed firewall policy."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed firewall policy."
+      }
+    }
+  }
+}
