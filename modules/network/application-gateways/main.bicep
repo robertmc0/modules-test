@@ -99,7 +99,7 @@ param trustedRootCertificates array = []
   hostNames: [
     'List of host names for HTTP Listener that allows special wildcard characters as well.'
   ]
-  firewallPolicy: 'Enables firewall policy on listener. Acceptable values are "true" or "false".'
+  firewallPolicyId: 'Resource ID of the firewall policy.'
 })
 param httpListeners array
 
@@ -451,7 +451,9 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         hostNames: contains(httpListener, 'hostNames') ? httpListener.hostNames : null
         hostName: contains(httpListener, 'hostName') ? httpListener.hostName : null
         requireServerNameIndication: contains(httpListener, 'requireServerNameIndication') ? httpListener.requireServerNameIndication : false
-        firewallPolicy: contains(httpListener, 'firewallPolicy') ? {
+        firewallPolicy: contains(httpListener, 'firewallPolicyId') ? {
+          id: httpListener.firewallPolicyId
+        } : !empty(firewallPolicyId) ? {
           id: firewallPolicyId
         } : null
       }

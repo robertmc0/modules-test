@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "13239731457219120746"
+      "version": "0.10.13.619",
+      "templateHash": "9985404697571124254"
     }
   },
   "parameters": {
@@ -148,7 +148,7 @@
         "hostNames": [
           "List of host names for HTTP Listener that allows special wildcard characters as well."
         ],
-        "firewallPolicy": "Enables firewall policy on listener. Acceptable values are \"true\" or \"false\".",
+        "firewallPolicyId": "Resource ID of the firewall policy.",
         "description": "Http listeners of the application gateway resource."
       }
     },
@@ -560,7 +560,7 @@
                 "hostNames": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'hostNames'), parameters('httpListeners')[copyIndex('httpListeners')].hostNames, null())]",
                 "hostName": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'hostName'), parameters('httpListeners')[copyIndex('httpListeners')].hostName, null())]",
                 "requireServerNameIndication": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'requireServerNameIndication'), parameters('httpListeners')[copyIndex('httpListeners')].requireServerNameIndication, false())]",
-                "firewallPolicy": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'firewallPolicy'), createObject('id', parameters('firewallPolicyId')), null())]"
+                "firewallPolicy": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'firewallPolicyId'), createObject('id', parameters('httpListeners')[copyIndex('httpListeners')].firewallPolicyId), if(not(empty(parameters('firewallPolicyId'))), createObject('id', parameters('firewallPolicyId')), null()))]"
               }
             }
           },
