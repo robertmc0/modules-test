@@ -324,7 +324,7 @@ module appGatewayWaf '../main.bicep' = {
         hostNames: [
           '*.${environmentHostingDomain}'
         ]
-        firewallPolicy: true
+        firewallPolicyId: firewallPolicy.id
       }
       {
         name: 'http-80-listener'
