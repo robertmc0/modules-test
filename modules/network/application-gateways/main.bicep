@@ -99,7 +99,7 @@ param trustedRootCertificates array = []
   hostNames: [
     'List of host names for HTTP Listener that allows special wildcard characters as well.'
   ]
-  firewallPolicyId: 'Resource ID of the firewall policy.'
+  firewallPolicyId: 'Resource ID of the firewall policy to use for this listener.'
 })
 param httpListeners array
 

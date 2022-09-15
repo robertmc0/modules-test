@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.10.13.619",
-      "templateHash": "9985404697571124254"
+      "templateHash": "7934717996623018526"
     }
   },
   "parameters": {
@@ -148,7 +148,7 @@
         "hostNames": [
           "List of host names for HTTP Listener that allows special wildcard characters as well."
         ],
-        "firewallPolicyId": "Resource ID of the firewall policy.",
+        "firewallPolicyId": "Resource ID of the firewall policy to use for this listener.",
         "description": "Http listeners of the application gateway resource."
       }
     },
