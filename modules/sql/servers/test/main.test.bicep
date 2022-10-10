@@ -110,7 +110,7 @@ module sqlServer '../main.bicep' = {
       objectId: '7d4930a7-f128-45af-9e70-07f1484c9c4a'
     }
     enableAudit: true
-    auditStorageId: auditStorageAccount.id
+    auditStorageAccountId: auditStorageAccount.id
     userAssignedIdentities: {
       '${userIdentity.id}': {}
     }

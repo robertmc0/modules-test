@@ -64,7 +64,7 @@ param vulnerabilityAssessmentStorageId string = ''
 param enableAudit bool = true
 
 @description('Optional. Resource ID of the Storage Account to store Audit logs.')
-param auditStorageId string = ''
+param auditStorageAccountId string = ''
 
 @description('Optional. Specifies that the schedule scan notification will be is sent to the subscription administrators.')
 param emailAccountAdmins bool = false
@@ -138,11 +138,11 @@ var vulnerabilityAssessmentStorageSubId = enableVulnerabilityAssessments ? split
 
 var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments ? last(split(vulnerabilityAssessmentStorageId, '/')) : null
 
-var auditStorageResourceGroup = enableAudit ? split(auditStorageId, '/')[4] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+var auditStorageResourceGroup = enableAudit ? split(auditStorageAccountId, '/')[4] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
-var auditStorageSubId = enableAudit ? split(auditStorageId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+var auditStorageSubId = enableAudit ? split(auditStorageAccountId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
-var auditStorageName = enableAudit ? last(split(auditStorageId, '/')) : null
+var auditStorageName = enableAudit ? last(split(auditStorageAccountId, '/')) : null
 
 var userIdentityResourceGroup = !empty(primaryUserAssignedIdentityId) ? split(primaryUserAssignedIdentityId, '/')[4] : null
 
