@@ -49,6 +49,16 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
+resource rsv 'Microsoft.RecoveryServices/vaults@2022-04-01' = {
+  name: 'rsv'
+  location: location
+  properties: {}
+  sku: {
+    name: 'RS0'
+    tier: 'Standard'
+  }
+}
+
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -66,7 +76,7 @@ module storageAccount '../main.bicep' = {
   params: {
     name: '${uniqueString(deployment().name, location)}sa'
     location: location
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
     requireInfrastructureEncryption: true
     networkAcls: {
       bypass: 'AzureServices'
@@ -82,6 +92,13 @@ module storageAccount '../main.bicep' = {
           action: 'Allow'
           value: '1.1.1.1'
         }
+      ]
+      resourceAccessRules: [
+        {
+          tenantId: subscription().tenantId
+          resourceId: rsv.id
+        }
+
       ]
     }
 
