@@ -57,13 +57,13 @@ param connectionType string = 'Default'
 @description('Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities.')
 param enableVulnerabilityAssessments bool = true
 
-@description('Optional. Resource ID of the Storage Account to store Vulnerability Assessments.')
+@description('Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true". ')
 param vulnerabilityAssessmentStorageId string = ''
 
 @description('Optional. Enable Audit logging.')
 param enableAudit bool = true
 
-@description('Optional. Resource ID of the Storage Account to store Audit logs.')
+@description('Optional. Resource ID of the Storage Account to store Audit logs. Required when enableAudit set to "true".')
 param auditStorageAccountId string = ''
 
 @description('Optional. Specifies that the schedule scan notification will be is sent to the subscription administrators.')

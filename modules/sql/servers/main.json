@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.11.1.770",
-      "templateHash": "761719326441937967"
+      "templateHash": "12225548474072274472"
     }
   },
   "parameters": {
@@ -99,7 +99,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. Resource ID of the Storage Account to store Vulnerability Assessments."
+        "description": "Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to \"true\". "
       }
     },
     "enableAudit": {
@@ -113,7 +113,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. Resource ID of the Storage Account to store Audit logs."
+        "description": "Optional. Resource ID of the Storage Account to store Audit logs. Required when enableAudit set to \"true\"."
       }
     },
     "emailAccountAdmins": {
