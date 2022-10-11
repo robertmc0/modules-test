@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.11.1.770",
-      "templateHash": "12225548474072274472"
+      "templateHash": "6045220108731776538"
     }
   },
   "parameters": {
@@ -172,14 +172,23 @@
         "description": "Optional. Enable diagnostic logging."
       }
     },
-    "diagnosticLogCategoryGroupsToEnable": {
+    "diagnosticLogCategoriesToEnable": {
       "type": "array",
       "defaultValue": [
-        "Audit"
+        "DevopsOperationsAudit",
+        "SQLSecurityAuditEvents"
       ],
       "allowedValues": [
-        "Audit",
-        "AllLogs"
+        "DevopsOperationsAudit",
+        "SQLSecurityAuditEvents",
+        "AutomaticTuning",
+        "QueryStoreRuntimeStatistics",
+        "QueryStoreWaitStatistics",
+        "Errors",
+        "DatabaseWaitStatistics",
+        "Timeouts",
+        "Blocks",
+        "Deadlocks"
       ],
       "metadata": {
         "description": "Optional. The name of log category groups that will be streamed."
@@ -188,10 +197,14 @@
     "diagnosticMetricsToEnable": {
       "type": "array",
       "defaultValue": [
-        "AllMetrics"
+        "Basic",
+        "InstanceAndAppAdvanced",
+        "WorkloadManagement"
       ],
       "allowedValues": [
-        "AllMetrics"
+        "Basic",
+        "InstanceAndAppAdvanced",
+        "WorkloadManagement"
       ],
       "metadata": {
         "description": "Optional. The name of metrics that will be streamed."
@@ -251,9 +264,9 @@
     "copy": [
       {
         "name": "diagnosticsLogs",
-        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "count": "[length(parameters('diagnosticLogCategoriesToEnable'))]",
         "input": {
-          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "category": "[parameters('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
           "enabled": true,
           "retentionPolicy": {
             "enabled": true,
@@ -377,6 +390,7 @@
         "state": "Enabled",
         "auditActionsAndGroups": "[variables('auditActionsAndGroups')]",
         "isAzureMonitorTargetEnabled": true,
+        "isManagedIdentityInUse": true,
         "isDevopsAuditEnabled": true,
         "storageEndpoint": "[if(parameters('enableAudit'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('auditStorageSubId'), variables('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('auditStorageName')), '2022-05-01').primaryEndpoints.blob, null())]",
         "storageAccountSubscriptionId": "[variables('auditStorageSubId')]"
@@ -529,7 +543,7 @@
             "value": "[variables('auditStorageName')]"
           },
           "principalId": {
-            "value": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('userIdentitySubId'), variables('userIdentityResourceGroup')), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2022-01-31-preview').principalId, reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId)]"
+            "value": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('userIdentitySubId'), variables('userIdentityResourceGroup')), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2018-11-30').principalId, reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId)]"
           }
         },
         "template": {

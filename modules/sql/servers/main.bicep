@@ -92,19 +92,32 @@ param enableDiagnostics bool = false
 
 @description('Optional. The name of log category groups that will be streamed.')
 @allowed([
-  'Audit'
-  'AllLogs'
+  'DevopsOperationsAudit'
+  'SQLSecurityAuditEvents'
+  'AutomaticTuning'
+  'QueryStoreRuntimeStatistics'
+  'QueryStoreWaitStatistics'
+  'Errors'
+  'DatabaseWaitStatistics'
+  'Timeouts'
+  'Blocks'
+  'Deadlocks'
 ])
-param diagnosticLogCategoryGroupsToEnable array = [
-  'Audit'
+param diagnosticLogCategoriesToEnable array = [
+  'DevopsOperationsAudit'
+  'SQLSecurityAuditEvents'
 ]
 
 @description('Optional. The name of metrics that will be streamed.')
 @allowed([
-  'AllMetrics'
+  'Basic'
+  'InstanceAndAppAdvanced'
+  'WorkloadManagement'
 ])
 param diagnosticMetricsToEnable array = [
-  'AllMetrics'
+  'Basic'
+  'InstanceAndAppAdvanced'
+  'WorkloadManagement'
 ]
 
 @description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
@@ -161,8 +174,8 @@ var identity = identityType != 'None' ? {
 
 var diagnosticsName = toLower('${sqlServer.name}-dgs')
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
+var diagnosticsLogs = [for category in diagnosticLogCategoriesToEnable: {
+  category: category
   enabled: true
   retentionPolicy: {
     enabled: true
@@ -186,7 +199,7 @@ var auditActionsAndGroups = [
   'FAILED_DATABASE_AUTHENTICATION_GROUP'
 ]
 
-resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' existing = if (!empty(primaryUserAssignedIdentityId)) {
+resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = if (!empty(primaryUserAssignedIdentityId)) {
   scope: resourceGroup(userIdentitySubId, userIdentityResourceGroup)
   name: userIdentityName
 }
@@ -294,6 +307,7 @@ resource auditSettings 'Microsoft.Sql/servers/auditingSettings@2021-11-01' = if 
     state: 'Enabled'
     auditActionsAndGroups: auditActionsAndGroups
     isAzureMonitorTargetEnabled: true
+    isManagedIdentityInUse: true
     isDevopsAuditEnabled: true
     storageEndpoint: enableAudit ? auditStorage.properties.primaryEndpoints.blob : null
     storageAccountSubscriptionId: auditStorageSubId
