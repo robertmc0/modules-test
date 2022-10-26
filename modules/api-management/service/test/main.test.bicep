@@ -18,7 +18,7 @@ param companyShortName string = 'arn'
   'External'
   'Internal'
 ])
-param virtualNetworkType string = 'None'
+param virtualNetworkType string = 'External'
 
 @description('Resource Tags')
 param tags object = {}
@@ -27,7 +27,7 @@ param tags object = {}
 TEST PREREQUISITES
 ======================================================================*/
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: '${companyShortName}-tst-law-${uniqueString(deployment().name,'logAnalyticsWorkspace',location)}'
+  name: '${companyShortName}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
   location: location
   properties: {
     sku: {
@@ -37,7 +37,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${companyShortName}-tst-appi-${uniqueString(deployment().name,'appi',location)}'
+  name: '${companyShortName}-tst-appi-${uniqueString(deployment().name, 'appi', location)}'
   location: location
   kind: 'web'
   properties: {
@@ -67,13 +67,29 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = if (virtualNetwor
   }
 }
 
+resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
+  name: 'arinco-apim-public-ip'
+  location: location
+  sku: {
+    name: 'Standard'
+    tier: 'Regional'
+  }
+  properties: {
+    publicIPAddressVersion: 'IPv4'
+    publicIPAllocationMethod: 'Static'
+    dnsSettings: {
+      domainNameLabel: 'arinnco-apim-public-ip-address'
+    }
+  }
+}
+
 resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
-  name: '${companyShortName}-tst-umi-${uniqueString(deployment().name,'umi',location)}'
+  name: '${companyShortName}-tst-umi-${uniqueString(deployment().name, 'umi', location)}'
   location: location
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
-  name: '${companyShortName}-tst-kv-${uniqueString(deployment().name,'kv',location)}'
+  name: '${companyShortName}-tst-kv-${uniqueString(deployment().name, 'kv', location)}'
   location: location
   properties: {
     sku: {
@@ -95,7 +111,7 @@ var roleDefinitionIds = [
 ]
 
 resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [for roleDefintionId in roleDefinitionIds: {
-  name: guid(roleDefintionId,userIdentity.id,keyVault.id)
+  name: guid(roleDefintionId, userIdentity.id, keyVault.id)
   scope: keyVault
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefintionId)
@@ -107,7 +123,7 @@ resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04
 var environmentHostingDomain = 'deploy.arinco.local'
 var apiHostname = 'api-${environment}.${environmentHostingDomain}'
 var portalHostname = 'portal-api-${environment}.${environmentHostingDomain}'
-var managementHostname= 'management-api-${environment}.${environmentHostingDomain}'
+var managementHostname = 'management-api-${environment}.${environmentHostingDomain}'
 
 module kvCert 'br/public:deployment-scripts/create-kv-certificate:1.1.1' = {
   name: 'akvCertSingle'
@@ -141,17 +157,18 @@ TEST EXECUTION
 module apim '../main.bicep' = {
   name: 'deployApim'
   params: {
-    name: '${companyShortName}-tst-apim-${uniqueString(deployment().name,'apim',location)}'
+    name: '${companyShortName}-tst-apim-${uniqueString(deployment().name, 'apim', location)}'
     location: location
     sku: 'Developer'
     skuCount: 1
     publisherEmail: 'support@arinco.com.au'
     publisherName: 'ARINCO'
     tags: tags
-    enableDiagnostics:true
+    enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticLogsRetentionInDays: 7
     virtualNetworkType: virtualNetworkType
+    publicIpAddressId: publicIpAddress.id
     subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''
     userAssignedIdentities: {
       '${userIdentity.id}': {}
