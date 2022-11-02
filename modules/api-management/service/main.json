@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "16670034497991414536"
+      "version": "0.11.1.770",
+      "templateHash": "4695336782209160140"
     }
   },
   "parameters": {
@@ -248,6 +248,13 @@
         "description": "Optional. The type of VPN in which API Management service needs to be configured in. None (Default Value) means the API Management service is not part of any Virtual Network, External means the API Management deployment is set up inside a Virtual Network having an internet Facing Endpoint, and Internal means that API Management deployment is setup inside a Virtual Network having an Intranet Facing Endpoint only."
       }
     },
+    "publicIpAddressId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The full resource ID of an Azure Public IP resource. The public IP address resource is required when setting up API Management with virtual network integration in either external or internal mode. For internal virtual network mode, the public IP address is used only for management operations."
+      }
+    },
     "zones": {
       "type": "array",
       "defaultValue": [],
@@ -400,6 +407,7 @@
         "disableGateway": "[parameters('disableGateway')]",
         "virtualNetworkType": "[parameters('virtualNetworkType')]",
         "virtualNetworkConfiguration": "[if(not(empty(parameters('subnetResourceId'))), json(format('{{\"subnetResourceId\": \"{0}\"}}', parameters('subnetResourceId'))), null())]",
+        "publicIpAddressId": "[if(not(empty(parameters('publicIpAddressId'))), parameters('publicIpAddressId'), null())]",
         "apiVersionConstraint": "[if(not(empty(parameters('minApiVersion'))), json(format('{{\"minApiVersion\": \"{0}\"}}', parameters('minApiVersion'))), null())]",
         "restore": "[parameters('restore')]"
       }

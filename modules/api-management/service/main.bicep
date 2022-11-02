@@ -167,6 +167,9 @@ param userAssignedIdentities object = {}
 ])
 param virtualNetworkType string = 'None'
 
+@description('Optional. The full resource ID of an Azure Public IP resource. The public IP address resource is required when setting up API Management with virtual network integration in either external or internal mode. For internal virtual network mode, the public IP address is used only for management operations.')
+param publicIpAddressId string = ''
+
 @description('Optional. A list of availability zones denoting where the resource needs to come from.')
 @metadata({
   zones: [ '1', '2' ]
@@ -270,6 +273,7 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
     disableGateway: disableGateway
     virtualNetworkType: virtualNetworkType
     virtualNetworkConfiguration: !empty(subnetResourceId) ? json('{"subnetResourceId": "${subnetResourceId}"}') : null
+    publicIpAddressId: !empty(publicIpAddressId) ? publicIpAddressId : null
     apiVersionConstraint: !empty(minApiVersion) ? json('{"minApiVersion": "${minApiVersion}"}') : null
     restore: restore
   }
