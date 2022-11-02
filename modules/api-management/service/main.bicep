@@ -251,7 +251,7 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
-resource apiManagementService 'Microsoft.ApiManagement/service@2021-01-01-preview' = {
+resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
   name: name
   location: location
   tags: tags

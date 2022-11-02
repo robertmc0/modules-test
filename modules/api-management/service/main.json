@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.11.1.770",
-      "templateHash": "2056570312051393805"
+      "templateHash": "12523886990894390789"
     }
   },
   "parameters": {
@@ -385,7 +385,7 @@
   "resources": [
     {
       "type": "Microsoft.ApiManagement/service",
-      "apiVersion": "2021-01-01-preview",
+      "apiVersion": "2021-08-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -546,7 +546,7 @@
     },
     "systemAssignedPrincipalId": {
       "type": "string",
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2021-01-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2021-01-01-preview', 'full').identity.principalId, '')]",
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2021-08-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2021-08-01', 'full').identity.principalId, '')]",
       "metadata": {
         "description": "The principal ID of the system assigned identity."
       }
