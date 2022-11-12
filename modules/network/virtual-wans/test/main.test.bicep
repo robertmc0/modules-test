@@ -16,10 +16,6 @@ module vwanMinimum '../main.bicep' = {
       {
         name: '${uniqueString(deployment().name, location)}minvhub'
         addressPrefix: '10.1.0.0/23'
-        hubRoutingPreference: 'ExpressRoute'
-        virtualRouterAutoScaleConfiguration: {
-          minCapacity: 2
-        }
       }
     ]
   }
