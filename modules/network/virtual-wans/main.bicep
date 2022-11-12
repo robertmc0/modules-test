@@ -71,8 +71,8 @@ resource virtualHub 'Microsoft.Network/virtualHubs@2022-05-01' = [for hub in vir
   tags: tags
   properties: {
     addressPrefix: hub.addressPrefix
-    hubRoutingPreference: hub.hubRoutingPreference
-    virtualRouterAutoScaleConfiguration: hub.virtualRouterAutoScaleConfiguration
+    hubRoutingPreference: contains(hub, 'hubRoutingPreference') ? hub.hubRoutingPreference : null
+    virtualRouterAutoScaleConfiguration: contains(hub, 'virtualRouterAutoScaleConfiguration') ? hub.virtualRouterAutoScaleConfiguration : null
     virtualWan: {
       id: virtualWan.id
     }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "8552646806791220910"
+      "templateHash": "15175734220174276516"
     }
   },
   "parameters": {
@@ -122,8 +122,8 @@
       "tags": "[parameters('tags')]",
       "properties": {
         "addressPrefix": "[parameters('virtualHubs')[copyIndex()].addressPrefix]",
-        "hubRoutingPreference": "[parameters('virtualHubs')[copyIndex()].hubRoutingPreference]",
-        "virtualRouterAutoScaleConfiguration": "[parameters('virtualHubs')[copyIndex()].virtualRouterAutoScaleConfiguration]",
+        "hubRoutingPreference": "[if(contains(parameters('virtualHubs')[copyIndex()], 'hubRoutingPreference'), parameters('virtualHubs')[copyIndex()].hubRoutingPreference, null())]",
+        "virtualRouterAutoScaleConfiguration": "[if(contains(parameters('virtualHubs')[copyIndex()], 'virtualRouterAutoScaleConfiguration'), parameters('virtualHubs')[copyIndex()].virtualRouterAutoScaleConfiguration, null())]",
         "virtualWan": {
           "id": "[resourceId('Microsoft.Network/virtualWans', parameters('name'))]"
         }
