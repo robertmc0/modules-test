@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "6775599810287980968"
+      "version": "0.12.40.16777",
+      "templateHash": "7040884852364862825"
     }
   },
   "parameters": {
@@ -56,14 +56,16 @@
     },
     "subnetResourceId": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Resource ID of the Azure firewall subnet."
+        "description": "Optional. Resource ID of the Azure firewall subnet."
       }
     },
     "publicIpAddressName": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Name of the Azure firewall public IP address."
+        "description": "Optional. Name of the Azure firewall public IP address."
       }
     },
     "firewallManagementConfiguration": {
@@ -104,14 +106,21 @@
     },
     "availabilityZones": {
       "type": "array",
-      "defaultValue": [],
       "allowedValues": [
         "1",
         "2",
         "3"
       ],
+      "defaultValue": [],
       "metadata": {
         "description": "Optional. A list of availability zones denoting where the resource should be deployed."
+      }
+    },
+    "virtualHubResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the Azure virtual hub."
       }
     },
     "enableDiagnostics": {
@@ -123,10 +132,10 @@
     },
     "diagnosticLogCategoryGroupsToEnable": {
       "type": "array",
-      "defaultValue": [
+      "allowedValues": [
         "AllLogs"
       ],
-      "allowedValues": [
+      "defaultValue": [
         "AllLogs"
       ],
       "metadata": {
@@ -135,10 +144,10 @@
     },
     "diagnosticMetricsToEnable": {
       "type": "array",
-      "defaultValue": [
+      "allowedValues": [
         "AllMetrics"
       ],
-      "allowedValues": [
+      "defaultValue": [
         "AllMetrics"
       ],
       "metadata": {
@@ -224,15 +233,17 @@
       }
     ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
-    "publicIpFirewallDiagnosticsName": "[toLower(format('{0}-dgs', parameters('publicIpAddressName')))]",
-    "publicIpFirewallMgmtDiagnosticsName": "[toLower(format('{0}-dgs', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder')))]",
-    "firewallDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+    "publicIpFirewallDiagnosticsName": "[toLower(format('{0}-dgs', if(equals(parameters('sku'), 'AZFW_VNet'), parameters('publicIpAddressName'), 'placeholder1')))]",
+    "publicIpFirewallMgmtDiagnosticsName": "[toLower(format('{0}-dgs', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder2')))]",
+    "firewallDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "firewallProperties": "[if(equals(parameters('sku'), 'AZFW_VNet'), createObject('sku', createObject('name', parameters('sku'), 'tier', parameters('tier')), 'ipConfigurations', createArray(createObject('name', if(equals(parameters('sku'), 'AZFW_VNet'), parameters('publicIpAddressName'), 'placeholder1'), 'properties', createObject('subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', if(equals(parameters('sku'), 'AZFW_VNet'), parameters('publicIpAddressName'), 'placeholder1')))))), 'managementIpConfiguration', if(not(empty(parameters('firewallManagementConfiguration'))), createObject('name', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder2'), 'properties', createObject('subnet', createObject('id', parameters('firewallManagementConfiguration').subnetResourceId), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder2'))))), null()), 'firewallPolicy', createObject('id', resourceId('Microsoft.Network/firewallPolicies', parameters('policyName')))), createObject('sku', createObject('name', parameters('sku'), 'tier', parameters('tier')), 'hubIPAddresses', createObject('publicIPs', createObject('count', 1)), 'virtualHub', createObject('id', parameters('virtualHubResourceId')), 'firewallPolicy', createObject('id', resourceId('Microsoft.Network/firewallPolicies', parameters('policyName')))))]"
   },
   "resources": [
     {
+      "condition": "[equals(parameters('sku'), 'AZFW_VNet')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2022-01-01",
-      "name": "[parameters('publicIpAddressName')]",
+      "name": "[if(equals(parameters('sku'), 'AZFW_VNet'), parameters('publicIpAddressName'), 'placeholder1')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {
@@ -244,10 +255,10 @@
       "zones": "[parameters('availabilityZones')]"
     },
     {
-      "condition": "[parameters('enableDiagnostics')]",
+      "condition": "[and(parameters('enableDiagnostics'), equals(parameters('sku'), 'AZFW_VNet'))]",
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
-      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', parameters('publicIpAddressName'))]",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', if(equals(parameters('sku'), 'AZFW_VNet'), parameters('publicIpAddressName'), 'placeholder1'))]",
       "name": "[variables('publicIpFirewallDiagnosticsName')]",
       "properties": {
         "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
@@ -258,14 +269,14 @@
         "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(equals(parameters('sku'), 'AZFW_VNet'), parameters('publicIpAddressName'), 'placeholder1'))]"
       ]
     },
     {
-      "condition": "[not(empty(parameters('firewallManagementConfiguration')))]",
+      "condition": "[and(not(empty(parameters('firewallManagementConfiguration'))), equals(parameters('sku'), 'AZFW_VNet'))]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2022-01-01",
-      "name": "[if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder')]",
+      "name": "[if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder2')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {
@@ -277,10 +288,10 @@
       "zones": "[parameters('availabilityZones')]"
     },
     {
-      "condition": "[and(not(empty(parameters('firewallManagementConfiguration'))), parameters('enableDiagnostics'))]",
+      "condition": "[and(and(not(empty(parameters('firewallManagementConfiguration'))), parameters('enableDiagnostics')), equals(parameters('sku'), 'AZFW_VNet'))]",
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
-      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'))]",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder2'))]",
       "name": "[variables('publicIpFirewallMgmtDiagnosticsName')]",
       "properties": {
         "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
@@ -291,7 +302,7 @@
         "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder2'))]"
       ]
     },
     {
@@ -300,33 +311,11 @@
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
-      "properties": {
-        "sku": {
-          "name": "[parameters('sku')]",
-          "tier": "[parameters('tier')]"
-        },
-        "ipConfigurations": [
-          {
-            "name": "[parameters('publicIpAddressName')]",
-            "properties": {
-              "subnet": {
-                "id": "[parameters('subnetResourceId')]"
-              },
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
-              }
-            }
-          }
-        ],
-        "managementIpConfiguration": "[if(not(empty(parameters('firewallManagementConfiguration'))), createObject('name', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'), 'properties', createObject('subnet', createObject('id', parameters('firewallManagementConfiguration').subnetResourceId), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'))))), null())]",
-        "firewallPolicy": {
-          "id": "[resourceId('Microsoft.Network/firewallPolicies', parameters('policyName'))]"
-        }
-      },
+      "properties": "[variables('firewallProperties')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/firewallPolicies', parameters('policyName'))]",
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]",
-        "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(equals(parameters('sku'), 'AZFW_VNet'), parameters('publicIpAddressName'), 'placeholder1'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder2'))]"
       ]
     },
     {
@@ -396,7 +385,7 @@
     },
     "privateIpAddress": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/azureFirewalls', parameters('name'))).ipConfigurations[0].properties.privateIPAddress]",
+      "value": "[if(equals(parameters('sku'), 'AZFW_VNet'), reference(resourceId('Microsoft.Network/azureFirewalls', parameters('name')), '2022-01-01').ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/azureFirewalls', parameters('name')), '2022-01-01').hubIPAddresses.privateIPAddress)]",
       "metadata": {
         "description": "Private IP address of the deployed Azure firewall."
       }
