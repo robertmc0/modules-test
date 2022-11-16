@@ -1,0 +1,493 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "10186514452572242883"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 63,
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "managedClusterSKU": {
+      "type": "string",
+      "defaultValue": "Free",
+      "allowedValues": [
+        "Free",
+        "Paid"
+      ],
+      "metadata": {
+        "description": "Optional. Sets the uptime SLA tier to enable a financially backed, higher SLA for an AKS cluster."
+      }
+    },
+    "nodeResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Node resource group name."
+      }
+    },
+    "disableLocalAccounts": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Disable static credentials for this cluster. This must only be used on Managed Clusters that are AAD enabled"
+      }
+    },
+    "dnsPrefix": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Custom DNS name prefix. This cannot be updated once the Managed Cluster has been created."
+      }
+    },
+    "enableRBAC": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable Kubernetes Role-Based Access Control."
+      }
+    },
+    "kubernetesVersion": {
+      "type": "string",
+      "defaultValue": "latest",
+      "metadata": {
+        "description": "Optional. Specify kubernetes version to deploy."
+      }
+    },
+    "enablePrivateCluster": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Create a private Managed Cluster"
+      }
+    },
+    "addonProfiles": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. Specify profile of managed cluster add-on."
+      }
+    },
+    "agentPoolName": {
+      "type": "string",
+      "defaultValue": "agentpool",
+      "metadata": {
+        "description": "Optional. Agent Pool name"
+      }
+    },
+    "agentPoolOsDiskSizeGB": {
+      "type": "int",
+      "defaultValue": 128,
+      "metadata": {
+        "description": "Optional. OS Disk Size in GB to be used to specify the disk size for every machine in the master/agent pool."
+      }
+    },
+    "agentPoolVnetSubnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "Existing VNET resourceid dedicated for use with a Managed Cluster"
+      }
+    },
+    "agentPoolMaxCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Optional. The maximum number of nodes for auto-scaling"
+      }
+    },
+    "agentPoolMaxPods": {
+      "type": "int",
+      "defaultValue": 30,
+      "metadata": {
+        "description": "Optional. The maximum number of pods that can run on a node."
+      }
+    },
+    "networkServiceCidr": {
+      "type": "string",
+      "metadata": {
+        "description": "A CIDR notation IP range from which to assign service cluster IPs. It must not overlap with any Subnet IP ranges."
+      }
+    },
+    "networkDnsServiceIp": {
+      "type": "string",
+      "metadata": {
+        "description": "An IP address assigned to the Kubernetes DNS service. It must be within the Kubernetes service address range specified in serviceCidr."
+      }
+    },
+    "networkDockerBridgeCidr": {
+      "type": "string",
+      "defaultValue": "172.17.0.1/16",
+      "metadata": {
+        "description": "Optional. A CIDR notation IP range assigned to the Docker bridge network. It must not overlap with any Subnet IP ranges or the Kubernetes service address range. Default 172.17.0.1"
+      }
+    },
+    "agentPoolMode": {
+      "type": "string",
+      "defaultValue": "System",
+      "allowedValues": [
+        "User",
+        "System"
+      ],
+      "metadata": {
+        "description": "Optional. A cluster must have at least one \"System\" Agent Pool at all times. For additional information on agent pool restrictions and best practices"
+      }
+    },
+    "agentPoolType": {
+      "type": "string",
+      "defaultValue": "VirtualMachineScaleSets",
+      "allowedValues": [
+        "AvailabilitySet",
+        "VirtualMachineScaleSets"
+      ],
+      "metadata": {
+        "description": "Optional. The type of Agent Pool."
+      }
+    },
+    "enableAvailabilityZones": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Availability zones for the agentpool nodes. This can only be specified if the AgentPoolType property is VirtualMachineScaleSets."
+      }
+    },
+    "agentPoolCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "metadata": {
+        "description": "Optional. Number of agents (VMs) to host docker containers. Allowed values must be in the range of 0 to 1000 (inclusive) for user pools and in the range of 1 to 1000 (inclusive) for system pools."
+      }
+    },
+    "enableAutoScaling": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables the Managed Cluster auto-scaler"
+      }
+    },
+    "agentPoolVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_B2s",
+      "metadata": {
+        "description": "Optional. Virtual Machine size of the nodes in the Managed Cluster."
+      }
+    },
+    "networkNetworkPlugin": {
+      "type": "string",
+      "defaultValue": "azure",
+      "allowedValues": [
+        "azure",
+        "kubenet",
+        "none"
+      ],
+      "metadata": {
+        "description": "Optional. Network plugin used for building the Kubernetes network."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource. Enable if not using User Assigned Managed Identity."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi": {}
+        },
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "enableAad": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Azure Active Directory configuration."
+      }
+    },
+    "enableAzureRBAC": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Azure RBAC for Kubernetes authorization."
+      }
+    },
+    "enableAddonAzurePolicy": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable the Azure Policy profile of managed cluster add-on."
+      }
+    },
+    "enableDefenderForCloud": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Defender for Cloud"
+      }
+    },
+    "logAnalyticsWorkspaceResourceID": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Enable App Insights Monitoring. Specify App Insights Log Analytics Workspace resourceId."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "allowedValues": [
+        "allLogs",
+        "audit"
+      ],
+      "defaultValue": [
+        "allLogs",
+        "audit"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "sku": {
+      "name": "Basic",
+      "tier": "[parameters('managedClusterSKU')]"
+    },
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "addonAzurePolicy": "[if(parameters('enableAddonAzurePolicy'), createObject('azurePolicy', createObject('enabled', parameters('enableAddonAzurePolicy'))), createObject())]",
+    "addonOmsAgent": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceID'))), createObject('omsagent', createObject('enabled', true(), 'config', createObject('logAnalyticsWorkspaceResourceID', if(not(empty(parameters('logAnalyticsWorkspaceResourceID'))), parameters('logAnalyticsWorkspaceResourceID'), null())))), createObject())]",
+    "clusterAddons": "[union(variables('addonAzurePolicy'), variables('addonOmsAgent'), parameters('addonProfiles'))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "availabilityZones": [
+      "1",
+      "2",
+      "3"
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2022-09-01",
+      "name": "[parameters('name')]",
+      "sku": "[variables('sku')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "nodeResourceGroup": "[parameters('nodeResourceGroup')]",
+        "disableLocalAccounts": "[parameters('disableLocalAccounts')]",
+        "dnsPrefix": "[if(not(empty(parameters('dnsPrefix'))), parameters('dnsPrefix'), parameters('name'))]",
+        "enableRBAC": "[parameters('enableRBAC')]",
+        "kubernetesVersion": "[if(not(equals(parameters('kubernetesVersion'), 'latest')), parameters('kubernetesVersion'), null())]",
+        "agentPoolProfiles": [
+          {
+            "name": "[parameters('agentPoolName')]",
+            "availabilityZones": "[if(parameters('enableAvailabilityZones'), variables('availabilityZones'), null())]",
+            "count": "[parameters('agentPoolCount')]",
+            "enableAutoScaling": "[parameters('enableAutoScaling')]",
+            "vmSize": "[parameters('agentPoolVMSize')]",
+            "osDiskSizeGB": "[parameters('agentPoolOsDiskSizeGB')]",
+            "vnetSubnetID": "[parameters('agentPoolVnetSubnetId')]",
+            "minCount": "[if(and(parameters('enableAutoScaling'), greater(parameters('agentPoolCount'), 1)), parameters('agentPoolCount'), null())]",
+            "maxCount": "[if(and(parameters('enableAutoScaling'), greater(parameters('agentPoolCount'), 1)), parameters('agentPoolMaxCount'), null())]",
+            "maxPods": "[parameters('agentPoolMaxPods')]",
+            "mode": "[parameters('agentPoolMode')]",
+            "type": "[parameters('agentPoolType')]"
+          }
+        ],
+        "networkProfile": {
+          "networkPlugin": "[parameters('networkNetworkPlugin')]",
+          "serviceCidr": "[parameters('networkServiceCidr')]",
+          "dnsServiceIP": "[parameters('networkDnsServiceIp')]",
+          "dockerBridgeCidr": "[parameters('networkDockerBridgeCidr')]"
+        },
+        "addonProfiles": "[variables('clusterAddons')]",
+        "aadProfile": "[if(parameters('enableAad'), createObject('managed', true(), 'enableAzureRBAC', parameters('enableAzureRBAC'), 'tenantID', tenant().tenantId), null())]",
+        "apiServerAccessProfile": {
+          "enablePrivateCluster": "[parameters('enablePrivateCluster')]"
+        },
+        "securityProfile": "[if(parameters('enableDefenderForCloud'), createObject('defender', createObject('logAnalyticsWorkspaceResourceId', parameters('diagnosticLogAnalyticsWorkspaceId'), 'securityMonitoring', createObject('enabled', parameters('enableDefenderForCloud')))), null())]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed managed cluster."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed managed cluster."
+      }
+    },
+    "systemAssignedPrincipalId": {
+      "type": "string",
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('name')), '2022-09-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('name')), '2022-09-01', 'full').identity.principalId, '')]",
+      "metadata": {
+        "description": "The principal ID of the system assigned identity."
+      }
+    }
+  }
+}
