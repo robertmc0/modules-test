@@ -26,6 +26,7 @@ This module performs the following
 | :--------- | :----: | :------------------------------------------------- |
 | name       | string | The name of the deployed virtual hub route.        |
 | resourceId | string | The resource ID of the deployed virtual hub route. |
+| labels     | array  | The labels of the deployed virtual hub route.      |
 
 ## Examples
 

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "1093543652576901312"
+      "templateHash": "15106970073642000682"
     }
   },
   "parameters": {
@@ -89,6 +89,13 @@
       "value": "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', parameters('virtualHubName'), parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed virtual hub route."
+      }
+    },
+    "labels": {
+      "type": "array",
+      "value": "[reference(resourceId('Microsoft.Network/virtualHubs/hubRouteTables', parameters('virtualHubName'), parameters('name')), '2022-05-01').labels]",
+      "metadata": {
+        "description": "The labels of the deployed virtual hub route."
       }
     }
   }

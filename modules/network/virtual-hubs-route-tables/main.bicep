@@ -47,3 +47,6 @@ output name string = virtualHubRoute.name
 
 @description('The resource ID of the deployed virtual hub route.')
 output resourceId string = virtualHubRoute.id
+
+@description('The labels of the deployed virtual hub route.')
+output labels array = virtualHubRoute.properties.labels
