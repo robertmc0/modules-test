@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "10186514452572242883"
+      "templateHash": "3904962585409698979"
     }
   },
   "parameters": {
@@ -280,6 +280,21 @@
         "description": "Optional. Enable diagnostic logging."
       }
     },
+    "upgradeChannel": {
+      "type": "string",
+      "defaultValue": "patch",
+      "allowedValues": [
+        "none",
+        "node-image",
+        "patch",
+        "stable",
+        "rapid"
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/aks/upgrade-cluster?tabs=azure-cli#set-auto-upgrade-channel",
+        "description": "optional. Enable auto upgrade on the AKS cluster to perform periodic upgrades to the latest Kubernetes version."
+      }
+    },
     "diagnosticLogCategoryGroupsToEnable": {
       "type": "array",
       "allowedValues": [
@@ -431,7 +446,8 @@
         "apiServerAccessProfile": {
           "enablePrivateCluster": "[parameters('enablePrivateCluster')]"
         },
-        "securityProfile": "[if(parameters('enableDefenderForCloud'), createObject('defender', createObject('logAnalyticsWorkspaceResourceId', parameters('diagnosticLogAnalyticsWorkspaceId'), 'securityMonitoring', createObject('enabled', parameters('enableDefenderForCloud')))), null())]"
+        "securityProfile": "[if(parameters('enableDefenderForCloud'), createObject('defender', createObject('logAnalyticsWorkspaceResourceId', parameters('diagnosticLogAnalyticsWorkspaceId'), 'securityMonitoring', createObject('enabled', parameters('enableDefenderForCloud')))), null())]",
+        "autoUpgradeProfile": "[if(not(equals(parameters('upgradeChannel'), 'none')), createObject('upgradeChannel', parameters('upgradeChannel')), null())]"
       }
     },
     {
