@@ -138,6 +138,19 @@ param logAnalyticsWorkspaceResourceID string = ''
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
+@description('optional. Enable auto upgrade on the AKS cluster to perform periodic upgrades to the latest Kubernetes version.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/aks/upgrade-cluster?tabs=azure-cli#set-auto-upgrade-channel'
+})
+@allowed([
+  'none'
+  'node-image'
+  'patch'
+  'stable'
+  'rapid'
+])
+param upgradeChannel string = 'patch'
+
 @description('Optional. The name of log category groups that will be streamed.')
 @allowed([
   'allLogs'
@@ -279,6 +292,9 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
           enabled: enableDefenderForCloud
         }
       }
+    } : null
+    autoUpgradeProfile: upgradeChannel != 'none' ? {
+      upgradeChannel: upgradeChannel
     } : null
   }
 }

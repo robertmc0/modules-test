@@ -139,13 +139,14 @@ module aksMax '../main.bicep' = {
     agentPoolVnetSubnetId: first(filter(vnetMax.properties.subnets, subnet => toLower(subnet.name) == toLower(subnetName))).id
     networkServiceCidr: '10.1.0.0/16'
     networkDnsServiceIp: '10.1.0.10'
-    userAssignedIdentities: {'${managedIdentity.id}': {}}
+    userAssignedIdentities: { '${managedIdentity.id}': {} }
     dnsPrefix: '${shortIdentifier}-aks-max-${uniqueString(deployment().name, 'max', location)}'
     enableAad: true
     enableAzureRBAC: true
     enablePrivateCluster: false
     enableAddonAzurePolicy: true
     disableLocalAccounts: true
+    upgradeChannel: 'patch'
     logAnalyticsWorkspaceResourceID: logAnalyticsWorkspace.id
     resourceLock: 'CanNotDelete'
     enableDiagnostics: true
