@@ -50,24 +50,6 @@ resource virtualHub2 'Microsoft.Network/virtualHubs@2022-05-01' = {
   }
 }
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
-  name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', 'vpnGateway', location)}'
-  location: location
-}
-
-resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
-  name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsStorageAccount', 'vpnGateway', location)}'
-  location: location
-  kind: 'StorageV2'
-  sku: {
-    name: 'Standard_LRS'
-  }
-}
-resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {
-  name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsEventHubNamespace', 'vpnGateway', location)}'
-  location: location
-}
-
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
