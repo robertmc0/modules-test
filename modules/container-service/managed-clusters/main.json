@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "3904962585409698979"
+      "templateHash": "12214618461899906171"
     }
   },
   "parameters": {
@@ -55,7 +55,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Disable static credentials for this cluster. This must only be used on Managed Clusters that are AAD enabled"
+        "description": "Optional. Disable static credentials for this cluster. This must only be used on Managed Clusters that are AAD enabled."
       }
     },
     "dnsPrefix": {
@@ -83,7 +83,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Create a private Managed Cluster"
+        "description": "Optional. Create a private Managed Cluster."
       }
     },
     "addonProfiles": {
@@ -97,7 +97,7 @@
       "type": "string",
       "defaultValue": "agentpool",
       "metadata": {
-        "description": "Optional. Agent Pool name"
+        "description": "Optional. Agent Pool name."
       }
     },
     "agentPoolOsDiskSizeGB": {
@@ -110,14 +110,14 @@
     "agentPoolVnetSubnetId": {
       "type": "string",
       "metadata": {
-        "description": "Existing VNET resourceid dedicated for use with a Managed Cluster"
+        "description": "Existing VNET resourceid dedicated for use with a Managed Cluster."
       }
     },
     "agentPoolMaxCount": {
       "type": "int",
       "defaultValue": 1,
       "metadata": {
-        "description": "Optional. The maximum number of nodes for auto-scaling"
+        "description": "Optional. The maximum number of nodes for auto-scaling."
       }
     },
     "agentPoolMaxPods": {
@@ -143,7 +143,7 @@
       "type": "string",
       "defaultValue": "172.17.0.1/16",
       "metadata": {
-        "description": "Optional. A CIDR notation IP range assigned to the Docker bridge network. It must not overlap with any Subnet IP ranges or the Kubernetes service address range. Default 172.17.0.1"
+        "description": "Optional. A CIDR notation IP range assigned to the Docker bridge network. It must not overlap with any Subnet IP ranges or the Kubernetes service address range. Default 172.17.0.1."
       }
     },
     "agentPoolMode": {
@@ -154,7 +154,7 @@
         "System"
       ],
       "metadata": {
-        "description": "Optional. A cluster must have at least one \"System\" Agent Pool at all times. For additional information on agent pool restrictions and best practices"
+        "description": "Optional. A cluster must have at least one \"System\" Agent Pool at all times. For additional information on agent pool restrictions and best practices."
       }
     },
     "agentPoolType": {
@@ -187,7 +187,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enables the Managed Cluster auto-scaler"
+        "description": "Optional. Enables the Managed Cluster auto-scaler."
       }
     },
     "agentPoolVMSize": {

@@ -24,7 +24,7 @@ param managedClusterSKU string = 'Free'
 @description('Optional. Node resource group name.')
 param nodeResourceGroup string = ''
 
-@description('Optional. Disable static credentials for this cluster. This must only be used on Managed Clusters that are AAD enabled')
+@description('Optional. Disable static credentials for this cluster. This must only be used on Managed Clusters that are AAD enabled.')
 param disableLocalAccounts bool = false
 
 @description('Optional. Custom DNS name prefix. This cannot be updated once the Managed Cluster has been created.')
@@ -36,22 +36,22 @@ param enableRBAC bool = true
 @description('Optional. Specify kubernetes version to deploy.')
 param kubernetesVersion string = 'latest'
 
-@description('Optional. Create a private Managed Cluster')
+@description('Optional. Create a private Managed Cluster.')
 param enablePrivateCluster bool = false
 
 @description('Optional. Specify profile of managed cluster add-on.')
 param addonProfiles object = {}
 
-@description('Optional. Agent Pool name')
+@description('Optional. Agent Pool name.')
 param agentPoolName string = 'agentpool'
 
 @description('Optional. OS Disk Size in GB to be used to specify the disk size for every machine in the master/agent pool.')
 param agentPoolOsDiskSizeGB int = 128
 
-@description('Existing VNET resourceid dedicated for use with a Managed Cluster')
+@description('Existing VNET resourceid dedicated for use with a Managed Cluster.')
 param agentPoolVnetSubnetId string
 
-@description('Optional. The maximum number of nodes for auto-scaling')
+@description('Optional. The maximum number of nodes for auto-scaling.')
 param agentPoolMaxCount int = 1
 
 @description('Optional. The maximum number of pods that can run on a node.')
@@ -63,10 +63,10 @@ param networkServiceCidr string
 @description('An IP address assigned to the Kubernetes DNS service. It must be within the Kubernetes service address range specified in serviceCidr.')
 param networkDnsServiceIp string
 
-@description('Optional. A CIDR notation IP range assigned to the Docker bridge network. It must not overlap with any Subnet IP ranges or the Kubernetes service address range. Default 172.17.0.1')
+@description('Optional. A CIDR notation IP range assigned to the Docker bridge network. It must not overlap with any Subnet IP ranges or the Kubernetes service address range. Default 172.17.0.1.')
 param networkDockerBridgeCidr string = '172.17.0.1/16'
 
-@description('Optional. A cluster must have at least one "System" Agent Pool at all times. For additional information on agent pool restrictions and best practices')
+@description('Optional. A cluster must have at least one "System" Agent Pool at all times. For additional information on agent pool restrictions and best practices.')
 @allowed([
   'User'
   'System'
@@ -87,7 +87,7 @@ param enableAvailabilityZones bool = false
 @minValue(1)
 param agentPoolCount int = 1
 
-@description('Optional. Enables the Managed Cluster auto-scaler')
+@description('Optional. Enables the Managed Cluster auto-scaler.')
 param enableAutoScaling bool = false
 
 @description('Optional. Virtual Machine size of the nodes in the Managed Cluster.')
