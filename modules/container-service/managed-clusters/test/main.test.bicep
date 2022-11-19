@@ -110,12 +110,9 @@ module aksMin '../main.bicep' = {
   params: {
     name: '${shortIdentifier}-aks-min-${uniqueString(deployment().name, 'min', location, uniqueId)}'
     location: location
-    agentPoolCount: 1
     agentPoolVnetSubnetId: first(filter(vnetMin.properties.subnets, subnet => toLower(subnet.name) == toLower(subnetName))).id
     networkServiceCidr: '10.1.0.0/16'
     networkDnsServiceIp: '10.1.0.10'
-    systemAssignedIdentity: true
-    enableAutoScaling: false
     resourceLock: 'CanNotDelete'
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
