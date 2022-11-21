@@ -15,11 +15,17 @@ TEST PREREQUISITES
 resource logAnalyticsWorkspace1 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace1', location)}'
   location: location
+  properties: {
+    retentionInDays: 90
+  }
 }
 
 resource logAnalyticsWorkspace2 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace2', location)}'
   location: location
+  properties: {
+    retentionInDays: 90
+  }
 }
 
 /*======================================================================
