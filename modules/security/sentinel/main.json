@@ -1,0 +1,288 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "11079338339964240891"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "workspaceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Log analytics workspace resource ID."
+      }
+    },
+    "dataSources": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "SecurityInsightsSecurityEventCollectionConfiguration",
+          "kind": "SecurityInsightsSecurityEventCollectionConfiguration",
+          "properties": {
+            "tier": "All",
+            "tierSetMethod": "Custom"
+          }
+        },
+        {
+          "name": "LinuxSyslogCollection",
+          "kind": "LinuxSyslogCollection",
+          "properties": {
+            "state": "enabled"
+          }
+        },
+        {
+          "name": "IISLogs",
+          "kind": "IISLogs",
+          "properties": {
+            "state": "OnPremiseEnabled"
+          }
+        }
+      ],
+      "metadata": {
+        "name": "Data source name.",
+        "kind": "Data source kind.",
+        "properties": "The data source properties in raw json format, each kind of data source have its own schema.",
+        "description": "Optional. Data sources to add to sentinel."
+      }
+    },
+    "connectors": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.securityinsights/dataconnectors?pivots=deployment-language-bicep",
+        "example": {
+          "kind": "AzureActiveDirectory",
+          "properties": {
+            "dataTypes": {
+              "alerts": {
+                "state": "string"
+              }
+            },
+            "tenantId": "string"
+          }
+        },
+        "description": "Optional. Connectors to be added to sentinel."
+      }
+    },
+    "alertRules": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "mlrdp",
+          "kind": "MLBehaviorAnalytics",
+          "properties": {
+            "enabled": true,
+            "alertRuleTemplateName": "737a2ce1-70a3-4968-9e90-3e6aca836abf"
+          }
+        },
+        {
+          "name": "fusion",
+          "kind": "Fusion",
+          "properties": {
+            "enabled": true,
+            "alertRuleTemplateName": "f71aba3d-28fb-450b-b192-4e76a83015c8"
+          }
+        },
+        {
+          "name": "mlssh",
+          "kind": "MLBehaviorAnalytics",
+          "properties": {
+            "enabled": true,
+            "alertRuleTemplateName": "fa118b98-de46-4e94-87f9-8e6d5060b60b"
+          }
+        }
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.securityinsights/alertrules?pivots=deployment-language-bicep",
+        "example": {
+          "kind": "ThreatIntelligence",
+          "properties": {
+            "alertRuleTemplateName": "string",
+            "enabled": "bool"
+          }
+        },
+        "description": "Optional. Incident creation alert rules to be added to sentinel."
+      }
+    },
+    "winEventProviders": {
+      "type": "array",
+      "defaultValue": [
+        "Microsoft-Windows-Sysmon/Operational",
+        "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational",
+        "Microsoft-Windows-Bits-Client/Operational",
+        "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "Directory Service",
+        "Microsoft-Windows-DNS-Client/Operational",
+        "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
+        "Windows PowerShell",
+        "Microsoft-Windows-PowerShell/Operational",
+        "Microsoft-Windows-WMI-Activity/Operational",
+        "Microsoft-Windows-TaskScheduler/Operational"
+      ],
+      "metadata": {
+        "description": "Optional. A list of Windows Event Providers that you would like to collect. Windows Security Auditing is not enabled through this option. It is enabled through Azure Sentinel Data Connectors."
+      }
+    },
+    "syslogFacilities": {
+      "type": "array",
+      "defaultValue": [
+        "auth",
+        "authpriv",
+        "cron",
+        "daemon",
+        "ftp",
+        "kern",
+        "user",
+        "mail"
+      ],
+      "metadata": {
+        "description": "Optional. A list of facilities to collect from Syslog."
+      }
+    }
+  },
+  "variables": {
+    "workspaceName": "[last(split(parameters('workspaceId'), '/'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationsManagement/solutions",
+      "apiVersion": "2015-11-01-preview",
+      "name": "[format('SecurityInsights({0})', variables('workspaceName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "workspaceResourceId": "[parameters('workspaceId')]"
+      },
+      "plan": {
+        "name": "[format('SecurityInsights({0})', variables('workspaceName'))]",
+        "product": "OMSGallery/SecurityInsights",
+        "publisher": "Microsoft",
+        "promotionCode": ""
+      }
+    },
+    {
+      "copy": {
+        "name": "sentinelDataSources",
+        "count": "[length(parameters('dataSources'))]"
+      },
+      "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/{1}', variables('workspaceName'), parameters('dataSources')[copyIndex()].name)]",
+      "kind": "[parameters('dataSources')[copyIndex()].kind]",
+      "properties": "[parameters('dataSources')[copyIndex()].properties]"
+    },
+    {
+      "copy": {
+        "name": "sentinelDataSourceWinEvent",
+        "count": "[length(parameters('winEventProviders'))]"
+      },
+      "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/winEvent{1}', variables('workspaceName'), replace(parameters('winEventProviders')[copyIndex()], '/', ''))]",
+      "kind": "WindowsEvent",
+      "properties": {
+        "eventLogName": "[parameters('winEventProviders')[copyIndex()]]",
+        "eventTypes": [
+          {
+            "eventType": "Error"
+          },
+          {
+            "eventType": "Warning"
+          },
+          {
+            "eventType": "Information"
+          }
+        ]
+      }
+    },
+    {
+      "copy": {
+        "name": "sentinelDataSourceSyslog",
+        "count": "[length(parameters('syslogFacilities'))]"
+      },
+      "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/syslog{1}', variables('workspaceName'), replace(parameters('syslogFacilities')[copyIndex()], '/', ''))]",
+      "kind": "LinuxSyslog",
+      "properties": {
+        "sysLogName": "[parameters('syslogFacilities')[copyIndex()]]",
+        "syslogSeverities": [
+          {
+            "severity": "emerg"
+          },
+          {
+            "severity": "alert"
+          },
+          {
+            "severity": "crit"
+          },
+          {
+            "severity": "err"
+          },
+          {
+            "severity": "warning"
+          },
+          {
+            "severity": "notice"
+          },
+          {
+            "severity": "info"
+          },
+          {
+            "severity": "debug"
+          }
+        ]
+      }
+    },
+    {
+      "copy": {
+        "name": "sentinelConnectors",
+        "count": "[length(parameters('connectors'))]"
+      },
+      "type": "Microsoft.SecurityInsights/dataConnectors",
+      "apiVersion": "2022-10-01-preview",
+      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', variables('workspaceName'))]",
+      "name": "[format('{0}{1}', parameters('connectors')[copyIndex()].kind, uniqueString(resourceGroup().id))]",
+      "location": "[parameters('location')]",
+      "kind": "[parameters('connectors')[copyIndex()].kind]",
+      "properties": "[parameters('connectors')[copyIndex()].properties]"
+    },
+    {
+      "copy": {
+        "name": "sentinelAlertRules",
+        "count": "[length(parameters('alertRules'))]"
+      },
+      "type": "Microsoft.SecurityInsights/alertRules",
+      "apiVersion": "2022-10-01-preview",
+      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', variables('workspaceName'))]",
+      "name": "[guid(parameters('alertRules')[copyIndex()].name)]",
+      "kind": "[parameters('alertRules')[copyIndex()].kind]",
+      "location": "[parameters('location')]",
+      "properties": "[parameters('alertRules')[copyIndex()].properties]"
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[variables('workspaceName')]",
+      "metadata": {
+        "description": "The name of the log analytics workspace where Sentinel is deployed."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]",
+      "metadata": {
+        "description": "The resource ID of the log analytics workspace where Sentinel is deployed."
+      }
+    }
+  }
+}
