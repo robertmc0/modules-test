@@ -25,10 +25,8 @@ This module deploys Azure Sentinel
 
 ## Outputs
 
-| Name       | Type   | Description                                                                |
-| :--------- | :----: | :------------------------------------------------------------------------- |
-| name       | string | The name of the log analytics workspace where Sentinel is deployed.        |
-| resourceId | string | The resource ID of the log analytics workspace where Sentinel is deployed. |
+| Name | Type | Description |
+| :--- | :--: | :---------- |
 
 ## Examples
 

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "11079338339964240891"
+      "templateHash": "2568373257943495384"
     }
   },
   "parameters": {
@@ -268,21 +268,5 @@
       "location": "[parameters('location')]",
       "properties": "[parameters('alertRules')[copyIndex()].properties]"
     }
-  ],
-  "outputs": {
-    "name": {
-      "type": "string",
-      "value": "[variables('workspaceName')]",
-      "metadata": {
-        "description": "The name of the log analytics workspace where Sentinel is deployed."
-      }
-    },
-    "resourceId": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]",
-      "metadata": {
-        "description": "The resource ID of the log analytics workspace where Sentinel is deployed."
-      }
-    }
-  }
+  ]
 }

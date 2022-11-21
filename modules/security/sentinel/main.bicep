@@ -212,9 +212,3 @@ resource sentinelAlertRules 'Microsoft.SecurityInsights/alertRules@2022-10-01-pr
   location: location
   properties: rule.properties
 }]
-
-@description('The name of the log analytics workspace where Sentinel is deployed.')
-output name string = logAnalytics.name
-
-@description('The resource ID of the log analytics workspace where Sentinel is deployed.')
-output resourceId string = logAnalytics.id
