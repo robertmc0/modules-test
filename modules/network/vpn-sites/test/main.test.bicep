@@ -38,7 +38,6 @@ module vpnSiteMinimum '../main.bicep' = {
         linkSpeedInMbps: 100
       }
     ]
-    resourceLock: 'CanNotDelete'
   }
 }
 
