@@ -41,35 +41,35 @@ module defenderMinimum '../main.bicep' = {
   }
 }
 
-// module defender '../main.bicep' = {
-//   dependsOn: [
-//     defenderMinimum
-//   ]
-//   scope: subscription((subscription().subscriptionId))
-//   name: '${uniqueString(deployment().name, location)}-defend'
-//   params: {
-//     workspaceId: logAnalyticsWorkspace.outputs.resourceId
-//     emailAddress: 'john.smith@contoso.com.au'
-//     alertNotificationSeverity: 'High'
-//     autoProvision: 'On'
-//     notificationsByRole: [
-//       'Owner'
-//       'ServiceAdmin'
-//     ]
-//     phone: '+61412567890'
-//     pricingCloudPosture: 'Standard'
-//     pricingTierAppServices: 'Standard'
-//     pricingTierArm: 'Standard'
-//     pricingTierContainerRegistry: 'Standard'
-//     pricingTierContainers: 'Standard'
-//     pricingTierCosmosDbs: 'Standard'
-//     pricingTierDns: 'Standard'
-//     pricingTierKeyVaults: 'Standard'
-//     pricingTierKubernetesService: 'Standard'
-//     pricingTierOpenSourceRelationalDatabases: 'Standard'
-//     pricingTierSqlServers: 'Standard'
-//     pricingTierSqlServerVirtualMachines: 'Standard'
-//     pricingTierStorageAccounts: 'Standard'
-//     pricingTierVMs: 'Standard'
-//   }
-// }
+module defender '../main.bicep' = {
+  dependsOn: [
+    defenderMinimum
+  ]
+  scope: subscription((subscription().subscriptionId))
+  name: '${uniqueString(deployment().name, location)}-defend'
+  params: {
+    workspaceId: logAnalyticsWorkspace.outputs.resourceId
+    emailAddress: 'john.smith@contoso.com.au'
+    alertNotificationSeverity: 'High'
+    autoProvision: 'On'
+    notificationsByRole: [
+      'Owner'
+      'ServiceAdmin'
+    ]
+    phone: '+61412567890'
+    pricingCloudPosture: 'Standard'
+    pricingTierAppServices: 'Standard'
+    pricingTierArm: 'Standard'
+    pricingTierContainerRegistry: 'Standard'
+    pricingTierContainers: 'Standard'
+    pricingTierCosmosDbs: 'Standard'
+    pricingTierDns: 'Standard'
+    pricingTierKeyVaults: 'Standard'
+    pricingTierKubernetesService: 'Standard'
+    pricingTierOpenSourceRelationalDatabases: 'Standard'
+    pricingTierSqlServers: 'Standard'
+    pricingTierSqlServerVirtualMachines: 'Standard'
+    pricingTierStorageAccounts: 'Standard'
+    pricingTierVMs: 'Standard'
+  }
+}
