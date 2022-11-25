@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "17776187457185104665"
+      "templateHash": "14827560719719957336"
     }
   },
   "parameters": {
@@ -43,7 +43,7 @@
       ],
       "defaultValue": [],
       "metadata": {
-        "description": "Optional. Defines which RBAC roles will get email notifications from Microsoft Defender for Cloud. "
+        "description": "Optional. Defines which RBAC roles will get email notifications from Microsoft Defender for Cloud."
       }
     },
     "pricingCloudPosture": {
@@ -206,6 +206,13 @@
         "description": "Resource ID of the Log Analytics workspace."
       }
     },
+    "workspaceScope": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Optional. All the VMs in this scope will send their security data to the mentioned workspace unless overridden by a setting with more specific scope."
+      }
+    },
     "autoProvision": {
       "type": "string",
       "defaultValue": "On",
@@ -350,8 +357,8 @@
       "apiVersion": "2017-08-01-preview",
       "name": "default",
       "properties": {
-        "workspaceId": "[parameters('workspaceId')]",
-        "scope": "[subscription().id]"
+        "scope": "[format('/subscriptions/{0}', parameters('workspaceScope'))]",
+        "workspaceId": "[parameters('workspaceId')]"
       }
     },
     {

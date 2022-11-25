@@ -14,7 +14,7 @@ param phone string = ''
 ])
 param alertNotificationSeverity string
 
-@description('Optional. Defines which RBAC roles will get email notifications from Microsoft Defender for Cloud. ')
+@description('Optional. Defines which RBAC roles will get email notifications from Microsoft Defender for Cloud.')
 @allowed([
   'AccountAdmin'
   'Contributor'
@@ -123,6 +123,9 @@ param pricingTierCosmosDbs string = 'Free'
 
 @description('Resource ID of the Log Analytics workspace.')
 param workspaceId string
+
+@description('Optional. All the VMs in this scope will send their security data to the mentioned workspace unless overridden by a setting with more specific scope.')
+param workspaceScope string = subscription().subscriptionId
 
 @description('Optional. Automatically enable new resources into the log analytics workspace.')
 @allowed([
@@ -248,8 +251,8 @@ resource cosmos 'Microsoft.Security/pricings@2022-03-01' = {
 resource workspace 'Microsoft.Security/workspaceSettings@2017-08-01-preview' = {
   name: 'default'
   properties: {
+    scope: '/subscriptions/${workspaceScope}'
     workspaceId: workspaceId
-    scope: subscription().id
   }
 }
 
