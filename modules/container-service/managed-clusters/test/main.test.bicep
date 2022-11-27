@@ -139,12 +139,12 @@ module aksMax '../main.bicep' = {
     userAssignedIdentities: { '${managedIdentity.id}': {} }
     dnsPrefix: '${shortIdentifier}-aks-max-${uniqueString(deployment().name, 'max', location)}'
     enableAad: true
-    enableAzureRBAC: true
+    enableAzureRbac: true
     enablePrivateCluster: false
     enableAddonAzurePolicy: true
     disableLocalAccounts: true
     upgradeChannel: 'patch'
-    logAnalyticsWorkspaceResourceID: logAnalyticsWorkspace.id
+    logAnalyticsWorkspaceResourceId: logAnalyticsWorkspace.id
     resourceLock: 'CanNotDelete'
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id

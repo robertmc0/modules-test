@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "12214618461899906171"
+      "templateHash": "1882812576542775011"
     }
   },
   "parameters": {
@@ -33,7 +33,7 @@
         "description": "Optional. Resource tags."
       }
     },
-    "managedClusterSKU": {
+    "managedClusterSku": {
       "type": "string",
       "defaultValue": "Free",
       "allowedValues": [
@@ -65,7 +65,7 @@
         "description": "Optional. Custom DNS name prefix. This cannot be updated once the Managed Cluster has been created."
       }
     },
-    "enableRBAC": {
+    "enableRbac": {
       "type": "bool",
       "defaultValue": true,
       "metadata": {
@@ -245,7 +245,7 @@
         "description": "Optional. Enable Azure Active Directory configuration."
       }
     },
-    "enableAzureRBAC": {
+    "enableAzureRbac": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
@@ -263,10 +263,10 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enable Defender for Cloud"
+        "description": "Optional. Enable Defender for Cloud."
       }
     },
-    "logAnalyticsWorkspaceResourceID": {
+    "logAnalyticsWorkspaceResourceId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -389,12 +389,12 @@
     ],
     "sku": {
       "name": "Basic",
-      "tier": "[parameters('managedClusterSKU')]"
+      "tier": "[parameters('managedClusterSku')]"
     },
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "addonAzurePolicy": "[if(parameters('enableAddonAzurePolicy'), createObject('azurePolicy', createObject('enabled', parameters('enableAddonAzurePolicy'))), createObject())]",
-    "addonOmsAgent": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceID'))), createObject('omsagent', createObject('enabled', true(), 'config', createObject('logAnalyticsWorkspaceResourceID', if(not(empty(parameters('logAnalyticsWorkspaceResourceID'))), parameters('logAnalyticsWorkspaceResourceID'), null())))), createObject())]",
+    "addonOmsAgent": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('omsagent', createObject('enabled', true(), 'config', createObject('logAnalyticsWorkspaceResourceId', if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), parameters('logAnalyticsWorkspaceResourceId'), null())))), createObject())]",
     "clusterAddons": "[union(variables('addonAzurePolicy'), variables('addonOmsAgent'), parameters('addonProfiles'))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
@@ -417,7 +417,7 @@
         "nodeResourceGroup": "[parameters('nodeResourceGroup')]",
         "disableLocalAccounts": "[parameters('disableLocalAccounts')]",
         "dnsPrefix": "[if(not(empty(parameters('dnsPrefix'))), parameters('dnsPrefix'), parameters('name'))]",
-        "enableRBAC": "[parameters('enableRBAC')]",
+        "enableRBAC": "[parameters('enableRbac')]",
         "kubernetesVersion": "[if(not(equals(parameters('kubernetesVersion'), 'latest')), parameters('kubernetesVersion'), null())]",
         "agentPoolProfiles": [
           {
@@ -442,7 +442,7 @@
           "dockerBridgeCidr": "[parameters('networkDockerBridgeCidr')]"
         },
         "addonProfiles": "[variables('clusterAddons')]",
-        "aadProfile": "[if(parameters('enableAad'), createObject('managed', true(), 'enableAzureRBAC', parameters('enableAzureRBAC'), 'tenantID', tenant().tenantId), null())]",
+        "aadProfile": "[if(parameters('enableAad'), createObject('managed', true(), 'enableAzureRbac', parameters('enableAzureRbac'), 'tenantID', tenant().tenantId), null())]",
         "apiServerAccessProfile": {
           "enablePrivateCluster": "[parameters('enablePrivateCluster')]"
         },

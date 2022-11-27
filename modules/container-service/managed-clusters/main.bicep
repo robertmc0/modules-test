@@ -19,7 +19,7 @@ param tags object = {}
   'Free'
   'Paid'
 ])
-param managedClusterSKU string = 'Free'
+param managedClusterSku string = 'Free'
 
 @description('Optional. Node resource group name.')
 param nodeResourceGroup string = ''
@@ -31,7 +31,7 @@ param disableLocalAccounts bool = false
 param dnsPrefix string = ''
 
 @description('Optional. Enable Kubernetes Role-Based Access Control.')
-param enableRBAC bool = true
+param enableRbac bool = true
 
 @description('Optional. Specify kubernetes version to deploy.')
 param kubernetesVersion string = 'latest'
@@ -124,16 +124,16 @@ param userAssignedIdentities object = {}
 param enableAad bool = false
 
 @description('Optional. Enable Azure RBAC for Kubernetes authorization.')
-param enableAzureRBAC bool = false
+param enableAzureRbac bool = false
 
 @description('Optional. Enable the Azure Policy profile of managed cluster add-on.')
 param enableAddonAzurePolicy bool = false
 
-@description('Optional. Enable Defender for Cloud')
+@description('Optional. Enable Defender for Cloud.')
 param enableDefenderForCloud bool = false
 
 @description('Optional. Enable App Insights Monitoring. Specify App Insights Log Analytics Workspace resourceId.')
-param logAnalyticsWorkspaceResourceID string = ''
+param logAnalyticsWorkspaceResourceId string = ''
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -188,7 +188,7 @@ param diagnosticEventHubName string = ''
 
 var sku = {
   name: 'Basic'
-  tier: managedClusterSKU
+  tier: managedClusterSku
 }
 
 var lockName = toLower('${aks.name}-${resourceLock}-lck')
@@ -220,11 +220,11 @@ var addonAzurePolicy = enableAddonAzurePolicy ? {
   }
 } : {}
 
-var addonOmsAgent = !empty(logAnalyticsWorkspaceResourceID) ? {
+var addonOmsAgent = !empty(logAnalyticsWorkspaceResourceId) ? {
   omsagent: {
     enabled: true
     config: {
-      logAnalyticsWorkspaceResourceID: !empty(logAnalyticsWorkspaceResourceID) ? logAnalyticsWorkspaceResourceID : null
+      logAnalyticsWorkspaceResourceId: !empty(logAnalyticsWorkspaceResourceId) ? logAnalyticsWorkspaceResourceId : null
     }
   }
 } : {}
@@ -254,7 +254,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
     nodeResourceGroup: nodeResourceGroup
     disableLocalAccounts: disableLocalAccounts
     dnsPrefix: !empty(dnsPrefix) ? dnsPrefix : name
-    enableRBAC: enableRBAC
+    enableRBAC: enableRbac
     kubernetesVersion: kubernetesVersion != 'latest' ? kubernetesVersion : null
     agentPoolProfiles: [ {
         name: agentPoolName
@@ -279,7 +279,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
     addonProfiles: clusterAddons
     aadProfile: enableAad ? {
       managed: true
-      enableAzureRBAC: enableAzureRBAC
+      enableAzureRbac: enableAzureRbac
       tenantID: tenant().tenantId
     } : null
     apiServerAccessProfile: {
