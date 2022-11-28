@@ -113,12 +113,6 @@ module aksMin '../main.bicep' = {
     agentPoolVnetSubnetId: first(filter(vnetMin.properties.subnets, subnet => toLower(subnet.name) == toLower(subnetName))).id
     networkServiceCidr: '10.1.0.0/16'
     networkDnsServiceIp: '10.1.0.10'
-    resourceLock: 'CanNotDelete'
-    enableDiagnostics: true
-    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
-    diagnosticStorageAccountId: diagnosticsStorageAccount.id
-    diagnosticEventHubName: diagnosticsEventHubNamespace.name
-    diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
   }
 }
 
@@ -153,3 +147,12 @@ module aksMax '../main.bicep' = {
     diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
   }
 }
+
+@description('The name of the deployed managed cluster.')
+output name string = aksMax.outputs.name
+
+@description('The resource ID of the deployed managed cluster.')
+output resourceId string = aksMax.outputs.resourceId
+
+@description('The principal ID of the system assigned identity.')
+output systemAssignedPrincipalId string = aksMax.outputs.systemAssignedPrincipalId

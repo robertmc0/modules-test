@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "1882812576542775011"
+      "templateHash": "15644390080323270439"
     }
   },
   "parameters": {
@@ -221,13 +221,6 @@
         "description": "Optional. Specify the type of resource lock."
       }
     },
-    "systemAssignedIdentity": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Optional. Enables system assigned managed identity on the resource. Enable if not using User Assigned Managed Identity."
-      }
-    },
     "userAssignedIdentities": {
       "type": "object",
       "defaultValue": {},
@@ -396,7 +389,7 @@
     "addonAzurePolicy": "[if(parameters('enableAddonAzurePolicy'), createObject('azurePolicy', createObject('enabled', parameters('enableAddonAzurePolicy'))), createObject())]",
     "addonOmsAgent": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('omsagent', createObject('enabled', true(), 'config', createObject('logAnalyticsWorkspaceResourceId', if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), parameters('logAnalyticsWorkspaceResourceId'), null())))), createObject())]",
     "clusterAddons": "[union(variables('addonAzurePolicy'), variables('addonOmsAgent'), parameters('addonProfiles'))]",
-    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identityType": "[if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'SystemAssigned')]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
     "availabilityZones": [
       "1",
@@ -447,7 +440,8 @@
           "enablePrivateCluster": "[parameters('enablePrivateCluster')]"
         },
         "securityProfile": "[if(parameters('enableDefenderForCloud'), createObject('defender', createObject('logAnalyticsWorkspaceResourceId', parameters('diagnosticLogAnalyticsWorkspaceId'), 'securityMonitoring', createObject('enabled', parameters('enableDefenderForCloud')))), null())]",
-        "autoUpgradeProfile": "[if(not(equals(parameters('upgradeChannel'), 'none')), createObject('upgradeChannel', parameters('upgradeChannel')), null())]"
+        "autoUpgradeProfile": "[if(not(equals(parameters('upgradeChannel'), 'none')), createObject('upgradeChannel', parameters('upgradeChannel')), null())]",
+        "servicePrincipalProfile": "[if(equals(variables('identityType'), 'SystemAssigned'), createObject('clientId', 'msi'), null())]"
       }
     },
     {
@@ -500,7 +494,7 @@
     },
     "systemAssignedPrincipalId": {
       "type": "string",
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('name')), '2022-09-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('name')), '2022-09-01', 'full').identity.principalId, '')]",
+      "value": "[if(contains(reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('name')), '2022-09-01', 'full').identity, 'principalId'), reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('name')), '2022-09-01', 'full').identity.principalId, '')]",
       "metadata": {
         "description": "The principal ID of the system assigned identity."
       }

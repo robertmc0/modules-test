@@ -109,9 +109,6 @@ param networkNetworkPlugin string = 'azure'
 ])
 param resourceLock string = 'NotSpecified'
 
-@description('Optional. Enables system assigned managed identity on the resource. Enable if not using User Assigned Managed Identity.')
-param systemAssignedIdentity bool = false
-
 @description('Optional. The ID(s) to assign to the resource.')
 @metadata({
   example: {
@@ -231,7 +228,7 @@ var addonOmsAgent = !empty(logAnalyticsWorkspaceResourceId) ? {
 
 var clusterAddons = union(addonAzurePolicy, addonOmsAgent, addonProfiles)
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = !empty(userAssignedIdentities) ? 'UserAssigned' : 'SystemAssigned'
 
 var identity = identityType != 'None' ? {
   type: identityType
@@ -296,6 +293,9 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
     autoUpgradeProfile: upgradeChannel != 'none' ? {
       upgradeChannel: upgradeChannel
     } : null
+    servicePrincipalProfile: identityType == 'SystemAssigned' ? {
+      clientId: 'msi'
+    } : null
   }
 }
 
@@ -328,4 +328,4 @@ output name string = aks.name
 output resourceId string = aks.id
 
 @description('The principal ID of the system assigned identity.')
-output systemAssignedPrincipalId string = systemAssignedIdentity && contains(aks.identity, 'principalId') ? aks.identity.principalId : ''
+output systemAssignedPrincipalId string = contains(aks.identity, 'principalId') ? aks.identity.principalId : ''
