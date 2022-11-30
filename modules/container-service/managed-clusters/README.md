@@ -7,21 +7,21 @@ This module deploys Microsoft.ContainerService managedClusters
 This module performs the following:
 
 - Creates Microsoft.ContainerService managedClusters resource.
-- Applies tags if specified
+- Applies tags if specified.
 - Applies uptime SLA 'Sku' if specified.
 - Applies custom node resource group if specified. Default 'MC_[resourcegroup]_[clustername]_[location]'.
 - Disables static local credentials for this cluster if set to true.
 - Applies custom DNS name prefix if specified. Default is [clustername].
 - Applies Kubernetes Role-Based Access Control. Default is true.
 - Applies the kubernetes version to specified value. Default is to use latest available.
-- Applies agent pool VM sizes and configuration
+- Applies agent pool VM sizes and configuration.
 - Applies network configuration if specified. Default is azure-cni.
 - Adds agentpool nodes to availability zones if specified.
 - Applies Azure Monitor extension if specified.
 - Applies Microsoft Antimalware extension if specified.
 - Applies a user assigned managed identity if specified.
 - Applies diagnostic settings.
-- Applies a lock to the key vault if the lock is specified.
+- Applies a lock to the cluster if the lock is specified.
 
 ## Parameters
 
