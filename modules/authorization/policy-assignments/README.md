@@ -8,21 +8,25 @@ This module performs the following
 
 - Creates Microsoft.Authorization policyAssignments resource.
 
+| Resource Type | API Version |
+| :-- | :-- |
+| `Microsoft.Authorization/policyAssignments` | [2021-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policyassignments?pivots=deployment-language-bicep) |
+
 ## Parameters
 
-| Name                     | Type     | Required | Description                                                                                    |
-| :----------------------- | :------: | :------: | :--------------------------------------------------------------------------------------------- |
-| `name`                   | `string` | Yes      | The resource name.                                                                             |
-| `location`               | `string` | Yes      | The geo-location where the resource lives.                                                     |
-| `displayName`            | `string` | Yes      | The display name of the policy assignment.                                                     |
-| `description`            | `string` | Yes      | This message will be part of response in case of policy violation.                             |
-| `enforcementMode`        | `string` | No       | Optional. The policy assignment enforcement mode.                                              |
-| `systemAssignedIdentity` | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                            |
-| `userAssignedIdentities` | `object` | No       | Optional. The ID(s) to assign to the resource.                                                 |
-| `nonComplianceMessage`   | `string` | No       | Optional. The message that describe why a resource is non-compliant with the policy.           |
-| `notScopes`              | `array`  | No       | Optional. The policy excluded scopes.                                                          |
-| `parameters`             | `object` | No       | Optional. The parameter values for the assigned policy rule. The keys are the parameter names. |
-| `policyDefinitionId`     | `string` | Yes      | The ID of the policy definition or policy set definition being assigned.                       |
+| Name                     | Type     | Required | Description                                                                                                        |
+| :----------------------- | :------: | :------: | :----------------------------------------------------------------------------------------------------------------- |
+| `name`                   | `string` | Yes      | Required. Specifies the name of the policy assignment. Maximum length is 24 characters for management group scope. |
+| `location`               | `string` | No       | Optional. The location of the policy assignment. Only required when utilizing managed identity.                    |
+| `displayName`            | `string` | Yes      | Required. The display name of the policy assignment. Maximum length is 128 characters.                             |
+| `description`            | `string` | Yes      | Required. This message will be part of response in case of policy violation.                                       |
+| `enforcementMode`        | `string` | No       | Optional. The policy assignment enforcement mode.                                                                  |
+| `systemAssignedIdentity` | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                |
+| `userAssignedIdentities` | `object` | No       | Optional. The ID(s) to assign to the resource.                                                                     |
+| `nonComplianceMessage`   | `string` | No       | Optional. The message that describe why a resource is non-compliant with the policy.                               |
+| `notScopes`              | `array`  | No       | Optional. The policy excluded scopes.                                                                              |
+| `parameters`             | `object` | No       | Optional. The parameter values for the assigned policy rule. The keys are the parameter names.                     |
+| `policyDefinitionId`     | `string` | Yes      | The ID of the policy definition or policy set definition being assigned.                                           |
 
 ## Outputs
 

@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "1203477347654308270"
+      "version": "0.12.40.16777",
+      "templateHash": "4679574698581100457"
     }
   },
   "parameters": {
@@ -14,25 +14,27 @@
       "maxLength": 24,
       "minLength": 1,
       "metadata": {
-        "description": "The resource name."
+        "description": "Required. Specifies the name of the policy assignment. Maximum length is 24 characters for management group scope."
       }
     },
     "location": {
       "type": "string",
+      "defaultValue": "[deployment().location]",
       "metadata": {
-        "description": "The geo-location where the resource lives."
+        "description": "Optional. The location of the policy assignment. Only required when utilizing managed identity."
       }
     },
     "displayName": {
       "type": "string",
+      "maxLength": 128,
       "metadata": {
-        "description": "The display name of the policy assignment."
+        "description": "Required. The display name of the policy assignment. Maximum length is 128 characters."
       }
     },
     "description": {
       "type": "string",
       "metadata": {
-        "description": "This message will be part of response in case of policy violation."
+        "description": "Required. This message will be part of response in case of policy violation."
       }
     },
     "enforcementMode": {
@@ -90,8 +92,7 @@
   },
   "variables": {
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
-    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
-    "roleDefinitionId": "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
   "resources": [
     {
@@ -105,7 +106,7 @@
         "displayName": "[parameters('displayName')]",
         "enforcementMode": "[parameters('enforcementMode')]",
         "nonComplianceMessages": "[if(not(empty(parameters('nonComplianceMessage'))), createArray(createObject('message', parameters('nonComplianceMessage'))), null())]",
-        "notScopes": "[parameters('notScopes')]",
+        "notScopes": "[if(not(empty(parameters('notScopes'))), parameters('notScopes'), createArray())]",
         "parameters": "[parameters('parameters')]",
         "policyDefinitionId": "[parameters('policyDefinitionId')]"
       }
@@ -117,7 +118,7 @@
       "name": "[guid(parameters('name'), 'Microsoft.Authorization/policyAssignments', extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name')))]",
       "properties": {
         "principalId": "[reference(extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name')), '2021-06-01', 'full').identity.principalId]",
-        "roleDefinitionId": "[variables('roleDefinitionId')]",
+        "roleDefinitionId": "[tenantResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
         "principalType": "ServicePrincipal"
       },
       "dependsOn": [

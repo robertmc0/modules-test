@@ -1,17 +1,18 @@
 targetScope = 'managementGroup'
 
-@sys.description('The resource name.')
+@sys.description('Required. Specifies the name of the policy assignment. Maximum length is 24 characters for management group scope.')
 @minLength(1)
 @maxLength(24)
 param name string
 
-@sys.description('The geo-location where the resource lives.')
-param location string
+@sys.description('Optional. The location of the policy assignment. Only required when utilizing managed identity.')
+param location string = deployment().location
 
-@sys.description('The display name of the policy assignment.')
+@sys.description('Required. The display name of the policy assignment. Maximum length is 128 characters.')
+@maxLength(128)
 param displayName string
 
-@sys.description('This message will be part of response in case of policy violation.')
+@sys.description('Required. This message will be part of response in case of policy violation.')
 param description string
 
 @sys.description('Optional. The policy assignment enforcement mode.')
@@ -46,8 +47,6 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
-var roleDefinitionId = '/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c' // Contributor role required for policy with deployIfNotExists/modify effects
-
 resource policyAssignment 'Microsoft.Authorization/policyAssignments@2021-06-01' = {
   name: name
   location: location
@@ -61,7 +60,7 @@ resource policyAssignment 'Microsoft.Authorization/policyAssignments@2021-06-01'
         message: nonComplianceMessage
       }
     ] : null
-    notScopes: notScopes
+    notScopes: !empty(notScopes) ? notScopes : []
     parameters: parameters
     policyDefinitionId: policyDefinitionId
   }
@@ -71,7 +70,7 @@ resource policyRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-0
   name: guid(policyAssignment.name, policyAssignment.type, policyAssignment.id)
   properties: {
     principalId: policyAssignment.identity.principalId
-    roleDefinitionId: roleDefinitionId
+    roleDefinitionId: tenantResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c') // Contributor role required for policy with deployIfNotExists/modify effects
     principalType: 'ServicePrincipal'
   }
 }
