@@ -14,15 +14,15 @@ This module performs the following
 
 ## Parameters
 
-| Name                     | Type     | Required | Description                                                                                                                                                                          |
-| :----------------------- | :------: | :------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                   | `string` | Yes      | Required. Specifies the name of the policy Set Definition (Initiative).                                                                                                              |
-| `description`            | `string` | Yes      | Required. The description name of the Set Definition (Initiative).                                                                                                                   |
-| `displayName`            | `string` | Yes      | Required. The display name of the Set Definition (Initiative). Maximum length is 128 characters.                                                                                     |
-| `parameters`             | `object` | No       | Optional. The policy set definition parameters that can be used in policy definition references.                                                                                     |
-| `metadata`               | `object` | No       | Optional. The Set Definition (Initiative) metadata. Metadata is an open ended object and is typically a collection of key-value pairs.                                               |
-| `policyDefinitions`      | `array`  | Yes      | Required. The array of Policy definitions object to include for this policy set. Each object must include the Policy definition ID, and optionally other properties like parameters. |
-| `policyDefinitionGroups` | `array`  | No       | Optional. The metadata describing groups of policy definition references within the Policy Set Definition (Initiative).                                                              |
+| Name                     | Type     | Required | Description                                                                                                                                                                |
+| :----------------------- | :------: | :------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                   | `string` | Yes      | Specifies the name of the policy Set Definition (Initiative).                                                                                                              |
+| `description`            | `string` | Yes      | The description name of the Set Definition (Initiative).                                                                                                                   |
+| `displayName`            | `string` | Yes      | The display name of the Set Definition (Initiative). Maximum length is 128 characters.                                                                                     |
+| `parameters`             | `object` | No       | Optional. The policy set definition parameters that can be used in policy definition references.                                                                           |
+| `polMetadata`            | `object` | No       | Optional. The Set Definition (Initiative) metadata. Metadata is an open ended object and is typically a collection of key-value pairs.                                     |
+| `policyDefinitions`      | `array`  | Yes      | The array of Policy definitions object to include for this policy set. Each object must include the Policy definition ID, and optionally other properties like parameters. |
+| `policyDefinitionGroups` | `array`  | No       | Optional. The metadata describing groups of policy definition references within the Policy Set Definition (Initiative).                                                    |
 
 ## Outputs
 

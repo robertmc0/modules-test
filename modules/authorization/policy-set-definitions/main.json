@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "13341173540869184241"
+      "templateHash": "1514133839686957113"
     }
   },
   "parameters": {
@@ -13,40 +13,63 @@
       "type": "string",
       "maxLength": 64,
       "metadata": {
-        "description": "Required. Specifies the name of the policy Set Definition (Initiative)."
+        "description": "Specifies the name of the policy Set Definition (Initiative)."
       }
     },
     "description": {
       "type": "string",
       "metadata": {
-        "description": "Required. The description name of the Set Definition (Initiative)."
+        "description": "The description name of the Set Definition (Initiative)."
       }
     },
     "displayName": {
       "type": "string",
       "maxLength": 128,
       "metadata": {
-        "description": "Required. The display name of the Set Definition (Initiative). Maximum length is 128 characters."
+        "description": "The display name of the Set Definition (Initiative). Maximum length is 128 characters."
       }
     },
     "parameters": {
       "type": "object",
       "defaultValue": {},
       "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policysetdefinitions?pivots=deployment-language-bicep#policysetdefinitionproperties",
+        "example": {
+          "parameters": {
+            "listOfAllowedLocations": {
+              "type": "Array",
+              "metadata": {
+                "description": "The list of locations that can be specified when deploying resources.",
+                "strongType": "location",
+                "displayName": "Allowed locations"
+              },
+              "defaultValue": [
+                "australiaeast",
+                "australiasoutheast"
+              ]
+            }
+          }
+        },
         "description": "Optional. The policy set definition parameters that can be used in policy definition references."
       }
     },
-    "metadata": {
+    "polMetadata": {
       "type": "object",
       "defaultValue": {},
       "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policysetdefinitions?pivots=deployment-language-bicep#policysetdefinitionproperties",
+        "example": {
+          "metadata": {
+            "version": "1.0.0"
+          }
+        },
         "description": "Optional. The Set Definition (Initiative) metadata. Metadata is an open ended object and is typically a collection of key-value pairs."
       }
     },
     "policyDefinitions": {
       "type": "array",
       "metadata": {
-        "description": "Required. The array of Policy definitions object to include for this policy set. Each object must include the Policy definition ID, and optionally other properties like parameters."
+        "description": "The array of Policy definitions object to include for this policy set. Each object must include the Policy definition ID, and optionally other properties like parameters."
       }
     },
     "policyDefinitionGroups": {
@@ -66,7 +89,7 @@
         "policyType": "Custom",
         "displayName": "[parameters('displayName')]",
         "description": "[parameters('description')]",
-        "metadata": "[if(not(empty(parameters('metadata'))), parameters('metadata'), null())]",
+        "metadata": "[if(not(empty(parameters('polMetadata'))), parameters('polMetadata'), null())]",
         "parameters": "[parameters('parameters')]",
         "policyDefinitions": "[parameters('policyDefinitions')]",
         "policyDefinitionGroups": "[if(not(empty(parameters('policyDefinitionGroups'))), parameters('policyDefinitionGroups'), createArray())]"
