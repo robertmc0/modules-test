@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "4679574698581100457"
+      "templateHash": "7517112676619225335"
     }
   },
   "parameters": {
@@ -14,7 +14,7 @@
       "maxLength": 24,
       "minLength": 1,
       "metadata": {
-        "description": "Required. Specifies the name of the policy assignment. Maximum length is 24 characters for management group scope."
+        "description": "Specifies the name of the policy assignment. Maximum length is 24 characters for management group scope."
       }
     },
     "location": {
@@ -28,13 +28,13 @@
       "type": "string",
       "maxLength": 128,
       "metadata": {
-        "description": "Required. The display name of the policy assignment. Maximum length is 128 characters."
+        "description": "The display name of the policy assignment. Maximum length is 128 characters."
       }
     },
     "description": {
       "type": "string",
       "metadata": {
-        "description": "Required. This message will be part of response in case of policy violation."
+        "description": "This message will be part of response in case of policy violation."
       }
     },
     "enforcementMode": {
@@ -59,6 +59,15 @@
       "type": "object",
       "defaultValue": {},
       "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policyassignments?pivots=deployment-language-bicep#identity",
+        "example": {
+          "identity": {
+            "type": "UserAssigned",
+            "userAssignedIdentities": {
+              "userAssignedManagedIdentity": {}
+            }
+          }
+        },
         "description": "Optional. The ID(s) to assign to the resource."
       }
     },
@@ -80,6 +89,23 @@
       "type": "object",
       "defaultValue": {},
       "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policyassignments?pivots=deployment-language-bicep#policyassignmentproperties",
+        "example": {
+          "parameters": {
+            "listOfAllowedLocations": {
+              "type": "Array",
+              "metadata": {
+                "description": "The list of locations that can be specified when deploying resources.",
+                "strongType": "location",
+                "displayName": "Allowed locations"
+              },
+              "defaultValue": [
+                "australiaeast",
+                "australiasoutheast"
+              ]
+            }
+          }
+        },
         "description": "Optional. The parameter values for the assigned policy rule. The keys are the parameter names."
       }
     },
@@ -106,7 +132,7 @@
         "displayName": "[parameters('displayName')]",
         "enforcementMode": "[parameters('enforcementMode')]",
         "nonComplianceMessages": "[if(not(empty(parameters('nonComplianceMessage'))), createArray(createObject('message', parameters('nonComplianceMessage'))), null())]",
-        "notScopes": "[if(not(empty(parameters('notScopes'))), parameters('notScopes'), createArray())]",
+        "notScopes": "[parameters('notScopes')]",
         "parameters": "[parameters('parameters')]",
         "policyDefinitionId": "[parameters('policyDefinitionId')]"
       }
