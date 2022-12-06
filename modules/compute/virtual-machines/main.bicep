@@ -499,7 +499,7 @@ resource extension_antimalware 'Microsoft.Compute/virtualMachines/extensions@202
 
 resource lock 'Microsoft.Authorization/locks@2017-04-01' = [for i in range(0, instanceCount): if (resourceLock != 'NotSpecified') {
   scope: virtualMachine[i]
-  name: toLower('${name}${format('{0:D2}', i + 1)}-${lockSuffix}')
+  name: toLower('${name}${format('{0:D2}', i + 1)}${lockSuffix}')
   properties: {
     level: resourceLock
     notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
