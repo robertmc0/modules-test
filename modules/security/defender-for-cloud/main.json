@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "14827560719719957336"
+      "version": "0.13.1.58284",
+      "templateHash": "596735136395090398"
     }
   },
   "parameters": {
@@ -35,13 +35,13 @@
     },
     "notificationsByRole": {
       "type": "array",
+      "defaultValue": [],
       "allowedValues": [
         "AccountAdmin",
         "Contributor",
         "Owner",
         "ServiceAdmin"
       ],
-      "defaultValue": [],
       "metadata": {
         "description": "Optional. Defines which RBAC roles will get email notifications from Microsoft Defender for Cloud."
       }
