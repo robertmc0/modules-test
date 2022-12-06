@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "2611490431657227041"
+      "version": "0.13.1.58284",
+      "templateHash": "14611842594811315322"
     }
   },
   "parameters": {
@@ -32,6 +32,7 @@
     },
     "serviceNames": {
       "type": "array",
+      "defaultValue": [],
       "allowedValues": [
         "API Management",
         "Action Groups",
@@ -249,13 +250,13 @@
         "Azure confidential ledger",
         "Azure Managed Grafana"
       ],
-      "defaultValue": [],
       "metadata": {
         "description": "Optional. Azure Services to scope to Service Health alert. Leave empty to add all services."
       }
     },
     "incidentTypes": {
       "type": "array",
+      "defaultValue": [],
       "allowedValues": [
         "Incident",
         "Maintenance",
@@ -263,13 +264,13 @@
         "ActionRequired",
         "Security"
       ],
-      "defaultValue": [],
       "metadata": {
         "description": "Optional. Incident Types to scope to Service Health alert. Leave empty to add all incident types."
       }
     },
     "regions": {
       "type": "array",
+      "defaultValue": [],
       "allowedValues": [
         "Global",
         "Australia Central",
@@ -316,7 +317,6 @@
         "Sweden Central",
         "Qatar Central"
       ],
-      "defaultValue": [],
       "metadata": {
         "description": "Optional. Regions to scope to Service Health alert. Leave empty to add all regions."
       }
