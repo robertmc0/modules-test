@@ -28,11 +28,11 @@ param tier string
 ])
 param sku string = 'AZFW_VNet'
 
-@description('Resource ID of the Azure firewall subnet.')
-param subnetResourceId string
+@description('Optional. Resource ID of the Azure firewall subnet.')
+param subnetResourceId string = ''
 
-@description('Name of the Azure firewall public IP address.')
-param publicIpAddressName string
+@description('Optional. Name of the Azure firewall public IP address.')
+param publicIpAddressName string = ''
 
 @description('Optional. IP configuration of the Azure Firewall used for management traffic.')
 @metadata({
@@ -60,6 +60,9 @@ param customDnsServers array = []
   '3'
 ])
 param availabilityZones array = []
+
+@description('Optional. Resource ID of the Azure virtual hub.')
+param virtualHubResourceId string = ''
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -132,8 +135,58 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-resource publicIpFirewall 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
-  name: publicIpAddressName
+var firewallProperties = sku == 'AZFW_VNet' ? {
+  sku: {
+    name: sku
+    tier: tier
+  }
+  ipConfigurations: [
+    {
+      name: publicIpFirewall.name
+      properties: {
+        subnet: {
+          id: subnetResourceId
+        }
+        publicIPAddress: {
+          id: publicIpFirewall.id
+        }
+      }
+    }
+  ]
+  managementIpConfiguration: !empty(firewallManagementConfiguration) ? {
+    name: publicIpFirewallMgmt.name
+    properties: {
+      subnet: {
+        id: firewallManagementConfiguration.subnetResourceId
+      }
+      publicIPAddress: {
+        id: publicIpFirewallMgmt.id
+      }
+    }
+  } : null
+  firewallPolicy: {
+    id: firewallPolicy.id
+  }
+} : {
+  sku: {
+    name: sku
+    tier: tier
+  }
+  hubIPAddresses: {
+    publicIPs: {
+      count: 1
+    }
+  }
+  virtualHub: {
+    id: virtualHubResourceId
+  }
+  firewallPolicy: {
+    id: firewallPolicy.id
+  }
+}
+
+resource publicIpFirewall 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (sku == 'AZFW_VNet') {
+  name: sku == 'AZFW_VNet' ? publicIpAddressName : 'placeholder1' //placeholder value added as name cannot be null or empty and is evaulated.
   location: location
   tags: tags
   sku: {
@@ -145,7 +198,7 @@ resource publicIpFirewall 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   zones: availabilityZones
 }
 
-resource diagnosticsPublicIpFirewall 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+resource diagnosticsPublicIpFirewall 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if ((enableDiagnostics) && (sku == 'AZFW_VNet')) {
   scope: publicIpFirewall
   name: publicIpFirewallDiagnosticsName
   properties: {
@@ -158,8 +211,8 @@ resource diagnosticsPublicIpFirewall 'Microsoft.Insights/diagnosticSettings@2021
   }
 }
 
-resource publicIpFirewallMgmt 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (!empty(firewallManagementConfiguration)) {
-  name: !empty(firewallManagementConfiguration) ? firewallManagementConfiguration.publicIpAddressName : 'placeholder' //placeholder value added as name cannot be null or empty and is evaulated.
+resource publicIpFirewallMgmt 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (!empty(firewallManagementConfiguration) && (sku == 'AZFW_VNet')) {
+  name: !empty(firewallManagementConfiguration) ? firewallManagementConfiguration.publicIpAddressName : 'placeholder2' //placeholder value added as name cannot be null or empty and is evaulated.
   location: location
   tags: tags
   sku: {
@@ -171,7 +224,7 @@ resource publicIpFirewallMgmt 'Microsoft.Network/publicIPAddresses@2022-01-01' =
   zones: availabilityZones
 }
 
-resource diagnosticsPublicIpFirewallMgmt 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(firewallManagementConfiguration) && (enableDiagnostics)) {
+resource diagnosticsPublicIpFirewallMgmt 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(firewallManagementConfiguration) && (enableDiagnostics) && (sku == 'AZFW_VNet')) {
   scope: publicIpFirewallMgmt
   name: publicIpFirewallMgmtDiagnosticsName
   properties: {
@@ -188,39 +241,7 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
   name: name
   location: location
   tags: tags
-  properties: {
-    sku: {
-      name: sku
-      tier: tier
-    }
-    ipConfigurations: [
-      {
-        name: publicIpFirewall.name
-        properties: {
-          subnet: {
-            id: subnetResourceId
-          }
-          publicIPAddress: {
-            id: publicIpFirewall.id
-          }
-        }
-      }
-    ]
-    managementIpConfiguration: !empty(firewallManagementConfiguration) ? {
-      name: publicIpFirewallMgmt.name
-      properties: {
-        subnet: {
-          id: firewallManagementConfiguration.subnetResourceId
-        }
-        publicIPAddress: {
-          id: publicIpFirewallMgmt.id
-        }
-      }
-    } : null
-    firewallPolicy: {
-      id: firewallPolicy.id
-    }
-  }
+  properties: firewallProperties
 }
 
 resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' = {
@@ -268,4 +289,4 @@ output name string = firewall.name
 output resourceId string = firewall.id
 
 @description('Private IP address of the deployed Azure firewall.')
-output privateIpAddress string = firewall.properties.ipConfigurations[0].properties.privateIPAddress
+output privateIpAddress string = sku == 'AZFW_VNet' ? firewall.properties.ipConfigurations[0].properties.privateIPAddress : firewall.properties.hubIPAddresses.privateIPAddress
