@@ -1,0 +1,167 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "101657891967074860"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "actionGroupIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Action Group Resource IDs."
+      }
+    },
+    "scopes": {
+      "type": "array",
+      "defaultValue": [
+        "[subscription().id]"
+      ],
+      "metadata": {
+        "description": "Optional. A list of resource IDs that will be used as prefixes. The alert will only apply to Activity Log events with resource IDs that fall under one of these prefixes."
+      }
+    },
+    "resourceTypes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. A list of resource type resource IDs to filter against. Leave empty to add all resource types."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "resourceTypeArray",
+        "count": "[length(parameters('resourceTypes'))]",
+        "input": {
+          "field": "resourceType",
+          "equals": "[parameters('resourceTypes')[copyIndex('resourceTypeArray')]]"
+        }
+      }
+    ],
+    "baseCondition": [
+      {
+        "field": "category",
+        "equals": "ResourceHealth"
+      },
+      {
+        "anyOf": [
+          {
+            "field": "properties.currentHealthStatus",
+            "equals": "Available"
+          },
+          {
+            "field": "properties.currentHealthStatus",
+            "equals": "Unavailable"
+          },
+          {
+            "field": "properties.currentHealthStatus",
+            "equals": "Degraded"
+          }
+        ]
+      },
+      {
+        "anyOf": [
+          {
+            "field": "properties.previousHealthStatus",
+            "equals": "Available"
+          },
+          {
+            "field": "properties.previousHealthStatus",
+            "equals": "Unavailable"
+          },
+          {
+            "field": "properties.previousHealthStatus",
+            "equals": "Degraded"
+          }
+        ]
+      },
+      {
+        "anyOf": [
+          {
+            "field": "properties.cause",
+            "equals": "PlatformInitiated"
+          }
+        ]
+      },
+      {
+        "anyOf": [
+          {
+            "field": "status",
+            "equals": "Active"
+          },
+          {
+            "field": "status",
+            "equals": "Resolved"
+          },
+          {
+            "field": "status",
+            "equals": "In Progress"
+          },
+          {
+            "field": "status",
+            "equals": "Updated"
+          }
+        ]
+      }
+    ],
+    "resourceTypeFilter": [
+      {
+        "anyOf": "[variables('resourceTypeArray')]"
+      }
+    ],
+    "condition": "[if(empty(parameters('resourceTypes')), variables('baseCondition'), union(variables('baseCondition'), variables('resourceTypeFilter')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/activityLogAlerts",
+      "apiVersion": "2020-10-01",
+      "name": "[parameters('name')]",
+      "location": "Global",
+      "properties": {
+        "enabled": true,
+        "scopes": "[parameters('scopes')]",
+        "condition": {
+          "allOf": "[variables('condition')]"
+        },
+        "actions": {
+          "copy": [
+            {
+              "name": "actionGroups",
+              "count": "[length(parameters('actionGroupIds'))]",
+              "input": {
+                "actionGroupId": "[parameters('actionGroupIds')[copyIndex('actionGroups')]]"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed resource health alert."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Insights/activityLogAlerts', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed resource health alert."
+      }
+    }
+  }
+}
