@@ -7,7 +7,7 @@ param location string = resourceGroup().location
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 @minLength(1)
 @maxLength(5)
-param shortIdentifier string = 'arn'
+param shortIdentifier string = 'ari'
 
 /*======================================================================
 TEST PREREQUISITES
@@ -58,6 +58,24 @@ resource vnet2 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
+resource virtualWan 'Microsoft.Network/virtualWans@2022-05-01' = {
+  name: '${shortIdentifier}-tst-vwan-${uniqueString(deployment().name, 'virtualWan', location)}'
+  location: location
+  properties: {
+  }
+}
+
+resource virtualHub 'Microsoft.Network/virtualHubs@2022-05-01' = {
+  name: '${shortIdentifier}-tst-vhub-${uniqueString(deployment().name, 'virtualHub', location)}'
+  location: location
+  properties: {
+    addressPrefix: '10.30.0.0/23'
+    virtualWan: {
+      id: virtualWan.id
+    }
+  }
+}
+
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
   location: location
@@ -71,6 +89,7 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01
     name: 'Standard_LRS'
   }
 }
+
 resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {
   name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsEventHubNamespace', location)}'
   location: location
@@ -114,5 +133,17 @@ module firewall '../main.bicep' = {
     diagnosticStorageAccountId: diagnosticsStorageAccount.id
     diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
     resourceLock: 'CanNotDelete'
+  }
+}
+
+module firewallHub '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-hub-firewall'
+  params: {
+    name: '${shortIdentifier}-tst-hub-fwl-${uniqueString(deployment().name, 'azureFirewall', location)}'
+    location: location
+    tier: 'Standard'
+    sku: 'AZFW_Hub'
+    virtualHubResourceId: virtualHub.id
+    policyName: '${uniqueString(deployment().name, location)}-hub-firewall-tst-afwp'
   }
 }
