@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "9623898622472454662"
+      "version": "0.12.40.16777",
+      "templateHash": "4385824304708666889"
     }
   },
   "parameters": {
@@ -56,12 +56,12 @@
     },
     "availabilityZones": {
       "type": "array",
-      "defaultValue": [],
       "allowedValues": [
         "1",
         "2",
         "3"
       ],
+      "defaultValue": [],
       "metadata": {
         "description": "Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed."
       }
@@ -612,7 +612,7 @@
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2017-04-01",
       "scope": "[format('Microsoft.Compute/virtualMachines/{0}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]",
-      "name": "[toLower(format('{0}{1}-{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('lockSuffix')))]",
+      "name": "[toLower(format('{0}{1}{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('lockSuffix')))]",
       "properties": {
         "level": "[parameters('resourceLock')]",
         "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"

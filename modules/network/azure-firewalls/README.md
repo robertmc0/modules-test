@@ -21,14 +21,15 @@ This module performs the following
 | `tags`                                  | `object` | No       | Optional. Resource tags.                                                                                                |
 | `tier`                                  | `string` | Yes      | Tier of an Azure Firewall.                                                                                              |
 | `sku`                                   | `string` | No       | Optional. The Azure Firewall Resource SKU. Set to AZFW_Hub only if attaching to a Virtual Hub.                          |
-| `subnetResourceId`                      | `string` | Yes      | Resource ID of the Azure firewall subnet.                                                                               |
-| `publicIpAddressName`                   | `string` | Yes      | Name of the Azure firewall public IP address.                                                                           |
+| `subnetResourceId`                      | `string` | No       | Optional. Resource ID of the Azure firewall subnet.                                                                     |
+| `publicIpAddressName`                   | `string` | No       | Optional. Name of the Azure firewall public IP address.                                                                 |
 | `firewallManagementConfiguration`       | `object` | No       | Optional. IP configuration of the Azure Firewall used for management traffic.                                           |
 | `policyName`                            | `string` | Yes      | Firewall policy name.                                                                                                   |
 | `threatIntelMode`                       | `string` | No       | Optional. The operation mode for Threat Intelligence.                                                                   |
 | `enableDnsProxy`                        | `bool`   | No       | Optional. Enable DNS Proxy on Firewalls attached to the Firewall Policy.                                                |
 | `customDnsServers`                      | `array`  | No       | Optional. List of Custom DNS Servers. Only required when enableDnsProxy set to true.                                    |
 | `availabilityZones`                     | `array`  | No       | Optional. A list of availability zones denoting where the resource should be deployed.                                  |
+| `virtualHubResourceId`                  | `string` | No       | Optional. Resource ID of the Azure virtual hub.                                                                         |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                    |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                        |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                    |
