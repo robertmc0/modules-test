@@ -4,7 +4,7 @@ param location string
 @description('Log analytics workspace resource ID.')
 param workspaceId string
 
-@description('Optional. Data sources to add to sentinel.')
+@description('Optional. Data sources to add to Sentinel.')
 @metadata({
   name: 'Data source name.'
   kind: 'Data source kind.'
@@ -35,7 +35,7 @@ param dataSources array = [
   }
 ]
 
-@description('Optional. Connectors to be added to sentinel.')
+@description('Optional. Connectors to be added to Sentinel.')
 @metadata({
   doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.securityinsights/dataconnectors?pivots=deployment-language-bicep'
   example: {
@@ -52,7 +52,7 @@ param dataSources array = [
 })
 param connectors array = []
 
-@description('Optional. Incident creation alert rules to be added to sentinel.')
+@description('Optional. Incident creation alert rules to be added to Sentinel.')
 @metadata({
   doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.securityinsights/alertrules?pivots=deployment-language-bicep'
   example: {
@@ -106,6 +106,22 @@ param winEventProviders array = [
   'Microsoft-Windows-TaskScheduler/Operational'
 ]
 
+@description('Optional. A list of Windows Event Types that you would like to collect.')
+@metadata({
+  eventType: 'string'
+})
+param winEventTypes array = [
+  {
+    eventType: 'Error'
+  }
+  {
+    eventType: 'Warning'
+  }
+  {
+    eventType: 'Information'
+  }
+]
+
 @description('Optional. A list of facilities to collect from Syslog.')
 param syslogFacilities array = [
   'auth'
@@ -116,6 +132,37 @@ param syslogFacilities array = [
   'kern'
   'user'
   'mail'
+]
+
+@description('Optional. A list of severities to collect from Syslog.')
+@metadata({
+  severity: 'string'
+})
+param syslogSeverities array = [
+  {
+    severity: 'emerg'
+  }
+  {
+    severity: 'alert'
+  }
+  {
+    severity: 'crit'
+  }
+  {
+    severity: 'err'
+  }
+  {
+    severity: 'warning'
+  }
+  {
+    severity: 'notice'
+  }
+  {
+    severity: 'info'
+  }
+  {
+    severity: 'debug'
+  }
 ]
 
 var workspaceName = last(split(workspaceId, '/'))
@@ -145,17 +192,7 @@ resource sentinelDataSourceWinEvent 'Microsoft.OperationalInsights/workspaces/da
   kind: 'WindowsEvent'
   properties: {
     eventLogName: provider
-    eventTypes: [
-      {
-        eventType: 'Error'
-      }
-      {
-        eventType: 'Warning'
-      }
-      {
-        eventType: 'Information'
-      }
-    ]
+    eventTypes: winEventTypes
   }
 }]
 
@@ -164,32 +201,7 @@ resource sentinelDataSourceSyslog 'Microsoft.OperationalInsights/workspaces/data
   kind: 'LinuxSyslog'
   properties: {
     sysLogName: facility
-    syslogSeverities: [
-      {
-        severity: 'emerg'
-      }
-      {
-        severity: 'alert'
-      }
-      {
-        severity: 'crit'
-      }
-      {
-        severity: 'err'
-      }
-      {
-        severity: 'warning'
-      }
-      {
-        severity: 'notice'
-      }
-      {
-        severity: 'info'
-      }
-      {
-        severity: 'debug'
-      }
-    ]
+    syslogSeverities: syslogSeverities
   }
 }]
 

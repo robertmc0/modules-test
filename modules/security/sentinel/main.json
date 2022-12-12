@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "2568373257943495384"
+      "version": "0.13.1.58284",
+      "templateHash": "6134446309333247438"
     }
   },
   "parameters": {
@@ -51,7 +51,7 @@
         "name": "Data source name.",
         "kind": "Data source kind.",
         "properties": "The data source properties in raw json format, each kind of data source have its own schema.",
-        "description": "Optional. Data sources to add to sentinel."
+        "description": "Optional. Data sources to add to Sentinel."
       }
     },
     "connectors": {
@@ -70,7 +70,7 @@
             "tenantId": "string"
           }
         },
-        "description": "Optional. Connectors to be added to sentinel."
+        "description": "Optional. Connectors to be added to Sentinel."
       }
     },
     "alertRules": {
@@ -110,7 +110,7 @@
             "enabled": "bool"
           }
         },
-        "description": "Optional. Incident creation alert rules to be added to sentinel."
+        "description": "Optional. Incident creation alert rules to be added to Sentinel."
       }
     },
     "winEventProviders": {
@@ -132,6 +132,24 @@
         "description": "Optional. A list of Windows Event Providers that you would like to collect. Windows Security Auditing is not enabled through this option. It is enabled through Azure Sentinel Data Connectors."
       }
     },
+    "winEventTypes": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "eventType": "Error"
+        },
+        {
+          "eventType": "Warning"
+        },
+        {
+          "eventType": "Information"
+        }
+      ],
+      "metadata": {
+        "eventType": "string",
+        "description": "Optional. A list of Windows Event Types that you would like to collect."
+      }
+    },
     "syslogFacilities": {
       "type": "array",
       "defaultValue": [
@@ -146,6 +164,39 @@
       ],
       "metadata": {
         "description": "Optional. A list of facilities to collect from Syslog."
+      }
+    },
+    "syslogSeverities": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "severity": "emerg"
+        },
+        {
+          "severity": "alert"
+        },
+        {
+          "severity": "crit"
+        },
+        {
+          "severity": "err"
+        },
+        {
+          "severity": "warning"
+        },
+        {
+          "severity": "notice"
+        },
+        {
+          "severity": "info"
+        },
+        {
+          "severity": "debug"
+        }
+      ],
+      "metadata": {
+        "severity": "string",
+        "description": "Optional. A list of severities to collect from Syslog."
       }
     }
   },
@@ -190,17 +241,7 @@
       "kind": "WindowsEvent",
       "properties": {
         "eventLogName": "[parameters('winEventProviders')[copyIndex()]]",
-        "eventTypes": [
-          {
-            "eventType": "Error"
-          },
-          {
-            "eventType": "Warning"
-          },
-          {
-            "eventType": "Information"
-          }
-        ]
+        "eventTypes": "[parameters('winEventTypes')]"
       }
     },
     {
@@ -214,32 +255,7 @@
       "kind": "LinuxSyslog",
       "properties": {
         "sysLogName": "[parameters('syslogFacilities')[copyIndex()]]",
-        "syslogSeverities": [
-          {
-            "severity": "emerg"
-          },
-          {
-            "severity": "alert"
-          },
-          {
-            "severity": "crit"
-          },
-          {
-            "severity": "err"
-          },
-          {
-            "severity": "warning"
-          },
-          {
-            "severity": "notice"
-          },
-          {
-            "severity": "info"
-          },
-          {
-            "severity": "debug"
-          }
-        ]
+        "syslogSeverities": "[parameters('syslogSeverities')]"
       }
     },
     {
