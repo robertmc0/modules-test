@@ -51,7 +51,6 @@ resource vpnSite 'Microsoft.Network/vpnSites@2022-05-01' = {
   location: location
   tags: tags
   properties: {
-
     addressSpace: {
       addressPrefixes: addressPrefixes
     }
