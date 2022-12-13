@@ -30,10 +30,11 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                               |
-| :--------- | :----: | :---------------------------------------- |
-| name       | string | The name of the policy assignment.        |
-| resourceId | string | The resource ID of the policy assignment. |
+| Name                      | Type   | Description                                       |
+| :------------------------ | :----: | :------------------------------------------------ |
+| name                      | string | The name of the policy assignment.                |
+| resourceId                | string | The resource ID of the policy assignment.         |
+| systemAssignedPrincipalId | string | The principal ID of the system assigned identity. |
 
 ## Examples
 
