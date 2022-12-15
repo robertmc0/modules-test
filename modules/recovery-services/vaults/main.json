@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "3380183901820924845"
+      "version": "0.13.1.58284",
+      "templateHash": "2329494449653800310"
     }
   },
   "parameters": {
@@ -289,7 +289,9 @@
     {
       "copy": {
         "name": "vaultProtectedItem",
-        "count": "[length(variables('vmBackupConfig'))]"
+        "count": "[length(variables('vmBackupConfig'))]",
+        "mode": "serial",
+        "batchSize": 1
       },
       "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
       "apiVersion": "2022-03-01",
@@ -300,6 +302,7 @@
         "sourceResourceId": "[variables('vmBackupConfig')[copyIndex()].resourceId]"
       },
       "dependsOn": [
+        "backupPolicy",
         "[resourceId('Microsoft.RecoveryServices/vaults', parameters('name'))]"
       ]
     },
