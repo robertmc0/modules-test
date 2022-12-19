@@ -188,7 +188,11 @@ resource vaultConfig 'Microsoft.RecoveryServices/vaults/backupstorageconfig@2022
   }
 }
 
+@batchSize(1)
 resource vaultProtectedItem 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems@2022-03-01' = [for vm in vmBackupConfig: {
+  dependsOn: [
+    backupPolicy
+  ]
   name: '${vault.name}/${vm.backupFabric}/${vm.protectionContainer}/${vm.protectedItem}'
   properties: {
     protectedItemType: 'Microsoft.Compute/virtualMachines'
