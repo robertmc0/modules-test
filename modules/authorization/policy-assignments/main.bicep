@@ -107,3 +107,6 @@ output name string = policyAssignment.name
 
 @sys.description('The resource ID of the policy assignment.')
 output resourceId string = policyAssignment.id
+
+@sys.description('The principal ID of the system assigned identity.')
+output systemAssignedPrincipalId string = systemAssignedIdentity && contains(policyAssignment.identity, 'principalId') ? policyAssignment.identity.principalId : ''
