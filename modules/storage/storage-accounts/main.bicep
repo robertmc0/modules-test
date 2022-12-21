@@ -120,6 +120,9 @@ param tables array = []
 })
 param networkAcls object = {}
 
+@description('Optional. Allow large file shares if set to Enabled. It cannot be disabled once it is enabled.')
+param largeFileSharesState string = 'Disabled'
+
 @allowed([
   'CanNotDelete'
   'NotSpecified'
@@ -230,6 +233,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
     publicNetworkAccess: publicNetworkAccess
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
+    largeFileSharesState: largeFileSharesState
   }
 }
 
