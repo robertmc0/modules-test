@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.11.1.770",
-      "templateHash": "17895206276750852497"
+      "version": "0.13.1.58284",
+      "templateHash": "18191505399725464554"
     }
   },
   "parameters": {
@@ -185,6 +185,13 @@
         "description": "Optional. Rule definitions governing the Storage network access."
       }
     },
+    "largeFileSharesState": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Optional. Allow large file shares if set to Enabled. It cannot be disabled once it is enabled."
+      }
+    },
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
@@ -331,7 +338,8 @@
         "networkAcls": "[parameters('networkAcls')]",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
         "minimumTlsVersion": "TLS1_2",
-        "supportsHttpsTrafficOnly": true
+        "supportsHttpsTrafficOnly": true,
+        "largeFileSharesState": "[parameters('largeFileSharesState')]"
       }
     },
     {
