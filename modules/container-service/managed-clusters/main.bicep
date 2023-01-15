@@ -83,6 +83,16 @@ param agentPoolType string = 'VirtualMachineScaleSets'
 @description('Optional. Enable Availability zones for the agentpool nodes. This can only be specified if the AgentPoolType property is VirtualMachineScaleSets.')
 param enableAvailabilityZones bool = false
 
+@description('Optional. Set availability zone to deploy the managed cluster into.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/aks/availability-zones'
+})
+param availabilityZones array = [
+  '1'
+  '2'
+  '3'
+]
+
 @description('Optional. Number of agents (VMs) to host docker containers. Allowed values must be in the range of 0 to 1000 (inclusive) for user pools and in the range of 1 to 1000 (inclusive) for system pools.')
 @minValue(1)
 param agentPoolCount int = 1
@@ -234,12 +244,6 @@ var identity = identityType != 'None' ? {
   type: identityType
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
-
-var availabilityZones = [
-  '1'
-  '2'
-  '3'
-]
 
 resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
   name: name
