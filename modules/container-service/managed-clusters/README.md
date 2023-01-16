@@ -15,6 +15,7 @@ This module performs the following:
 - Applies Kubernetes Role-Based Access Control. Default is true.
 - Applies the kubernetes version to specified value. Default is to use latest available.
 - Applies agent pool VM sizes and configuration.
+- Applies agent pool autoscaler configuration if enabled.
 - Applies network configuration if specified. Default is azure-cni.
 - Adds agentpool nodes to availability zones if specified.
 - Applies Azure Monitor extension if specified.
@@ -41,7 +42,6 @@ This module performs the following:
 | `agentPoolName`                         | `string` | No       | Optional. Agent Pool name.                                                                                                                                                                          |
 | `agentPoolOsDiskSizeGB`                 | `int`    | No       | Optional. OS Disk Size in GB to be used to specify the disk size for every machine in the master/agent pool.                                                                                        |
 | `agentPoolVnetSubnetId`                 | `string` | Yes      | Existing VNET resourceid dedicated for use with a Managed Cluster.                                                                                                                                  |
-| `agentPoolMaxCount`                     | `int`    | No       | Optional. The maximum number of nodes for auto-scaling.                                                                                                                                             |
 | `agentPoolMaxPods`                      | `int`    | No       | Optional. The maximum number of pods that can run on a node.                                                                                                                                        |
 | `networkServiceCidr`                    | `string` | Yes      | A CIDR notation IP range from which to assign service cluster IPs. It must not overlap with any Subnet IP ranges.                                                                                   |
 | `networkDnsServiceIp`                   | `string` | Yes      | An IP address assigned to the Kubernetes DNS service. It must be within the Kubernetes service address range specified in serviceCidr.                                                              |
@@ -49,8 +49,11 @@ This module performs the following:
 | `agentPoolMode`                         | `string` | No       | Optional. A cluster must have at least one "System" Agent Pool at all times. For additional information on agent pool restrictions and best practices.                                              |
 | `agentPoolType`                         | `string` | No       | Optional. The type of Agent Pool.                                                                                                                                                                   |
 | `enableAvailabilityZones`               | `bool`   | No       | Optional. Enable Availability zones for the agentpool nodes. This can only be specified if the AgentPoolType property is VirtualMachineScaleSets.                                                   |
+| `availabilityZones`                     | `array`  | No       | Optional. Set availability zone to deploy the managed cluster into.                                                                                                                                 |
 | `agentPoolCount`                        | `int`    | No       | Optional. Number of agents (VMs) to host docker containers. Allowed values must be in the range of 0 to 1000 (inclusive) for user pools and in the range of 1 to 1000 (inclusive) for system pools. |
 | `enableAutoScaling`                     | `bool`   | No       | Optional. Enables the Managed Cluster auto-scaler.                                                                                                                                                  |
+| `agentPoolMinCount`                     | `int`    | No       | Optional. When enabling autoscaler a minimum node count must be set for the autoscaler to function. Defaults to 1.                                                                                  |
+| `agentPoolMaxCount`                     | `int`    | No       | Optional. When enabling autoscaler a maximum node count must be set for the autoscaler to function. Defaults to 1.                                                                                  |
 | `agentPoolVMSize`                       | `string` | No       | Optional. Virtual Machine size of the nodes in the Managed Cluster.                                                                                                                                 |
 | `networkNetworkPlugin`                  | `string` | No       | Optional. Network plugin used for building the Kubernetes network.                                                                                                                                  |
 | `resourceLock`                          | `string` | No       | Optional. Specify the type of resource lock.                                                                                                                                                        |
