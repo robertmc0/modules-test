@@ -125,8 +125,9 @@ module aksMax '../main.bicep' = {
     agentPoolCount: 2
     kubernetesVersion: '1.23.12'
     enableAvailabilityZones: true
-    agentPoolMaxCount: 3
     enableAutoScaling: true
+    agentPoolMinCount: 1
+    agentPoolMaxCount: 2
     agentPoolVnetSubnetId: first(filter(vnetMax.properties.subnets, subnet => toLower(subnet.name) == toLower(subnetName))).id
     networkServiceCidr: '10.1.0.0/16'
     networkDnsServiceIp: '10.1.0.10'
