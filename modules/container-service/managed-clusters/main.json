@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "15644390080323270439"
+      "version": "0.13.1.58284",
+      "templateHash": "15911968437243820788"
     }
   },
   "parameters": {
@@ -113,13 +113,6 @@
         "description": "Existing VNET resourceid dedicated for use with a Managed Cluster."
       }
     },
-    "agentPoolMaxCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "description": "Optional. The maximum number of nodes for auto-scaling."
-      }
-    },
     "agentPoolMaxPods": {
       "type": "int",
       "defaultValue": 30,
@@ -175,6 +168,18 @@
         "description": "Optional. Enable Availability zones for the agentpool nodes. This can only be specified if the AgentPoolType property is VirtualMachineScaleSets."
       }
     },
+    "availabilityZones": {
+      "type": "array",
+      "defaultValue": [
+        "1",
+        "2",
+        "3"
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/aks/availability-zones",
+        "description": "Optional. Set availability zone to deploy the managed cluster into."
+      }
+    },
     "agentPoolCount": {
       "type": "int",
       "defaultValue": 1,
@@ -187,7 +192,22 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/aks/cluster-autoscaler",
         "description": "Optional. Enables the Managed Cluster auto-scaler."
+      }
+    },
+    "agentPoolMinCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Optional. When enabling autoscaler a minimum node count must be set for the autoscaler to function. Defaults to 1."
+      }
+    },
+    "agentPoolMaxCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Optional. When enabling autoscaler a maximum node count must be set for the autoscaler to function. Defaults to 1."
       }
     },
     "agentPoolVMSize": {
@@ -290,11 +310,11 @@
     },
     "diagnosticLogCategoryGroupsToEnable": {
       "type": "array",
-      "allowedValues": [
+      "defaultValue": [
         "allLogs",
         "audit"
       ],
-      "defaultValue": [
+      "allowedValues": [
         "allLogs",
         "audit"
       ],
@@ -304,10 +324,10 @@
     },
     "diagnosticMetricsToEnable": {
       "type": "array",
-      "allowedValues": [
+      "defaultValue": [
         "AllMetrics"
       ],
-      "defaultValue": [
+      "allowedValues": [
         "AllMetrics"
       ],
       "metadata": {
@@ -390,12 +410,7 @@
     "addonOmsAgent": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('omsagent', createObject('enabled', true(), 'config', createObject('logAnalyticsWorkspaceResourceId', if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), parameters('logAnalyticsWorkspaceResourceId'), null())))), createObject())]",
     "clusterAddons": "[union(variables('addonAzurePolicy'), variables('addonOmsAgent'), parameters('addonProfiles'))]",
     "identityType": "[if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'SystemAssigned')]",
-    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
-    "availabilityZones": [
-      "1",
-      "2",
-      "3"
-    ]
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
   "resources": [
     {
@@ -415,14 +430,14 @@
         "agentPoolProfiles": [
           {
             "name": "[parameters('agentPoolName')]",
-            "availabilityZones": "[if(parameters('enableAvailabilityZones'), variables('availabilityZones'), null())]",
+            "availabilityZones": "[if(parameters('enableAvailabilityZones'), parameters('availabilityZones'), null())]",
             "count": "[parameters('agentPoolCount')]",
             "enableAutoScaling": "[parameters('enableAutoScaling')]",
             "vmSize": "[parameters('agentPoolVMSize')]",
             "osDiskSizeGB": "[parameters('agentPoolOsDiskSizeGB')]",
             "vnetSubnetID": "[parameters('agentPoolVnetSubnetId')]",
-            "minCount": "[if(and(parameters('enableAutoScaling'), greater(parameters('agentPoolCount'), 1)), parameters('agentPoolCount'), null())]",
-            "maxCount": "[if(and(parameters('enableAutoScaling'), greater(parameters('agentPoolCount'), 1)), parameters('agentPoolMaxCount'), null())]",
+            "minCount": "[if(parameters('enableAutoScaling'), parameters('agentPoolMinCount'), null())]",
+            "maxCount": "[if(parameters('enableAutoScaling'), parameters('agentPoolMaxCount'), null())]",
             "maxPods": "[parameters('agentPoolMaxPods')]",
             "mode": "[parameters('agentPoolMode')]",
             "type": "[parameters('agentPoolType')]"

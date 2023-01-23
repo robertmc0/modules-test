@@ -51,9 +51,6 @@ param agentPoolOsDiskSizeGB int = 128
 @description('Existing VNET resourceid dedicated for use with a Managed Cluster.')
 param agentPoolVnetSubnetId string
 
-@description('Optional. The maximum number of nodes for auto-scaling.')
-param agentPoolMaxCount int = 1
-
 @description('Optional. The maximum number of pods that can run on a node.')
 param agentPoolMaxPods int = 30
 
@@ -83,12 +80,31 @@ param agentPoolType string = 'VirtualMachineScaleSets'
 @description('Optional. Enable Availability zones for the agentpool nodes. This can only be specified if the AgentPoolType property is VirtualMachineScaleSets.')
 param enableAvailabilityZones bool = false
 
+@description('Optional. Set availability zone to deploy the managed cluster into.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/aks/availability-zones'
+})
+param availabilityZones array = [
+  '1'
+  '2'
+  '3'
+]
+
 @description('Optional. Number of agents (VMs) to host docker containers. Allowed values must be in the range of 0 to 1000 (inclusive) for user pools and in the range of 1 to 1000 (inclusive) for system pools.')
 @minValue(1)
 param agentPoolCount int = 1
 
 @description('Optional. Enables the Managed Cluster auto-scaler.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/aks/cluster-autoscaler'
+})
 param enableAutoScaling bool = false
+
+@description('Optional. When enabling autoscaler a minimum node count must be set for the autoscaler to function. Defaults to 1.')
+param agentPoolMinCount int = 1
+
+@description('Optional. When enabling autoscaler a maximum node count must be set for the autoscaler to function. Defaults to 1.')
+param agentPoolMaxCount int = 1
 
 @description('Optional. Virtual Machine size of the nodes in the Managed Cluster.')
 param agentPoolVMSize string = 'Standard_B2s'
@@ -235,12 +251,6 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
-var availabilityZones = [
-  '1'
-  '2'
-  '3'
-]
-
 resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
   name: name
   sku: sku
@@ -261,8 +271,8 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
         vmSize: agentPoolVMSize
         osDiskSizeGB: agentPoolOsDiskSizeGB
         vnetSubnetID: agentPoolVnetSubnetId
-        minCount: enableAutoScaling && agentPoolCount > 1 ? agentPoolCount : null
-        maxCount: enableAutoScaling && agentPoolCount > 1 ? agentPoolMaxCount : null
+        minCount: enableAutoScaling ? agentPoolMinCount : null
+        maxCount: enableAutoScaling ? agentPoolMaxCount : null
         maxPods: agentPoolMaxPods
         mode: agentPoolMode
         type: agentPoolType
