@@ -23,6 +23,8 @@ param tags object = {
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
+// Note: In order to deploy scaling plans you must assign the Desktop Virtualization Power On Off Contributor role to the Azure Virtual Desktop service principal. Reference article https://learn.microsoft.com/en-us/azure/virtual-desktop/autoscale-scaling-plan#assign-the-desktop-virtualization-power-on-off-contributor-role-with-the-azure-portal.
+
 resource hostPool1 'Microsoft.DesktopVirtualization/hostPools@2022-04-01-preview' = {
   name: '${shortIdentifier}-tst-hp-${uniqueString(deployment().name, 'hostPool1', location)}'
   location: location
