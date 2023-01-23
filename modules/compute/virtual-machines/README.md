@@ -11,6 +11,8 @@ This module performs the following
 - Adds virtual machine to availability set if specified.
 - Applies Azure Monitor extension if specified.
 - Applies Microsoft Antimalware extension if specified.
+- Applies AD Domain Join extension if specified.
+- Applies DSC extension if specified.
 - Adds data disks if specified.
 - Adds custom data if specified.
 - Applies a lock to the virtual machine if the lock is specified.
@@ -40,6 +42,9 @@ This module performs the following
 | `licenseType`                       | `string`       | No       | Optional. Specifies that the image or disk that is being used was licensed on-premises. Accepted values "Windows_Client", "Windows_Server", "RHEL_BYOS" or "SLES_BYOS".                                                           |
 | `diagnosticLogAnalyticsWorkspaceId` | `string`       | No       | Optional. Log analytics workspace resource id. Only required to enable VM Diagnostics.                                                                                                                                            |
 | `antiMalwareConfiguration`          | `object`       | No       | Optional. Microsoft antimalware configuration. Will not be installed if left blank.                                                                                                                                               |
+| `domainJoinSettings`                | `object`       | No       | Optional. Domain join configuration. Will not be domain joined if left blank.                                                                                                                                                     |
+| `domainJoinPassword`                | `secureString` | No       | Optional. Password for the domain join user account.                                                                                                                                                                              |
+| `dscConfiguration`                  | `object`       | No       | Optional. Desired state configuration. Will not be executed if left blank.                                                                                                                                                        |
 | `resourceLock`                      | `string`       | No       | Optional. Specify the type of resource lock.                                                                                                                                                                                      |
 
 ## Outputs

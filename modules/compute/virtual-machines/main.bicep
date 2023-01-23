@@ -336,6 +336,36 @@ param diagnosticLogAnalyticsWorkspaceId string = ''
 })
 param antiMalwareConfiguration object = {}
 
+@description('Optional. Domain join configuration. Will not be domain joined if left blank.')
+@metadata({
+  domainToJoin: 'FQDN of the domain to which the session host virtual machines will be joined. E.g. contoso.com.'
+  ouPath: 'Organisational unit (OU) to place the session host virtual machines when joining the domain. E.g. OU=testOU;DC=domain;DC=Domain;DC=com.'
+  domainJoinUser: 'Username that has privileges to join the session host virtual machines to the domain.'
+  domainJoinPassword: 'Password for the domain join user account.'
+})
+param domainJoinSettings object = {}
+
+@description('Optional. Password for the domain join user account.')
+@secure()
+param domainJoinPassword string = ''
+
+@description('Optional. Desired state configuration. Will not be executed if left blank.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/virtual-machines/extensions/dsc-windows'
+  example: {
+    configuration: {
+      url: 'http://validURLToConfigLocation'
+      script: 'ConfigurationScript.ps1'
+      function: 'ConfigurationFunction'
+    }
+    configurationArguments: {
+      argument1: 'Value1'
+      argument2: 'Value2'
+    }
+  }
+})
+param dscConfiguration object = {}
+
 @description('Optional. Specify the type of resource lock.')
 @allowed([
   'NotSpecified'
@@ -359,7 +389,7 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@2022-01-01' = [for i in range(0, instanceCount): {
+resource networkInterface 'Microsoft.Network/networkInterfaces@2022-07-01' = [for i in range(0, instanceCount): {
   name: '${name}${format('{0:D2}', i + 1)}${networkInterfaceSuffix}'
   location: location
   tags: tags
@@ -378,7 +408,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2022-01-01' = [fo
   }
 }]
 
-resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-03-01' = if (!empty(availabilitySetConfiguration)) {
+resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-08-01' = if (!empty(availabilitySetConfiguration)) {
   name: !empty(availabilitySetConfiguration) ? availabilitySetConfiguration.name : 'placeholder'
   location: location
   tags: tags
@@ -391,7 +421,7 @@ resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-03-01' = if (!
   }
 }
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = [for i in range(0, instanceCount): {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [for i in range(0, instanceCount): {
   dependsOn: [
     networkInterface
   ]
@@ -451,8 +481,11 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = [for i 
   }
 }]
 
-resource extension_monitoring 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+resource extension_monitoring 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
   parent: virtualMachine[i]
+  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
+    extension_joinDomain
+  ] : []
   name: 'Microsoft.EnterpriseCloud.Monitoring'
   location: location
   properties: {
@@ -469,8 +502,14 @@ resource extension_monitoring 'Microsoft.Compute/virtualMachines/extensions@2022
   }
 }]
 
-resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2021-04-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
   parent: virtualMachine[i]
+  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
+    extension_joinDomain
+    extension_monitoring
+  ] : [
+    extension_monitoring
+  ]
   name: 'DependencyAgentWindows'
   location: location
   properties: {
@@ -479,13 +518,50 @@ resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2021-0
     typeHandlerVersion: '9.5'
     autoUpgradeMinorVersion: true
   }
-  dependsOn: [
-    extension_monitoring
-  ]
+
 }]
 
-resource extension_antimalware 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = [for i in range(0, instanceCount): if (!empty(antiMalwareConfiguration)) {
+resource extension_guestHealth 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
   parent: virtualMachine[i]
+  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
+    extension_joinDomain
+    extension_depAgent
+  ] : [
+    extension_depAgent
+  ]
+  name: 'GuestHealthWindowsAgent'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.Monitor.VirtualMachines.GuestHealth'
+    type: 'GuestHealthWindowsAgent'
+    typeHandlerVersion: '1.0'
+    autoUpgradeMinorVersion: true
+  }
+}]
+
+resource extension_azureMonitorWindowsAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+  parent: virtualMachine[i]
+  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
+    extension_joinDomain
+    extension_guestHealth
+  ] : [
+    extension_guestHealth
+  ]
+  name: 'AzureMonitorWindowsAgent'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.Monitor'
+    type: 'AzureMonitorWindowsAgent'
+    typeHandlerVersion: '1.0'
+    autoUpgradeMinorVersion: true
+  }
+}]
+
+resource extension_antimalware 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(antiMalwareConfiguration)) {
+  parent: virtualMachine[i]
+  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
+    extension_joinDomain
+  ] : []
   name: 'IaaSAntimalware'
   location: location
   properties: {
@@ -494,6 +570,44 @@ resource extension_antimalware 'Microsoft.Compute/virtualMachines/extensions@202
     typeHandlerVersion: '1.3'
     autoUpgradeMinorVersion: true
     settings: antiMalwareConfiguration
+  }
+}]
+
+resource extension_joinDomain 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(domainJoinSettings) && !empty(domainJoinPassword)) {
+  parent: virtualMachine[i]
+  name: 'JoinDomain'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Compute'
+    type: 'JsonADDomainExtension'
+    typeHandlerVersion: '1.3'
+    autoUpgradeMinorVersion: true
+    settings: {
+      name: domainJoinSettings.domainToJoin
+      oUPath: domainJoinSettings.ouPath
+      user: '${domainJoinSettings.domainToJoin}\\${domainJoinSettings.domainJoinUser}'
+      restart: 'true'
+      options: 3 // Join Domain and Create Computer Account
+    }
+    protectedSettings: {
+      password: domainJoinPassword
+    }
+  }
+}]
+
+resource extension_dsc 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(dscConfiguration)) {
+  parent: virtualMachine[i]
+  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
+    extension_joinDomain
+  ] : []
+  name: 'Microsoft.Powershell.DSC'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Powershell'
+    type: 'DSC'
+    typeHandlerVersion: '2.83'
+    autoUpgradeMinorVersion: true
+    settings: dscConfiguration
   }
 }]
 
