@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "4385824304708666889"
+      "version": "0.13.1.58284",
+      "templateHash": "5770396572873791155"
     }
   },
   "parameters": {
@@ -56,12 +56,12 @@
     },
     "availabilityZones": {
       "type": "array",
+      "defaultValue": [],
       "allowedValues": [
         "1",
         "2",
         "3"
       ],
-      "defaultValue": [],
       "metadata": {
         "description": "Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed."
       }
@@ -408,6 +408,43 @@
         "description": "Optional. Microsoft antimalware configuration. Will not be installed if left blank."
       }
     },
+    "domainJoinSettings": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "domainToJoin": "FQDN of the domain to which the session host virtual machines will be joined. E.g. contoso.com.",
+        "ouPath": "Organisational unit (OU) to place the session host virtual machines when joining the domain. E.g. OU=testOU;DC=domain;DC=Domain;DC=com.",
+        "domainJoinUser": "Username that has privileges to join the session host virtual machines to the domain.",
+        "domainJoinPassword": "Password for the domain join user account.",
+        "description": "Optional. Domain join configuration. Will not be domain joined if left blank."
+      }
+    },
+    "domainJoinPassword": {
+      "type": "secureString",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Password for the domain join user account."
+      }
+    },
+    "dscConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/virtual-machines/extensions/dsc-windows",
+        "example": {
+          "configuration": {
+            "url": "http://validURLToConfigLocation",
+            "script": "ConfigurationScript.ps1",
+            "function": "ConfigurationFunction"
+          },
+          "configurationArguments": {
+            "argument1": "Value1",
+            "argument2": "Value2"
+          }
+        },
+        "description": "Optional. Desired state configuration. Will not be executed if left blank."
+      }
+    },
     "resourceLock": {
       "type": "string",
       "defaultValue": "NotSpecified",
@@ -436,7 +473,7 @@
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2022-01-01",
+      "apiVersion": "2022-07-01",
       "name": "[format('{0}{1}{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('networkInterfaceSuffix'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -457,7 +494,7 @@
     {
       "condition": "[not(empty(parameters('availabilitySetConfiguration')))]",
       "type": "Microsoft.Compute/availabilitySets",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2022-08-01",
       "name": "[if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -475,7 +512,7 @@
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
       "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2022-08-01",
       "name": "[format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -546,7 +583,7 @@
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'Microsoft.EnterpriseCloud.Monitoring')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -558,6 +595,7 @@
         "protectedSettings": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), createObject('workspaceKey', listKeys(parameters('diagnosticLogAnalyticsWorkspaceId'), '2015-03-20').primarySharedKey), null())]"
       },
       "dependsOn": [
+        "extension_joinDomain",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
       ]
     },
@@ -568,7 +606,7 @@
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2021-04-01",
+      "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'DependencyAgentWindows')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -578,7 +616,52 @@
         "autoUpgradeMinorVersion": true
       },
       "dependsOn": [
+        "extension_joinDomain",
         "extension_monitoring",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "copy": {
+        "name": "extension_guestHealth",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'GuestHealthWindowsAgent')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitor.VirtualMachines.GuestHealth",
+        "type": "GuestHealthWindowsAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true
+      },
+      "dependsOn": [
+        "extension_depAgent",
+        "extension_joinDomain",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "copy": {
+        "name": "extension_azureMonitorWindowsAgent",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'AzureMonitorWindowsAgent')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitor",
+        "type": "AzureMonitorWindowsAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true
+      },
+      "dependsOn": [
+        "extension_guestHealth",
+        "extension_joinDomain",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
       ]
     },
@@ -589,7 +672,7 @@
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'IaaSAntimalware')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -600,6 +683,59 @@
         "settings": "[parameters('antiMalwareConfiguration')]"
       },
       "dependsOn": [
+        "extension_joinDomain",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "condition": "[and(not(empty(parameters('domainJoinSettings'))), not(empty(parameters('domainJoinPassword'))))]",
+      "copy": {
+        "name": "extension_joinDomain",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'JoinDomain')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "JsonADDomainExtension",
+        "typeHandlerVersion": "1.3",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "name": "[parameters('domainJoinSettings').domainToJoin]",
+          "oUPath": "[parameters('domainJoinSettings').ouPath]",
+          "user": "[format('{0}\\{1}', parameters('domainJoinSettings').domainToJoin, parameters('domainJoinSettings').domainJoinUser)]",
+          "restart": "true",
+          "options": 3
+        },
+        "protectedSettings": {
+          "password": "[parameters('domainJoinPassword')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('dscConfiguration')))]",
+      "copy": {
+        "name": "extension_dsc",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'Microsoft.Powershell.DSC')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.83",
+        "autoUpgradeMinorVersion": true,
+        "settings": "[parameters('dscConfiguration')]"
+      },
+      "dependsOn": [
+        "extension_joinDomain",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
       ]
     },
