@@ -84,5 +84,10 @@ module workspace '../main.bicep' = {
       applicationGroup.id
     ]
     publicNetworkAccess: 'Disabled'
+    enableDiagnostics: true
+    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    diagnosticStorageAccountId: diagnosticsStorageAccount.id
+    diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
+    resourceLock: 'CanNotDelete'
   }
 }
