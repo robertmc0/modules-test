@@ -22,16 +22,16 @@ param tags object = {
   environment: 'test'
 }
 
+@description('Optional. Staging resource group name.')
+param stagingResourceGroupName string = '${shortIdentifier}-staging-rg-${uniqueString(deployment().name, 'resourceGroups', location)}'
+
+// existing staging resource group cannot be used due to bug, see https://github.com/MicrosoftDocs/azure-docs/issues/103161
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
 resource deployResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: '${shortIdentifier}-deploy2-rg-${uniqueString(deployment().name, 'resourceGroups', location)}'
-  location: location
-}
-
-resource stagingResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: '${shortIdentifier}-staging2-rg-${uniqueString(deployment().name, 'resourceGroups', location)}'
+  name: '${shortIdentifier}-deploy-rg-${uniqueString(deployment().name, 'resourceGroups', location)}'
   location: location
 }
 
@@ -45,24 +45,11 @@ module preReqs 'prereqs.main.test.bicep' = {
   }
 }
 
-module stagingRoleAssignment 'resource-group-role-assignment.bicep' = {
-  scope: resourceGroup(stagingResourceGroup.name)
-  name: '${uniqueString(deployment().name, location)}-stage-roleasgmt'
-  params: {
-    roleAssignmentName: guid(shortIdentifier, preReqs.outputs.userIdentityId, 'b24988ac-6180-42a0-ab88-20f7382dd24c')
-    principalId: preReqs.outputs.userIdentityPrincipalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c') // Contributor role
-  }
-}
-
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
 module minImageTemplate '../main.bicep' = {
   scope: resourceGroup(deployResourceGroup.name)
-  dependsOn: [
-    stagingRoleAssignment
-  ]
   name: '${uniqueString(deployment().name, location)}-min-image-tmpl'
   params: {
     imageGalleryName: '${shortIdentifier}mintstgallery${uniqueString(deployment().name, 'imageGallery', location)}'
@@ -91,9 +78,6 @@ module minImageTemplate '../main.bicep' = {
 
 module imageTemplate '../main.bicep' = {
   scope: resourceGroup(deployResourceGroup.name)
-  dependsOn: [
-    stagingRoleAssignment
-  ]
   name: '${uniqueString(deployment().name, location)}-image-tmpl'
   params: {
     imageGalleryName: '${shortIdentifier}tstgallery${uniqueString(deployment().name, 'imageGallery', location)}'
@@ -117,7 +101,7 @@ module imageTemplate '../main.bicep' = {
     }
     customizerScriptUri: 'https://raw.githubusercontent.com/danielsollondon/azvmimagebuilder/master/testPsScript.ps1'
     runOutputName: '${shortIdentifier}tstimage${uniqueString(deployment().name, 'runOutputName', location)}'
-    stagingResourceGroupId: stagingResourceGroup.id
+    stagingResourceGroupId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${stagingResourceGroupName}'
     vmSize: 'Standard_D2s_v3'
     replicationRegions: [
       'australiasoutheast'
