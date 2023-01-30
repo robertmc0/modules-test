@@ -1,16 +1,21 @@
 /*======================================================================
 GLOBAL CONFIGURATION
 ======================================================================*/
-@description('The location to deploy resources to.')
+@description('Optional. The geo-location where the resource lives.')
 param location string = resourceGroup().location
+
+@description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
+@minLength(1)
+@maxLength(5)
+param shortIdentifier string = 'arn'
 
 var privateDnsZoneDns = 'privatelink.vaultcore.azure.net'
 
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-resource keyVault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
-  name: 'arincokv'
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+  name: '${shortIdentifier}-tst-kv-${uniqueString(deployment().name, 'keyVault', location)}'
   location: location
   properties: {
     sku: {
@@ -22,8 +27,19 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
   }
 }
 
+resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  name: '${shortIdentifier}tst${uniqueString(deployment().name, 'storage', location)}'
+  location: location
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+  properties: {
+  }
+}
+
 resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
-  name: 'arinco-vnet'
+  name: '${shortIdentifier}-tst-vnet-${uniqueString(deployment().name, 'virtualNetworks', location)}'
   location: location
   properties: {
     addressSpace: {
@@ -33,7 +49,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
     }
     subnets: [
       {
-        name: 'arinco-subnet'
+        name: 'PrivateEndpoints'
         properties: {
           addressPrefix: '10.0.0.0/27'
         }
@@ -52,8 +68,20 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
-module privateEndpoint '../main.bicep' = {
+module privateEndpointNoDns '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-private-endpoint'
+  params: {
+    location: location
+    resourcelock: 'CanNotDelete'
+    targetResourceId: storage.id
+    targetResourceName: storage.name
+    targetSubResourceType: 'blob'
+    subnetId: vnet.properties.subnets[0].id
+  }
+}
+
+module privateEndpointWithDns '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-private-endpoint-dns'
   params: {
     location: location
     resourcelock: 'CanNotDelete'
@@ -65,5 +93,5 @@ module privateEndpoint '../main.bicep' = {
   }
 }
 
-output ipAddress string = privateEndpoint.outputs.ipAddress
-output ipAllocationMethod string = privateEndpoint.outputs.ipAllocationMethod
+output ipAddress string = privateEndpointWithDns.outputs.ipAddress
+output ipAllocationMethod string = privateEndpointWithDns.outputs.ipAllocationMethod
