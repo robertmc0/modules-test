@@ -27,6 +27,8 @@ This module deploys Microsoft.VirtualMachineImages imageTemplates
 | `replicationRegions`         | `array`  | No       | Optional. Azure regions where you would like to replicate the custom image after it is created.  |
 | `customizerScriptUri`        | `string` | Yes      | Storage Blob URL to the PowerShell script containing the image customisation configuration.      |
 | `windowsUpdateConfiguration` | `array`  | No       | Optional. Windows update configuration for image template.                                       |
+| `imageRecommendedSettings`   | `object` | No       | Optional. Recommended compute and memory settings for image.                                     |
+| `osDiskSizeGB`               | `int`    | No       | Optional. OS disk size in gigabytes.                                                             |
 | `resourcelock`               | `string` | No       | Optional. Specify the type of resource lock.                                                     |
 
 ## Outputs

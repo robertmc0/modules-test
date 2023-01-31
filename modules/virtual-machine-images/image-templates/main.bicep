@@ -82,6 +82,31 @@ param windowsUpdateConfiguration array = [
   }
 ]
 
+@description('Optional. Recommended compute and memory settings for image.')
+@metadata({
+  vCPUs: {
+    min: 'integer containing recommended minimum CPU configuration.'
+    max: 'integer containing recommended maximum CPU configuration.'
+  }
+  memory: {
+    min: 'integer containing recommended minimum memory configuration.'
+    max: 'integer containing recommended maximum memory configuration.'
+  }
+})
+param imageRecommendedSettings object = {
+  vCPUs: {
+    min: 2
+    max: 8
+  }
+  memory: {
+    min: 16
+    max: 48
+  }
+}
+
+@description('Optional. OS disk size in gigabytes.')
+param osDiskSizeGB int = 127
+
 @allowed([
   'CanNotDelete'
   'NotSpecified'
@@ -142,16 +167,7 @@ resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
       offer: imageDefinitionProperties.offer
       sku: imageDefinitionProperties.sku
     }
-    recommended: {
-      vCPUs: {
-        min: 2
-        max: 8
-      }
-      memory: {
-        min: 16
-        max: 48
-      }
-    }
+    recommended: imageRecommendedSettings
     hyperVGeneration: 'V2'
   }
 }
@@ -178,7 +194,7 @@ resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2022-02-14
     buildTimeoutInMinutes: 120
     vmProfile: {
       vmSize: vmSize
-      osDiskSizeGB: 127
+      osDiskSizeGB: osDiskSizeGB
       vnetConfig: {
         subnetId: subnetResourceId
       }

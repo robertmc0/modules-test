@@ -89,6 +89,17 @@ module imageTemplate '../main.bicep' = {
       offer: 'microsoftwindowsdesktop'
       sku: 'win11-22h2-avd'
     }
+    imageRecommendedSettings: {
+      vCPUs: {
+        min: 2
+        max: 32
+      }
+      memory: {
+        min: 4
+        max: 48
+      }
+    }
+    osDiskSizeGB: 127
     imageTemplateName: '${shortIdentifier}tstimage${uniqueString(deployment().name, 'imageTemplate', location)}'
     userIdentityId: preReqs.outputs.userIdentityId
     subnetResourceId: '${preReqs.outputs.vnetId}/subnets/default'

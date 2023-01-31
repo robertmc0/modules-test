@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "2110752462382669883"
+      "templateHash": "17152470886141517062"
     }
   },
   "parameters": {
@@ -132,6 +132,37 @@
         "description": "Optional. Windows update configuration for image template."
       }
     },
+    "imageRecommendedSettings": {
+      "type": "object",
+      "defaultValue": {
+        "vCPUs": {
+          "min": 2,
+          "max": 8
+        },
+        "memory": {
+          "min": 16,
+          "max": 48
+        }
+      },
+      "metadata": {
+        "vCPUs": {
+          "min": "integer containing recommended minimum CPU configuration.",
+          "max": "integer containing recommended maximum CPU configuration."
+        },
+        "memory": {
+          "min": "integer containing recommended minimum memory configuration.",
+          "max": "integer containing recommended maximum memory configuration."
+        },
+        "description": "Optional. Recommended compute and memory settings for image."
+      }
+    },
+    "osDiskSizeGB": {
+      "type": "int",
+      "defaultValue": 127,
+      "metadata": {
+        "description": "Optional. OS disk size in gigabytes."
+      }
+    },
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
@@ -202,16 +233,7 @@
           "offer": "[parameters('imageDefinitionProperties').offer]",
           "sku": "[parameters('imageDefinitionProperties').sku]"
         },
-        "recommended": {
-          "vCPUs": {
-            "min": 2,
-            "max": 8
-          },
-          "memory": {
-            "min": 16,
-            "max": 48
-          }
-        },
+        "recommended": "[parameters('imageRecommendedSettings')]",
         "hyperVGeneration": "V2"
       },
       "dependsOn": [
@@ -247,7 +269,7 @@
         "buildTimeoutInMinutes": 120,
         "vmProfile": {
           "vmSize": "[parameters('vmSize')]",
-          "osDiskSizeGB": 127,
+          "osDiskSizeGB": "[parameters('osDiskSizeGB')]",
           "vnetConfig": {
             "subnetId": "[parameters('subnetResourceId')]"
           },
