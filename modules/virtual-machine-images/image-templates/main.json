@@ -1,0 +1,327 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.13.1.58284",
+      "templateHash": "17152470886141517062"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "imageGalleryName": {
+      "type": "string",
+      "maxLength": 80,
+      "minLength": 3,
+      "metadata": {
+        "description": "Azure Image Gallery name."
+      }
+    },
+    "imageDefinitionProperties": {
+      "type": "object",
+      "metadata": {
+        "name": "Image definition name.",
+        "publisher": "Publisher name.",
+        "offer": "Image offer name, e.g. microsoftwindowsdesktop.",
+        "sku": "Image sku name, e.g. win11-22h2-avd.",
+        "description": "Image definition to set for the custom image produced by the Azure Image Builder build."
+      }
+    },
+    "imageTemplateName": {
+      "type": "string",
+      "metadata": {
+        "description": "Image template name."
+      }
+    },
+    "userIdentityId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the user-assigned managed identity used by Azure Image Builder template."
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D4s_v5",
+      "metadata": {
+        "description": "Optional. Size of virtual machine to use for image template."
+      }
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the virtual machine subnet."
+      }
+    },
+    "sourceImage": {
+      "type": "object",
+      "metadata": {
+        "type": "Image source type, allowed values PlatformImage, ManagedImage or SharedImageVersion ",
+        "publisher": "Publisher name.",
+        "offer": "Image offer name, e.g. microsoftwindowsdesktop.",
+        "sku": "Image sku name, e.g. win11-22h2-ent.",
+        "version": "Image version, e.g. latest",
+        "description": "Image definition of source image to use for image template."
+      }
+    },
+    "stagingResourceGroupId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the staging resource group that host resources used during image build."
+      }
+    },
+    "runOutputName": {
+      "type": "string",
+      "metadata": {
+        "description": "Image name to create and distribute using Azure Image Builder."
+      }
+    },
+    "replicationRegions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. Azure regions where you would like to replicate the custom image after it is created."
+      }
+    },
+    "customizerScriptUri": {
+      "type": "string",
+      "metadata": {
+        "description": "Storage Blob URL to the PowerShell script containing the image customisation configuration."
+      }
+    },
+    "windowsUpdateConfiguration": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "type": "WindowsUpdate",
+          "searchCriteria": "IsInstalled=0",
+          "filters": [
+            "exclude:$_.Title -like '*Preview*'",
+            "include:$true"
+          ],
+          "updateLimit": 40
+        }
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.virtualmachineimages/imagetemplates?pivots=deployment-language-bicep#imagetemplatewindowsupdatecustomizer",
+        "example": {
+          "type": "WindowsUpdate",
+          "searchCriteria": "Criteria to search updates.",
+          "filters": [
+            "Array of filters to select updates to apply."
+          ],
+          "updateLimit": "Maximum number of updates to apply at a time"
+        },
+        "description": "Optional. Windows update configuration for image template."
+      }
+    },
+    "imageRecommendedSettings": {
+      "type": "object",
+      "defaultValue": {
+        "vCPUs": {
+          "min": 2,
+          "max": 8
+        },
+        "memory": {
+          "min": 16,
+          "max": 48
+        }
+      },
+      "metadata": {
+        "vCPUs": {
+          "min": "integer containing recommended minimum CPU configuration.",
+          "max": "integer containing recommended maximum CPU configuration."
+        },
+        "memory": {
+          "min": "integer containing recommended minimum memory configuration.",
+          "max": "integer containing recommended maximum memory configuration."
+        },
+        "description": "Optional. Recommended compute and memory settings for image."
+      }
+    },
+    "osDiskSizeGB": {
+      "type": "int",
+      "defaultValue": 127,
+      "metadata": {
+        "description": "Optional. OS disk size in gigabytes."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      },
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ]
+    }
+  },
+  "variables": {
+    "imageGalleryLockName": "[toLower(format('{0}-{1}-lck', parameters('imageGalleryName'), parameters('resourcelock')))]",
+    "imageDefinitionLockName": "[toLower(format('{0}-{1}-lck', parameters('imageDefinitionProperties').name, parameters('resourcelock')))]",
+    "imageTemplateLockName": "[toLower(format('{0}-{1}-lck', parameters('imageTemplateName'), parameters('resourcelock')))]",
+    "defaultCustomiserSettings": [
+      {
+        "type": "PowerShell",
+        "name": "ConfigureVM",
+        "runElevated": true,
+        "runAsSystem": true,
+        "scriptUri": "[parameters('customizerScriptUri')]"
+      },
+      {
+        "type": "WindowsRestart",
+        "restartCommand": "shutdown /r /f /t 0",
+        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM > c:\\users\\packer\\azureImageBuilderRestart.txt",
+        "restartTimeout": "5m"
+      }
+    ],
+    "customiserSettings": "[union(variables('defaultCustomiserSettings'), parameters('windowsUpdateConfiguration'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/galleries",
+      "apiVersion": "2022-03-03",
+      "name": "[parameters('imageGalleryName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {}
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Compute/galleries/{0}', parameters('imageGalleryName'))]",
+      "name": "[variables('imageGalleryLockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/galleries', parameters('imageGalleryName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/galleries/images",
+      "apiVersion": "2022-03-03",
+      "name": "[format('{0}/{1}', parameters('imageGalleryName'), parameters('imageDefinitionProperties').name)]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "osType": "Windows",
+        "osState": "Generalized",
+        "identifier": {
+          "publisher": "[parameters('imageDefinitionProperties').publisher]",
+          "offer": "[parameters('imageDefinitionProperties').offer]",
+          "sku": "[parameters('imageDefinitionProperties').sku]"
+        },
+        "recommended": "[parameters('imageRecommendedSettings')]",
+        "hyperVGeneration": "V2"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/galleries', parameters('imageGalleryName'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Compute/galleries/{0}/images/{1}', parameters('imageGalleryName'), parameters('imageDefinitionProperties').name)]",
+      "name": "[variables('imageDefinitionLockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/galleries/images', parameters('imageGalleryName'), parameters('imageDefinitionProperties').name)]"
+      ]
+    },
+    {
+      "type": "Microsoft.VirtualMachineImages/imageTemplates",
+      "apiVersion": "2022-02-14",
+      "name": "[parameters('imageTemplateName')]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', parameters('userIdentityId'))]": {}
+        }
+      },
+      "properties": {
+        "buildTimeoutInMinutes": 120,
+        "vmProfile": {
+          "vmSize": "[parameters('vmSize')]",
+          "osDiskSizeGB": "[parameters('osDiskSizeGB')]",
+          "vnetConfig": {
+            "subnetId": "[parameters('subnetResourceId')]"
+          },
+          "userAssignedIdentities": [
+            "[parameters('userIdentityId')]"
+          ]
+        },
+        "source": "[parameters('sourceImage')]",
+        "stagingResourceGroup": "[parameters('stagingResourceGroupId')]",
+        "customize": "[variables('customiserSettings')]",
+        "distribute": [
+          {
+            "type": "SharedImage",
+            "galleryImageId": "[resourceId('Microsoft.Compute/galleries/images', parameters('imageGalleryName'), parameters('imageDefinitionProperties').name)]",
+            "runOutputName": "[parameters('runOutputName')]",
+            "replicationRegions": "[parameters('replicationRegions')]"
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/galleries/images', parameters('imageGalleryName'), parameters('imageDefinitionProperties').name)]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.VirtualMachineImages/imageTemplates/{0}', parameters('imageTemplateName'))]",
+      "name": "[variables('imageTemplateLockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.VirtualMachineImages/imageTemplates', parameters('imageTemplateName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('imageTemplateName')]",
+      "metadata": {
+        "description": "The name of the deployed image template."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.VirtualMachineImages/imageTemplates', parameters('imageTemplateName'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed image template."
+      }
+    }
+  }
+}
