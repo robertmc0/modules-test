@@ -160,6 +160,3 @@ output name string = scalingPlan.name
 
 @description('The resource ID of the deployed scaling plan.')
 output resourceId string = scalingPlan.id
-
-@description('The host pools scaling plan is associated to.')
-output hostPool array = scalingPlan.properties.hostPoolReferences
