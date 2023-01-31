@@ -38,6 +38,7 @@ This module deploys Microsoft.DesktopVirtualization scalingPlans
 | :--------- | :----: | :-------------------------------------------- |
 | name       | string | The name of the deployed scaling plan.        |
 | resourceId | string | The resource ID of the deployed scaling plan. |
+| hostPool   | array  | The host pools scaling plan is associated to. |
 
 ## Examples
 

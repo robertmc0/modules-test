@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "13990226727443392527"
+      "templateHash": "11621115093588112779"
     }
   },
   "parameters": {
@@ -262,6 +262,13 @@
       "value": "[resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed scaling plan."
+      }
+    },
+    "hostPool": {
+      "type": "array",
+      "value": "[reference(resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name')), '2022-04-01-preview').hostPoolReferences]",
+      "metadata": {
+        "description": "The host pools scaling plan is associated to."
       }
     }
   }
