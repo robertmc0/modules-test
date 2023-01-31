@@ -29,8 +29,8 @@ param location string
 @description('Resource ID of the subnet that will host the Private Endpoint.')
 param subnetId string
 
-@description('Resource ID of the Private DNS Zone to host the Private Endpoint.')
-param privateDnsZoneId string
+@description('Optional. Resource ID of the Private DNS Zone to host the Private Endpoint.')
+param privateDnsZoneId string = ''
 
 @description('Optional. Private endpoint DNS Group Name. Defaults to default.')
 param privateDNSZoneGroupName string = 'default'
@@ -72,7 +72,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
     ]
   }
 
-  resource privateDNSZoneGroup 'privateDnsZoneGroups@2022-01-01' = {
+  resource privateDNSZoneGroup 'privateDnsZoneGroups@2022-01-01' = if (!empty(privateDnsZoneId)) {
     name: privateDNSZoneGroupName
     properties: {
       privateDnsZoneConfigs: [

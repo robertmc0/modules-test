@@ -21,7 +21,7 @@ This module performs the following
 | `targetSubResourceType`   | `string` | Yes      | The type of sub-resource for the target resource that the private endpoint will be able to access. |
 | `location`                | `string` | Yes      | Location of the resource.                                                                          |
 | `subnetId`                | `string` | Yes      | Resource ID of the subnet that will host the Private Endpoint.                                     |
-| `privateDnsZoneId`        | `string` | Yes      | Resource ID of the Private DNS Zone to host the Private Endpoint.                                  |
+| `privateDnsZoneId`        | `string` | No       | Optional. Resource ID of the Private DNS Zone to host the Private Endpoint.                        |
 | `privateDNSZoneGroupName` | `string` | No       | Optional. Private endpoint DNS Group Name. Defaults to default.                                    |
 | `resourcelock`            | `string` | No       | Optional. Specify the type of resource lock.                                                       |
 
