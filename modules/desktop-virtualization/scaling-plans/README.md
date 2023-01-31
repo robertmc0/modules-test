@@ -8,7 +8,7 @@ This module deploys Microsoft.DesktopVirtualization scalingPlans
 - Applies diagnostic settings if specified.
 - Applies a resource lock if specified.
 
-> Note: In order to deploy scaling plans you must assign the Desktop Virtualization Power On Off Contributor role to the Azure Virtual Desktop service principal. Reference article [here](https://learn.microsoft.com/en-us/azure/virtual-desktop/autoscale-scaling-plan#assign-the-desktop-virtualization-power-on-off-contributor-role-with-the-azure-portal).
+> Note: In order to deploy scaling plans you must assign the Desktop Virtualization Power On Off Contributor role to the Azure Virtual Desktop service principal. See reference article [here](https://learn.microsoft.com/en-us/azure/virtual-desktop/autoscale-scaling-plan#assign-the-desktop-virtualization-power-on-off-contributor-role-with-the-azure-portal).
 
 ## Parameters
 
