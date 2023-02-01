@@ -17,7 +17,7 @@ jobs:
       tag: ${{ steps.create-tag.outputs.result }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -29,8 +29,8 @@ jobs:
         env:
           PublicRelease: true
         run: |
-          echo ::set-output name=base_version::$(nbgv get-version ${{ github.event.before }} --format json | jq '.SemVer2')
-          echo ::set-output name=head_version::$(nbgv get-version ${{ github.event.after }} --format json | jq '.SemVer2')
+          echo "name=base_version::$(nbgv get-version ${{ github.event.before }} --format json | jq '.SemVer2')" >> $GITHUB_OUTPUT
+          echo "name=head_version::$(nbgv get-version ${{ github.event.after }} --format json | jq '.SemVer2')" >> $GITHUB_OUTPUT
         working-directory: ${{ needs.get-module-to-publish.outputs.module_dir }}
 
       - name: Create tag
