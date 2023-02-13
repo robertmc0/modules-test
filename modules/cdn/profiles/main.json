@@ -1,0 +1,474 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
+    "_generator": {
+      "name": "bicep",
+      "version": "0.14.6.61914",
+      "templateHash": "4053432649271962549"
+    }
+  },
+  "definitions": {
+    "Origin": {
+      "type": "object",
+      "required": [
+        "originGroupName",
+        "originName",
+        "hostName",
+        "originHostHeader"
+      ],
+      "properties": {
+        "originGroupName": {
+          "type": "string"
+        },
+        "originName": {
+          "type": "string"
+        },
+        "hostName": {
+          "type": "string"
+        },
+        "httpPort": {
+          "type": "int"
+        },
+        "httpsPort": {
+          "type": "int"
+        },
+        "originHostHeader": {
+          "type": "string"
+        },
+        "enforceCertificateNameCheck": {
+          "type": "bool"
+        },
+        "priority": {
+          "type": "int"
+        },
+        "weight": {
+          "type": "int"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "frontDoorName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Front Door endpoint to create. This must be globally unique."
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_AzureFrontDoor",
+        "Premium_AzureFrontDoor"
+      ],
+      "metadata": {
+        "description": "The name of the SKU to use when creating the Front Door profile."
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "metadata": {
+        "description": "Endpoints to deploy to Frontdoor"
+      }
+    },
+    "originGroups": {
+      "type": "array",
+      "metadata": {
+        "description": "Origin Groups to deploy to Frontdoor"
+      }
+    },
+    "origins": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Origin"
+      },
+      "metadata": {
+        "description": "Origins to deploy to Frontdoor"
+      }
+    },
+    "certificates": {
+      "type": "array",
+      "metadata": {
+        "description": "Certificates to deploy to Frontdoor"
+      }
+    },
+    "customDomains": {
+      "type": "array",
+      "metadata": {
+        "description": "Custom domains to deploy to Frontdoor"
+      }
+    },
+    "routes": {
+      "type": "array",
+      "metadata": {
+        "description": "Routes to deploy to Frontdoor"
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "allLogs"
+      ],
+      "allowedValues": [
+        "allLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource group. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticStorageAccountName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "diagnosticStorageAccountId": "[resourceId(parameters('diagnosticStorageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('diagnosticStorageAccountName'))]",
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('frontDoorName'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('frontDoorName')))]"
+  },
+  "resources": {
+    "ruleSet::rule": {
+      "type": "Microsoft.Cdn/profiles/ruleSets/rules",
+      "apiVersion": "2022-11-01-preview",
+      "name": "[format('{0}/{1}/{2}', parameters('frontDoorName'), 'MaintenancePageRedirects', 'MaintenancePageRedirectForExternal')]",
+      "properties": {
+        "order": 1,
+        "matchProcessingBehavior": "Stop",
+        "actions": [
+          {
+            "name": "UrlRedirect",
+            "parameters": {
+              "redirectType": "TemporaryRedirect",
+              "destinationProtocol": "Https",
+              "customHostname": "maintenance.racgp.org.au",
+              "typeName": "DeliveryRuleUrlRedirectActionParameters"
+            }
+          }
+        ],
+        "conditions": [
+          {
+            "name": "RemoteAddress",
+            "parameters": {
+              "operator": "IPMatch",
+              "typeName": "DeliveryRuleRemoteAddressConditionParameters",
+              "matchValues": [
+                "203.8.200.20"
+              ],
+              "negateCondition": true
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "ruleSet"
+      ]
+    },
+    "profile": {
+      "type": "Microsoft.Cdn/profiles",
+      "apiVersion": "2021-06-01",
+      "name": "[parameters('frontDoorName')]",
+      "location": "global",
+      "sku": {
+        "name": "[parameters('skuName')]"
+      }
+    },
+    "endpoint": {
+      "copy": {
+        "name": "endpoint",
+        "count": "[length(parameters('endpoints'))]"
+      },
+      "type": "Microsoft.Cdn/profiles/afdEndpoints",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}', parameters('frontDoorName'), parameters('endpoints')[copyIndex()].endpointName)]",
+      "location": "global",
+      "properties": {
+        "enabledState": "Enabled"
+      },
+      "dependsOn": [
+        "profile"
+      ]
+    },
+    "originGroup": {
+      "copy": {
+        "name": "originGroup",
+        "count": "[length(parameters('originGroups'))]"
+      },
+      "type": "Microsoft.Cdn/profiles/originGroups",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}', parameters('frontDoorName'), parameters('originGroups')[copyIndex()].originGroupName)]",
+      "properties": {
+        "loadBalancingSettings": {
+          "sampleSize": 4,
+          "successfulSamplesRequired": 3
+        },
+        "healthProbeSettings": "[if(and(parameters('originGroups')[copyIndex()].healthProbeEnabled, contains(parameters('originGroups')[copyIndex()], 'healthProbeSettings')), createObject('probePath', if(contains(parameters('originGroups')[copyIndex()].healthProbeSettings, 'probePath'), parameters('originGroups')[copyIndex()].healthProbeSettings.probePath, '/'), 'probeRequestType', if(contains(parameters('originGroups')[copyIndex()].healthProbeSettings, 'probeRequestType'), parameters('originGroups')[copyIndex()].healthProbeSettings.probeRequestType, 'HEAD'), 'probeProtocol', if(contains(parameters('originGroups')[copyIndex()].healthProbeSettings, 'probeProtocol'), parameters('originGroups')[copyIndex()].healthProbeSettings.probeProtocol, 'Https'), 'probeIntervalInSeconds', if(contains(parameters('originGroups')[copyIndex()].healthProbeSettings, 'probeIntervalInSeconds'), parameters('originGroups')[copyIndex()].healthProbeSettings.probeIntervalInSeconds, 100)), createObject())]"
+      },
+      "dependsOn": [
+        "profile"
+      ]
+    },
+    "origin": {
+      "copy": {
+        "name": "origin",
+        "count": "[length(parameters('origins'))]"
+      },
+      "type": "Microsoft.Cdn/profiles/originGroups/origins",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}/{2}', parameters('frontDoorName'), parameters('origins')[copyIndex()].originGroupName, parameters('origins')[copyIndex()].originName)]",
+      "properties": {
+        "hostName": "[parameters('origins')[copyIndex()].hostName]",
+        "httpPort": "[parameters('origins')[copyIndex()].httpPort]",
+        "httpsPort": "[parameters('origins')[copyIndex()].httpsPort]",
+        "originHostHeader": "[parameters('origins')[copyIndex()].originHostHeader]",
+        "enforceCertificateNameCheck": "[parameters('origins')[copyIndex()].enforceCertificateNameCheck]",
+        "priority": "[parameters('origins')[copyIndex()].priority]",
+        "weight": "[parameters('origins')[copyIndex()].weight]"
+      },
+      "dependsOn": [
+        "originGroup",
+        "profile"
+      ]
+    },
+    "secret": {
+      "copy": {
+        "name": "secret",
+        "count": "[length(parameters('certificates'))]"
+      },
+      "type": "Microsoft.Cdn/profiles/secrets",
+      "apiVersion": "2022-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('frontDoorName'), parameters('certificates')[copyIndex()].secretName)]",
+      "properties": {
+        "parameters": {
+          "type": "CustomerCertificate",
+          "useLatestVersion": true,
+          "secretSource": {
+            "id": "[parameters('certificates')[copyIndex()].certificateSecretId]"
+          }
+        }
+      },
+      "dependsOn": [
+        "profile"
+      ]
+    },
+    "customDomain": {
+      "copy": {
+        "name": "customDomain",
+        "count": "[length(parameters('customDomains'))]"
+      },
+      "type": "Microsoft.Cdn/profiles/customDomains",
+      "apiVersion": "2022-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('frontDoorName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-'))]",
+      "properties": {
+        "hostName": "[parameters('customDomains')[copyIndex()].hostName]",
+        "azureDnsZone": {
+          "id": "[parameters('customDomains')[copyIndex()].dnsZoneId]"
+        },
+        "tlsSettings": {
+          "certificateType": "CustomerCertificate",
+          "minimumTlsVersion": "TLS12",
+          "secret": {
+            "id": "[resourceId('Microsoft.Cdn/profiles/secrets', parameters('frontDoorName'), parameters('customDomains')[copyIndex()].secretName)]"
+          }
+        }
+      },
+      "dependsOn": [
+        "profile",
+        "secret"
+      ]
+    },
+    "ruleSet": {
+      "type": "Microsoft.Cdn/profiles/ruleSets",
+      "apiVersion": "2022-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('frontDoorName'), 'MaintenancePageRedirects')]",
+      "dependsOn": [
+        "profile"
+      ]
+    },
+    "routeDef": {
+      "copy": {
+        "name": "routeDef",
+        "count": "[length(parameters('routes'))]"
+      },
+      "type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/{1}/{2}', parameters('frontDoorName'), parameters('routes')[copyIndex()].endpointName, parameters('routes')[copyIndex()].routeName)]",
+      "properties": {
+        "copy": [
+          {
+            "name": "customDomains",
+            "count": "[length(parameters('routes')[copyIndex()].customDomains)]",
+            "input": {
+              "id": "[resourceId('Microsoft.Cdn/profiles/customdomains', parameters('frontDoorName'), replace(parameters('routes')[copyIndex()].customDomains[copyIndex('customDomains')], '.', '-'))]"
+            }
+          }
+        ],
+        "originGroup": {
+          "id": "[resourceId('Microsoft.Cdn/profiles/origingroups', parameters('frontDoorName'), parameters('routes')[copyIndex()].originGroupName)]"
+        },
+        "supportedProtocols": [
+          "Http",
+          "Https"
+        ],
+        "patternsToMatch": [
+          "/*"
+        ],
+        "forwardingProtocol": "HttpsOnly",
+        "linkToDefaultDomain": "Enabled",
+        "httpsRedirect": "Enabled"
+      },
+      "dependsOn": [
+        "customDomain",
+        "origin",
+        "profile"
+      ]
+    },
+    "lock": {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Cdn/profiles/{0}', parameters('frontDoorName'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "profile"
+      ]
+    },
+    "diagnostics": {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Cdn/profiles/{0}', parameters('frontDoorName'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(variables('diagnosticStorageAccountId')), null(), variables('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "profile"
+      ]
+    }
+  },
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('frontDoorName')]",
+      "metadata": {
+        "description": "The name of the deployed Azure Frontdoor Profile."
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "copy": {
+        "count": "[length(parameters('endpoints'))]",
+        "input": "[parameters('endpoints')[copyIndex()].endpointName]"
+      }
+    }
+  }
+}
