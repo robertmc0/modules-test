@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "16766622835769079394"
+      "version": "0.14.46.61228",
+      "templateHash": "4781210815963427595"
     }
   },
   "parameters": {
@@ -83,7 +83,7 @@
               "name": "[parameters('routes')[copyIndex('routes')].name]",
               "properties": {
                 "addressPrefix": "[parameters('routes')[copyIndex('routes')].addressPrefix]",
-                "hasBgpOverride": "[if(contains(parameters('routes')[copyIndex('routes')], 'hasBgpOverride'), parameters('routes')[copyIndex('routes')].hasBgpOverride, null())]",
+                "hasBgpOverride": "[if(contains(parameters('routes')[copyIndex('routes')], 'hasBgpOverride'), parameters('routes')[copyIndex('routes')].hasBgpOverride, false())]",
                 "nextHopIpAddress": "[if(contains(parameters('routes')[copyIndex('routes')], 'nextHopIpAddress'), parameters('routes')[copyIndex('routes')].nextHopIpAddress, null())]",
                 "nextHopType": "[parameters('routes')[copyIndex('routes')].nextHopType]"
               }

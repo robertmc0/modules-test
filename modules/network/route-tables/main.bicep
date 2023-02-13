@@ -46,7 +46,7 @@ resource routeTable 'Microsoft.Network/routeTables@2022-01-01' = {
       name: route.name
       properties: {
         addressPrefix: route.addressPrefix
-        hasBgpOverride: contains(route, 'hasBgpOverride') ? route.hasBgpOverride : null
+        hasBgpOverride: contains(route, 'hasBgpOverride') ? route.hasBgpOverride : false
         nextHopIpAddress: contains(route, 'nextHopIpAddress') ? route.nextHopIpAddress : null
         nextHopType: route.nextHopType
       }
