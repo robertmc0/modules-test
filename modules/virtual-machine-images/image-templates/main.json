@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "17152470886141517062"
+      "version": "0.14.6.61914",
+      "templateHash": "10522993285389623473"
     }
   },
   "parameters": {
@@ -163,6 +163,13 @@
         "description": "Optional. OS disk size in gigabytes."
       }
     },
+    "buildTimeoutInMinutes": {
+      "type": "int",
+      "defaultValue": 120,
+      "metadata": {
+        "description": "Optional. Build timeout in minutes."
+      }
+    },
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
@@ -266,7 +273,7 @@
         }
       },
       "properties": {
-        "buildTimeoutInMinutes": 120,
+        "buildTimeoutInMinutes": "[parameters('buildTimeoutInMinutes')]",
         "vmProfile": {
           "vmSize": "[parameters('vmSize')]",
           "osDiskSizeGB": "[parameters('osDiskSizeGB')]",
