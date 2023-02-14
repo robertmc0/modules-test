@@ -7,6 +7,7 @@ param location string = resourceGroup().location
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
+// Minimum Test
 module routeTableMinimum '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-min-route-table'
   params: {
