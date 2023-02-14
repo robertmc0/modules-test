@@ -233,6 +233,3 @@ output name string = imageTemplate.name
 
 @description('The resource ID of the deployed image template.')
 output resourceId string = imageTemplate.id
-
-@description('Size of virtual machine used for the image template.')
-output vmSize string = 'Standard_D4s_v5'
