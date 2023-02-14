@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.14.46.61228",
-      "templateHash": "4781210815963427595"
+      "version": "0.14.6.61914",
+      "templateHash": "11415755236761988131"
     }
   },
   "parameters": {
@@ -121,6 +121,13 @@
       "value": "[resourceId('Microsoft.Network/routeTables', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed route table."
+      }
+    },
+    "disableBgpRoutePropagation": {
+      "type": "bool",
+      "value": "[parameters('disableBgpRoutePropagation')]",
+      "metadata": {
+        "description": "Whether BGP route propogation is disabled. True means disable."
       }
     }
   }

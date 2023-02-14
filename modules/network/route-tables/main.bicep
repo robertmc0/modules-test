@@ -69,5 +69,5 @@ output name string = routeTable.name
 @description('The resource ID of the deployed route table.')
 output resourceId string = routeTable.id
 
-@description('Whether to disable the routes learned by BGP on that route table. True means disable.')
+@description('Whether BGP route propogation is disabled. True means disable.')
 output disableBgpRoutePropagation bool = disableBgpRoutePropagation
