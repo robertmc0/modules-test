@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "10522993285389623473"
+      "templateHash": "10076344791137427106"
     }
   },
   "parameters": {
@@ -328,6 +328,13 @@
       "value": "[resourceId('Microsoft.VirtualMachineImages/imageTemplates', parameters('imageTemplateName'))]",
       "metadata": {
         "description": "The resource ID of the deployed image template."
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "value": "Standard_D4s_v5",
+      "metadata": {
+        "description": "Size of virtual machine used for the image template."
       }
     }
   }
