@@ -34,10 +34,11 @@ This module deploys Microsoft.VirtualMachineImages imageTemplates
 
 ## Outputs
 
-| Name       | Type   | Description                                     |
-| :--------- | :----: | :---------------------------------------------- |
-| name       | string | The name of the deployed image template.        |
-| resourceId | string | The resource ID of the deployed image template. |
+| Name       | Type   | Description                                          |
+| :--------- | :----: | :--------------------------------------------------- |
+| name       | string | The name of the deployed image template.             |
+| resourceId | string | The resource ID of the deployed image template.      |
+| vmSize     | string | Size of virtual machine used for the image template. |
 
 ## Examples
 
