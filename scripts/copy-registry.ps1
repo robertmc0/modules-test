@@ -1,7 +1,7 @@
 #requires -version 6.0
 <#
   .SYNOPSIS
-    Script used to copy bice moduls from a azure container registry to another registry in a different tenant. The script uses AD Authentication to access
+    Script used to copy bicep modules from a container registry to another registry in a different tenant. The script uses AD Authentication to access
     the source registry.
 
   .DESCRIPTION
