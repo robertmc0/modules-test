@@ -50,13 +50,13 @@ $token = az acr login -n $SourceRegistryName --expose-token 2>$null | ConvertFro
 $Repos = az acr repository list -n $SourceRegistryName | ConvertFrom-Json
 
 Write-Host "Found $($($Repos).Count) source repositories."
-$items = [System.Collections.ArrayList]@()
+$images = [System.Collections.ArrayList]@()
 
 Write-Host "Scanning source repositories for images."
 foreach ($repo in $Repos) {
   $Tags = az acr repository show-tags -n $SourceRegistryName --repository $repo | ConvertFrom-Json
   foreach ($tag in $Tags) {
-    $items += "${repo}:${tag}"
+    $images += "${repo}:${tag}"
   }
 }
 
@@ -66,7 +66,7 @@ az account set --subscription $TargetSubscriptionName
 
 Write-Host "Importing images to target registry"
 
-foreach ($item in $items) {
-  Write-Host "Importing Image $item"
-  az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$item" -u "00000000-0000-0000-0000-000000000000" -p $token.accessToken
+foreach ($image in $images) {
+  Write-Host "Importing Image $image"
+  az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$image" -u "00000000-0000-0000-0000-000000000000" -p $token.accessToken
 }
