@@ -46,17 +46,17 @@ $ErrorActionPreference = "Stop"
 
 Read-Host -Prompt "Prepare to login to tenant ($SourceTenantId) where the source registry '$SourceRegistryName' is located. Press any key to continue"
 az login --tenant $SourceTenantId 1>$null 2>$null
-$token = az acr login -n $SourceRegistryName --expose-token 2>$null | ConvertFrom-Json
+$Token = az acr login -n $SourceRegistryName --expose-token 2>$null | ConvertFrom-Json
 $Repos = az acr repository list -n $SourceRegistryName | ConvertFrom-Json
 
 Write-Host "Found $($($Repos).Count) source repositories."
-$images = [System.Collections.ArrayList]@()
+$Images = [System.Collections.ArrayList]@()
 
 Write-Host "Scanning source repositories for images."
-foreach ($repo in $Repos) {
-  $Tags = az acr repository show-tags -n $SourceRegistryName --repository $repo | ConvertFrom-Json
-  foreach ($tag in $Tags) {
-    $images += "${repo}:${tag}"
+foreach ($Repo in $Repos) {
+  $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo | ConvertFrom-Json
+  foreach ($Tag in $Tags) {
+    $Images += "${Repo}:${Tag}"
   }
 }
 
@@ -66,7 +66,7 @@ az account set --subscription $TargetSubscriptionName
 
 Write-Host "Importing images to target registry"
 
-foreach ($image in $images) {
-  Write-Host "Importing Image $image"
-  az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$image" -u "00000000-0000-0000-0000-000000000000" -p $token.accessToken
+foreach ($Image in $Images) {
+  Write-Host "Importing Image $Image"
+  az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$Image" -u "00000000-0000-0000-0000-000000000000" -p $Token.accessToken
 }
