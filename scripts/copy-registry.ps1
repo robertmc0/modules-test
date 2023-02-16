@@ -2,7 +2,7 @@
 <#
   .SYNOPSIS
     Script used to copy bicep modules from a container registry to another registry in a different tenant. The script uses AD Authentication to access
-    the source registry.
+    the source and target registry.
 
   .DESCRIPTION
     This script does the following:
