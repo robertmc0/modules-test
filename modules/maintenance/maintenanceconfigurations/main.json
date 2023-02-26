@@ -1,0 +1,184 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.14.85.62628",
+      "templateHash": "16779936773613897830"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Required. Maintenance Configuration Name."
+      }
+    },
+    "linuxClassificationsToInclude": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "Critical",
+        "Security",
+        "Other"
+      ],
+      "metadata": {
+        "description": "Optional. Choose classification of patches to include in Linux patching."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Optional. Location for all Resources."
+      }
+    },
+    "lock": {
+      "type": "string",
+      "defaultValue": "",
+      "allowedValues": [
+        "",
+        "CanNotDelete",
+        "ReadOnly"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      }
+    },
+    "maintenanceScope": {
+      "type": "string",
+      "defaultValue": "InGuestPatch",
+      "allowedValues": [
+        "Host",
+        "OSImage",
+        "Extension",
+        "InGuestPatch",
+        "SQLDB",
+        "SQLManagedInstance"
+      ],
+      "metadata": {
+        "description": "Optional. Gets or sets maintenanceScope of the configuration."
+      }
+    },
+    "maintenanceWindow": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.maintenance/maintenanceconfigurations?pivots=deployment-language-bicep#maintenancewindow",
+        "example": {
+          "duration": "string",
+          "expirationDateTime": "string",
+          "recurEvery": "string",
+          "startDateTime": "string",
+          "timeZone": "string"
+        },
+        "description": "Optional. Definition of a MaintenanceWindow."
+      }
+    },
+    "rebootSetting": {
+      "type": "string",
+      "defaultValue": "IfRequired",
+      "allowedValues": [
+        "Always",
+        "IfRequired",
+        "Never"
+      ],
+      "metadata": {
+        "description": "Optional. Sets the reboot setting for the patches."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. Gets or sets tags of the resource."
+      }
+    },
+    "visibility": {
+      "type": "string",
+      "defaultValue": "Custom",
+      "allowedValues": [
+        "",
+        "Custom",
+        "Public"
+      ],
+      "metadata": {
+        "description": "Optional. Gets or sets the visibility of the configuration. The default value is 'Custom'."
+      }
+    },
+    "windowsClassificationsToInclude": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "Critical",
+        "Security",
+        "UpdateRollup",
+        "FeaturePack",
+        "ServicePack",
+        "Definition",
+        "Tools",
+        "Updates"
+      ],
+      "metadata": {
+        "description": "Optional. Choose classification of patches to include in Windows patching."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Maintenance/maintenanceConfigurations",
+      "apiVersion": "2022-11-01-preview",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "extensionProperties": {
+          "inGuestPatchMode": "User"
+        },
+        "maintenanceScope": "[parameters('maintenanceScope')]",
+        "maintenanceWindow": "[parameters('maintenanceWindow')]",
+        "visibility": "[parameters('visibility')]",
+        "installPatches": {
+          "rebootSetting": "[parameters('rebootSetting')]",
+          "windowsParameters": {
+            "classificationsToInclude": "[parameters('windowsClassificationsToInclude')]"
+          },
+          "linuxParameters": {
+            "classificationsToInclude": "[parameters('linuxClassificationsToInclude')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": "[not(empty(parameters('lock')))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Maintenance/maintenanceConfigurations/{0}', parameters('name'))]",
+      "name": "[format('{0}-{1}-lock', parameters('name'), parameters('lock'))]",
+      "properties": {
+        "level": "[parameters('lock')]",
+        "notes": "[if(equals(parameters('lock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the Maintenance Configuration."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the Maintenance Configuration."
+      }
+    }
+  }
+}
