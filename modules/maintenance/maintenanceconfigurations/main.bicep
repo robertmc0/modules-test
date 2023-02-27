@@ -16,7 +16,7 @@ param inGuestPatchMode string = 'User'
 ])
 param linuxClassificationsToInclude array = []
 
-@description('Optional. Location for all Resources.')
+@description('Location for all Resources.')
 param location string
 
 @description('Optional. Gets or sets maintenanceScope of the configuration.')

@@ -16,7 +16,7 @@ This module performs the following:
 | `name`                            | `string` | Yes      | Maintenance Configuration Name.                                                            |
 | `inGuestPatchMode`                | `string` | No       | Optional. Specifies the mode of in-guest patching to IaaS virtual machine.                 |
 | `linuxClassificationsToInclude`   | `array`  | No       | Optional. Choose classification of patches to include in Linux patching.                   |
-| `location`                        | `string` | Yes      | Optional. Location for all Resources.                                                      |
+| `location`                        | `string` | Yes      | Location for all Resources.                                                                |
 | `maintenanceScope`                | `string` | No       | Optional. Gets or sets maintenanceScope of the configuration.                              |
 | `maintenanceWindow`               | `object` | No       | Optional. Definition of a MaintenanceWindow.                                               |
 | `rebootSetting`                   | `string` | No       | Optional. Sets the reboot setting for the patches.                                         |

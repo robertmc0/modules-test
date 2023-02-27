@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.85.62628",
-      "templateHash": "809426999262764529"
+      "templateHash": "3885790349594700739"
     }
   },
   "parameters": {
@@ -41,7 +41,7 @@
     "location": {
       "type": "string",
       "metadata": {
-        "description": "Optional. Location for all Resources."
+        "description": "Location for all Resources."
       }
     },
     "maintenanceScope": {
