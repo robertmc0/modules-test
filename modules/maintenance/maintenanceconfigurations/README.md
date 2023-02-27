@@ -13,14 +13,15 @@ This module performs the following:
 
 | Name                              | Type     | Required | Description                                                                                |
 | :-------------------------------- | :------: | :------: | :----------------------------------------------------------------------------------------- |
-| `name`                            | `string` | Yes      | Required. Maintenance Configuration Name.                                                  |
+| `name`                            | `string` | Yes      | Maintenance Configuration Name.                                                            |
+| `inGuestPatchMode`                | `string` | No       | Optional. Specifies the mode of in-guest patching to IaaS virtual machine.                 |
 | `linuxClassificationsToInclude`   | `array`  | No       | Optional. Choose classification of patches to include in Linux patching.                   |
-| `location`                        | `string` | No       | Optional. Location for all Resources.                                                      |
-| `lock`                            | `string` | No       | Optional. Specify the type of lock.                                                        |
+| `location`                        | `string` | Yes      | Optional. Location for all Resources.                                                      |
 | `maintenanceScope`                | `string` | No       | Optional. Gets or sets maintenanceScope of the configuration.                              |
 | `maintenanceWindow`               | `object` | No       | Optional. Definition of a MaintenanceWindow.                                               |
 | `rebootSetting`                   | `string` | No       | Optional. Sets the reboot setting for the patches.                                         |
-| `tags`                            | `object` | No       | Optional. Gets or sets tags of the resource.                                               |
+| `resourceLock`                    | `string` | No       | Optional. Specify the type of resource lock.                                               |
+| `tags`                            | `object` | No       | Optional. Resource tags.                                                                   |
 | `visibility`                      | `string` | No       | Optional. Gets or sets the visibility of the configuration. The default value is 'Custom'. |
 | `windowsClassificationsToInclude` | `array`  | No       | Optional. Choose classification of patches to include in Windows patching.                 |
 

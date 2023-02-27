@@ -1,5 +1,12 @@
-@description('Required. Maintenance Configuration Name.')
+@description('Maintenance Configuration Name.')
 param name string
+
+@description('Optional. Specifies the mode of in-guest patching to IaaS virtual machine.')
+@allowed([
+  'User'
+  'Platform'
+])
+param inGuestPatchMode string = 'User'
 
 @description('Optional. Choose classification of patches to include in Linux patching.')
 @allowed([
@@ -10,15 +17,7 @@ param name string
 param linuxClassificationsToInclude array = []
 
 @description('Optional. Location for all Resources.')
-param location string = resourceGroup().location
-
-@description('Optional. Specify the type of lock.')
-@allowed([
-  ''
-  'CanNotDelete'
-  'ReadOnly'
-])
-param lock string = ''
+param location string
 
 @description('Optional. Gets or sets maintenanceScope of the configuration.')
 @allowed([
@@ -52,12 +51,25 @@ param maintenanceWindow object = {}
 ])
 param rebootSetting string = 'IfRequired'
 
-@description('Optional. Gets or sets tags of the resource.')
+@description('Optional. Specify the type of resource lock.')
+@allowed([
+  'NotSpecified'
+  'ReadOnly'
+  'CanNotDelete'
+])
+param resourceLock string = 'NotSpecified'
+
+@description('Optional. Resource tags.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
 param tags object = {}
 
 @description('Optional. Gets or sets the visibility of the configuration. The default value is \'Custom\'.')
 @allowed([
-  ''
   'Custom'
   'Public'
 ])
@@ -76,13 +88,15 @@ param visibility string = 'Custom'
 ])
 param windowsClassificationsToInclude array = []
 
+var lockName = toLower('${maintenanceConfiguration.name}-${resourceLock}-lck')
+
 resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfigurations@2022-11-01-preview' = {
   name: name
   location: location
   tags: tags
   properties: {
     extensionProperties: {
-      inGuestPatchMode: 'User'
+      InGuestPatchMode: inGuestPatchMode
     }
     maintenanceScope: maintenanceScope
     maintenanceWindow: maintenanceWindow
@@ -99,13 +113,13 @@ resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfiguratio
   }
 }
 
-resource maintenanceConfiguration_lock 'Microsoft.Authorization/locks@2020-05-01' = if (!empty(lock)) {
-  name: '${maintenanceConfiguration.name}-${lock}-lock'
-  properties: {
-    level: any(lock)
-    notes: lock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
-  }
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
   scope: maintenanceConfiguration
+  name: lockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+  }
 }
 
 @description('The name of the Maintenance Configuration.')
