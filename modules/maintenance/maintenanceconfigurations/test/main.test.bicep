@@ -10,7 +10,7 @@ TEST EXECUTION
 module maintenanceConfigurationMinimum '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-min-maintenance-configuration'
   params: {
-    name: '${uniqueString(deployment().name, location)}-mcfg'
+    name: '${uniqueString(deployment().name, location)}-min-mcfg'
     location: location
     maintenanceWindow: {
       startDateTime: '2022-12-28 03:00'
