@@ -88,7 +88,7 @@ function ConnectToSourceRegistry {
     return $Token
   }
   catch {
-    throw "Failed to login to source containe registry $SourceRegistryName. Please ensure the correct credentials have been used. Error: $($_.Exception.Message)"
+    throw "Failed to login to source container registry $SourceRegistryName. Please ensure the correct credentials have been used. Error: $($_.Exception.Message)"
   }
 }
 
