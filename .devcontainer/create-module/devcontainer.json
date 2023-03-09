@@ -17,7 +17,8 @@
         "mhutchie.git-graph",
         "usernamehw.errorlens",
         "ms-azuretools.vscode-bicep",
-        "msazurermtools.azurerm-vscode-tools"
+        "msazurermtools.azurerm-vscode-tools",
+        "streetsidesoftware.code-spell-checker"
       ]
     }
   }
