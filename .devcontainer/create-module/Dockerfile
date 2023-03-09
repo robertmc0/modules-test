@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
+WORKDIR /home/
+
 RUN echo "===> Installing Azure CLI..."
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
