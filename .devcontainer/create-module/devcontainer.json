@@ -4,7 +4,8 @@
     "memory": "2gb"
   },
   "dockerFile": "Dockerfile",
-  "postAttachCommand": "dotnet tool install --global Azure.Bicep.RegistryModuleTool",
+  // "postAttachCommand": "dotnet tool install --global Azure.Bicep.RegistryModuleTool",
+  "updateContentCommand": "dotnet tool install --global Azure.Bicep.RegistryModuleTool",
   "customizations": {
     "vscode": {
       "extensions": [
