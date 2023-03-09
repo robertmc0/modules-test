@@ -18,3 +18,5 @@ RUN wget https://packages.microsoft.com/config/ubuntu/22.10/packages-microsoft-p
 
 RUN echo "===> Installing Bicep registry module..."
 RUN dotnet tool install --global Azure.Bicep.RegistryModuleTool
+
+RUN PATH=$PATH:/home/
