@@ -17,6 +17,3 @@ RUN wget https://packages.microsoft.com/config/ubuntu/22.10/packages-microsoft-p
     apt-get update && \
     apt-get install -y dotnet-sdk-7.0 && \
     dotnet --version
-
-# RUN echo "===> Installing Bicep registry module..."
-# RUN dotnet tool install --global Azure.Bicep.RegistryModuleTool
