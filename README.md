@@ -80,4 +80,6 @@ To contribute, please refer to [Contributing to Arinco Bicep modules](./CONTRIBU
 - Raise a pull request and code owners will be automatically assigned to review your pull request
 - Merge Code
 
+Want to contribute but can't install and configure all the required software on your local machine, check out [codespaces](https://github.com/arincoau/arinco-bicep-modules/wiki/Codespace)
+
 ![GitHub Flow](docs/media/github-flow-diagram.png)
