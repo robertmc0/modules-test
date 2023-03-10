@@ -1,7 +1,8 @@
 {
+  "name": "Create Module",
   "hostRequirements": {
     "cpus": 2,
-    "memory": "2gb"
+    "memory": "4gb"
   },
   "dockerFile": "Dockerfile",
   "updateContentCommand": "dotnet tool install --global Azure.Bicep.RegistryModuleTool",
