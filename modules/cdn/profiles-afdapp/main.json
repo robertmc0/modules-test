@@ -7,7 +7,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "1975868909839805757"
+      "templateHash": "4584392463822300819"
     }
   },
   "definitions": {
@@ -42,12 +42,10 @@
           "type": "object",
           "properties": {
             "sampleSize": {
-              "type": "int",
-              "nullable": true
+              "type": "int"
             },
             "successfulSamplesRequired": {
-              "type": "int",
-              "nullable": true
+              "type": "int"
             }
           },
           "nullable": true
@@ -247,6 +245,10 @@
         "httpsRedirect": {
           "type": "string",
           "nullable": true
+        },
+        "cacheConfiguration": {
+          "type": "object",
+          "nullable": true
         }
       }
     },
@@ -294,20 +296,10 @@
     }
   },
   "parameters": {
-    "frontDoorName": {
+    "profileName": {
       "type": "string",
       "metadata": {
-        "description": "The name of the Front Door endpoint to create. This must be globally unique."
-      }
-    },
-    "skuName": {
-      "type": "string",
-      "allowedValues": [
-        "Standard_AzureFrontDoor",
-        "Premium_AzureFrontDoor"
-      ],
-      "metadata": {
-        "description": "The name of the SKU to use when creating the Front Door profile."
+        "description": "The name of the existing Front Door Profile."
       }
     },
     "endpoints": {
@@ -371,164 +363,23 @@
       "items": {
         "$ref": "#/definitions/SecurityPolicy"
       },
-      "defaultValue": []
-    },
-    "systemAssignedIdentity": {
-      "type": "bool",
-      "defaultValue": false,
+      "defaultValue": [],
       "metadata": {
-        "description": "Optional. Enables system assigned managed identity on the resource."
-      }
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
-        "example": {
-          "tagKey": "string"
-        },
-        "description": "Optional. Resource tags."
-      }
-    },
-    "userAssignedIdentities": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "example": {
-          "/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi": {}
-        },
-        "description": "Optional. The ID(s) to assign to the resource."
-      }
-    },
-    "resourceLock": {
-      "type": "string",
-      "defaultValue": "NotSpecified",
-      "allowedValues": [
-        "NotSpecified",
-        "ReadOnly",
-        "CanNotDelete"
-      ],
-      "metadata": {
-        "description": "Optional. Specify the type of resource lock."
-      }
-    },
-    "enableDiagnostics": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Optional. Enable diagnostic logging."
-      }
-    },
-    "diagnosticLogCategoryGroupsToEnable": {
-      "type": "array",
-      "defaultValue": [
-        "allLogs"
-      ],
-      "allowedValues": [
-        "allLogs"
-      ],
-      "metadata": {
-        "description": "Optional. The name of log category groups that will be streamed."
-      }
-    },
-    "diagnosticMetricsToEnable": {
-      "type": "array",
-      "defaultValue": [
-        "AllMetrics"
-      ],
-      "allowedValues": [
-        "AllMetrics"
-      ],
-      "metadata": {
-        "description": "Optional. The name of metrics that will be streamed."
-      }
-    },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
-    "diagnosticStorageAccountId": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
-      }
-    },
-    "diagnosticLogAnalyticsWorkspaceId": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
-      }
-    },
-    "diagnosticEventHubAuthorizationRuleId": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
-      }
-    },
-    "diagnosticEventHubName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+        "description": "Security Policies to deploy to Frontdoor"
       }
     }
   },
   "variables": {
-    "copy": [
-      {
-        "name": "diagnosticsLogs",
-        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
-        "input": {
-          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
-        }
-      },
-      {
-        "name": "diagnosticsMetrics",
-        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
-        "input": {
-          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
-          "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
-        }
-      }
-    ],
-    "lockName": "[toLower(format('{0}-{1}-lck', parameters('frontDoorName'), parameters('resourceLock')))]",
-    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('frontDoorName')))]",
-    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
-    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
-    "endpointsWithPolicy": "[map(filter(parameters('endpoints'), lambda('e', not(empty(tryGet(lambdaVariables('e'), 'policy'))))), lambda('e', createObject('policy', lambdaVariables('e').policy, 'id', resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('frontDoorName'), lambdaVariables('e').name))))]",
-    "customDomainsWithPolicy": "[map(filter(parameters('customDomains'), lambda('c', not(empty(tryGet(lambdaVariables('c'), 'policy'))))), lambda('c', createObject('policy', lambdaVariables('c').policy, 'id', resourceId('Microsoft.Cdn/profiles/customDomains', parameters('frontDoorName'), lambdaVariables('c').customDomainName))))]",
+    "endpointsWithPolicy": "[map(filter(parameters('endpoints'), lambda('e', not(empty(tryGet(lambdaVariables('e'), 'policy'))))), lambda('e', createObject('policy', lambdaVariables('e').policy, 'id', resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('profileName'), lambdaVariables('e').name))))]",
+    "customDomainsWithPolicy": "[map(filter(parameters('customDomains'), lambda('c', not(empty(tryGet(lambdaVariables('c'), 'policy'))))), lambda('c', createObject('policy', lambdaVariables('c').policy, 'id', resourceId('Microsoft.Cdn/profiles/customDomains', parameters('profileName'), lambdaVariables('c').customDomainName))))]",
     "domainsWithPolicy": "[union(variables('endpointsWithPolicy'), variables('customDomainsWithPolicy'))]"
   },
   "resources": {
     "profile": {
+      "existing": true,
       "type": "Microsoft.Cdn/profiles",
       "apiVersion": "2022-11-01-preview",
-      "name": "[parameters('frontDoorName')]",
-      "location": "global",
-      "sku": {
-        "name": "[parameters('skuName')]"
-      },
-      "identity": "[variables('identity')]",
-      "tags": "[parameters('tags')]"
+      "name": "[parameters('profileName')]"
     },
     "endpoint": {
       "copy": {
@@ -537,14 +388,11 @@
       },
       "type": "Microsoft.Cdn/profiles/afdEndpoints",
       "apiVersion": "2021-06-01",
-      "name": "[format('{0}/{1}', parameters('frontDoorName'), parameters('endpoints')[copyIndex()].name)]",
+      "name": "[format('{0}/{1}', parameters('profileName'), parameters('endpoints')[copyIndex()].name)]",
       "location": "global",
       "properties": {
         "enabledState": "[if(contains(parameters('endpoints')[copyIndex()], 'enabledState'), parameters('endpoints')[copyIndex()].enabledState, 'Enabled')]"
-      },
-      "dependsOn": [
-        "profile"
-      ]
+      }
     },
     "originGroup": {
       "copy": {
@@ -553,7 +401,7 @@
       },
       "type": "Microsoft.Cdn/profiles/originGroups",
       "apiVersion": "2021-06-01",
-      "name": "[format('{0}/{1}', parameters('frontDoorName'), parameters('originGroups')[copyIndex()].name)]",
+      "name": "[format('{0}/{1}', parameters('profileName'), parameters('originGroups')[copyIndex()].name)]",
       "properties": {
         "loadBalancingSettings": {
           "sampleSize": 4,
@@ -565,10 +413,7 @@
           "probeProtocol": "[coalesce(tryGet(tryGet(parameters('originGroups')[copyIndex()], 'healthProbeSettings'), 'probeProtocol'), 'Https')]",
           "probeIntervalInSeconds": "[tryGet(tryGet(parameters('originGroups')[copyIndex()], 'healthProbeSettings'), 'probeIntervalInSeconds')]"
         }
-      },
-      "dependsOn": [
-        "profile"
-      ]
+      }
     },
     "origin": {
       "copy": {
@@ -577,7 +422,7 @@
       },
       "type": "Microsoft.Cdn/profiles/originGroups/origins",
       "apiVersion": "2021-06-01",
-      "name": "[format('{0}/{1}/{2}', parameters('frontDoorName'), parameters('origins')[copyIndex()].originGroupName, parameters('origins')[copyIndex()].originName)]",
+      "name": "[format('{0}/{1}/{2}', parameters('profileName'), parameters('origins')[copyIndex()].originGroupName, parameters('origins')[copyIndex()].originName)]",
       "properties": {
         "hostName": "[parameters('origins')[copyIndex()].hostName]",
         "httpPort": "[if(contains(parameters('origins')[copyIndex()], 'httpPort'), parameters('origins')[copyIndex()].httpPort, 80)]",
@@ -588,8 +433,7 @@
         "weight": "[if(contains(parameters('origins')[copyIndex()], 'weight'), parameters('origins')[copyIndex()].weight, 100)]"
       },
       "dependsOn": [
-        "originGroup",
-        "profile"
+        "originGroup"
       ]
     },
     "secret": {
@@ -599,7 +443,7 @@
       },
       "type": "Microsoft.Cdn/profiles/secrets",
       "apiVersion": "2022-11-01-preview",
-      "name": "[format('{0}/{1}', parameters('frontDoorName'), parameters('secrets')[copyIndex()].secretName)]",
+      "name": "[format('{0}/{1}', parameters('profileName'), parameters('secrets')[copyIndex()].secretName)]",
       "properties": {
         "parameters": {
           "type": "CustomerCertificate",
@@ -608,10 +452,7 @@
             "id": "[parameters('secrets')[copyIndex()].parameters.certificateSecretId]"
           }
         }
-      },
-      "dependsOn": [
-        "profile"
-      ]
+      }
     },
     "customDomain": {
       "copy": {
@@ -620,7 +461,7 @@
       },
       "type": "Microsoft.Cdn/profiles/customDomains",
       "apiVersion": "2022-11-01-preview",
-      "name": "[format('{0}/{1}', parameters('frontDoorName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-'))]",
+      "name": "[format('{0}/{1}', parameters('profileName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-'))]",
       "properties": {
         "hostName": "[parameters('customDomains')[copyIndex()].hostName]",
         "azureDnsZone": {
@@ -629,11 +470,10 @@
         "tlsSettings": {
           "certificateType": "[parameters('customDomains')[copyIndex()].tlsSettings.certificateType]",
           "minimumTlsVersion": "TLS12",
-          "secret": "[if(equals(parameters('customDomains')[copyIndex()].tlsSettings.certificateType, 'CustomerCertificate'), createObject('id', resourceId('Microsoft.Cdn/profiles/secrets', parameters('frontDoorName'), coalesce(parameters('customDomains')[copyIndex()].tlsSettings.secretName, 'undefined'))), null())]"
+          "secret": "[if(equals(parameters('customDomains')[copyIndex()].tlsSettings.certificateType, 'CustomerCertificate'), createObject('id', resourceId('Microsoft.Cdn/profiles/secrets', parameters('profileName'), coalesce(parameters('customDomains')[copyIndex()].tlsSettings.secretName, 'undefined'))), null())]"
         }
       },
       "dependsOn": [
-        "profile",
         "secret"
       ]
     },
@@ -644,14 +484,14 @@
       },
       "type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
       "apiVersion": "2021-06-01",
-      "name": "[format('{0}/{1}/{2}', parameters('frontDoorName'), parameters('routes')[copyIndex()].endpointName, parameters('routes')[copyIndex()].routeName)]",
+      "name": "[format('{0}/{1}/{2}', parameters('profileName'), parameters('routes')[copyIndex()].endpointName, parameters('routes')[copyIndex()].routeName)]",
       "properties": {
         "copy": [
           {
             "name": "customDomains",
             "count": "[length(coalesce(parameters('routes')[copyIndex()].customDomains, createArray()))]",
             "input": {
-              "id": "[resourceId('Microsoft.Cdn/profiles/customdomains', parameters('frontDoorName'), replace(coalesce(parameters('routes')[copyIndex()].customDomains, createArray())[copyIndex('customDomains')].name, '.', '-'))]"
+              "id": "[resourceId('Microsoft.Cdn/profiles/customdomains', parameters('profileName'), replace(coalesce(parameters('routes')[copyIndex()].customDomains, createArray())[copyIndex('customDomains')].name, '.', '-'))]"
             }
           },
           {
@@ -663,18 +503,18 @@
           }
         ],
         "originGroup": {
-          "id": "[resourceId('Microsoft.Cdn/profiles/origingroups', parameters('frontDoorName'), parameters('routes')[copyIndex()].originGroupName)]"
+          "id": "[resourceId('Microsoft.Cdn/profiles/origingroups', parameters('profileName'), parameters('routes')[copyIndex()].originGroupName)]"
         },
         "supportedProtocols": "[if(contains(parameters('routes')[copyIndex()], 'supportedProtocols'), parameters('routes')[copyIndex()].supportedProtocols, createArray('Https'))]",
         "patternsToMatch": "[if(contains(parameters('routes')[copyIndex()], 'patternsToMatch'), parameters('routes')[copyIndex()].patternsToMatch, createArray())]",
         "forwardingProtocol": "[if(contains(parameters('routes')[copyIndex()], 'forwardingProtocol'), parameters('routes')[copyIndex()].forwardingProtocol, 'HttpsOnly')]",
         "linkToDefaultDomain": "[if(contains(parameters('routes')[copyIndex()], 'linkToDefaultDomain'), parameters('routes')[copyIndex()].linkToDefaultDomain, 'Enabled')]",
-        "httpsRedirect": "[if(contains(parameters('routes')[copyIndex()], 'httpsRedirect'), parameters('routes')[copyIndex()].httpsRedirect, 'Enabled')]"
+        "httpsRedirect": "[if(contains(parameters('routes')[copyIndex()], 'httpsRedirect'), parameters('routes')[copyIndex()].httpsRedirect, 'Enabled')]",
+        "cacheConfiguration": "[tryGet(parameters('routes')[copyIndex()], 'cacheConfiguration')]"
       },
       "dependsOn": [
         "customDomain",
-        "origin",
-        "profile"
+        "origin"
       ]
     },
     "policy": {
@@ -684,7 +524,7 @@
       },
       "type": "Microsoft.Cdn/profiles/securityPolicies",
       "apiVersion": "2022-11-01-preview",
-      "name": "[format('{0}/{1}', parameters('frontDoorName'), parameters('securityPolicies')[copyIndex()].name)]",
+      "name": "[format('{0}/{1}', parameters('profileName'), parameters('securityPolicies')[copyIndex()].name)]",
       "properties": {
         "parameters": {
           "type": "WebApplicationFirewall",
@@ -709,64 +549,17 @@
       },
       "dependsOn": [
         "customDomain",
-        "endpoint",
-        "profile"
-      ]
-    },
-    "lock": {
-      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
-      "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2020-05-01",
-      "scope": "[format('Microsoft.Cdn/profiles/{0}', parameters('frontDoorName'))]",
-      "name": "[variables('lockName')]",
-      "properties": {
-        "level": "[parameters('resourceLock')]",
-        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
-      },
-      "dependsOn": [
-        "profile"
-      ]
-    },
-    "diagnostics": {
-      "condition": "[parameters('enableDiagnostics')]",
-      "type": "Microsoft.Insights/diagnosticSettings",
-      "apiVersion": "2021-05-01-preview",
-      "scope": "[format('Microsoft.Cdn/profiles/{0}', parameters('frontDoorName'))]",
-      "name": "[variables('diagnosticsName')]",
-      "properties": {
-        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
-        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
-        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
-        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
-        "logs": "[variables('diagnosticsLogs')]",
-        "metrics": "[variables('diagnosticsMetrics')]"
-      },
-      "dependsOn": [
-        "profile"
+        "endpoint"
       ]
     }
   },
   "outputs": {
-    "name": {
-      "type": "string",
-      "value": "[parameters('frontDoorName')]",
-      "metadata": {
-        "description": "The name of the deployed Azure Frontdoor Profile."
-      }
-    },
-    "resourceId": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Cdn/profiles', parameters('frontDoorName'))]",
-      "metadata": {
-        "description": "The resource Id of the deployed Azure Frontdoor Profile."
-      }
-    },
     "endpoints": {
       "type": "array",
       "copy": {
         "count": "[length(parameters('endpoints'))]",
         "input": {
-          "id": "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('frontDoorName'), parameters('endpoints')[copyIndex()].name)]",
+          "id": "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('profileName'), parameters('endpoints')[copyIndex()].name)]",
           "name": "[parameters('endpoints')[copyIndex()]]"
         }
       }
@@ -776,7 +569,7 @@
       "copy": {
         "count": "[length(parameters('customDomains'))]",
         "input": {
-          "id": "[resourceId('Microsoft.Cdn/profiles/customDomains', parameters('frontDoorName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-'))]",
+          "id": "[resourceId('Microsoft.Cdn/profiles/customDomains', parameters('profileName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-'))]",
           "name": "[parameters('customDomains')[copyIndex()]]"
         }
       }
