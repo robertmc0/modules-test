@@ -1,13 +1,11 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "languageVersion": "1.10-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
-    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "13440880804010189555"
+      "templateHash": "17947321586286308958"
     }
   },
   "parameters": {
@@ -176,8 +174,8 @@
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
-  "resources": {
-    "profile": {
+  "resources": [
+    {
       "type": "Microsoft.Cdn/profiles",
       "apiVersion": "2022-11-01-preview",
       "name": "[parameters('name')]",
@@ -191,7 +189,7 @@
         "originResponseTimeoutSeconds": "[parameters('originResponseTimeoutSeconds')]"
       }
     },
-    "lock": {
+    {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2020-05-01",
@@ -202,10 +200,10 @@
         "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
       },
       "dependsOn": [
-        "profile"
+        "[resourceId('Microsoft.Cdn/profiles', parameters('name'))]"
       ]
     },
-    "diagnostics": {
+    {
       "condition": "[parameters('enableDiagnostics')]",
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
@@ -220,10 +218,10 @@
         "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
-        "profile"
+        "[resourceId('Microsoft.Cdn/profiles', parameters('name'))]"
       ]
     }
-  },
+  ],
   "outputs": {
     "name": {
       "type": "string",
