@@ -30,7 +30,7 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
-var uniqueName = uniqueString(deployment().name, location)
+var uniqueName = uniqueString(deployment().name, 'global')
 
 module frontDoorMinimum '../main.bicep' = {
   name: '${uniqueName}-min-module'
@@ -45,6 +45,7 @@ module frontDoorStd '../main.bicep' = {
   params: {
     name: '${uniqueName}-std-afd'
     skuName: 'Standard_AzureFrontDoor'
+    originResponseTimeoutSeconds: 60
     resourceLock: 'CanNotDelete'
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
