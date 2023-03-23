@@ -246,3 +246,6 @@ module frontDoorEndpointsStd '../main.bicep' = {
     ]
   }
 }
+
+output endpoints array = frontDoorEndpointsStd.outputs.endpoints
+output customDomainValidations array = frontDoorEndpointsStd.outputs.customDomainValidations
