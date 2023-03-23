@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "605849213700660594"
+      "templateHash": "3075436289616612202"
     }
   },
   "parameters": {
@@ -50,14 +50,14 @@
       "type": "string",
       "defaultValue": "0",
       "metadata": {
-        "description": "Minimum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores. Requires string to handle decimals."
+        "description": "Optional. Minimum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores. Requires string to handle decimals."
       }
     },
     "databaseMaxCapacity": {
       "type": "int",
       "defaultValue": "[parameters('skuCapacity')]",
       "metadata": {
-        "description": "Maximum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores."
+        "description": "Optional. Maximum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores."
       }
     },
     "maxPoolSize": {
