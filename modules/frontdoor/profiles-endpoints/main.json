@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "8356097656731312909"
+      "templateHash": "10436028167432419922"
     }
   },
   "parameters": {
@@ -247,7 +247,7 @@
         "hostName": "[parameters('origins')[copyIndex()].hostName]",
         "httpPort": "[if(contains(parameters('origins')[copyIndex()], 'httpPort'), parameters('origins')[copyIndex()].httpPort, 80)]",
         "httpsPort": "[if(contains(parameters('origins')[copyIndex()], 'httpsPort'), parameters('origins')[copyIndex()].httpsPort, 443)]",
-        "originHostHeader": "[if(contains(parameters('origins')[copyIndex()], 'originHostHeader'), parameters('origins')[copyIndex()].originHostHeader, null())]",
+        "originHostHeader": "[if(contains(parameters('origins')[copyIndex()], 'originHostHeader'), parameters('origins')[copyIndex()].originHostHeader, parameters('origins')[copyIndex()].hostName)]",
         "enforceCertificateNameCheck": "[if(contains(parameters('origins')[copyIndex()], 'enforceCertificateNameCheck'), parameters('origins')[copyIndex()].enforceCertificateNameCheck, true())]",
         "priority": "[if(contains(parameters('origins')[copyIndex()], 'priority'), parameters('origins')[copyIndex()].priority, 1)]",
         "weight": "[if(contains(parameters('origins')[copyIndex()], 'weight'), parameters('origins')[copyIndex()].weight, 1000)]",
