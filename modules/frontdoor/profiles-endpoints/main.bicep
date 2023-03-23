@@ -215,7 +215,7 @@ resource origin 'Microsoft.Cdn/profiles/originGroups/origins@2022-11-01-preview'
     hostName: o.hostName
     httpPort: contains(o, 'httpPort') ? o.httpPort : 80
     httpsPort: contains(o, 'httpsPort') ? o.httpsPort : 443
-    originHostHeader: contains(o, 'originHostHeader') ? o.originHostHeader : null
+    originHostHeader: contains(o, 'originHostHeader') ? o.originHostHeader : o.hostName
     enforceCertificateNameCheck: contains(o, 'enforceCertificateNameCheck') ? o.enforceCertificateNameCheck : true
     priority: contains(o, 'priority') ? o.priority : 1
     weight: contains(o, 'weight') ? o.weight : 1000
