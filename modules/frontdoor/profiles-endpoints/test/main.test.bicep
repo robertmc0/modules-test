@@ -1,7 +1,7 @@
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-var environmentHostingDomain = 'deploy.arinco.local'
+var environmentHostingDomain = 'deploy.arinco.com.au'
 
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: environmentHostingDomain
