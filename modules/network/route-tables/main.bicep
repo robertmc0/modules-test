@@ -46,7 +46,7 @@ resource routeTable 'Microsoft.Network/routeTables@2022-01-01' = {
       name: route.name
       properties: {
         addressPrefix: route.addressPrefix
-        hasBgpOverride: contains(route, 'hasBgpOverride') ? route.hasBgpOverride : null
+        hasBgpOverride: contains(route, 'hasBgpOverride') ? route.hasBgpOverride : false
         nextHopIpAddress: contains(route, 'nextHopIpAddress') ? route.nextHopIpAddress : null
         nextHopType: route.nextHopType
       }
@@ -68,3 +68,6 @@ output name string = routeTable.name
 
 @description('The resource ID of the deployed route table.')
 output resourceId string = routeTable.id
+
+@description('Whether BGP route propogation is disabled. True means disable.')
+output disableBgpRoutePropagation bool = disableBgpRoutePropagation
