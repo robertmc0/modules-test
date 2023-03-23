@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "5187601790233857689"
+      "templateHash": "8077015057801859506"
     }
   },
   "parameters": {
@@ -54,7 +54,7 @@
           "enabledState": "The state of the policy. Acceptable values are \"Enabled\" or \"Disabled\".",
           "mode": "The mode of the policy. Acceptable values are \"Detection\" or \"Prevention\"."
         },
-        "description": "Optional. Firewall policy settings"
+        "description": "Optional. Firewall policy settings."
       }
     },
     "customRules": {

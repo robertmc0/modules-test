@@ -18,7 +18,7 @@ param skuName string
 })
 param tags object = {}
 
-@description('Optional. Firewall policy settings')
+@description('Optional. Firewall policy settings.')
 @metadata({
   doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/frontdoorwebapplicationfirewallpolicies?pivots=deployment-language-bicep#policysettings'
   example: {
