@@ -1,0 +1,43 @@
+# Front Door Profile Endpoints Module
+
+This module deploys front door profile endpoints and associated resources to an existing front door profile.
+
+## Description
+
+This module allows you to create AFD endpoints for an existing frontdoor profile, along with assoicated resources. It does the following:-
+
+- Creates Front Door endpoints.
+- Creates Front Door Custom Domains and links them to DNS Zones.
+- Creates Front Door Origin Groups and origins.
+- Creates Front Door RuleSets.
+- Creates Front Door Secrets and links to secrets stored in key vault.
+- Creates Front Door Routes linking to provided custom domains, endpoints and rulesets.
+- Creates Front Door Security Policies linking to existing Front Door Web Application Firewall policy.
+
+## Parameters
+
+| Name               | Type     | Required | Description                                                                                               |
+| :----------------- | :------: | :------: | :-------------------------------------------------------------------------------------------------------- |
+| `profileName`      | `string` | Yes      | The name of the existing Front Door/CDN Profile.                                                          |
+| `endpoints`        | `array`  | Yes      | Endpoints to deploy to Frontdoor.                                                                         |
+| `originGroups`     | `array`  | Yes      | Origin Groups to deploy to Frontdoor.                                                                     |
+| `origins`          | `array`  | Yes      | Origins to deploy to Frontdoor.                                                                           |
+| `secrets`          | `array`  | No       | Optional. Secrets to deploy to Frontdoor. Required if customer certificates are used to secure endpoints. |
+| `customDomains`    | `array`  | No       | Optional. Custom domains to deploy to Frontdoor.                                                          |
+| `routes`           | `array`  | Yes      | Routes to deploy to Frontdoor.                                                                            |
+| `ruleSets`         | `array`  | No       | RuleSets to deploy to Frontdoor.                                                                          |
+| `securityPolicies` | `array`  | No       | Security Policies to deploy to Frontdoor.                                                                 |
+
+## Outputs
+
+| Name                    | Type  | Description                                                            |
+| :---------------------- | :---: | :--------------------------------------------------------------------- |
+| endpoints               | array | The endpoints of the deployed Azure Frontdoor Profile.                 |
+| customDomains           | array | The custom domains of the deployed Azure Frontdoor Profile.            |
+| customDomainValidations | array | The custom domain validations of the deployed Azure Frontdoor Profile. |
+| securityPolicies        | array | The security policies of the deployed Azure Frontdoor Profile.         |
+| ruleSets                | array | The ruleSets of the deployed Azure Frontdoor Profile.                  |
+
+## Examples
+
+Please see the [Bicep Tests](test/main.test.bicep) file for examples.
