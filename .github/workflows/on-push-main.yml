@@ -29,8 +29,8 @@ jobs:
         env:
           PublicRelease: true
         run: |
-          echo "name=base_version::$(nbgv get-version ${{ github.event.before }} --format json | jq '.SemVer2')" >> $GITHUB_OUTPUT
-          echo "name=head_version::$(nbgv get-version ${{ github.event.after }} --format json | jq '.SemVer2')" >> $GITHUB_OUTPUT
+          echo "base_version=$(nbgv get-version ${{ github.event.before }} --format json | jq '.SemVer2')" >> $GITHUB_OUTPUT
+          echo "head_version=$(nbgv get-version ${{ github.event.after }} --format json | jq '.SemVer2')" >> $GITHUB_OUTPUT
         working-directory: ${{ needs.get-module-to-publish.outputs.module_dir }}
 
       - name: Create tag

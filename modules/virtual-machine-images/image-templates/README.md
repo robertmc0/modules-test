@@ -29,6 +29,7 @@ This module deploys Microsoft.VirtualMachineImages imageTemplates
 | `windowsUpdateConfiguration` | `array`  | No       | Optional. Windows update configuration for image template.                                       |
 | `imageRecommendedSettings`   | `object` | No       | Optional. Recommended compute and memory settings for image.                                     |
 | `osDiskSizeGB`               | `int`    | No       | Optional. OS disk size in gigabytes.                                                             |
+| `buildTimeoutInMinutes`      | `int`    | No       | Optional. Build timeout in minutes.                                                              |
 | `resourcelock`               | `string` | No       | Optional. Specify the type of resource lock.                                                     |
 
 ## Outputs

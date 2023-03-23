@@ -23,10 +23,11 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                                  |
-| :--------- | :----: | :------------------------------------------- |
-| name       | string | The name of the deployed route table.        |
-| resourceId | string | The resource ID of the deployed route table. |
+| Name                       | Type   | Description                                                    |
+| :------------------------- | :----: | :------------------------------------------------------------- |
+| name                       | string | The name of the deployed route table.                          |
+| resourceId                 | string | The resource ID of the deployed route table.                   |
+| disableBgpRoutePropagation | bool   | Whether BGP route propogation is disabled. True means disable. |
 
 ## Examples
 
