@@ -65,6 +65,18 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
   }
 }
 
+module elasticPoolMinimum '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-min-elastic-pool'
+  params: {
+    location: location
+    sqlServerName: sqlServer.name
+    name: 'example-min-elastic-pool'
+    skuType: 'StandardPool'
+    skuCapacity: 50
+    maxPoolSize: 53687091200 // 50 GIG
+  }
+}
+
 module elasticPool '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-elastic-pool'
   params: {

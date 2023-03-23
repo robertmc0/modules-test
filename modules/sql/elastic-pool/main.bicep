@@ -20,10 +20,10 @@ param skuType string
 @description('Capacity of Elastic Pool.  If DTU model, define amount of DTU. If vCore model, define number of vCores.')
 param skuCapacity int
 
-@description('Minimum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores. Requires string to handle decimals.')
+@description('Optional. Minimum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores. Requires string to handle decimals.')
 param databaseMinCapacity string = '0'
 
-@description('Maximum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores.')
+@description('Optional. Maximum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores.')
 param databaseMaxCapacity int = skuCapacity
 
 @description('Maximum size in bytes for the Elastic Pool.')
@@ -134,6 +134,7 @@ resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' existing = {
 }
 
 resource elasticPool 'Microsoft.Sql/servers/elasticPools@2022-05-01-preview' = {
+  parent: sqlServer
   name: name
   location: location
   tags: tags
@@ -143,7 +144,6 @@ resource elasticPool 'Microsoft.Sql/servers/elasticPools@2022-05-01-preview' = {
     family: skuMap[skuType].family
     capacity: skuCapacity
   }
-  parent: sqlServer
   properties: {
     licenseType: licenseType
     maxSizeBytes: maxPoolSize
