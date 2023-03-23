@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "10014166748674596194"
+      "version": "0.15.31.15270",
+      "templateHash": "8981707045070409993"
     }
   },
   "parameters": {
@@ -235,7 +235,7 @@
       "condition": "[parameters('enableDiagnostics')]",
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
-      "scope": "[format('Microsoft.Network/virtualNetworkGateways/{0}', parameters('name'))]",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', parameters('publicIpAddressName'))]",
       "name": "[variables('publicIpDiagnosticsName')]",
       "properties": {
         "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
@@ -246,8 +246,7 @@
         "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('name'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
       ]
     },
     {
