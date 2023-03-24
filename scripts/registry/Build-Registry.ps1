@@ -80,57 +80,6 @@ function Build-Registry {
   ImportImagesToTargetRegistry -SourceRegistryToken $SourceRegistryToken -SourceRegistryName $SourceRegistryName -Images $Images -TargetTenantId $TargetTenantId -TargetSubscriptionName $TargetSubscriptionName -TargetRegistryName $TargetRegistryName
 }
 
-function CreateRegistry() {
-  param (
-    [Parameter(Mandatory = $true)]
-    [string] $AzureRegion,
-    [Parameter(Mandatory = $true)]
-    [string] $TargetRegistryName,
-    [Parameter(Mandatory = $true)]
-    [string] $TargetTenantId,
-    [Parameter(Mandatory = $true)]
-    [string] $TargetSubscriptionName,
-    [Parameter(Mandatory = $true)]
-    [string] $TargetRegistryResourceGroupName,
-    [Parameter(Mandatory = $false)]
-    [string] $Tags
-  )
-  $ErrorActionPreference = "Stop"
-
-  $account = az account show | ConvertFrom-Json
-  if ($account.tenantId -ne $TargetTenantId) {
-    Read-Host -Prompt "Prepare to login to tenant ($TargetTenantId) where the target registry '$TargetRegistryName' is located. Press any key to continue"
-    try {
-      az login --tenant $TargetTenantId 1>$null 2>$null
-    }
-    catch {
-      throw "Failed to login to source tenant $TargetTenantId. Please ensure the correct credentials have been used. Error: $($_.Exception.Message)"
-    }
-  }
-
-  try {
-    az account set --subscription $TargetSubscriptionName
-  }
-  catch {
-    throw "Failed to set subscription to $TargetSubscriptionName. Please ensure the correct subscription has been used. Error: $($_.Exception.Message)"
-  }
-
-  try {
-    Write-Host "Provisioning registry"
-    $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags | ConvertFrom-Json
-    if ($output.properties.provisioningState -eq "Succeeded") {
-      Write-Host "Successfully provisioned registry"
-    }
-    else {
-      $output
-      throw "Provision state is $output.provisioningState. Please check output"
-    }
-  }
-  catch {
-    throw "Failed to deploy registry against target subscription $TargetSubscriptionName. Error: $($_.Exception.Message)"
-  }
-}
-
 function ConnectToSourceRegistry {
   param (
     [Parameter(Mandatory = $true)]
@@ -177,6 +126,57 @@ function GetSourceRegistryImages {
     }
   }
   return $Images
+}
+
+function CreateRegistry() {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string] $AzureRegion,
+    [Parameter(Mandatory = $true)]
+    [string] $TargetRegistryName,
+    [Parameter(Mandatory = $true)]
+    [string] $TargetTenantId,
+    [Parameter(Mandatory = $true)]
+    [string] $TargetSubscriptionName,
+    [Parameter(Mandatory = $true)]
+    [string] $TargetRegistryResourceGroupName,
+    [Parameter(Mandatory = $false)]
+    [string] $Tags
+  )
+  $ErrorActionPreference = "Stop"
+
+  $account = az account show | ConvertFrom-Json
+  if ($account.tenantId -ne $TargetTenantId) {
+    Read-Host -Prompt "Prepare to login to tenant ($TargetTenantId) where the target registry '$TargetRegistryName' is located. Press any key to continue"
+    try {
+      az login --tenant $TargetTenantId 1>$null 2>$null
+    }
+    catch {
+      throw "Failed to login to source tenant $TargetTenantId. Please ensure the correct credentials have been used. Error: $($_.Exception.Message)"
+    }
+  }
+
+  try {
+    az account set --subscription $TargetSubscriptionName
+  }
+  catch {
+    throw "Failed to set subscription to $TargetSubscriptionName. Please ensure the correct subscription has been used. Error: $($_.Exception.Message)"
+  }
+
+  try {
+    Write-Host "Provisioning registry"
+    $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags | ConvertFrom-Json
+    if ($output.properties.provisioningState -eq "Succeeded") {
+      Write-Host "Successfully provisioned registry"
+    }
+    else {
+      $output
+      throw "Provision failed. Please check output"
+    }
+  }
+  catch {
+    throw "Failed to deploy registry against target subscription $TargetSubscriptionName. Error: $($_.Exception.Message)"
+  }
 }
 
 function ImportImagesToTargetRegistry {
