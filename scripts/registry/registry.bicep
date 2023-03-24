@@ -13,7 +13,7 @@ param tags object = {}
 param location string = deployment().location
 
 @description('Optional. Bootstrap resource group name.')
-param resourceGroupName string //= '${companyPrefix}-${locationIdentifier}-bootstrap-rg'
+param resourceGroupName string
 
 @description('Optional. Container registry name.')
 param containerRegistryName string
