@@ -10,7 +10,7 @@ The purpose of the scripts is to create initial resources in the client subscrip
 
 ```powershell
 Import-Module .\Build-Registry.ps1 -Force
-Build-Registry -AzureRegion <Region> -TargetRegistryName <Client registry name> -TargetTenantId <Client Tenant ID>  -TargetSubscriptionName <Client Subscription ID> -TargetRegistryResourceGroupName <Client registry resource group>
+Build-Registry -AzureRegion <Region> -TargetRegistryName <Client registry name> -TargetTenantId <Client Tenant ID>  -TargetSubscriptionName <Client Subscription ID> -TargetRegistryResourceGroupName <Client registry resource group> -Tags <Tags>
 ```
 
 You will need:-
@@ -20,6 +20,7 @@ You will need:-
 - TargetTenantId
 - TargetSubscriptionName
 - TargetRegistryResourceGroupName i.e \<companyPrefix\>-\<locationIdentifier\>-bicep-registry-rg
+- Tags. Needs to be a JSON formatted string. i.e "{'Owner':'Contoso','Cost Center':'2345-324'}"
 
 3. In the 'Done Right' deployment repository modify the **bicepconfig.json** file to point to the clients bicep registry where the registry name is '\<companyPrefix\>\<locationIdentifier\>bicepmodulesacr'.
 

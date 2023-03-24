@@ -67,14 +67,16 @@ function Build-Registry {
     [Parameter(Mandatory = $true)]
     [string] $TargetSubscriptionName,
     [Parameter(Mandatory = $true)]
-    [string] $TargetRegistryResourceGroupName
+    [string] $TargetRegistryResourceGroupName,
+    [Parameter(Mandatory = $false)]
+    [string] $Tags
   )
   $ErrorActionPreference = "Stop"
 
   $SourceRegistryToken = ConnectToSourceRegistry -SourceTenantId  $SourceTenantId -SourceRegistryName $SourceRegistryName
   $Images = GetSourceRegistryImages -SourceRegistryName $SourceRegistryName
 
-  CreateRegistry -AzureRegion $AzureRegion -TargetRegistryName $TargetRegistryName -TargetTenantId $TargetTenantId  -TargetSubscriptionName $TargetSubscriptionName -TargetRegistryResourceGroupName $TargetRegistryResourceGroupName
+  CreateRegistry -AzureRegion $AzureRegion -TargetRegistryName $TargetRegistryName -TargetTenantId $TargetTenantId  -TargetSubscriptionName $TargetSubscriptionName -TargetRegistryResourceGroupName $TargetRegistryResourceGroupName -Tags $Tags
   ImportImagesToTargetRegistry -SourceRegistryToken $SourceRegistryToken -SourceRegistryName $SourceRegistryName -Images $Images -TargetTenantId $TargetTenantId -TargetSubscriptionName $TargetSubscriptionName -TargetRegistryName $TargetRegistryName
 }
 
@@ -89,7 +91,9 @@ function CreateRegistry() {
     [Parameter(Mandatory = $true)]
     [string] $TargetSubscriptionName,
     [Parameter(Mandatory = $true)]
-    [string] $TargetRegistryResourceGroupName
+    [string] $TargetRegistryResourceGroupName,
+    [Parameter(Mandatory = $false)]
+    [string] $Tags
   )
   $ErrorActionPreference = "Stop"
 
@@ -113,7 +117,7 @@ function CreateRegistry() {
 
   try {
     Write-Host "Provisioning registry"
-    $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName | ConvertFrom-Json
+    $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags | ConvertFrom-Json
     if ($output.properties.provisioningState -eq "Succeeded") {
       Write-Host "Successfully provisioned registry"
     }

@@ -21,6 +21,7 @@ param containerRegistryName string
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: resourceGroupName
   location: location
+  tags: tags
 }
 
 module containerRegistry '../../modules/container-registry/registries/main.bicep' = {
