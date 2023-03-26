@@ -12,10 +12,10 @@ param tags object = {}
 @description('Optional. The geo-location where the resource lives.')
 param location string = deployment().location
 
-@description('Optional. Bootstrap resource group name.')
+@description('Resource group name to support registry.')
 param resourceGroupName string
 
-@description('Optional. Container registry name.')
+@description('Container registry name.')
 param containerRegistryName string
 
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
