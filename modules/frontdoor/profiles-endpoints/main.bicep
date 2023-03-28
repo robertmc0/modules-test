@@ -1,7 +1,7 @@
 @description('The name of the existing Front Door/CDN Profile.')
 param profileName string
 
-@description('Endpoints to deploy to Frontdoor.')
+@description('Endpoints to deploy to Front Door.')
 @metadata(
   {
     doclink: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.cdn/profiles/afdendpoints?pivots=deployment-language-bicep'
@@ -16,7 +16,7 @@ param profileName string
 )
 param endpoints array
 
-@description('Origin Groups to deploy to Frontdoor.')
+@description('Origin Groups to deploy to Front Door.')
 @metadata({
   doclink: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.cdn/profiles/origingroups?pivots=deployment-language-bicep'
   example: {
@@ -37,7 +37,7 @@ param endpoints array
 })
 param originGroups array
 
-@description('Origins to deploy to Frontdoor.')
+@description('Origins to deploy to Front Door.')
 @metadata({
   docclink: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.cdn/profiles/origingroups/origins?pivots=deployment-language-bicep'
   example: {
@@ -63,7 +63,7 @@ param originGroups array
 })
 param origins array
 
-@description('Optional. Secrets to deploy to Frontdoor. Required if customer certificates are used to secure endpoints.')
+@description('Optional. Secrets to deploy to Front Door. Required if customer certificates are used to secure endpoints.')
 @metadata({
   doclink: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.cdn/profiles/secrets?pivots=deployment-language-bicep'
   example: {
@@ -76,7 +76,7 @@ param origins array
 })
 param secrets array = []
 
-@description('Optional. Custom domains to deploy to Frontdoor.')
+@description('Optional. Custom domains to deploy to Front Door.')
 @metadata({
   doclink: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.cdn/profiles/customdomains?pivots=deployment-language-bicep'
   example: {
@@ -91,7 +91,7 @@ param secrets array = []
 })
 param customDomains array = []
 
-@description('Routes to deploy to Frontdoor.')
+@description('Routes to deploy to Front Door.')
 @metadata({
   doclink: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.cdn/profiles/afdendpoints/routes?pivots=deployment-language-bicep'
   example: {
@@ -114,7 +114,7 @@ param customDomains array = []
 })
 param routes array
 
-@description('RuleSets to deploy to Frontdoor.')
+@description('RuleSets to deploy to Front Door.')
 @metadata({
   doclink: [
     'https://learn.microsoft.com/en-us/azure/templates/microsoft.cdn/profiles/rulesets?pivots=deployment-language-bicep'
@@ -157,11 +157,11 @@ param routes array
 })
 param ruleSets array = []
 
-@description('Security Policies to deploy to Frontdoor.')
+@description('Security Policies to deploy to Front Door.')
 @metadata({
   example: {
     name: 'securityPolicy1'
-    firewallPolicyId: 'resource id to Front door WAF Policy'
+    firewallPolicyId: 'resource id to Front Door WAF Policy'
     endpoints: [ 'myendpoint' ] // Names must match with the endpoint name configured as part of endpoints param.
     customDomains: [ 'myCustomDomain' ] // Name(s) must match with the custom domain name configured as part of customDomains param.
   }
@@ -382,14 +382,14 @@ resource policy 'Microsoft.Cdn/profiles/securityPolicies@2022-11-01-preview' = [
   }
 }]
 
-@description('The endpoints of the deployed Azure Frontdoor Profile.')
+@description('The endpoints of the deployed Azure Front Door Profile.')
 output endpoints array = [for (ep, i) in endpoints: {
   id: endpoint[i].id
   name: endpoint[i].name
   hostName: endpoint[i].properties.hostName
 }]
 
-@description('The custom domains of the deployed Azure Frontdoor Profile.')
+@description('The custom domains of the deployed Azure Front Door Profile.')
 output customDomains array = [for (domain, i) in customDomains: {
   id: customDomain[i].id
   name: customDomain[i].name
@@ -397,21 +397,21 @@ output customDomains array = [for (domain, i) in customDomains: {
   status: customDomain[i].properties.deploymentStatus
   state: customDomain[i].properties.provisioningState
 }]
-@description('The custom domain validations of the deployed Azure Frontdoor Profile.')
+@description('The custom domain validations of the deployed Azure Front Door Profile.')
 output customDomainValidations array = [for (domain, i) in customDomains: {
   dnsTxtRecordName: '_dnsauth.${customDomain[i].properties.hostName}'
   dnsTxtRecordValue: customDomain[i].properties.validationProperties.validationToken
   expiry: customDomain[i].properties.validationProperties.expirationDate
 }]
 
-@description('The security policies of the deployed Azure Frontdoor Profile.')
+@description('The security policies of the deployed Azure Front Door Profile.')
 output securityPolicies array = [for (sp, i) in securityPolicies: {
   id: policy[i].id
   name: policy[i].name
   associations: policy[i].properties.parameters.associations
 }]
 
-@description('The ruleSets of the deployed Azure Frontdoor Profile.')
+@description('The ruleSets of the deployed Azure Front Door Profile.')
 output ruleSets array = [for (rs, i) in ruleSets: {
   id: ruleset[i].id
   name: ruleset[i].name
