@@ -107,6 +107,9 @@ param imageRecommendedSettings object = {
 @description('Optional. OS disk size in gigabytes.')
 param osDiskSizeGB int = 127
 
+@description('Optional. Build timeout in minutes.')
+param buildTimeoutInMinutes int = 120
+
 @allowed([
   'CanNotDelete'
   'NotSpecified'
@@ -191,7 +194,7 @@ resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2022-02-14
     }
   }
   properties: {
-    buildTimeoutInMinutes: 120
+    buildTimeoutInMinutes: buildTimeoutInMinutes
     vmProfile: {
       vmSize: vmSize
       osDiskSizeGB: osDiskSizeGB

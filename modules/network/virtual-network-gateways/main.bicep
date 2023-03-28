@@ -147,7 +147,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
 }
 
 resource diagnosticsPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
-  scope: virtualNetworkGateway
+  scope: publicIp
   name: publicIpDiagnosticsName
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
