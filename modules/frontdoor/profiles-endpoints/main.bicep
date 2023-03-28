@@ -114,7 +114,7 @@ param customDomains array = []
 })
 param routes array
 
-@description('RuleSets to deploy to Front Door.')
+@description('Optional. RuleSets to deploy to Front Door.')
 @metadata({
   doclink: [
     'https://learn.microsoft.com/en-us/azure/templates/microsoft.cdn/profiles/rulesets?pivots=deployment-language-bicep'
@@ -157,7 +157,7 @@ param routes array
 })
 param ruleSets array = []
 
-@description('Security Policies to deploy to Front Door.')
+@description('Optional. Security Policies to deploy to Front Door.')
 @metadata({
   example: {
     name: 'securityPolicy1'

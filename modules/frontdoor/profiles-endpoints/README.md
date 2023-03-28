@@ -25,8 +25,8 @@ This module allows you to create AFD endpoints for an existing frontdoor profile
 | `secrets`          | `array`  | No       | Optional. Secrets to deploy to Front Door. Required if customer certificates are used to secure endpoints. |
 | `customDomains`    | `array`  | No       | Optional. Custom domains to deploy to Front Door.                                                          |
 | `routes`           | `array`  | Yes      | Routes to deploy to Front Door.                                                                            |
-| `ruleSets`         | `array`  | No       | RuleSets to deploy to Front Door.                                                                          |
-| `securityPolicies` | `array`  | No       | Security Policies to deploy to Front Door.                                                                 |
+| `ruleSets`         | `array`  | No       | Optional. RuleSets to deploy to Front Door.                                                                |
+| `securityPolicies` | `array`  | No       | Optional. Security Policies to deploy to Front Door.                                                       |
 
 ## Outputs
 

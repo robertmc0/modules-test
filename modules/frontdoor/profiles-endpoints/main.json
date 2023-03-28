@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "16516095062138722592"
+      "templateHash": "17868482682848469684"
     }
   },
   "parameters": {
@@ -180,7 +180,7 @@
             }
           ]
         },
-        "description": "RuleSets to deploy to Front Door."
+        "description": "Optional. RuleSets to deploy to Front Door."
       }
     },
     "securityPolicies": {
@@ -197,7 +197,7 @@
             "myCustomDomain"
           ]
         },
-        "description": "Security Policies to deploy to Front Door."
+        "description": "Optional. Security Policies to deploy to Front Door."
       }
     }
   },
