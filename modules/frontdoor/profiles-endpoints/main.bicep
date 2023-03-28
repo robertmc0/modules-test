@@ -232,7 +232,6 @@ resource secret 'Microsoft.Cdn/profiles/secrets@2022-11-01-preview' = [for s in 
       type: 'CustomerCertificate'
       useLatestVersion: true
       secretSource: {
-        #disable-next-line use-resource-id-functions
         id: s.parameters.certificateSecretId
       }
     }
