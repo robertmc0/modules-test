@@ -5,14 +5,14 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "17947321586286308958"
+      "templateHash": "14696641015942146136"
     }
   },
   "parameters": {
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of the front door profile to create. This must be globally unique."
+        "description": "The name of the Front Door profile to create. This must be globally unique."
       }
     },
     "skuName": {
@@ -227,14 +227,14 @@
       "type": "string",
       "value": "[parameters('name')]",
       "metadata": {
-        "description": "The name of the deployed Azure Frontdoor Profile."
+        "description": "The name of the deployed Azure Front Door Profile."
       }
     },
     "resourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Cdn/profiles', parameters('name'))]",
       "metadata": {
-        "description": "The resource Id of the deployed Azure Frontdoor Profile."
+        "description": "The resource Id of the deployed Azure Front Door Profile."
       }
     }
   }

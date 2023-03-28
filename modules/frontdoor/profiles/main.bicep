@@ -1,4 +1,4 @@
-@description('The name of the front door profile to create. This must be globally unique.')
+@description('The name of the Front Door profile to create. This must be globally unique.')
 param name string
 
 @description('The name of the SKU to use when creating the Front Door profile.')
@@ -140,7 +140,7 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
   }
 }
 
-@description('The name of the deployed Azure Frontdoor Profile.')
+@description('The name of the deployed Azure Front Door Profile.')
 output name string = profile.name
-@description('The resource Id of the deployed Azure Frontdoor Profile.')
+@description('The resource Id of the deployed Azure Front Door Profile.')
 output resourceId string = profile.id

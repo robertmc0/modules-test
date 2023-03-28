@@ -15,7 +15,7 @@ This module performs the following
 
 | Name                                    | Type     | Required | Description                                                                                                                                   |
 | :-------------------------------------- | :------: | :------: | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                                  | `string` | Yes      | The name of the front door profile to create. This must be globally unique.                                                                   |
+| `name`                                  | `string` | Yes      | The name of the Front Door profile to create. This must be globally unique.                                                                   |
 | `skuName`                               | `string` | Yes      | The name of the SKU to use when creating the Front Door profile.                                                                              |
 | `originResponseTimeoutSeconds`          | `int`    | No       | Optional. Specifies the send and receive timeout on forwarding request to the origin. When timeout is reached, the request fails and returns. |
 | `systemAssignedIdentity`                | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                                           |
@@ -33,10 +33,10 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                                              |
-| :--------- | :----: | :------------------------------------------------------- |
-| name       | string | The name of the deployed Azure Frontdoor Profile.        |
-| resourceId | string | The resource Id of the deployed Azure Frontdoor Profile. |
+| Name       | Type   | Description                                               |
+| :--------- | :----: | :-------------------------------------------------------- |
+| name       | string | The name of the deployed Azure Front Door Profile.        |
+| resourceId | string | The resource Id of the deployed Azure Front Door Profile. |
 
 ## Examples
 
