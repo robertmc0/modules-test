@@ -23,7 +23,7 @@
         "Standard_AzureFrontDoor"
       ],
       "metadata": {
-        "description": "The sku of the front door firewall policy."
+        "description": "The sku of the Front Door firewall policy."
       }
     },
     "tags": {

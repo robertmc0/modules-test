@@ -1,7 +1,7 @@
 @description('The resource name.')
 param name string
 
-@description('The sku of the front door firewall policy.')
+@description('The sku of the Front Door firewall policy.')
 @allowed([
   'Classic_AzureFrontDoor'
   'Premium_AzureFrontDoor'

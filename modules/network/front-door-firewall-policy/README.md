@@ -17,7 +17,7 @@ This module performs the following
 | Name             | Type     | Required | Description                                              |
 | :--------------- | :------: | :------: | :------------------------------------------------------- |
 | `name`           | `string` | Yes      | The resource name.                                       |
-| `skuName`        | `string` | Yes      | The sku of the front door firewall policy.               |
+| `skuName`        | `string` | Yes      | The sku of the Front Door firewall policy.               |
 | `tags`           | `object` | No       | Optional. Resource tags.                                 |
 | `policySettings` | `object` | No       | Optional. Firewall policy settings.                      |
 | `customRules`    | `object` | No       | Optional. The custom rules inside the policy.            |
