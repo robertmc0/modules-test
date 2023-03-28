@@ -1,0 +1,286 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.15.31.15270",
+      "templateHash": "3075436289616612202"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Elastic Pool to create."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location of resource."
+      }
+    },
+    "sqlServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of existing Azure SQL Server."
+      }
+    },
+    "skuType": {
+      "type": "string",
+      "allowedValues": [
+        "BasicPool,",
+        "StandardPool",
+        "PremiumPool",
+        "GP_Fsv2",
+        "GP_Gen5"
+      ],
+      "metadata": {
+        "description": "A predefined set of SkuTypes. Currently template not configured to support Hyper-Scale or Business Critical."
+      }
+    },
+    "skuCapacity": {
+      "type": "int",
+      "metadata": {
+        "description": "Capacity of Elastic Pool.  If DTU model, define amount of DTU. If vCore model, define number of vCores."
+      }
+    },
+    "databaseMinCapacity": {
+      "type": "string",
+      "defaultValue": "0",
+      "metadata": {
+        "description": "Optional. Minimum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores. Requires string to handle decimals."
+      }
+    },
+    "databaseMaxCapacity": {
+      "type": "int",
+      "defaultValue": "[parameters('skuCapacity')]",
+      "metadata": {
+        "description": "Optional. Maximum capacity per database.  If DTU model, define amount of DTU. If vCore model, define number of vCores."
+      }
+    },
+    "maxPoolSize": {
+      "type": "int",
+      "metadata": {
+        "description": "Maximum size in bytes for the Elastic Pool."
+      }
+    },
+    "zoneRedundant": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Whether the databases in pool zone redundant. Only supported in some regions."
+      }
+    },
+    "licenseType": {
+      "type": "string",
+      "defaultValue": "LicenseIncluded",
+      "allowedValues": [
+        "BasePrice",
+        "LicenseIncluded"
+      ],
+      "metadata": {
+        "description": "Optional. For Azure Hybrid Benefit, use BasePrice."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      },
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ]
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic log analytics workspace."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic storage account."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Basic",
+        "InstanceAndAppAdvanced"
+      ],
+      "allowedValues": [
+        "Basic",
+        "InstanceAndAppAdvanced"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "skuMap": {
+      "BasicPool": {
+        "name": "BasicPool",
+        "tier": "Basic",
+        "family": "[json('null')]"
+      },
+      "StandardPool": {
+        "name": "StandardPool",
+        "tier": "Standard",
+        "family": "[json('null')]"
+      },
+      "PremiumPool": {
+        "name": "PremiumPool",
+        "tier": "Premium",
+        "family": "[json('null')]"
+      },
+      "GP_Gen5": {
+        "name": "GP_S_Gen5",
+        "tier": "GeneralPurpose",
+        "family": "Gen5"
+      },
+      "GP_Fsv2": {
+        "name": "GP_S_Fsv2",
+        "tier": "GeneralPurpose",
+        "family": "Fsv2"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers/elasticPools",
+      "apiVersion": "2022-05-01-preview",
+      "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('name'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[variables('skuMap')[parameters('skuType')].name]",
+        "tier": "[variables('skuMap')[parameters('skuType')].tier]",
+        "family": "[variables('skuMap')[parameters('skuType')].family]",
+        "capacity": "[parameters('skuCapacity')]"
+      },
+      "properties": {
+        "licenseType": "[parameters('licenseType')]",
+        "maxSizeBytes": "[parameters('maxPoolSize')]",
+        "perDatabaseSettings": {
+          "minCapacity": "[parameters('databaseMinCapacity')]",
+          "maxCapacity": "[parameters('databaseMaxCapacity')]"
+        },
+        "zoneRedundant": "[parameters('zoneRedundant')]"
+      }
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Sql/servers/{0}/elasticPools/{1}', parameters('sqlServerName'), parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "storageAccountId": "[if(not(empty(parameters('diagnosticStorageAccountId'))), parameters('diagnosticStorageAccountId'), null())]",
+        "workspaceId": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), parameters('diagnosticLogAnalyticsWorkspaceId'), null())]",
+        "eventHubAuthorizationRuleId": "[if(not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))), parameters('diagnosticEventHubAuthorizationRuleId'), null())]",
+        "eventHubName": "[if(not(empty(parameters('diagnosticEventHubName'))), parameters('diagnosticEventHubName'), null())]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/elasticPools', parameters('sqlServerName'), parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Sql/servers/{0}/elasticPools/{1}', parameters('sqlServerName'), parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/elasticPools', parameters('sqlServerName'), parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the elastic pool."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Sql/servers/elasticPools', parameters('sqlServerName'), parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the elastic pool."
+      }
+    }
+  }
+}
