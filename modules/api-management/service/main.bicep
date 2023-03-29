@@ -196,8 +196,50 @@ param diagnosticMetricsToEnable array = [
 @description('Resource ID of the application insights resource.')
 param applicationInsightsId string
 
-@description('Optional. The sample rate for the application insights logger. Defaults to 10%')
+@description('Optional. The sample rate for the application insights logger. Defaults to 10%.')
 param loggerSamplingRate int = 10
+
+@description('Optional. Diagnostic settings for incoming/outgoing HTTP messages to backend.')
+@metadata(
+  {
+    doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/diagnostics?pivots=deployment-language-arm-template#pipelinediagnosticsettings-1'
+    example: {
+      request: {
+        headers: [ 'X-Forwarded-For' ]
+      }
+    }
+  }
+)
+param loggerBackendSettings object = {}
+
+@description('Optional. Diagnostic settings for incoming/outgoing HTTP messages to frontend.')
+@metadata(
+  {
+    doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/diagnostics?pivots=deployment-language-arm-template#pipelinediagnosticsettings-1'
+    example: {
+      request: {
+        headers: [ 'X-Forwarded-For' ]
+      }
+    }
+  }
+)
+param loggerFrontendSettings object = {}
+
+@description('Optional. Correlation protocol to use for application insights diagnostics. Legacy is the default.')
+@allowed([
+  'Legacy'
+  'None'
+  'W3C'
+])
+param loggerHttpCorrelationProtocol string = 'Legacy'
+
+@description('Optional. The verbosity level applied to traces emitted by trace policies.')
+@allowed([
+  'error'
+  'information'
+  'verbose'
+])
+param loggerVerbosity string = 'information'
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -324,12 +366,17 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
   ]
 }
 
-resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2021-08-01' = {
+resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2022-08-01' = {
   parent: apiManagementService
   name: 'applicationinsights'
   properties: {
     alwaysLog: 'allErrors'
     loggerId: logger.id
+    verbosity: loggerVerbosity
+    httpCorrelationProtocol: loggerHttpCorrelationProtocol
+    frontend: loggerFrontendSettings
+    backend: loggerBackendSettings
+    metrics: true
     sampling: {
       samplingType: 'fixed'
       percentage: loggerSamplingRate
