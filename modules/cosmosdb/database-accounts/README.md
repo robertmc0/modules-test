@@ -18,7 +18,7 @@ The module provides options to configure scale settings at either the database o
 
 - Use the **databaseScalingOptions** parameter to set a dedicated scale limit at the database level.
 - Use the **defaultContainerScaleSettings** parameter to configure a default scale setting for each container.
-- Use the **containerConfigurations[].options** field to configure a specific scale setting for a container.
+- Use the **containerConfigurations[].options** property to configure a specific scale setting for a container.
 
 Refer to the examples for further details.
 

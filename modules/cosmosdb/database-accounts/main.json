@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "4775723461993628838"
+      "templateHash": "17065674871997004984"
     }
   },
   "parameters": {
@@ -350,7 +350,7 @@
       },
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
       "apiVersion": "2021-11-15-preview",
-      "name": "[format('{0}/{1}', parameters('name'), guid(variables('readerPrincipals')[copyIndex()], parameters('name')))]",
+      "name": "[format('{0}/{1}', parameters('name'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').Reader), variables('readerPrincipals')[copyIndex()], parameters('name')))]",
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').Reader)]",
         "principalId": "[variables('readerPrincipals')[copyIndex()]]",
@@ -362,12 +362,12 @@
     },
     {
       "copy": {
-        "name": "sqlRoleAssignment",
+        "name": "sqlRoleAssignmentContributor",
         "count": "[length(variables('contributorPrincipals'))]"
       },
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
       "apiVersion": "2021-11-15-preview",
-      "name": "[format('{0}/{1}', parameters('name'), guid(variables('contributorPrincipals')[copyIndex()], parameters('name')))]",
+      "name": "[format('{0}/{1}', parameters('name'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').DataContributor), variables('contributorPrincipals')[copyIndex()], parameters('name')))]",
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').DataContributor)]",
         "principalId": "[variables('contributorPrincipals')[copyIndex()]]",
