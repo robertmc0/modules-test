@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "Front Door Firewall Policy Module",
+  "summary": "This module deploys Microsoft.Network FrontDoorWebApplicationFirewallPolicies",
+  "owner": "Arinco"
+}
