@@ -201,10 +201,11 @@ module cosmosAccountMultiRegionWrite '../main.bicep' = {
       }
     ]
     enableMultipleWriteLocations: true
-    allowedIpAddressOrRanges: [
-      '14.202.157.78'
-    ]
-    publicNetworkAccess: 'Enabled'
+    // if public access is required, use the following properties.
+    // allowedIpAddressOrRanges: [
+    //   '52.52.52.52'
+    // ]
+    // publicNetworkAccess: 'Enabled'
     resourcelock: 'CanNotDelete'
     accountAccess: {
       reader: {
