@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "Front Door Profile Endpoints Module",
+  "summary": "This module deploys front door profile endpoints and associated resources to an existing front door profile.",
+  "owner": "Arinco"
+}
