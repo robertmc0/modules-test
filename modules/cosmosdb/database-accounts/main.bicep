@@ -235,7 +235,7 @@ var contributorPrincipals = contains(accountAccess, 'contributor') ? accountAcce
 
 resource sqlRoleAssignmentReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2021-11-15-preview' = [for principalId in readerPrincipals: {
   parent: cosmosAccount
-  name: guid(principalId, cosmosAccount.name)
+  name: guid(sqlRoleDefinitionReader.id, principalId, cosmosAccount.name)
   properties: {
     roleDefinitionId: sqlRoleDefinitionReader.id
     principalId: principalId
@@ -243,9 +243,9 @@ resource sqlRoleAssignmentReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleA
   }
 }]
 
-resource sqlRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2021-11-15-preview' = [for principalId in contributorPrincipals: {
+resource sqlRoleAssignmentContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2021-11-15-preview' = [for principalId in contributorPrincipals: {
   parent: cosmosAccount
-  name: guid(principalId, cosmosAccount.name)
+  name: guid(sqlRoleDefinitionContributor.id, principalId, cosmosAccount.name)
   properties: {
     roleDefinitionId: sqlRoleDefinitionContributor.id
     principalId: principalId
