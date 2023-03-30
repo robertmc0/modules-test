@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "Front Door Profiles Module",
+  "summary": "This module deploys Microsoft.Cdn front door profiles",
+  "owner": "Arinco"
+}
