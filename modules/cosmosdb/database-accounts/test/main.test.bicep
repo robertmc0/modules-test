@@ -6,7 +6,7 @@ param tags object = {}
 
 var uniqueName = uniqueString(deployment().name, location)
 
-resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: '${uniqueName}-umi'
   location: location
 }

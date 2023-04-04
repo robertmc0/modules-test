@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "17065674871997004984"
+      "templateHash": "17200598274826266041"
     }
   },
   "parameters": {
@@ -29,14 +29,14 @@
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of the COSMOS DB account."
+        "description": "The name of the Cosmos DB account."
       },
       "minLength": 1
     },
     "databaseName": {
       "type": "string",
       "metadata": {
-        "description": "The database to create in the COSMOS DB account."
+        "description": "The database to create in the Cosmos DB account."
       },
       "minLength": 1
     },
@@ -61,7 +61,7 @@
     "containerConfigurations": {
       "type": "array",
       "metadata": {
-        "description": "Container configurations to apply to the COSMOS DB account."
+        "description": "Container configurations to apply to the Cosmos DB account."
       }
     },
     "accountAccess": {
@@ -80,14 +80,14 @@
             ]
           }
         },
-        "description": "Access permissions to apply to the COSMOS DB account."
+        "description": "Access permissions to apply to the Cosmos DB account."
       }
     },
     "virtualNetworkSubnetId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. The full resource ID of a subnet in a virtual network to deploy the COSMOS DB account in."
+        "description": "Optional. The full resource ID of a subnet in a virtual network to deploy the Cosmos DB account in."
       }
     },
     "publicNetworkAccess": {
@@ -349,7 +349,7 @@
         "count": "[length(variables('readerPrincipals'))]"
       },
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
-      "apiVersion": "2021-11-15-preview",
+      "apiVersion": "2022-11-15",
       "name": "[format('{0}/{1}', parameters('name'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').Reader), variables('readerPrincipals')[copyIndex()], parameters('name')))]",
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').Reader)]",
@@ -366,7 +366,7 @@
         "count": "[length(variables('contributorPrincipals'))]"
       },
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
-      "apiVersion": "2021-11-15-preview",
+      "apiVersion": "2022-11-15",
       "name": "[format('{0}/{1}', parameters('name'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').DataContributor), variables('contributorPrincipals')[copyIndex()], parameters('name')))]",
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').DataContributor)]",
@@ -379,7 +379,7 @@
     },
     {
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
-      "apiVersion": "2021-06-15",
+      "apiVersion": "2022-11-15",
       "name": "[format('{0}/{1}', parameters('name'), parameters('databaseName'))]",
       "properties": {
         "resource": {
@@ -397,7 +397,7 @@
         "count": "[length(parameters('containerConfigurations'))]"
       },
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
-      "apiVersion": "2021-06-15",
+      "apiVersion": "2022-11-15",
       "name": "[format('{0}/{1}/{2}', parameters('name'), parameters('databaseName'), parameters('containerConfigurations')[copyIndex()].id)]",
       "properties": {
         "options": "[if(not(contains(parameters('containerConfigurations')[copyIndex()], 'options')), if(empty(parameters('databaseScalingOptions')), parameters('defaultContainerScaleSettings'), null()), parameters('containerConfigurations')[copyIndex()].options)]",
@@ -446,14 +446,14 @@
       "type": "string",
       "value": "[parameters('name')]",
       "metadata": {
-        "description": "The name of the COSMOS DB account."
+        "description": "The name of the Cosmos DB account."
       }
     },
     "resourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]",
       "metadata": {
-        "description": "The resource ID of the COSMOS DB account."
+        "description": "The resource ID of the Cosmos DB account."
       }
     }
   }

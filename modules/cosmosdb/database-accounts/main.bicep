@@ -11,11 +11,11 @@ param location string
 param tags object = {}
 
 @minLength(1)
-@description('The name of the COSMOS DB account.')
+@description('The name of the Cosmos DB account.')
 param name string
 
 @minLength(1)
-@description('The database to create in the COSMOS DB account.')
+@description('The database to create in the Cosmos DB account.')
 param databaseName string
 
 @description('An array that contains the georeplication locations enabled for the Cosmos DB account.')
@@ -34,10 +34,10 @@ param databaseName string
   ] })
 param locations array
 
-@description('Container configurations to apply to the COSMOS DB account.')
+@description('Container configurations to apply to the Cosmos DB account.')
 param containerConfigurations array
 
-@description('Access permissions to apply to the COSMOS DB account.')
+@description('Access permissions to apply to the Cosmos DB account.')
 @metadata({
   accountAccess: {
     reader: {
@@ -55,7 +55,7 @@ param containerConfigurations array
 })
 param accountAccess object
 
-@description('Optional. The full resource ID of a subnet in a virtual network to deploy the COSMOS DB account in.')
+@description('Optional. The full resource ID of a subnet in a virtual network to deploy the Cosmos DB account in.')
 param virtualNetworkSubnetId string = ''
 
 @description('Optional. Indicates whether to allow public network access. Defaults to Disabled.')
@@ -220,12 +220,12 @@ var cosmosDBRoleDefintions = {
   DataContributor: '00000000-0000-0000-0000-000000000002'
 }
 
-resource sqlRoleDefinitionReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2021-11-15-preview' existing = {
+resource sqlRoleDefinitionReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2022-11-15' existing = {
   parent: cosmosAccount
   name: cosmosDBRoleDefintions.Reader
 }
 
-resource sqlRoleDefinitionContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2021-11-15-preview' existing = {
+resource sqlRoleDefinitionContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2022-11-15' existing = {
   parent: cosmosAccount
   name: cosmosDBRoleDefintions.DataContributor
 }
@@ -233,7 +233,7 @@ resource sqlRoleDefinitionContributor 'Microsoft.DocumentDB/databaseAccounts/sql
 var readerPrincipals = contains(accountAccess, 'reader') ? accountAccess.reader.principalIds : []
 var contributorPrincipals = contains(accountAccess, 'contributor') ? accountAccess.contributor.principalIds : []
 
-resource sqlRoleAssignmentReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2021-11-15-preview' = [for principalId in readerPrincipals: {
+resource sqlRoleAssignmentReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-11-15' = [for principalId in readerPrincipals: {
   parent: cosmosAccount
   name: guid(sqlRoleDefinitionReader.id, principalId, cosmosAccount.name)
   properties: {
@@ -243,7 +243,7 @@ resource sqlRoleAssignmentReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleA
   }
 }]
 
-resource sqlRoleAssignmentContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2021-11-15-preview' = [for principalId in contributorPrincipals: {
+resource sqlRoleAssignmentContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-11-15' = [for principalId in contributorPrincipals: {
   parent: cosmosAccount
   name: guid(sqlRoleDefinitionContributor.id, principalId, cosmosAccount.name)
   properties: {
@@ -253,7 +253,7 @@ resource sqlRoleAssignmentContributor 'Microsoft.DocumentDB/databaseAccounts/sql
   }
 }]
 
-resource sqlDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-06-15' = {
+resource sqlDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-11-15' = {
   parent: cosmosAccount
   name: databaseName
   properties: {
@@ -264,7 +264,7 @@ resource sqlDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-06
   }
 }
 
-resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-06-15' = [for containerConfiguration in containerConfigurations: {
+resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2022-11-15' = [for containerConfiguration in containerConfigurations: {
   parent: sqlDatabase
   name: containerConfiguration.id
   properties: {
@@ -296,8 +296,8 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   }
 }
 
-@description('The name of the COSMOS DB account.')
+@description('The name of the Cosmos DB account.')
 output name string = cosmosAccount.name
 
-@description('The resource ID of the COSMOS DB account.')
+@description('The resource ID of the Cosmos DB account.')
 output resourceId string = cosmosAccount.id

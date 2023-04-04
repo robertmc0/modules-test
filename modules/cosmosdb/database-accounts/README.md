@@ -1,6 +1,6 @@
-# COSMOS DB Account Module
+# Cosmos DB Account Module
 
-This module deploys COSMOS DB Account and container resources.
+This module deploys Cosmos DB Account and container resources.
 
 ## Description
 
@@ -24,7 +24,7 @@ Refer to the examples for further details.
 
 ### Accessing Cosmos DB
 
-Use https://cosmos.azure.com/?feature.enableAadDataPlane=true to acccess COSMOS DB. This module does not permit access to COSMOS DB via the portal.
+Use https://cosmos.azure.com/?feature.enableAadDataPlane=true to acccess Cosmos DB. This module does not permit access to Cosmos DB via the portal.
 
 ## Parameters
 
@@ -32,12 +32,12 @@ Use https://cosmos.azure.com/?feature.enableAadDataPlane=true to acccess COSMOS 
 | :-------------------------------------- | :------: | :------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `location`                              | `string` | Yes      | The geo-location where the resource lives.                                                                                                                                        |
 | `tags`                                  | `object` | No       | Optional. Resource tags.                                                                                                                                                          |
-| `name`                                  | `string` | Yes      | The name of the COSMOS DB account.                                                                                                                                                |
-| `databaseName`                          | `string` | Yes      | The database to create in the COSMOS DB account.                                                                                                                                  |
+| `name`                                  | `string` | Yes      | The name of the Cosmos DB account.                                                                                                                                                |
+| `databaseName`                          | `string` | Yes      | The database to create in the Cosmos DB account.                                                                                                                                  |
 | `locations`                             | `array`  | Yes      | An array that contains the georeplication locations enabled for the Cosmos DB account.                                                                                            |
-| `containerConfigurations`               | `array`  | Yes      | Container configurations to apply to the COSMOS DB account.                                                                                                                       |
-| `accountAccess`                         | `object` | Yes      | Access permissions to apply to the COSMOS DB account.                                                                                                                             |
-| `virtualNetworkSubnetId`                | `string` | No       | Optional. The full resource ID of a subnet in a virtual network to deploy the COSMOS DB account in.                                                                               |
+| `containerConfigurations`               | `array`  | Yes      | Container configurations to apply to the Cosmos DB account.                                                                                                                       |
+| `accountAccess`                         | `object` | Yes      | Access permissions to apply to the Cosmos DB account.                                                                                                                             |
+| `virtualNetworkSubnetId`                | `string` | No       | Optional. The full resource ID of a subnet in a virtual network to deploy the Cosmos DB account in.                                                                               |
 | `publicNetworkAccess`                   | `string` | No       | Optional. Indicates whether to allow public network access. Defaults to Disabled.                                                                                                 |
 | `disableLocalAuth`                      | `bool`   | No       | Optional. Indicates whether to disable local authentication with access keys. Defaults to true.                                                                                   |
 | `disableKeyBasedMetadataWriteAccess`    | `bool`   | No       | Optional. Disable write operations on metadata resources (databases, containers, throughput) via account keys. Defaults to true.                                                  |
@@ -64,13 +64,13 @@ Use https://cosmos.azure.com/?feature.enableAadDataPlane=true to acccess COSMOS 
 
 | Name       | Type   | Description                               |
 | :--------- | :----: | :---------------------------------------- |
-| name       | string | The name of the COSMOS DB account.        |
-| resourceId | string | The resource ID of the COSMOS DB account. |
+| name       | string | The name of the Cosmos DB account.        |
+| resourceId | string | The resource ID of the Cosmos DB account. |
 
 ## Examples
 
 Please see the following files for examples.
 
 - [Bicep Test - Minimum Parameters](test/main.test.bicep)
-- [Bicep Test - COSMOS DB with dedicated scale settings](test/main.test.dedicated.bicep)
-- [Bicep Test - COSMOS DB with specific container scale and security settings](test/main.test.advanced.bicep)
+- [Bicep Test - Cosmos DB with dedicated scale settings](test/main.test.dedicated.bicep)
+- [Bicep Test - Cosmos DB with specific container scale and security settings](test/main.test.advanced.bicep)
