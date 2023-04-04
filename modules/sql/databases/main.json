@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "5057328327908281729"
+      "version": "0.15.31.15270",
+      "templateHash": "8972884398043882424"
     }
   },
   "parameters": {
@@ -53,7 +53,8 @@
         "Standard",
         "Premium",
         "vCoreGen5",
-        "vCoreGen5Serverless"
+        "vCoreGen5Serverless",
+        "ElasticPool"
       ],
       "metadata": {
         "description": "A predefined set of SkuTypes. Currently template not configured to support Hyper-Scale or Business Critical."
@@ -129,6 +130,13 @@
       "defaultValue": "Geo",
       "metadata": {
         "description": "Optional. Set location of backups, geo, local or zone."
+      }
+    },
+    "elasticPoolId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Elastic Pool ID."
       }
     },
     "tags": {
@@ -284,6 +292,12 @@
         "tier": "Premium",
         "family": "[json('null')]",
         "kind": "v12.0,user"
+      },
+      "ElasticPool": {
+        "name": "ElasticPool",
+        "tier": "[json('null')]",
+        "family": "[json('null')]",
+        "kind": "[json('null')]"
       }
     }
   },
@@ -309,7 +323,8 @@
         "minCapacity": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('skuMinCapacity'), json('null'))]",
         "autoPauseDelay": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('autoPauseDelay'), json('null'))]",
         "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
-        "createMode": "[parameters('createMode')]"
+        "createMode": "[parameters('createMode')]",
+        "elasticPoolId": "[if(not(empty(parameters('elasticPoolId'))), parameters('elasticPoolId'), null())]"
       }
     },
     {

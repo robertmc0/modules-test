@@ -29,6 +29,7 @@ param createMode string = 'Default'
   'Premium'
   'vCoreGen5'
   'vCoreGen5Serverless'
+  'ElasticPool'
 ])
 param skuType string
 
@@ -65,6 +66,9 @@ param readScaleOut string = 'Disabled'
 
 @description('Optional. Set location of backups, geo, local or zone.')
 param requestedBackupStorageRedundancy string = 'Geo'
+
+@description('Optional. Elastic Pool ID.')
+param elasticPoolId string = ''
 
 @description('Optional. Resource tags.')
 @metadata({
@@ -175,6 +179,12 @@ var skuMap = {
     family: json('null')
     kind: 'v12.0,user'
   }
+  ElasticPool: {
+    name: 'ElasticPool'
+    tier: json('null')
+    family: json('null')
+    kind: json('null')
+  }
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' existing = {
@@ -202,6 +212,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
     autoPauseDelay: skuType == 'vCoreGen5Serverless' ? autoPauseDelay : json('null')
     requestedBackupStorageRedundancy: requestedBackupStorageRedundancy
     createMode: createMode
+    elasticPoolId: !empty(elasticPoolId) ? elasticPoolId : null
   }
 }
 
