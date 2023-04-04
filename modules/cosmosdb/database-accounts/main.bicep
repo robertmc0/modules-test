@@ -184,7 +184,7 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2022-11-15' = {
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' = {
   name: name
   kind: 'GlobalDocumentDB'
   location: location
@@ -197,7 +197,6 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2022-11-15' = {
     enableAutomaticFailover: enableAutomaticFailover
     enableAnalyticalStorage: enableAnalyticalStorage
     analyticalStorageConfiguration: analyticalStorageConfiguration
-    minimalTlsVersion: 'Tls12'
     capacity: capacity
     virtualNetworkRules: !empty(virtualNetworkSubnetId) ? [
       {
@@ -220,12 +219,12 @@ var cosmosDBRoleDefintions = {
   DataContributor: '00000000-0000-0000-0000-000000000002'
 }
 
-resource sqlRoleDefinitionReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2022-11-15' existing = {
+resource sqlRoleDefinitionReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2022-08-15' existing = {
   parent: cosmosAccount
   name: cosmosDBRoleDefintions.Reader
 }
 
-resource sqlRoleDefinitionContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2022-11-15' existing = {
+resource sqlRoleDefinitionContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2022-08-15' existing = {
   parent: cosmosAccount
   name: cosmosDBRoleDefintions.DataContributor
 }
@@ -233,7 +232,7 @@ resource sqlRoleDefinitionContributor 'Microsoft.DocumentDB/databaseAccounts/sql
 var readerPrincipals = contains(accountAccess, 'reader') ? accountAccess.reader.principalIds : []
 var contributorPrincipals = contains(accountAccess, 'contributor') ? accountAccess.contributor.principalIds : []
 
-resource sqlRoleAssignmentReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-11-15' = [for principalId in readerPrincipals: {
+resource sqlRoleAssignmentReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-08-15' = [for principalId in readerPrincipals: {
   parent: cosmosAccount
   name: guid(sqlRoleDefinitionReader.id, principalId, cosmosAccount.name)
   properties: {
@@ -243,7 +242,7 @@ resource sqlRoleAssignmentReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleA
   }
 }]
 
-resource sqlRoleAssignmentContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-11-15' = [for principalId in contributorPrincipals: {
+resource sqlRoleAssignmentContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-08-15' = [for principalId in contributorPrincipals: {
   parent: cosmosAccount
   name: guid(sqlRoleDefinitionContributor.id, principalId, cosmosAccount.name)
   properties: {
@@ -253,7 +252,7 @@ resource sqlRoleAssignmentContributor 'Microsoft.DocumentDB/databaseAccounts/sql
   }
 }]
 
-resource sqlDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-11-15' = {
+resource sqlDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-08-15' = {
   parent: cosmosAccount
   name: databaseName
   properties: {
@@ -264,7 +263,7 @@ resource sqlDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-11
   }
 }
 
-resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2022-11-15' = [for containerConfiguration in containerConfigurations: {
+resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2022-08-15' = [for containerConfiguration in containerConfigurations: {
   parent: sqlDatabase
   name: containerConfiguration.id
   properties: {
@@ -273,7 +272,7 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
   }
 }]
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != 'NotSpecified') {
   scope: cosmosAccount
   name: lockName
   properties: {

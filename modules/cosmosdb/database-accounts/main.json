@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "17200598274826266041"
+      "templateHash": "15250129005210259382"
     }
   },
   "parameters": {
@@ -312,7 +312,7 @@
   "resources": [
     {
       "type": "Microsoft.DocumentDB/databaseAccounts",
-      "apiVersion": "2022-11-15",
+      "apiVersion": "2022-08-15",
       "name": "[parameters('name')]",
       "kind": "GlobalDocumentDB",
       "location": "[parameters('location')]",
@@ -334,7 +334,6 @@
         "enableAutomaticFailover": "[parameters('enableAutomaticFailover')]",
         "enableAnalyticalStorage": "[parameters('enableAnalyticalStorage')]",
         "analyticalStorageConfiguration": "[parameters('analyticalStorageConfiguration')]",
-        "minimalTlsVersion": "Tls12",
         "capacity": "[parameters('capacity')]",
         "virtualNetworkRules": "[if(not(empty(parameters('virtualNetworkSubnetId'))), createArray(createObject('id', parameters('virtualNetworkSubnetId'))), createArray())]",
         "isVirtualNetworkFilterEnabled": "[not(empty(parameters('virtualNetworkSubnetId')))]",
@@ -349,7 +348,7 @@
         "count": "[length(variables('readerPrincipals'))]"
       },
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
-      "apiVersion": "2022-11-15",
+      "apiVersion": "2022-08-15",
       "name": "[format('{0}/{1}', parameters('name'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').Reader), variables('readerPrincipals')[copyIndex()], parameters('name')))]",
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').Reader)]",
@@ -366,7 +365,7 @@
         "count": "[length(variables('contributorPrincipals'))]"
       },
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
-      "apiVersion": "2022-11-15",
+      "apiVersion": "2022-08-15",
       "name": "[format('{0}/{1}', parameters('name'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').DataContributor), variables('contributorPrincipals')[copyIndex()], parameters('name')))]",
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').DataContributor)]",
@@ -379,7 +378,7 @@
     },
     {
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
-      "apiVersion": "2022-11-15",
+      "apiVersion": "2022-08-15",
       "name": "[format('{0}/{1}', parameters('name'), parameters('databaseName'))]",
       "properties": {
         "resource": {
@@ -397,7 +396,7 @@
         "count": "[length(parameters('containerConfigurations'))]"
       },
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
-      "apiVersion": "2022-11-15",
+      "apiVersion": "2022-08-15",
       "name": "[format('{0}/{1}/{2}', parameters('name'), parameters('databaseName'), parameters('containerConfigurations')[copyIndex()].id)]",
       "properties": {
         "options": "[if(not(contains(parameters('containerConfigurations')[copyIndex()], 'options')), if(empty(parameters('databaseScalingOptions')), parameters('defaultContainerScaleSettings'), null()), parameters('containerConfigurations')[copyIndex()].options)]",
@@ -410,7 +409,7 @@
     {
       "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
