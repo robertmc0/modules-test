@@ -1,0 +1,459 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.15.31.15270",
+      "templateHash": "15250129005210259382"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Cosmos DB account."
+      },
+      "minLength": 1
+    },
+    "databaseName": {
+      "type": "string",
+      "metadata": {
+        "description": "The database to create in the Cosmos DB account."
+      },
+      "minLength": 1
+    },
+    "locations": {
+      "type": "array",
+      "metadata": {
+        "locations": [
+          {
+            "locationName": "australiaeast",
+            "failoverPriority": 0,
+            "isZoneRedundant": true
+          },
+          {
+            "locationName": "australiasoutheast",
+            "failoverPriority": 1,
+            "isZoneRedundant": false
+          }
+        ],
+        "description": "An array that contains the georeplication locations enabled for the Cosmos DB account."
+      }
+    },
+    "containerConfigurations": {
+      "type": "array",
+      "metadata": {
+        "description": "Container configurations to apply to the Cosmos DB account."
+      }
+    },
+    "accountAccess": {
+      "type": "object",
+      "metadata": {
+        "accountAccess": {
+          "reader": {
+            "principals": [
+              "principalId1"
+            ]
+          },
+          "contributor": {
+            "principals": [
+              "principalId1",
+              "principalId2"
+            ]
+          }
+        },
+        "description": "Access permissions to apply to the Cosmos DB account."
+      }
+    },
+    "virtualNetworkSubnetId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The full resource ID of a subnet in a virtual network to deploy the Cosmos DB account in."
+      }
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Optional. Indicates whether to allow public network access. Defaults to Disabled."
+      }
+    },
+    "disableLocalAuth": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Indicates whether to disable local authentication with access keys. Defaults to true."
+      }
+    },
+    "disableKeyBasedMetadataWriteAccess": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Disable write operations on metadata resources (databases, containers, throughput) via account keys. Defaults to true."
+      }
+    },
+    "consistencyPolicy": {
+      "type": "object",
+      "defaultValue": {
+        "defaultConsistencyLevel": "Session"
+      },
+      "metadata": {
+        "description": "Optional. The consistency policy for the Cosmos DB account. Defaults to Session consistency."
+      }
+    },
+    "enableMultipleWriteLocations": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Indicates whether multiple write locations is enabled."
+      }
+    },
+    "enableAutomaticFailover": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Indicates whether automatic failover is enabled."
+      }
+    },
+    "enableAnalyticalStorage": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Indicates whether to enable storage analytics."
+      }
+    },
+    "analyticalStorageConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. Analytical storage specific properties."
+      }
+    },
+    "capacity": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "capacity": {
+          "totalThroughputLimit": 10000
+        },
+        "description": "Optional. Total capacity limit for the Cosmos DB account."
+      }
+    },
+    "defaultContainerScaleSettings": {
+      "type": "object",
+      "defaultValue": {
+        "autoscaleSettings": {
+          "maxThroughput": 1000
+        }
+      },
+      "metadata": {
+        "description": "Optional. The default scale settings to apply to each container, when not using dedicated (database level) scale settings. Defaults to autoscale with max throughput of 1000 RUs."
+      }
+    },
+    "databaseScalingOptions": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example1": {
+          "autoscaleSettings": {
+            "maxThroughput": 10000
+          }
+        },
+        "example2": {
+          "throughput": 1000
+        },
+        "description": "Optional. The dedicated (database level) scale settings to apply. When not provided, scale settings are configured on each container."
+      }
+    },
+    "allowedIpAddressOrRanges": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "example": [
+          "1.2.3.4",
+          "10.0.10.0/28"
+        ],
+        "description": "Optional. List of IP rules to apply to the Cosmos DB account."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      },
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ]
+    },
+    "diagnosticLogCategoryToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "ControlPlaneRequests",
+        "PartitionKeyStatistics",
+        "PartitionKeyRUConsumption"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Requests"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic log analytics workspace."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the diagnostic storage account."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticLogCategoryToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "cosmosDBRoleDefintions": {
+      "Reader": "00000000-0000-0000-0000-000000000001",
+      "DataContributor": "00000000-0000-0000-0000-000000000002"
+    },
+    "readerPrincipals": "[if(contains(parameters('accountAccess'), 'reader'), parameters('accountAccess').reader.principalIds, createArray())]",
+    "contributorPrincipals": "[if(contains(parameters('accountAccess'), 'contributor'), parameters('accountAccess').contributor.principalIds, createArray())]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "apiVersion": "2022-08-15",
+      "name": "[parameters('name')]",
+      "kind": "GlobalDocumentDB",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "copy": [
+          {
+            "name": "ipRules",
+            "count": "[length(parameters('allowedIpAddressOrRanges'))]",
+            "input": {
+              "ipAddressOrRange": "[parameters('allowedIpAddressOrRanges')[copyIndex('ipRules')]]"
+            }
+          }
+        ],
+        "databaseAccountOfferType": "Standard",
+        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+        "disableKeyBasedMetadataWriteAccess": "[parameters('disableKeyBasedMetadataWriteAccess')]",
+        "enableMultipleWriteLocations": "[parameters('enableMultipleWriteLocations')]",
+        "enableAutomaticFailover": "[parameters('enableAutomaticFailover')]",
+        "enableAnalyticalStorage": "[parameters('enableAnalyticalStorage')]",
+        "analyticalStorageConfiguration": "[parameters('analyticalStorageConfiguration')]",
+        "capacity": "[parameters('capacity')]",
+        "virtualNetworkRules": "[if(not(empty(parameters('virtualNetworkSubnetId'))), createArray(createObject('id', parameters('virtualNetworkSubnetId'))), createArray())]",
+        "isVirtualNetworkFilterEnabled": "[not(empty(parameters('virtualNetworkSubnetId')))]",
+        "consistencyPolicy": "[parameters('consistencyPolicy')]",
+        "disableLocalAuth": "[parameters('disableLocalAuth')]",
+        "locations": "[parameters('locations')]"
+      }
+    },
+    {
+      "copy": {
+        "name": "sqlRoleAssignmentReader",
+        "count": "[length(variables('readerPrincipals'))]"
+      },
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+      "apiVersion": "2022-08-15",
+      "name": "[format('{0}/{1}', parameters('name'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').Reader), variables('readerPrincipals')[copyIndex()], parameters('name')))]",
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').Reader)]",
+        "principalId": "[variables('readerPrincipals')[copyIndex()]]",
+        "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "sqlRoleAssignmentContributor",
+        "count": "[length(variables('contributorPrincipals'))]"
+      },
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+      "apiVersion": "2022-08-15",
+      "name": "[format('{0}/{1}', parameters('name'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').DataContributor), variables('contributorPrincipals')[copyIndex()], parameters('name')))]",
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('name'), variables('cosmosDBRoleDefintions').DataContributor)]",
+        "principalId": "[variables('contributorPrincipals')[copyIndex()]]",
+        "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+      "apiVersion": "2022-08-15",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('databaseName'))]",
+      "properties": {
+        "resource": {
+          "id": "[parameters('databaseName')]"
+        },
+        "options": "[if(empty(parameters('databaseScalingOptions')), null(), parameters('databaseScalingOptions'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "container",
+        "count": "[length(parameters('containerConfigurations'))]"
+      },
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2022-08-15",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), parameters('databaseName'), parameters('containerConfigurations')[copyIndex()].id)]",
+      "properties": {
+        "options": "[if(not(contains(parameters('containerConfigurations')[copyIndex()], 'options')), if(empty(parameters('databaseScalingOptions')), parameters('defaultContainerScaleSettings'), null()), parameters('containerConfigurations')[copyIndex()].options)]",
+        "resource": "[parameters('containerConfigurations')[copyIndex()]]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('name'), parameters('databaseName'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "storageAccountId": "[if(not(empty(parameters('diagnosticStorageAccountId'))), parameters('diagnosticStorageAccountId'), null())]",
+        "workspaceId": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), parameters('diagnosticLogAnalyticsWorkspaceId'), null())]",
+        "eventHubAuthorizationRuleId": "[if(not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))), parameters('diagnosticEventHubAuthorizationRuleId'), null())]",
+        "eventHubName": "[if(not(empty(parameters('diagnosticEventHubName'))), parameters('diagnosticEventHubName'), null())]",
+        "metrics": "[variables('diagnosticsMetrics')]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "logAnalyticsDestinationType": "Dedicated"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the Cosmos DB account."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the Cosmos DB account."
+      }
+    }
+  }
+}
