@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "8972884398043882424"
+      "templateHash": "3043788362870944034"
     }
   },
   "parameters": {
@@ -62,8 +62,9 @@
     },
     "skuCapacity": {
       "type": "int",
+      "defaultValue": 0,
       "metadata": {
-        "description": "If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless)."
+        "description": "Optional. If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless). Not used for Elastic pool."
       }
     },
     "skuMinCapacity": {
@@ -267,51 +268,46 @@
         "name": "GP_S_Gen5",
         "tier": "GeneralPurpose",
         "family": "Gen5",
-        "kind": "v12.0,user,vcore"
+        "defaultCapacity": 2
       },
       "vCoreGen5Serverless": {
         "name": "GP_S_Gen5",
         "tier": "GeneralPurpose",
         "family": "Gen5",
-        "kind": "v12.0,user,vcore,serverless"
+        "defaultCapacity": 2
       },
       "Basic": {
         "name": "Basic",
         "tier": "Basic",
-        "family": "[json('null')]",
-        "kind": "v12.0,user"
+        "defaultCapacity": 10
       },
       "Standard": {
         "name": "Standard",
         "tier": "Standard",
-        "family": "[json('null')]",
-        "kind": "v12.0,user"
+        "defaultCapacity": 10
       },
       "Premium": {
         "name": "Premium",
         "tier": "Premium",
-        "family": "[json('null')]",
-        "kind": "v12.0,user"
+        "defaultCapacity": 10
       },
       "ElasticPool": {
         "name": "ElasticPool",
-        "tier": "[json('null')]",
-        "family": "[json('null')]",
-        "kind": "[json('null')]"
+        "defaultCapacity": 0
       }
     }
   },
   "resources": [
     {
       "type": "Microsoft.Sql/servers/databases",
-      "apiVersion": "2021-02-01-preview",
+      "apiVersion": "2022-08-01-preview",
       "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {
         "name": "[variables('skuMap')[parameters('skuType')].name]",
-        "tier": "[variables('skuMap')[parameters('skuType')].tier]",
-        "family": "[variables('skuMap')[parameters('skuType')].family]",
+        "tier": "[if(contains(variables('skuMap')[parameters('skuType')], 'tier'), variables('skuMap')[parameters('skuType')].tier, null())]",
+        "family": "[if(contains(variables('skuMap')[parameters('skuType')], 'family'), variables('skuMap')[parameters('skuType')].family, null())]",
         "capacity": "[parameters('skuCapacity')]"
       },
       "properties": {
@@ -320,8 +316,8 @@
         "zoneRedundant": "[parameters('zoneRedundant')]",
         "licenseType": "[parameters('licenseType')]",
         "readScale": "[parameters('readScaleOut')]",
-        "minCapacity": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('skuMinCapacity'), json('null'))]",
-        "autoPauseDelay": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('autoPauseDelay'), json('null'))]",
+        "minCapacity": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('skuMinCapacity'), null())]",
+        "autoPauseDelay": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('autoPauseDelay'), null())]",
         "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
         "createMode": "[parameters('createMode')]",
         "elasticPoolId": "[if(not(empty(parameters('elasticPoolId'))), parameters('elasticPoolId'), null())]"
@@ -329,7 +325,7 @@
     },
     {
       "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
-      "apiVersion": "2021-02-01-preview",
+      "apiVersion": "2022-08-01-preview",
       "name": "[format('{0}/{1}/{2}', parameters('sqlServerName'), parameters('databaseName'), 'default')]",
       "properties": {
         "retentionDays": "[parameters('retentionPeriod')]"
