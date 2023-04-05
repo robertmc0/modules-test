@@ -29,11 +29,12 @@ param createMode string = 'Default'
   'Premium'
   'vCoreGen5'
   'vCoreGen5Serverless'
+  'ElasticPool'
 ])
 param skuType string
 
-@description('If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless).')
-param skuCapacity int
+@description('Optional. If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless). Not used for Elastic pool.')
+param skuCapacity int = 0 //overridden by skuMap/defaultCapacity if not set
 
 @description('Optional. Min vCore allocation. Applicable for vCore Serverless model only. Requires string to handle decimals.')
 param skuMinCapacity string = '0.5'
@@ -65,6 +66,9 @@ param readScaleOut string = 'Disabled'
 
 @description('Optional. Set location of backups, geo, local or zone.')
 param requestedBackupStorageRedundancy string = 'Geo'
+
+@description('Optional. Elastic Pool ID.')
+param elasticPoolId string = ''
 
 @description('Optional. Resource tags.')
 @metadata({
@@ -149,48 +153,49 @@ var skuMap = {
     name: 'GP_S_Gen5'
     tier: 'GeneralPurpose'
     family: 'Gen5'
-    kind: 'v12.0,user,vcore'
+    defaultCapacity: 2 // vCores
   }
   vCoreGen5Serverless: {
     name: 'GP_S_Gen5'
     tier: 'GeneralPurpose'
     family: 'Gen5'
-    kind: 'v12.0,user,vcore,serverless'
+    defaultCapacity: 2 // vCores
   }
   Basic: {
     name: 'Basic'
     tier: 'Basic'
-    family: json('null')
-    kind: 'v12.0,user'
+    defaultCapacity: 10 // DTUs
   }
   Standard: {
     name: 'Standard'
     tier: 'Standard'
-    family: json('null')
-    kind: 'v12.0,user'
+    defaultCapacity: 10 // DTUs
   }
   Premium: {
     name: 'Premium'
     tier: 'Premium'
-    family: json('null')
-    kind: 'v12.0,user'
+    defaultCapacity: 10 // DTUs
+  }
+  ElasticPool: {
+    name: 'ElasticPool'
+    defaultCapacity: 0 // Not used
   }
 }
 
-resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' existing = {
+resource sqlServer 'Microsoft.Sql/servers@2022-08-01-preview' existing = {
   name: sqlServerName
 }
 
-resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-08-01-preview' = {
   parent: sqlServer
   name: databaseName
   location: location
   tags: tags
   sku: {
     name: skuMap[skuType].name
-    tier: skuMap[skuType].tier
-    family: skuMap[skuType].family
-    capacity: skuCapacity
+    tier: contains(skuMap[skuType], 'tier') ? skuMap[skuType].tier : null
+    family: contains(skuMap[skuType], 'family') ? skuMap[skuType].family : null
+    capacity: skuCapacity != 0 ? skuCapacity : skuMap[skuType].defaultCapacity
   }
   properties: {
     collation: databaseCollation
@@ -198,14 +203,15 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
     zoneRedundant: zoneRedundant
     licenseType: licenseType
     readScale: readScaleOut
-    minCapacity: skuType == 'vCoreGen5Serverless' ? any(skuMinCapacity) : json('null')
-    autoPauseDelay: skuType == 'vCoreGen5Serverless' ? autoPauseDelay : json('null')
+    minCapacity: skuType == 'vCoreGen5Serverless' ? any(skuMinCapacity) : null
+    autoPauseDelay: skuType == 'vCoreGen5Serverless' ? autoPauseDelay : null
     requestedBackupStorageRedundancy: requestedBackupStorageRedundancy
     createMode: createMode
+    elasticPoolId: !empty(elasticPoolId) ? elasticPoolId : null
   }
 }
 
-resource retention 'Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies@2021-02-01-preview' = {
+resource retention 'Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies@2022-08-01-preview' = {
   parent: sqlDatabase
   name: 'default'
   properties: {

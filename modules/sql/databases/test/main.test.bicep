@@ -67,6 +67,19 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
   }
 }
 
+module elasticPool '../../elastic-pool/main.bicep' = {
+  name: '${shortIdentifier}-ep-${uniqueString(deploymentName, 'elasticpool', location)}'
+  params: {
+    location: location
+    sqlServerName: sqlServer.name
+    name: 'example-elastic-pool'
+    skuType: 'StandardPool'
+    skuCapacity: 50
+    databaseMaxCapacity: 50
+    maxPoolSize: 53687091200 // 50 GIG
+  }
+}
+
 // ============== //
 // Test Execution //
 // ============== //
@@ -99,5 +112,19 @@ module sqlDatabase2 '../main.bicep' = {
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticStorageAccountId: diagnosticsStorageAccount.id
     maxDbSize: 10737418240 // 10 GIG
+  }
+}
+module sqlDatabase3 '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-elasticpool-sqldatabase'
+  params: {
+    location: location
+    sqlServerName: sqlServer.name
+    databaseName: 'example3-dev-db'
+    skuType: 'ElasticPool'
+    enableDiagnostics: true
+    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    diagnosticStorageAccountId: diagnosticsStorageAccount.id
+    maxDbSize: 10737418240 // 10 GIG
+    elasticPoolId: elasticPool.outputs.resourceId
   }
 }
