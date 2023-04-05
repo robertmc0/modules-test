@@ -195,7 +195,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-08-01-preview' = {
     name: skuMap[skuType].name
     tier: contains(skuMap[skuType], 'tier') ? skuMap[skuType].tier : null
     family: contains(skuMap[skuType], 'family') ? skuMap[skuType].family : null
-    capacity: skuCapacity
+    capacity: skuCapacity != 0 ? skuCapacity : skuMap[skuType].defaultCapacity
   }
   properties: {
     collation: databaseCollation

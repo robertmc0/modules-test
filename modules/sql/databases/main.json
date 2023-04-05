@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "3043788362870944034"
+      "templateHash": "8304645359938692858"
     }
   },
   "parameters": {
@@ -308,7 +308,7 @@
         "name": "[variables('skuMap')[parameters('skuType')].name]",
         "tier": "[if(contains(variables('skuMap')[parameters('skuType')], 'tier'), variables('skuMap')[parameters('skuType')].tier, null())]",
         "family": "[if(contains(variables('skuMap')[parameters('skuType')], 'family'), variables('skuMap')[parameters('skuType')].family, null())]",
-        "capacity": "[parameters('skuCapacity')]"
+        "capacity": "[if(not(equals(parameters('skuCapacity'), 0)), parameters('skuCapacity'), variables('skuMap')[parameters('skuType')].defaultCapacity)]"
       },
       "properties": {
         "collation": "[parameters('databaseCollation')]",
