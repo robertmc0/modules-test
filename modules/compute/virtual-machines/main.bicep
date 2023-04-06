@@ -269,6 +269,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [for i 
     networkProfile: {
       networkInterfaces: [
         {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/networkInterfaces', '${name}${format('{0:D2}', i + 1)}${networkInterfaceSuffix}')
         }
       ]
