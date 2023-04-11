@@ -75,8 +75,8 @@ module vmss '../main.bicep' = {
     subnetResourceId: '${vnet.id}/subnets/default'
     imageReference: {
       publisher: 'canonical'
-      offer: '0001-com-ubuntu-server-focal'
-      sku: '20_04-lts'
+      offer: '0001-com-ubuntu-server-jammy'
+      sku: '22_04-lts-gen2'
       version: 'latest'
     }
     customData: customData
@@ -87,5 +87,6 @@ module vmss '../main.bicep' = {
         'OldestVM'
       ]
     }
+    enableSecurityProfile: true
   }
 }

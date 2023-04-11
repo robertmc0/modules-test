@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "1586545505087904752"
+      "version": "0.16.1.55165",
+      "templateHash": "7269286258086145527"
     }
   },
   "parameters": {
@@ -68,13 +68,13 @@
       }
     },
     "adminUsername": {
-      "type": "secureString",
+      "type": "securestring",
       "metadata": {
         "description": "Specifies the name of the administrator account."
       }
     },
     "adminPassword": {
-      "type": "secureString",
+      "type": "securestring",
       "metadata": {
         "description": "Specifies the password of the administrator account. Refer to article for password requirements https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachinescalesets?pivots=deployment-language-bicep#virtualmachinescalesetosprofile."
       }
@@ -187,10 +187,58 @@
       "metadata": {
         "description": "Optional. Specify the type of resource lock."
       }
+    },
+    "enableSecurityProfile": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-au/azure/virtual-machines/trusted-launch",
+        "description": "Optional. Enables the Security related profile settings for the virtual machine. Only supported on Gen 2 VMs."
+      }
+    },
+    "encryptionAtHost": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable the encryption for all the disks including Resource/Temp disk at host itself."
+      }
+    },
+    "securityType": {
+      "type": "string",
+      "defaultValue": "TrustedLaunch",
+      "allowedValues": [
+        "TrustedLaunch",
+        "ConfidentialVM"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings."
+      }
+    },
+    "secureBootEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable secure boot on the virtual machine."
+      }
+    },
+    "vTpmEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable vTPM on the virtual machine."
+      }
     }
   },
   "variables": {
-    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "securityProfileSettings": {
+      "encryptionAtHost": "[parameters('encryptionAtHost')]",
+      "securityType": "[parameters('securityType')]",
+      "uefiSettings": {
+        "secureBootEnabled": "[parameters('secureBootEnabled')]",
+        "vTpmEnabled": "[parameters('vTpmEnabled')]"
+      }
+    }
   },
   "resources": [
     {
@@ -250,6 +298,7 @@
               }
             ]
           },
+          "securityProfile": "[if(parameters('enableSecurityProfile'), variables('securityProfileSettings'), createObject())]",
           "diagnosticsProfile": {
             "bootDiagnostics": {
               "enabled": true
@@ -276,17 +325,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed virtual machine scale set."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed virtual machine scale set."
-      }
+      },
+      "value": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('name'))]"
     }
   }
 }
