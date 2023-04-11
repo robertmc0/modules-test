@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "5770396572873791155"
+      "version": "0.16.1.55165",
+      "templateHash": "15479708002068906286"
     }
   },
   "parameters": {
@@ -257,7 +257,7 @@
       }
     },
     "adminPassword": {
-      "type": "secureString",
+      "type": "securestring",
       "metadata": {
         "description": "Specifies the password of the administrator account. Refer to https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#osprofile for password complexity requirements."
       }
@@ -420,7 +420,7 @@
       }
     },
     "domainJoinPassword": {
-      "type": "secureString",
+      "type": "securestring",
       "defaultValue": "",
       "metadata": {
         "description": "Optional. Password for the domain join user account."
@@ -456,9 +456,57 @@
       "metadata": {
         "description": "Optional. Specify the type of resource lock."
       }
+    },
+    "enableSecurityProfile": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-au/azure/virtual-machines/trusted-launch",
+        "description": "Optional. Enables the Security related profile settings for the virtual machine. Only supported on Gen 2 VMs."
+      }
+    },
+    "encryptionAtHost": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable the encryption for all the disks including Resource/Temp disk at host itself."
+      }
+    },
+    "securityType": {
+      "type": "string",
+      "defaultValue": "TrustedLaunch",
+      "allowedValues": [
+        "TrustedLaunch",
+        "ConfidentialVM"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings."
+      }
+    },
+    "secureBootEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable secure boot on the virtual machine."
+      }
+    },
+    "vTpmEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable vTPM on the virtual machine."
+      }
     }
   },
   "variables": {
+    "securityProfileSettings": {
+      "encryptionAtHost": "[parameters('encryptionAtHost')]",
+      "securityType": "[parameters('securityType')]",
+      "uefiSettings": {
+        "secureBootEnabled": "[parameters('secureBootEnabled')]",
+        "vTpmEnabled": "[parameters('vTpmEnabled')]"
+      }
+    },
     "lockSuffix": "-lck",
     "networkInterfaceSuffix": "-nic",
     "osDiskSuffix": "-osdisk",
@@ -569,6 +617,7 @@
             "enabled": true
           }
         },
+        "securityProfile": "[if(parameters('enableSecurityProfile'), variables('securityProfileSettings'), createObject())]",
         "licenseType": "[if(not(empty(parameters('licenseType'))), parameters('licenseType'), null())]"
       },
       "dependsOn": [
@@ -577,11 +626,11 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "copy": {
         "name": "extension_monitoring",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'Microsoft.EnterpriseCloud.Monitoring')]",
@@ -600,11 +649,11 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "copy": {
         "name": "extension_depAgent",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'DependencyAgentWindows')]",
@@ -622,11 +671,11 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "copy": {
         "name": "extension_guestHealth",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'GuestHealthWindowsAgent')]",
@@ -644,11 +693,11 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "copy": {
         "name": "extension_azureMonitorWindowsAgent",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'AzureMonitorWindowsAgent')]",
@@ -666,11 +715,11 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('antiMalwareConfiguration')))]",
       "copy": {
         "name": "extension_antimalware",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
+      "condition": "[not(empty(parameters('antiMalwareConfiguration')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'IaaSAntimalware')]",
@@ -688,11 +737,11 @@
       ]
     },
     {
-      "condition": "[and(not(empty(parameters('domainJoinSettings'))), not(empty(parameters('domainJoinPassword'))))]",
       "copy": {
         "name": "extension_joinDomain",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
+      "condition": "[and(not(empty(parameters('domainJoinSettings'))), not(empty(parameters('domainJoinPassword'))))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'JoinDomain')]",
@@ -718,11 +767,11 @@
       ]
     },
     {
-      "condition": "[not(empty(parameters('dscConfiguration')))]",
       "copy": {
         "name": "extension_dsc",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
+      "condition": "[not(empty(parameters('dscConfiguration')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'Microsoft.Powershell.DSC')]",
@@ -740,11 +789,11 @@
       ]
     },
     {
-      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "copy": {
         "name": "lock",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2017-04-01",
       "scope": "[format('Microsoft.Compute/virtualMachines/{0}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]",
@@ -761,22 +810,22 @@
   "outputs": {
     "name": {
       "type": "array",
+      "metadata": {
+        "description": "The name of the deployed virtual machines."
+      },
       "copy": {
         "count": "[length(range(0, parameters('instanceCount')))]",
         "input": "[format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1)))]"
-      },
-      "metadata": {
-        "description": "The name of the deployed virtual machines."
       }
     },
     "resourceId": {
       "type": "array",
+      "metadata": {
+        "description": "The resource ID of the deployed virtual machines."
+      },
       "copy": {
         "count": "[length(range(0, parameters('instanceCount')))]",
         "input": "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
-      },
-      "metadata": {
-        "description": "The resource ID of the deployed virtual machines."
       }
     }
   }

@@ -110,6 +110,7 @@ module vm '../main.bicep' = {
         time: '120'
       }
     }
+    enableSecurityProfile: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
   }
 }
