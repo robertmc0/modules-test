@@ -12,8 +12,10 @@ param shortIdentifier string = 'arn'
 @secure()
 param vmPassword string = '${toUpper(uniqueString(resourceGroup().id))}-${newGuid()}'
 
+@maxLength(15)
 param vmNameMin string = substring(newGuid(), 0, 15)
 
+@maxLength(15)
 param vmName string = substring(newGuid(), 0, 13)
 
 /*======================================================================
