@@ -61,6 +61,7 @@ module minImageTemplate '../main.bicep' = {
       offer: 'microsoftwindowsdesktop'
       sku: 'win11-22h2-avd'
     }
+    hyperVGeneration: 'V2'
     imageTemplateName: '${shortIdentifier}mintstimage${uniqueString(deployment().name, 'imageTemplate', location)}'
     userIdentityId: preReqs.outputs.userIdentityId
     subnetResourceId: '${preReqs.outputs.vnetId}/subnets/default'
@@ -99,6 +100,7 @@ module imageTemplate '../main.bicep' = {
         max: 48
       }
     }
+    hyperVGeneration: 'V2'
     osDiskSizeGB: 127
     imageTemplateName: '${shortIdentifier}tstimage${uniqueString(deployment().name, 'imageTemplate', location)}'
     userIdentityId: preReqs.outputs.userIdentityId

@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.14.46.61228",
-      "templateHash": "5809396560356513900"
+      "version": "0.16.2.56959",
+      "templateHash": "12567404169209703814"
     }
   },
   "parameters": {
@@ -78,6 +78,16 @@
         "sku": "Image sku name, e.g. win11-22h2-ent.",
         "version": "Image version, e.g. latest",
         "description": "Image definition of source image to use for image template."
+      }
+    },
+    "hyperVGeneration": {
+      "type": "string",
+      "allowedValues": [
+        "V1",
+        "V2"
+      ],
+      "metadata": {
+        "description": "The hypervisor generation of the Virtual Machine. Applicable to OS disks only."
       }
     },
     "stagingResourceGroupId": {
@@ -241,7 +251,7 @@
           "sku": "[parameters('imageDefinitionProperties').sku]"
         },
         "recommended": "[parameters('imageRecommendedSettings')]",
-        "hyperVGeneration": "V2"
+        "hyperVGeneration": "[parameters('hyperVGeneration')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Compute/galleries', parameters('imageGalleryName'))]"
@@ -318,17 +328,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('imageTemplateName')]",
       "metadata": {
         "description": "The name of the deployed image template."
-      }
+      },
+      "value": "[parameters('imageTemplateName')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.VirtualMachineImages/imageTemplates', parameters('imageTemplateName'))]",
       "metadata": {
         "description": "The resource ID of the deployed image template."
-      }
+      },
+      "value": "[resourceId('Microsoft.VirtualMachineImages/imageTemplates', parameters('imageTemplateName'))]"
     }
   }
 }
