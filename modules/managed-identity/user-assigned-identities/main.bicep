@@ -46,3 +46,6 @@ output resourceId string = userAssignedIdentity.id
 
 @description('The principal ID of the deployed user assigned identity.')
 output principalId string = userAssignedIdentity.properties.principalId
+
+@description('The client ID of the deployed user assigned identity.')
+output clientId string = userAssignedIdentity.properties.clientId
