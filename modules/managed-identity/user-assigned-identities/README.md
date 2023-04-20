@@ -25,6 +25,7 @@ This module performs the following
 | name        | string | The name of the deployed user assigned identity.         |
 | resourceId  | string | The resource ID of the deployed user assigned identity.  |
 | principalId | string | The principal ID of the deployed user assigned identity. |
+| clientId    | string | The client ID of the deployed user assigned identity.    |
 
 ## Examples
 
