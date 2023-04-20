@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "1421451578620235328"
+      "templateHash": "2610166609046924981"
     }
   },
   "parameters": {
@@ -40,7 +40,7 @@
         "Basic"
       ],
       "metadata": {
-        "description": "SKU name of the account."
+        "description": "Optional. SKU name of the account."
       }
     },
     "modules": {
@@ -50,7 +50,7 @@
         "name": "Module name.",
         "version": "Module version or specify latest to get the latest version.",
         "uri": "Module package uri, e.g. https://www.powershellgallery.com/api/v2/package.",
-        "description": "Modules to import into automation account."
+        "description": "Optional. Modules to import into automation account."
       }
     },
     "variables": {
@@ -58,7 +58,7 @@
       "defaultValue": [],
       "metadata": {
         "name": "Variable name.",
-        "description": "Variables to import into automation account.",
+        "description": "Optional. Variables to import into automation account.",
         "isEncrypted": "Variable is encypted.",
         "value": "Variable value."
       }
@@ -72,7 +72,7 @@
         "runbookType": "Runbook type: Graph, Graph PowerShell, Graph PowerShellWorkflow, PowerShell, PowerShell Workflow, Script.",
         "logProgress": "Enable progress logs.",
         "logVerbose": "Enable verbose logs.",
-        "description": "Runbooks to import into automation account."
+        "description": "Optional. Runbooks to import into automation account."
       }
     },
     "schedules": {
@@ -87,7 +87,7 @@
           "frequency": "Hour",
           "timeZone": "Australia/Canberra, Melbourne, Sydney"
         },
-        "description": "Schedules to import into automation account."
+        "description": "Optional. Schedules to import into automation account."
       }
     },
     "systemAssignedIdentity": {

@@ -13,14 +13,14 @@ param location string
 })
 param tags object = {}
 
-@description('SKU name of the account.')
+@description('Optional. SKU name of the account.')
 @allowed([
   'Free'
   'Basic'
 ])
 param sku string = 'Basic'
 
-@description('Modules to import into automation account.')
+@description('Optional. Modules to import into automation account.')
 @metadata({
   name: 'Module name.'
   version: 'Module version or specify latest to get the latest version.'
@@ -28,7 +28,7 @@ param sku string = 'Basic'
 })
 param modules array = []
 
-@description('Variables to import into automation account.')
+@description('Optional. Variables to import into automation account.')
 @metadata({
   name: 'Variable name.'
   description: 'Variable Description.'
@@ -37,7 +37,7 @@ param modules array = []
 })
 param variables array = []
 
-@description('Runbooks to import into automation account.')
+@description('Optional. Runbooks to import into automation account.')
 @metadata({
   runbookName: 'Runbook name.'
   runbookUri: 'Runbook URI.'
@@ -47,7 +47,7 @@ param variables array = []
 })
 param runbooks array = []
 
-@description('Schedules to import into automation account.')
+@description('Optional. Schedules to import into automation account.')
 @metadata({
   example: {
     name: 'auto-shutdown-1'
