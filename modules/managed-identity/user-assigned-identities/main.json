@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "13782152584650880487"
+      "version": "0.16.2.56959",
+      "templateHash": "3676254501406196600"
     }
   },
   "parameters": {
@@ -74,24 +74,31 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed user assigned identity."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed user assigned identity."
-      }
+      },
+      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
     },
     "principalId": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))).principalId]",
       "metadata": {
         "description": "The principal ID of the deployed user assigned identity."
-      }
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2022-01-31-preview').principalId]"
+    },
+    "clientId": {
+      "type": "string",
+      "metadata": {
+        "description": "The client ID of the deployed user assigned identity."
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2022-01-31-preview').clientId]"
     }
   }
 }
