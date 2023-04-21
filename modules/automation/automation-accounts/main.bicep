@@ -13,14 +13,14 @@ param location string
 })
 param tags object = {}
 
-@description('SKU name of the account.')
+@description('Optional. SKU name of the account.')
 @allowed([
   'Free'
   'Basic'
 ])
 param sku string = 'Basic'
 
-@description('Modules to import into automation account.')
+@description('Optional. Modules to import into automation account.')
 @metadata({
   name: 'Module name.'
   version: 'Module version or specify latest to get the latest version.'
@@ -28,7 +28,16 @@ param sku string = 'Basic'
 })
 param modules array = []
 
-@description('Runbooks to import into automation account.')
+@description('Optional. Variables to import into automation account.')
+@metadata({
+  name: 'Variable name.'
+  description: 'Variable Description.'
+  isEncrypted: 'Variable is encypted.'
+  value: 'Variable value.'
+})
+param variables array = []
+
+@description('Optional. Runbooks to import into automation account.')
 @metadata({
   runbookName: 'Runbook name.'
   runbookUri: 'Runbook URI.'
@@ -37,6 +46,19 @@ param modules array = []
   logVerbose: 'Enable verbose logs.'
 })
 param runbooks array = []
+
+@description('Optional. Schedules to import into automation account.')
+@metadata({
+  example: {
+    name: 'auto-shutdown-1'
+    description: 'Auto shutdown schedule'
+    startTime: '2023-03-30T19:00:00+00:00'
+    interval: 1
+    frequency: 'Hour'
+    timeZone: 'Australia/Canberra, Melbourne, Sydney' // IANA ID / Windows Time Zone ID
+  }
+})
+param schedules array = []
 
 @description('Optional. Enables system assigned managed identity on the resource.')
 param systemAssignedIdentity bool = false
@@ -152,7 +174,7 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-resource automationAccount 'Microsoft.Automation/automationAccounts@2021-06-22' = {
+resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' = {
   name: name
   location: location
   tags: tags
@@ -165,7 +187,7 @@ resource automationAccount 'Microsoft.Automation/automationAccounts@2021-06-22' 
 }
 
 @batchSize(1)
-resource automationAccountModules 'Microsoft.Automation/automationAccounts/modules@2020-01-13-preview' = [for module in modules: {
+resource automationAccountModules 'Microsoft.Automation/automationAccounts/modules@2022-08-08' = [for module in modules: {
   parent: automationAccount
   name: module.name
   properties: {
@@ -176,7 +198,17 @@ resource automationAccountModules 'Microsoft.Automation/automationAccounts/modul
   }
 }]
 
-resource runbook 'Microsoft.Automation/automationAccounts/runbooks@2019-06-01' = [for runbook in runbooks: {
+resource automationAccountVariables 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = [for variable in variables: {
+  name: variable.name
+  parent: automationAccount
+  properties: {
+    description: variable.description
+    isEncrypted: variable.isEncrypted
+    value: variable.value
+  }
+}]
+
+resource runbook 'Microsoft.Automation/automationAccounts/runbooks@2022-08-08' = [for runbook in runbooks: {
   parent: automationAccount
   name: runbook.runbookName
   location: location
@@ -186,6 +218,38 @@ resource runbook 'Microsoft.Automation/automationAccounts/runbooks@2019-06-01' =
     logVerbose: runbook.logVerbose
     publishContentLink: {
       uri: runbook.runbookUri
+    }
+  }
+}]
+
+resource schedule 'Microsoft.Automation/automationAccounts/schedules@2022-08-08' = [for schedule in schedules: {
+  parent: automationAccount
+  dependsOn: [
+    runbook
+  ]
+  name: schedule.name
+  properties: {
+    description: schedule.description
+    startTime: schedule.startTime
+    frequency: schedule.frequency
+    interval: schedule.interval
+    timeZone: schedule.timeZone
+  }
+}]
+
+resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-08-08' = [for i in range(0, length(runbooks)): if (contains(runbooks[i], 'linkSchedule')) {
+  parent: automationAccount
+  name: guid(automationAccount.name, runbooks[i].runbookName)
+  dependsOn: [
+    schedule
+  ]
+  properties: {
+    parameters: {}
+    runbook: {
+      name: runbooks[i].runbookName
+    }
+    schedule: {
+      name: (contains(runbooks[i], 'linkSchedule')) ? runbooks[i].linkSchedule : ''
     }
   }
 }]
