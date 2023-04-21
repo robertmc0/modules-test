@@ -88,5 +88,9 @@ module vmss '../main.bicep' = {
       ]
     }
     enableSecurityProfile: true
+    encryptionAtHost: true
+    securityType: 'TrustedLaunch'
+    secureBootEnabled: true
+    vTpmEnabled: true
   }
 }
