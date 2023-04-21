@@ -113,6 +113,10 @@ module vm '../main.bicep' = {
       }
     }
     enableSecurityProfile: true
+    encryptionAtHost: true
+    securityType: 'TrustedLaunch'
+    secureBootEnabled: true
+    vTpmEnabled: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
   }
 }
