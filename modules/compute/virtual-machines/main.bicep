@@ -82,7 +82,7 @@ param customData string = ''
 })
 param linuxConfiguration object = {}
 
-@description('Specifies Windows operating system settings on the virtual machine.')
+@description('Optional. Specifies Windows operating system settings on the virtual machine.')
 @metadata({
   doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#windowsconfiguration'
   example: {

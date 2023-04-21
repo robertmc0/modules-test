@@ -15,7 +15,7 @@ This module performs the following
 - Applies DSC extension if specified.
 - Adds data disks if specified.
 - Adds custom data if specified.
-- Adds Security Profiles if specified
+- Adds Security Profiles if specified.
 - Applies a lock to the virtual machine if the lock is specified.
 
 ## Parameters

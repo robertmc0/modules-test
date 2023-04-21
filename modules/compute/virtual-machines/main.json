@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "15968161961443096945"
+      "templateHash": "15511378884145228272"
     }
   },
   "parameters": {
@@ -158,7 +158,7 @@
             ]
           }
         },
-        "description": "Specifies Windows operating system settings on the virtual machine."
+        "description": "Optional. Specifies Windows operating system settings on the virtual machine."
       }
     },
     "systemAssignedIdentity": {
