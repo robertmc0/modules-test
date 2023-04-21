@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "8301734963570591160"
+      "version": "0.16.2.56959",
+      "templateHash": "2610166609046924981"
     }
   },
   "parameters": {
@@ -40,7 +40,7 @@
         "Basic"
       ],
       "metadata": {
-        "description": "SKU name of the account."
+        "description": "Optional. SKU name of the account."
       }
     },
     "modules": {
@@ -50,7 +50,17 @@
         "name": "Module name.",
         "version": "Module version or specify latest to get the latest version.",
         "uri": "Module package uri, e.g. https://www.powershellgallery.com/api/v2/package.",
-        "description": "Modules to import into automation account."
+        "description": "Optional. Modules to import into automation account."
+      }
+    },
+    "variables": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Variable name.",
+        "description": "Optional. Variables to import into automation account.",
+        "isEncrypted": "Variable is encypted.",
+        "value": "Variable value."
       }
     },
     "runbooks": {
@@ -62,7 +72,22 @@
         "runbookType": "Runbook type: Graph, Graph PowerShell, Graph PowerShellWorkflow, PowerShell, PowerShell Workflow, Script.",
         "logProgress": "Enable progress logs.",
         "logVerbose": "Enable verbose logs.",
-        "description": "Runbooks to import into automation account."
+        "description": "Optional. Runbooks to import into automation account."
+      }
+    },
+    "schedules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "example": {
+          "name": "auto-shutdown-1",
+          "description": "Auto shutdown schedule",
+          "startTime": "2023-03-30T19:00:00+00:00",
+          "interval": 1,
+          "frequency": "Hour",
+          "timeZone": "Australia/Canberra, Melbourne, Sydney"
+        },
+        "description": "Optional. Schedules to import into automation account."
       }
     },
     "systemAssignedIdentity": {
@@ -232,7 +257,7 @@
   "resources": [
     {
       "type": "Microsoft.Automation/automationAccounts",
-      "apiVersion": "2021-06-22",
+      "apiVersion": "2022-08-08",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -251,7 +276,7 @@
         "batchSize": 1
       },
       "type": "Microsoft.Automation/automationAccounts/modules",
-      "apiVersion": "2020-01-13-preview",
+      "apiVersion": "2022-08-08",
       "name": "[format('{0}/{1}', parameters('name'), parameters('modules')[copyIndex()].name)]",
       "properties": {
         "contentLink": {
@@ -265,11 +290,28 @@
     },
     {
       "copy": {
+        "name": "automationAccountVariables",
+        "count": "[length(parameters('variables'))]"
+      },
+      "type": "Microsoft.Automation/automationAccounts/variables",
+      "apiVersion": "2022-08-08",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('variables')[copyIndex()].name)]",
+      "properties": {
+        "description": "[parameters('variables')[copyIndex()].description]",
+        "isEncrypted": "[parameters('variables')[copyIndex()].isEncrypted]",
+        "value": "[parameters('variables')[copyIndex()].value]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
         "name": "runbook",
         "count": "[length(parameters('runbooks'))]"
       },
       "type": "Microsoft.Automation/automationAccounts/runbooks",
-      "apiVersion": "2019-06-01",
+      "apiVersion": "2022-08-08",
       "name": "[format('{0}/{1}', parameters('name'), parameters('runbooks')[copyIndex()].runbookName)]",
       "location": "[parameters('location')]",
       "properties": {
@@ -282,6 +324,49 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "schedule",
+        "count": "[length(parameters('schedules'))]"
+      },
+      "type": "Microsoft.Automation/automationAccounts/schedules",
+      "apiVersion": "2022-08-08",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('schedules')[copyIndex()].name)]",
+      "properties": {
+        "description": "[parameters('schedules')[copyIndex()].description]",
+        "startTime": "[parameters('schedules')[copyIndex()].startTime]",
+        "frequency": "[parameters('schedules')[copyIndex()].frequency]",
+        "interval": "[parameters('schedules')[copyIndex()].interval]",
+        "timeZone": "[parameters('schedules')[copyIndex()].timeZone]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]",
+        "runbook"
+      ]
+    },
+    {
+      "copy": {
+        "name": "jobSchedule",
+        "count": "[length(range(0, length(parameters('runbooks'))))]"
+      },
+      "condition": "[contains(parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]], 'linkSchedule')]",
+      "type": "Microsoft.Automation/automationAccounts/jobSchedules",
+      "apiVersion": "2022-08-08",
+      "name": "[format('{0}/{1}', parameters('name'), guid(parameters('name'), parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]].runbookName))]",
+      "properties": {
+        "parameters": {},
+        "runbook": {
+          "name": "[parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]].runbookName]"
+        },
+        "schedule": {
+          "name": "[if(contains(parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]], 'linkSchedule'), parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]].linkSchedule, '')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]",
+        "schedule"
       ]
     },
     {
@@ -333,24 +418,24 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed automation account."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed automation account."
-      }
+      },
+      "value": "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
     },
     "systemAssignedPrincipalId": {
       "type": "string",
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Automation/automationAccounts', parameters('name')), '2021-06-22', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Automation/automationAccounts', parameters('name')), '2021-06-22', 'full').identity.principalId, '')]",
       "metadata": {
         "description": "The principal ID of the system assigned identity."
-      }
+      },
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Automation/automationAccounts', parameters('name')), '2022-08-08', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Automation/automationAccounts', parameters('name')), '2022-08-08', 'full').identity.principalId, '')]"
     }
   }
 }
