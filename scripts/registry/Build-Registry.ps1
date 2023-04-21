@@ -78,6 +78,8 @@ function Build-Registry {
 
   CreateRegistry -AzureRegion $AzureRegion -TargetRegistryName $TargetRegistryName -TargetTenantId $TargetTenantId  -TargetSubscriptionName $TargetSubscriptionName -TargetRegistryResourceGroupName $TargetRegistryResourceGroupName -Tags $Tags
   ImportImagesToTargetRegistry -SourceRegistryToken $SourceRegistryToken -SourceRegistryName $SourceRegistryName -Images $Images -TargetTenantId $TargetTenantId -TargetSubscriptionName $TargetSubscriptionName -TargetRegistryName $TargetRegistryName
+
+  Write-Host "Build and registry import process was successful."
 }
 
 function ConnectToSourceRegistry {
@@ -141,7 +143,7 @@ function CreateRegistry() {
     [Parameter(Mandatory = $true)]
     [string] $TargetRegistryResourceGroupName,
     [Parameter(Mandatory = $false)]
-    [string] $Tags
+    [string] $Tags = "{}"
   )
   $ErrorActionPreference = "Stop"
 
