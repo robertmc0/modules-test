@@ -22,6 +22,7 @@ This module deploys Microsoft.VirtualMachineImages imageTemplates
 | `vmSize`                     | `string` | No       | Optional. Size of virtual machine to use for image template.                                     |
 | `subnetResourceId`           | `string` | Yes      | Resource ID of the virtual machine subnet.                                                       |
 | `sourceImage`                | `object` | Yes      | Image definition of source image to use for image template.                                      |
+| `hyperVGeneration`           | `string` | Yes      | The hypervisor generation of the Virtual Machine. Applicable to OS disks only.                   |
 | `stagingResourceGroupId`     | `string` | No       | Optional. Resource ID of the staging resource group that host resources used during image build. |
 | `runOutputName`              | `string` | Yes      | Image name to create and distribute using Azure Image Builder.                                   |
 | `replicationRegions`         | `array`  | No       | Optional. Azure regions where you would like to replicate the custom image after it is created.  |
