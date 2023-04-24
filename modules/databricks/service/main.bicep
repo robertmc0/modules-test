@@ -108,7 +108,7 @@ resource databricks 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {
   }
   properties: {
     publicNetworkAccess: publicNetworkAccess
-    managedResourceGroupId: managedResourceGroupId //this is dumb, ID in the documentation actually means name.
+    managedResourceGroupId: managedResourceGroupId
     requiredNsgRules: requiredNsgRules
     parameters: {
       customPrivateSubnetName: { value: customPrivateSubnetName }

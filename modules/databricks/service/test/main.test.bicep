@@ -26,10 +26,10 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: location
 }
 
-// resource managedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-//   name:
-//   location: location
-// }
+//This is a dumb hack, ADB resource wants a resource ID for deployment, but the Resource can't be created.
+resource managedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
+  name: '${shortIdentifier}-tst-mrg-${uniqueString(deployment().name, 'resourceGroup', location)}'
+}
 
 module virtualNetwork 'main.test.prereqs.bicep' = {
   name: '${shortIdentifier}-tst-nwk-${uniqueString(deployment().name, 'resourceGroup', location)}'
@@ -51,9 +51,9 @@ module databricks '../main.bicep' = {
   params: {
     name: '${uniqueString(deployment().name, location)}-adb'
     location: resourceGroup.location
-    customPrivateSubnetName: privateSubnetName
-    customPublicSubnetName: publicSubnetName
+    customPrivateSubnetName: '${uniqueString(deployment().name, location)}-${privateSubnetName}'
+    customPublicSubnetName: '${uniqueString(deployment().name, location)}-${publicSubnetName}'
     customVirtualNetworkId: virtualNetwork.outputs.resourceId
-    managedResourceGroupId: '${shortIdentifier}-tst-mrg-${uniqueString(deployment().name, 'resourceGroup', location)}'
+    managedResourceGroupId: managedResourceGroup.id
   }
 }
