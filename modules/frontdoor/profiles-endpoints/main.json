@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.15.31.15270",
-      "templateHash": "17868482682848469684"
+      "version": "0.16.2.56959",
+      "templateHash": "13194981523082833674"
     }
   },
   "parameters": {
@@ -286,9 +286,7 @@
       "name": "[format('{0}/{1}', parameters('profileName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-'))]",
       "properties": {
         "hostName": "[parameters('customDomains')[copyIndex()].hostName]",
-        "azureDnsZone": {
-          "id": "[parameters('customDomains')[copyIndex()].dnsZoneId]"
-        },
+        "azureDnsZone": "[if(contains(parameters('customDomains')[copyIndex()], 'dnsZoneId'), createObject('id', parameters('customDomains')[copyIndex()].dnsZoneId), null())]",
         "tlsSettings": {
           "certificateType": "[parameters('customDomains')[copyIndex()].tlsSettings.certificateType]",
           "minimumTlsVersion": "TLS12",
@@ -393,7 +391,7 @@
         "count": "[length(parameters('ruleSets'))]"
       },
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "[format('rulesModuleDeploy{0}', copyIndex())]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -417,8 +415,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "10128574613656338549"
+              "version": "0.16.2.56959",
+              "templateHash": "8072352215590356776"
             }
           },
           "parameters": {
@@ -468,6 +466,9 @@
   "outputs": {
     "endpoints": {
       "type": "array",
+      "metadata": {
+        "description": "The endpoints of the deployed Azure Front Door Profile."
+      },
       "copy": {
         "count": "[length(parameters('endpoints'))]",
         "input": {
@@ -475,13 +476,13 @@
           "name": "[parameters('endpoints')[copyIndex()].name]",
           "hostName": "[reference(resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('profileName'), parameters('endpoints')[copyIndex()].name), '2022-11-01-preview').hostName]"
         }
-      },
-      "metadata": {
-        "description": "The endpoints of the deployed Azure Front Door Profile."
       }
     },
     "customDomains": {
       "type": "array",
+      "metadata": {
+        "description": "The custom domains of the deployed Azure Front Door Profile."
+      },
       "copy": {
         "count": "[length(parameters('customDomains'))]",
         "input": {
@@ -491,13 +492,13 @@
           "status": "[reference(resourceId('Microsoft.Cdn/profiles/customDomains', parameters('profileName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-')), '2022-11-01-preview').deploymentStatus]",
           "state": "[reference(resourceId('Microsoft.Cdn/profiles/customDomains', parameters('profileName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-')), '2022-11-01-preview').provisioningState]"
         }
-      },
-      "metadata": {
-        "description": "The custom domains of the deployed Azure Front Door Profile."
       }
     },
     "customDomainValidations": {
       "type": "array",
+      "metadata": {
+        "description": "The custom domain validations of the deployed Azure Front Door Profile."
+      },
       "copy": {
         "count": "[length(parameters('customDomains'))]",
         "input": {
@@ -505,13 +506,13 @@
           "dnsTxtRecordValue": "[reference(resourceId('Microsoft.Cdn/profiles/customDomains', parameters('profileName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-')), '2022-11-01-preview').validationProperties.validationToken]",
           "expiry": "[reference(resourceId('Microsoft.Cdn/profiles/customDomains', parameters('profileName'), replace(parameters('customDomains')[copyIndex()].customDomainName, '.', '-')), '2022-11-01-preview').validationProperties.expirationDate]"
         }
-      },
-      "metadata": {
-        "description": "The custom domain validations of the deployed Azure Front Door Profile."
       }
     },
     "securityPolicies": {
       "type": "array",
+      "metadata": {
+        "description": "The security policies of the deployed Azure Front Door Profile."
+      },
       "copy": {
         "count": "[length(parameters('securityPolicies'))]",
         "input": {
@@ -519,22 +520,19 @@
           "name": "[parameters('securityPolicies')[copyIndex()].policyName]",
           "associations": "[reference(resourceId('Microsoft.Cdn/profiles/securityPolicies', parameters('profileName'), parameters('securityPolicies')[copyIndex()].policyName), '2022-11-01-preview').parameters.associations]"
         }
-      },
-      "metadata": {
-        "description": "The security policies of the deployed Azure Front Door Profile."
       }
     },
     "ruleSets": {
       "type": "array",
+      "metadata": {
+        "description": "The ruleSets of the deployed Azure Front Door Profile."
+      },
       "copy": {
         "count": "[length(parameters('ruleSets'))]",
         "input": {
           "id": "[resourceId('Microsoft.Cdn/profiles/ruleSets', parameters('profileName'), parameters('ruleSets')[copyIndex()].ruleSetName)]",
           "name": "[parameters('ruleSets')[copyIndex()].ruleSetName]"
         }
-      },
-      "metadata": {
-        "description": "The ruleSets of the deployed Azure Front Door Profile."
       }
     }
   }
