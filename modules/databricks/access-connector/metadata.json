@@ -1,6 +1,0 @@
-{
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
-  "name": "Azure Databricks Access Connector",
-  "summary": "Deploys Azure Databricks access connector, enabling connectivity to ADLS \u0026 other resources using Managed Identity",
-  "owner": "Arinco"
-}
