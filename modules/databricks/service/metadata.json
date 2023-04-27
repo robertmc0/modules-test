@@ -1,6 +1,6 @@
 {
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-schema#",
-  "name": "Azure Databricks Deployment",
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "Azure Databricks Module",
   "summary": "Deploys Azure Databricks using the premium sku",
   "owner": "Arinco"
 }

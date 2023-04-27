@@ -1,4 +1,4 @@
-# Azure Databricks Deployment
+# Azure Databricks Module
 
 Deploys Azure Databricks using the premium sku
 
