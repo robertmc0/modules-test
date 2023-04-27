@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "10447096147145293333"
+      "version": "0.16.2.56959",
+      "templateHash": "2821226513100664735"
     }
   },
   "parameters": {
@@ -87,15 +87,17 @@
         "description": "The service provider name."
       }
     },
-    "privatePeeringConfig": {
+    "peeringConfig": {
       "type": "object",
       "defaultValue": {},
       "metadata": {
+        "name": "The name of the peering",
+        "peeringType": "The type of peering.",
         "peerASN": "The peer ASN.",
         "primaryPeerAddressPrefix": "The primary address prefix.",
         "secondaryPeerAddressPrefix": "The secondary address prefix.",
         "vlanId": "The VLAN ID.",
-        "description": "Optional. Azure private peering configuration."
+        "description": "Optional. Peering configuration object."
       }
     },
     "diagnosticLogCategoryGroupsToEnable": {
@@ -200,13 +202,25 @@
         }
       }
     ],
+    "peeringConfiguration": [
+      {
+        "name": "[parameters('peeringConfig').name]",
+        "properties": {
+          "peeringType": "[parameters('peeringConfig').peeringType]",
+          "peerASN": "[parameters('peeringConfig').peerASN]",
+          "primaryPeerAddressPrefix": "[parameters('peeringConfig').primaryPeerAddressPrefix]",
+          "secondaryPeerAddressPrefix": "[parameters('peeringConfig').secondaryPeerAddressPrefix]",
+          "vlanId": "[parameters('peeringConfig').vlanId]"
+        }
+      }
+    ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
   },
   "resources": [
     {
       "type": "Microsoft.Network/expressRouteCircuits",
-      "apiVersion": "2022-01-01",
+      "apiVersion": "2022-09-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -221,24 +235,9 @@
           "bandwidthInMbps": "[parameters('bandwidthInMbps')]",
           "peeringLocation": "[parameters('peeringLocation')]",
           "serviceProviderName": "[parameters('serviceProviderName')]"
-        }
+        },
+        "peerings": "[if(not(empty(parameters('peeringConfig'))), variables('peeringConfiguration'), null())]"
       }
-    },
-    {
-      "condition": "[not(empty(parameters('privatePeeringConfig')))]",
-      "type": "Microsoft.Network/expressRouteCircuits/peerings",
-      "apiVersion": "2022-01-01",
-      "name": "[format('{0}/{1}', parameters('name'), 'AzurePrivatePeering')]",
-      "properties": {
-        "peeringType": "AzurePrivatePeering",
-        "peerASN": "[parameters('privatePeeringConfig').peerASN]",
-        "primaryPeerAddressPrefix": "[parameters('privatePeeringConfig').primaryPeerAddressPrefix]",
-        "secondaryPeerAddressPrefix": "[parameters('privatePeeringConfig').secondaryPeerAddressPrefix]",
-        "vlanId": "[parameters('privatePeeringConfig').vlanId]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/expressRouteCircuits', parameters('name'))]"
-      ]
     },
     {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
@@ -276,17 +275,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed express route circuit."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/expressRouteCircuits', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed express route circuit."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/expressRouteCircuits', parameters('name'))]"
     }
   }
 }

@@ -44,7 +44,7 @@ param peeringLocation string
 @description('The service provider name.')
 param serviceProviderName string
 
-@description('Optional. Peering configuration.')
+@description('Optional. Peering configuration object.')
 @metadata({
   name: 'The name of the peering'
   peeringType: 'The type of peering.'
@@ -55,6 +55,7 @@ param serviceProviderName string
 })
 param peeringConfig object = {}
 
+@description('Peering configuration variable.')
 var peeringConfiguration = [
   {
     name: peeringConfig.name
@@ -150,6 +151,7 @@ resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-09-01' = {
     }
     peerings: !empty(peeringConfig) ? peeringConfiguration : null
   }
+}
 
 resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
   scope: expressRoute
