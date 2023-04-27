@@ -10,7 +10,7 @@ param tags object = {
 param resourceLock string = 'CanNotDelete'
 
 module connector '../main.bicep' = {
-  name: 'adb-access-connector-${uniqueString(deployment().name, location)}'
+  name: '${uniqueString(deployment().name, location)}-adb-ac'
   params: {
     name: name
     location: location
