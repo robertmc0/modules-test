@@ -44,14 +44,29 @@ param peeringLocation string
 @description('The service provider name.')
 param serviceProviderName string
 
-@description('Optional. Azure private peering configuration.')
+@description('Optional. Peering configuration.')
 @metadata({
+  name: 'The name of the peering'
+  peeringType: 'The type of peering.'
   peerASN: 'The peer ASN.'
   primaryPeerAddressPrefix: 'The primary address prefix.'
   secondaryPeerAddressPrefix: 'The secondary address prefix.'
   vlanId: 'The VLAN ID.'
 })
-param privatePeeringConfig object = {}
+param peeringConfig object = {}
+
+var peeringConfiguration = [
+  {
+    name: peeringConfig.name
+    properties: {
+      peeringType: peeringConfig.peeringType
+      peerASN: peeringConfig.peerASN
+      primaryPeerAddressPrefix: peeringConfig.primaryPeerAddressPrefix
+      secondaryPeerAddressPrefix: peeringConfig.secondaryPeerAddressPrefix
+      vlanId: peeringConfig.vlanId
+    }
+  }
+]
 
 @description('Optional. The name of log category groups that will be streamed.')
 @allowed([
@@ -117,7 +132,7 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-01-01' = {
+resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-09-01' = {
   name: name
   location: location
   tags: tags
@@ -133,20 +148,8 @@ resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-01-01' = {
       peeringLocation: peeringLocation
       serviceProviderName: serviceProviderName
     }
+    peerings: !empty(peeringConfig) ? peeringConfiguration : null
   }
-}
-
-resource expressRoutePrivatePeering 'Microsoft.Network/expressRouteCircuits/peerings@2022-01-01' = if (!empty(privatePeeringConfig)) {
-  parent: expressRoute
-  name: 'AzurePrivatePeering'
-  properties: {
-    peeringType: 'AzurePrivatePeering'
-    peerASN: privatePeeringConfig.peerASN
-    primaryPeerAddressPrefix: privatePeeringConfig.primaryPeerAddressPrefix
-    secondaryPeerAddressPrefix: privatePeeringConfig.secondaryPeerAddressPrefix
-    vlanId: privatePeeringConfig.vlanId
-  }
-}
 
 resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
   scope: expressRoute
