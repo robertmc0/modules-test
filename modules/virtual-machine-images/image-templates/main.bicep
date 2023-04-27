@@ -46,6 +46,13 @@ param subnetResourceId string
 })
 param sourceImage object
 
+@description('The hypervisor generation of the Virtual Machine. Applicable to OS disks only.')
+@allowed([
+  'V1'
+  'V2'
+])
+param hyperVGeneration string
+
 @description('Optional. Resource ID of the staging resource group that host resources used during image build.')
 param stagingResourceGroupId string = ''
 
@@ -171,7 +178,7 @@ resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
       sku: imageDefinitionProperties.sku
     }
     recommended: imageRecommendedSettings
-    hyperVGeneration: 'V2'
+    hyperVGeneration: hyperVGeneration
   }
 }
 

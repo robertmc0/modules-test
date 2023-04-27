@@ -16,6 +16,7 @@ param location string = deployment().location
 param resourceGroupName string
 
 @description('Container registry name.')
+@maxLength(50)
 param containerRegistryName string
 
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {

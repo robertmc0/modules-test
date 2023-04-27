@@ -9,6 +9,9 @@ param location string = resourceGroup().location
 @maxLength(5)
 param shortIdentifier string = 'arn'
 
+@description('Optional. Get UTC for basetime calculations in code.')
+param baseTime string = utcNow('u')
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -68,13 +71,51 @@ module automationAccount '../main.bicep' = {
         runbookType: 'PowerShell'
         logProgress: true
         logVerbose: false
+        linkSchedule: 'auto-shutdown-1'
+      }
+      {
+        runbookName: 'AzureAutomationTutorialImportedTest'
+        runbookUri: 'https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/quickstarts/microsoft.automation/101-automation/scripts/AzureAutomationTutorial.ps1'
+        runbookType: 'PowerShell'
+        logProgress: true
+        logVerbose: false
+      }
+    ]
+    schedules: [
+      {
+        name: 'auto-shutdown-1'
+        description: 'Auto shutdown'
+        startTime: dateTimeAdd(baseTime, 'PT3H', 'yyyy-MM-ddTHH:mm+00:00')
+        frequency: 'Hour'
+        interval: 1
+        timeZone: 'AUS Eastern Standard Time'
+      }
+    ]
+    variables: [
+      {
+        name: 'userAssignedIdentity'
+        description: 'User Assigned Identity Name'
+        isEncrypted: false
+        value: '"3802097b-a159-4529-84b3-0004bfa45958"'
+      }
+      {
+        name: 'workspaceId'
+        description: 'Log Analytics Workspace ID to query'
+        isEncrypted: false
+        value: '"0e246377-00a7-4038-afb5-ec3551e3f9e5"'
+      }
+      {
+        name: 'vmprefix'
+        description: 'AVD name prefix.'
+        isEncrypted: false
+        value: '"avdn"'
       }
     ]
     updateScheduleConfig: [
       {
         name: 'windows-updates'
         scheduleInfo: {
-          startTime: '2022-09-01T21:00:00Z'
+          startTime: dateTimeAdd(baseTime, 'P1D', 'yyyy-MM-ddTHH:mm+00:00')
           frequency: 'Month'
           timeZone: 'AUS Eastern Standard Time'
           interval: 1
@@ -103,7 +144,7 @@ module automationAccount '../main.bicep' = {
       {
         name: 'linux-updates'
         scheduleInfo: {
-          startTime: '2022-10-01T21:00:00Z'
+          startTime: dateTimeAdd(baseTime, 'P1D', 'yyyy-MM-ddTHH:mm+00:00')
           frequency: 'Week'
           timeZone: 'AUS Eastern Standard Time'
           interval: 4
