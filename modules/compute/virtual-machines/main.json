@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.16.1.55165",
-      "templateHash": "9985026828567708411"
+      "version": "0.16.2.56959",
+      "templateHash": "15511378884145228272"
     }
   },
   "parameters": {
@@ -158,7 +158,7 @@
             ]
           }
         },
-        "description": "Specifies Windows operating system settings on the virtual machine."
+        "description": "Optional. Specifies Windows operating system settings on the virtual machine."
       }
     },
     "systemAssignedIdentity": {
@@ -288,9 +288,57 @@
       "metadata": {
         "description": "Optional. Specify the type of resource lock."
       }
+    },
+    "enableSecurityProfile": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-au/azure/virtual-machines/trusted-launch",
+        "description": "Optional. Enables the Security related profile settings for the virtual machine. Only supported on Gen 2 VMs."
+      }
+    },
+    "encryptionAtHost": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable the encryption for all the disks including Resource/Temp disk at host itself."
+      }
+    },
+    "securityType": {
+      "type": "string",
+      "defaultValue": "TrustedLaunch",
+      "allowedValues": [
+        "TrustedLaunch",
+        "ConfidentialVM"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings."
+      }
+    },
+    "secureBootEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable secure boot on the virtual machine."
+      }
+    },
+    "vTpmEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable vTPM on the virtual machine."
+      }
     }
   },
   "variables": {
+    "securityProfileSettings": {
+      "encryptionAtHost": "[parameters('encryptionAtHost')]",
+      "securityType": "[parameters('securityType')]",
+      "uefiSettings": {
+        "secureBootEnabled": "[parameters('secureBootEnabled')]",
+        "vTpmEnabled": "[parameters('vTpmEnabled')]"
+      }
+    },
     "lockSuffix": "-lck",
     "networkInterfaceSuffix": "-nic",
     "osDiskSuffix": "-osdisk",
@@ -401,6 +449,7 @@
             "enabled": true
           }
         },
+        "securityProfile": "[if(parameters('enableSecurityProfile'), variables('securityProfileSettings'), createObject())]",
         "licenseType": "[if(not(empty(parameters('licenseType'))), parameters('licenseType'), null())]"
       },
       "dependsOn": [
