@@ -55,7 +55,9 @@ module expressRoute '../main.bicep' = {
     peeringLocation: 'Melbourne'
     serviceProviderName: 'Optus'
     allowClassicOperations: true
-    privatePeeringConfig: {
+    peeringConfig: {
+      name: 'AzurePrivatePeering'
+      peeringType: 'AzurePrivatePeering'
       peerASN: 5432
       primaryPeerAddressPrefix: '172.50.1.28/30'
       secondaryPeerAddressPrefix: '172.50.1.24/30'
