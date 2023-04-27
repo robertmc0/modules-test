@@ -115,7 +115,38 @@ param availabilityZones array = []
 ])
 param resourceLock string = 'NotSpecified'
 
+@description('Optional. Enables the Security related profile settings for the virtual machine. Only supported on Gen 2 VMs.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-au/azure/virtual-machines/trusted-launch'
+})
+param enableSecurityProfile bool = false
+
+@description('Optional. Enable the encryption for all the disks including Resource/Temp disk at host itself.')
+param encryptionAtHost bool = true
+
+@description('Optional. Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings.')
+@allowed([
+  'TrustedLaunch'
+  'ConfidentialVM'
+])
+param securityType string = 'TrustedLaunch'
+
+@description('Optional. Enable secure boot on the virtual machine.')
+param secureBootEnabled bool = true
+
+@description('Optional. Enable vTPM on the virtual machine.')
+param vTpmEnabled bool = true
+
 var lockName = toLower('${virtualMachineScaleSet.name}-${resourceLock}-lck')
+
+var securityProfileSettings = {
+  encryptionAtHost: encryptionAtHost
+  securityType: securityType
+  uefiSettings: {
+    secureBootEnabled: secureBootEnabled
+    vTpmEnabled: vTpmEnabled
+  }
+}
 
 resource virtualMachineScaleSet 'Microsoft.Compute/virtualMachineScaleSets@2022-03-01' = {
   name: name
@@ -172,6 +203,7 @@ resource virtualMachineScaleSet 'Microsoft.Compute/virtualMachineScaleSets@2022-
           }
         ]
       }
+      securityProfile: enableSecurityProfile ? securityProfileSettings : {}
       diagnosticsProfile: {
         bootDiagnostics: {
           enabled: true
