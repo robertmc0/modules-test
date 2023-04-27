@@ -10,6 +10,8 @@ This module performs the following
 - Imports modules into automation account if specified.
 - Imports runbooks into automation account if specified.
 - Creates a deployment update schedule if specified.
+- Creates shared resource schedules and links to runbook if specified.
+- Creates shared resource variables if specified.
 - Applies diagnostic settings.
 - Applies a lock to the bastion host if the lock is specified.
 
@@ -20,9 +22,11 @@ This module performs the following
 | `name`                                  | `string` | Yes      | The resource name.                                                                                                      |
 | `location`                              | `string` | Yes      | The geo-location where the resource lives.                                                                              |
 | `tags`                                  | `object` | No       | Optional. Resource tags.                                                                                                |
-| `sku`                                   | `string` | No       | SKU name of the account.                                                                                                |
-| `modules`                               | `array`  | No       | Modules to import into automation account.                                                                              |
-| `runbooks`                              | `array`  | No       | Runbooks to import into automation account.                                                                             |
+| `sku`                                   | `string` | No       | Optional. SKU name of the account.                                                                                      |
+| `modules`                               | `array`  | No       | Optional. Modules to import into automation account.                                                                    |
+| `variables`                             | `array`  | No       | Optional. Variables to import into automation account.                                                                  |
+| `runbooks`                              | `array`  | No       | Optional. Runbooks to import into automation account.                                                                   |
+| `schedules`                             | `array`  | No       | Optional. Schedules to import into automation account.                                                                  |
 | `systemAssignedIdentity`                | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                     |
 | `userAssignedIdentities`                | `object` | No       | Optional. The ID(s) to assign to the resource.                                                                          |
 | `updateScheduleConfig`                  | `array`  | No       | Optional. Update schedule configuration.                                                                                |

@@ -6,7 +6,13 @@ The purpose of the scripts is to create initial resources in the client subscrip
 
 1. Open command prompt to the directory containing this README.
 
-2. Run the following commands and fill in the parameters in angle brackets.
+2. If the command prompt does not have adminstration privelges, run the following script to ensure powershell can execute unsigned scripts.
+
+```powershell
+Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+```
+
+3. Run the following commands and fill in the parameters in angle brackets.
 
 ```powershell
 Import-Module .\Build-Registry.ps1 -Force
@@ -22,7 +28,7 @@ You will need:-
 - TargetRegistryResourceGroupName i.e \<companyPrefix\>-\<locationIdentifier\>-bicep-registry-rg
 - Tags. Needs to be a JSON formatted string. i.e "{'Owner':'Contoso','Cost Center':'2345-324'}"
 
-3. In the 'Done Right' deployment repository modify the **bicepconfig.json** file to point to the clients bicep registry where the registry name is '\<companyPrefix\>\<locationIdentifier\>bicepmodulesacr'.
+4. In the 'Done Right' deployment repository modify the **bicepconfig.json** file to point to the clients bicep registry where the registry name is '\<companyPrefix\>\<locationIdentifier\>bicepmodulesacr'.
 
 ```json
 {
@@ -37,4 +43,4 @@ You will need:-
 }
 ```
 
-4. Execute 'Done Right' deployment.
+5. Execute 'Done Right' deployment.
