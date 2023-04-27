@@ -42,9 +42,16 @@ Deploys Azure Databricks using the premium sku
 ### Example 1
 
 ```bicep
-```
-
-### Example 2
-
-```bicep
+module databricks '../main.bicep' = {
+  scope: az.resourceGroup(resourceGroup.name)
+  name: 'adb-${uniqueString(deployment().name, location)}'
+  params: {
+    name: 'my-project-adb'
+    location: 'australiaeast'
+    customPrivateSubnetName: 'databricks-private-snet'
+    customPublicSubnetName: 'databricks-public-snet'
+    customVirtualNetworkId: virtualNetwork.outputs.resourceId
+    managedResourceGroupId: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}' //Must be a fake resource ID - resource group can not exist
+   }
+}
 ```
