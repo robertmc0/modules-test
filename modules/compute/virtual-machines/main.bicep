@@ -82,7 +82,7 @@ param customData string = ''
 })
 param linuxConfiguration object = {}
 
-@description('Specifies Windows operating system settings on the virtual machine.')
+@description('Optional. Specifies Windows operating system settings on the virtual machine.')
 @metadata({
   doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#windowsconfiguration'
   example: {
@@ -206,6 +206,37 @@ param dscConfiguration object = {}
 ])
 param resourceLock string = 'NotSpecified'
 
+@description('Optional. Enables the Security related profile settings for the virtual machine. Only supported on Gen 2 VMs.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-au/azure/virtual-machines/trusted-launch'
+})
+param enableSecurityProfile bool = false
+
+@description('Optional. Enable the encryption for all the disks including Resource/Temp disk at host itself.')
+param encryptionAtHost bool = true
+
+@description('Optional. Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings.')
+@allowed([
+  'TrustedLaunch'
+  'ConfidentialVM'
+])
+param securityType string = 'TrustedLaunch'
+
+@description('Optional. Enable secure boot on the virtual machine.')
+param secureBootEnabled bool = true
+
+@description('Optional. Enable vTPM on the virtual machine.')
+param vTpmEnabled bool = true
+
+var securityProfileSettings = {
+  encryptionAtHost: encryptionAtHost
+  securityType: securityType
+  uefiSettings: {
+    secureBootEnabled: secureBootEnabled
+    vTpmEnabled: vTpmEnabled
+  }
+}
+
 var lockSuffix = '-lck'
 
 var networkInterfaceSuffix = '-nic'
@@ -310,6 +341,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [for i 
         enabled: true
       }
     }
+    securityProfile: enableSecurityProfile ? securityProfileSettings : {}
     licenseType: !empty(licenseType) ? licenseType : null
   }
 }]
