@@ -55,20 +55,6 @@ param serviceProviderName string
 })
 param peeringConfig object = {}
 
-@description('Peering configuration variable.')
-var peeringConfiguration = [
-  {
-    name: peeringConfig.name
-    properties: {
-      peeringType: peeringConfig.peeringType
-      peerASN: peeringConfig.peerASN
-      primaryPeerAddressPrefix: peeringConfig.primaryPeerAddressPrefix
-      secondaryPeerAddressPrefix: peeringConfig.secondaryPeerAddressPrefix
-      vlanId: peeringConfig.vlanId
-    }
-  }
-]
-
 @description('Optional. The name of log category groups that will be streamed.')
 @allowed([
   'AllLogs'
@@ -133,6 +119,20 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
+@description('Peering configuration variable.')
+var peerings = !empty(peeringConfig) ? [
+  {
+    name: peeringConfig.name
+    properties: {
+      peeringType: peeringConfig.peeringType
+      peerASN: peeringConfig.peerASN
+      primaryPeerAddressPrefix: peeringConfig.primaryPeerAddressPrefix
+      secondaryPeerAddressPrefix: peeringConfig.secondaryPeerAddressPrefix
+      vlanId: peeringConfig.vlanId
+    }
+  }
+] : []
+
 resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-09-01' = {
   name: name
   location: location
@@ -149,7 +149,7 @@ resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-09-01' = {
       peeringLocation: peeringLocation
       serviceProviderName: serviceProviderName
     }
-    peerings: !empty(peeringConfig) ? peeringConfiguration : null
+    peerings: peerings
   }
 }
 

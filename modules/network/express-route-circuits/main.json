@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "2821226513100664735"
+      "templateHash": "14178273268733598871"
     }
   },
   "parameters": {
@@ -202,20 +202,9 @@
         }
       }
     ],
-    "peeringConfiguration": [
-      {
-        "name": "[parameters('peeringConfig').name]",
-        "properties": {
-          "peeringType": "[parameters('peeringConfig').peeringType]",
-          "peerASN": "[parameters('peeringConfig').peerASN]",
-          "primaryPeerAddressPrefix": "[parameters('peeringConfig').primaryPeerAddressPrefix]",
-          "secondaryPeerAddressPrefix": "[parameters('peeringConfig').secondaryPeerAddressPrefix]",
-          "vlanId": "[parameters('peeringConfig').vlanId]"
-        }
-      }
-    ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
-    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "peerings": "[if(not(empty(parameters('peeringConfig'))), createArray(createObject('name', parameters('peeringConfig').name, 'properties', createObject('peeringType', parameters('peeringConfig').peeringType, 'peerASN', parameters('peeringConfig').peerASN, 'primaryPeerAddressPrefix', parameters('peeringConfig').primaryPeerAddressPrefix, 'secondaryPeerAddressPrefix', parameters('peeringConfig').secondaryPeerAddressPrefix, 'vlanId', parameters('peeringConfig').vlanId))), createArray())]"
   },
   "resources": [
     {
@@ -236,7 +225,7 @@
           "peeringLocation": "[parameters('peeringLocation')]",
           "serviceProviderName": "[parameters('serviceProviderName')]"
         },
-        "peerings": "[if(not(empty(parameters('peeringConfig'))), variables('peeringConfiguration'), null())]"
+        "peerings": "[variables('peerings')]"
       }
     },
     {
