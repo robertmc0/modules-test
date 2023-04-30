@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "11364535603201911901"
+      "templateHash": "3734133759417312551"
     }
   },
   "parameters": {
@@ -40,7 +40,7 @@
         "premium"
       ],
       "metadata": {
-        "description": "The sku of the resource"
+        "description": "Optional. The sku of the resource"
       }
     },
     "publicNetworkAccess": {
@@ -94,7 +94,7 @@
         "NoAzureServiceRules"
       ],
       "metadata": {
-        "description": "NSG rules to be applied to the custom subnets.  NoAzureDatabricksRules must be selected to use private endpoints"
+        "description": "Optional. TNSG rules to be applied to the custom subnets.  NoAzureDatabricksRules must be selected to use private endpoints"
       }
     },
     "enableDiagnostics": {
