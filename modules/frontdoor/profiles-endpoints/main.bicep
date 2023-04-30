@@ -246,10 +246,10 @@ resource customDomain 'Microsoft.Cdn/profiles/customDomains@2022-11-01-preview' 
   name: replace(c.customDomainName, '.', '-')
   properties: {
     hostName: c.hostName
-    azureDnsZone: {
+    azureDnsZone: contains(c, 'dnsZoneId') ? {
       #disable-next-line use-resource-id-functions
       id: c.dnsZoneId
-    }
+    } : null 
     tlsSettings: {
       certificateType: c.tlsSettings.certificateType
       minimumTlsVersion: 'TLS12'
