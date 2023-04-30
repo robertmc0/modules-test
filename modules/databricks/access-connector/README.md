@@ -26,12 +26,4 @@ Deploys Azure Databricks access connector, enabling connectivity to ADLS & other
 
 ## Examples
 
-### Example 1
-
-```bicep
-```
-
-### Example 2
-
-```bicep
-```
+Please see the [Bicep Tests](test/main.test.bicep) file for examples.
