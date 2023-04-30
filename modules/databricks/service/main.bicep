@@ -13,7 +13,7 @@ param location string
 })
 param tags object = {}
 
-@description('The sku of the resource')
+@description('Optional. The sku of the resource')
 @allowed([
   'standard'
   'premium'
@@ -42,7 +42,7 @@ param customPrivateSubnetName string
 @description('Name of the public subnet for databricks to use')
 param customPublicSubnetName string
 
-@description('NSG rules to be applied to the custom subnets.  NoAzureDatabricksRules must be selected to use private endpoints')
+@description('Optional. TNSG rules to be applied to the custom subnets.  NoAzureDatabricksRules must be selected to use private endpoints')
 @allowed([
   'AllRules'
   'NoAzureDatabricksRules'
