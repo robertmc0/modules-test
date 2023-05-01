@@ -128,7 +128,7 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != '
   }
 }
 
-resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics && sku == 'premium') {
   scope: databricks
   name: diagnosticsName
   properties: {
