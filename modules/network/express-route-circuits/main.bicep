@@ -44,14 +44,16 @@ param peeringLocation string
 @description('The service provider name.')
 param serviceProviderName string
 
-@description('Optional. Azure private peering configuration.')
+@description('Optional. Peering configuration object.')
 @metadata({
+  name: 'The name of the peering'
+  peeringType: 'The type of peering.'
   peerASN: 'The peer ASN.'
   primaryPeerAddressPrefix: 'The primary address prefix.'
   secondaryPeerAddressPrefix: 'The secondary address prefix.'
   vlanId: 'The VLAN ID.'
 })
-param privatePeeringConfig object = {}
+param peeringConfig object = {}
 
 @description('Optional. The name of log category groups that will be streamed.')
 @allowed([
@@ -117,7 +119,21 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-01-01' = {
+@description('Peering configuration variable.')
+var peerings = !empty(peeringConfig) ? [
+  {
+    name: peeringConfig.name
+    properties: {
+      peeringType: peeringConfig.peeringType
+      peerASN: peeringConfig.peerASN
+      primaryPeerAddressPrefix: peeringConfig.primaryPeerAddressPrefix
+      secondaryPeerAddressPrefix: peeringConfig.secondaryPeerAddressPrefix
+      vlanId: peeringConfig.vlanId
+    }
+  }
+] : []
+
+resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-09-01' = {
   name: name
   location: location
   tags: tags
@@ -133,18 +149,7 @@ resource expressRoute 'Microsoft.Network/expressRouteCircuits@2022-01-01' = {
       peeringLocation: peeringLocation
       serviceProviderName: serviceProviderName
     }
-  }
-}
-
-resource expressRoutePrivatePeering 'Microsoft.Network/expressRouteCircuits/peerings@2022-01-01' = if (!empty(privatePeeringConfig)) {
-  parent: expressRoute
-  name: 'AzurePrivatePeering'
-  properties: {
-    peeringType: 'AzurePrivatePeering'
-    peerASN: privatePeeringConfig.peerASN
-    primaryPeerAddressPrefix: privatePeeringConfig.primaryPeerAddressPrefix
-    secondaryPeerAddressPrefix: privatePeeringConfig.secondaryPeerAddressPrefix
-    vlanId: privatePeeringConfig.vlanId
+    peerings: peerings
   }
 }
 
