@@ -15,6 +15,7 @@ This module performs the following
 - Applies DSC extension if specified.
 - Adds data disks if specified.
 - Adds custom data if specified.
+- Adds Security Profiles if specified.
 - Applies a lock to the virtual machine if the lock is specified.
 
 ## Parameters
@@ -33,7 +34,7 @@ This module performs the following
 | `adminPassword`                     | `securestring` | Yes      | Specifies the password of the administrator account. Refer to https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#osprofile for password complexity requirements. |
 | `customData`                        | `string`       | No       | Optional. Specifies a base-64 encoded string of custom data.                                                                                                                                                                      |
 | `linuxConfiguration`                | `object`       | No       | Optional. Specifies the Linux operating system settings on the virtual machine.                                                                                                                                                   |
-| `windowsConfiguration`              | `object`       | No       | Specifies Windows operating system settings on the virtual machine.                                                                                                                                                               |
+| `windowsConfiguration`              | `object`       | No       | Optional. Specifies Windows operating system settings on the virtual machine.                                                                                                                                                     |
 | `systemAssignedIdentity`            | `bool`         | No       | Optional. Enables system assigned managed identity on the resource.                                                                                                                                                               |
 | `userAssignedIdentities`            | `object`       | No       | Optional. The ID(s) to assign to the resource.                                                                                                                                                                                    |
 | `osStorageAccountType`              | `string`       | Yes      | Specifies the storage account type for the os managed disk.                                                                                                                                                                       |
@@ -46,6 +47,11 @@ This module performs the following
 | `domainJoinPassword`                | `securestring` | No       | Optional. Password for the domain join user account.                                                                                                                                                                              |
 | `dscConfiguration`                  | `object`       | No       | Optional. Desired state configuration. Will not be executed if left blank.                                                                                                                                                        |
 | `resourceLock`                      | `string`       | No       | Optional. Specify the type of resource lock.                                                                                                                                                                                      |
+| `enableSecurityProfile`             | `bool`         | No       | Optional. Enables the Security related profile settings for the virtual machine. Only supported on Gen 2 VMs.                                                                                                                     |
+| `encryptionAtHost`                  | `bool`         | No       | Optional. Enable the encryption for all the disks including Resource/Temp disk at host itself.                                                                                                                                    |
+| `securityType`                      | `string`       | No       | Optional. Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings.                                                                                                      |
+| `secureBootEnabled`                 | `bool`         | No       | Optional. Enable secure boot on the virtual machine.                                                                                                                                                                              |
+| `vTpmEnabled`                       | `bool`         | No       | Optional. Enable vTPM on the virtual machine.                                                                                                                                                                                     |
 
 ## Outputs
 

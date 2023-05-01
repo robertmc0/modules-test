@@ -25,7 +25,7 @@ This module performs the following
 | `bandwidthInMbps`                       | `int`    | Yes      | The bandwidth of the ExpressRoute circuit.                                                                              |
 | `peeringLocation`                       | `string` | Yes      | The peering location.                                                                                                   |
 | `serviceProviderName`                   | `string` | Yes      | The service provider name.                                                                                              |
-| `privatePeeringConfig`                  | `object` | No       | Optional. Azure private peering configuration.                                                                          |
+| `peeringConfig`                         | `object` | No       | Optional. Peering configuration object.                                                                                 |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                        |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                    |
 | `diagnosticLogsRetentionInDays`         | `int`    | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.          |
