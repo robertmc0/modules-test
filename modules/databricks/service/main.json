@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "3734133759417312551"
+      "templateHash": "6234186952463097582"
     }
   },
   "parameters": {
@@ -40,7 +40,7 @@
         "premium"
       ],
       "metadata": {
-        "description": "Optional. The sku of the resource"
+        "description": "Optional. The sku of the resource."
       }
     },
     "publicNetworkAccess": {
@@ -64,25 +64,25 @@
     "managedResourceGroupId": {
       "type": "string",
       "metadata": {
-        "description": "Id of the managed resource group"
+        "description": "Managed resource group resource id."
       }
     },
     "customVirtualNetworkId": {
       "type": "string",
       "metadata": {
-        "description": "Id of the virtual network for databricks to use"
+        "description": "Databricks virtual network resource id."
       }
     },
     "customPrivateSubnetName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the private subnet for databricks to use"
+        "description": "Private subnet name for databricks."
       }
     },
     "customPublicSubnetName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the public subnet for databricks to use"
+        "description": "Public subnet name for databricks."
       }
     },
     "requiredNsgRules": {
@@ -94,7 +94,7 @@
         "NoAzureServiceRules"
       ],
       "metadata": {
-        "description": "Optional. TNSG rules to be applied to the custom subnets.  NoAzureDatabricksRules must be selected to use private endpoints"
+        "description": "Optional. NSG rules to be applied to the custom subnets.  NoAzureDatabricksRules must be selected to use private endpoints."
       }
     },
     "enableDiagnostics": {
