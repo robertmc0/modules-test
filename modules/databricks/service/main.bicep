@@ -13,7 +13,7 @@ param location string
 })
 param tags object = {}
 
-@description('Optional. The sku of the resource')
+@description('Optional. The sku of the resource.')
 @allowed([
   'standard'
   'premium'
@@ -30,19 +30,19 @@ param publicNetworkAccess string = 'Disabled'
 @description('Optional. Enable or disable public IP for the resource. Vnet injection requires public IP to be disabled.')
 param enableNoPublicIp bool = true
 
-@description('Id of the managed resource group')
+@description('Managed resource group resource id.')
 param managedResourceGroupId string
 
-@description('Id of the virtual network for databricks to use')
+@description('Databricks virtual network resource id.')
 param customVirtualNetworkId string
 
-@description('Name of the private subnet for databricks to use')
+@description('Private subnet name for databricks.')
 param customPrivateSubnetName string
 
-@description('Name of the public subnet for databricks to use')
+@description('Public subnet name for databricks.')
 param customPublicSubnetName string
 
-@description('Optional. TNSG rules to be applied to the custom subnets.  NoAzureDatabricksRules must be selected to use private endpoints')
+@description('Optional. NSG rules to be applied to the custom subnets.  NoAzureDatabricksRules must be selected to use private endpoints.')
 @allowed([
   'AllRules'
   'NoAzureDatabricksRules'
