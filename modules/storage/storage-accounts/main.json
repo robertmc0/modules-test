@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "18191505399725464554"
+      "version": "0.17.1.54307",
+      "templateHash": "8107451018300290307"
     }
   },
   "parameters": {
@@ -97,6 +97,27 @@
       ],
       "metadata": {
         "description": "Optional. Allow or disallow public network access to Storage Account."
+      }
+    },
+    "allowSharedKeyAccess": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key."
+      }
+    },
+    "allowBlobPublicAccess": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Allow or disallow public access to all blobs or containers in the storage account."
+      }
+    },
+    "defaultToOAuthAuthentication": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Indicates whether the default authentication is OAuth (AD Authentication) or not."
       }
     },
     "deleteRetentionPolicy": {
@@ -339,7 +360,10 @@
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
         "minimumTlsVersion": "TLS1_2",
         "supportsHttpsTrafficOnly": true,
-        "largeFileSharesState": "[parameters('largeFileSharesState')]"
+        "largeFileSharesState": "[parameters('largeFileSharesState')]",
+        "allowSharedKeyAccess": "[parameters('allowSharedKeyAccess')]",
+        "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
+        "defaultToOAuthAuthentication": "[parameters('defaultToOAuthAuthentication')]"
       }
     },
     {
@@ -542,17 +566,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed storage account."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed storage account."
-      }
+      },
+      "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
     }
   }
 }
