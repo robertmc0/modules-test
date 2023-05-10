@@ -19,6 +19,7 @@ param targetResourceId string
     'gateway'
     'namespace'
     'managedInstance'
+    'databricks_ui_api'
   ]
 })
 param targetSubResourceType string
