@@ -55,13 +55,13 @@ param publicNetworkAccess string = 'Enabled'
 param connectionType string = 'Default'
 
 @description('Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities.')
-param enableVulnerabilityAssessments bool = true
+param enableVulnerabilityAssessments bool = false
 
 @description('Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true". ')
 param vulnerabilityAssessmentStorageId string = ''
 
 @description('Optional. Enable Audit logging.')
-param enableAudit bool = true
+param enableAudit bool = false
 
 @description('Optional. Resource ID of the Storage Account to store Audit logs. Required when enableAudit set to "true".')
 param auditStorageAccountId string = ''
@@ -335,8 +335,7 @@ resource sqlServerMasterDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = 
   parent: sqlServer
   location: location
   name: 'master'
-  properties: {
-  }
+  properties: {}
 }
 
 resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {

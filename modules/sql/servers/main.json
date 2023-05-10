@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.11.1.770",
-      "templateHash": "6045220108731776538"
+      "version": "0.16.2.56959",
+      "templateHash": "16065091008759936796"
     }
   },
   "parameters": {
@@ -40,7 +40,7 @@
       }
     },
     "administratorLoginPassword": {
-      "type": "secureString",
+      "type": "securestring",
       "defaultValue": "",
       "metadata": {
         "description": "Optional. The administrator login password. Required if \"administrators\" is not provided."
@@ -90,7 +90,7 @@
     },
     "enableVulnerabilityAssessments": {
       "type": "bool",
-      "defaultValue": true,
+      "defaultValue": false,
       "metadata": {
         "description": "Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities."
       }
@@ -104,7 +104,7 @@
     },
     "enableAudit": {
       "type": "bool",
-      "defaultValue": true,
+      "defaultValue": false,
       "metadata": {
         "description": "Optional. Enable Audit logging."
       }
@@ -462,7 +462,7 @@
     {
       "condition": "[and(parameters('enableVulnerabilityAssessments'), not(empty(variables('identity'))))]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "vulnerabilityAssessmentRoleAssignment",
       "subscriptionId": "[variables('vulnerabilityAssessmentStorageSubId')]",
       "resourceGroup": "[variables('vulnerabilityAssessmentStorageResourceGroup')]",
@@ -485,8 +485,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.11.1.770",
-              "templateHash": "3461631228597330390"
+              "version": "0.16.2.56959",
+              "templateHash": "1343800498555263342"
             }
           },
           "parameters": {
@@ -529,7 +529,7 @@
     {
       "condition": "[and(parameters('enableAudit'), not(empty(variables('identity'))))]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "auditStorageRoleAssignment",
       "subscriptionId": "[variables('auditStorageSubId')]",
       "resourceGroup": "[variables('auditStorageResourceGroup')]",
@@ -542,9 +542,7 @@
           "storageAccountName": {
             "value": "[variables('auditStorageName')]"
           },
-          "principalId": {
-            "value": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('userIdentitySubId'), variables('userIdentityResourceGroup')), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2018-11-30').principalId, reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId)]"
-          }
+          "principalId": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('userIdentitySubId'), variables('userIdentityResourceGroup')), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2018-11-30').principalId), createObject('value', reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId))]"
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -552,8 +550,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.11.1.770",
-              "templateHash": "3461631228597330390"
+              "version": "0.16.2.56959",
+              "templateHash": "1343800498555263342"
             }
           },
           "parameters": {
@@ -597,31 +595,31 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the sql server."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the sql server."
-      }
+      },
+      "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
     },
     "resourceGroupName": {
       "type": "string",
-      "value": "[resourceGroup().name]",
       "metadata": {
         "description": "The resource group the sql server was deployed into."
-      }
+      },
+      "value": "[resourceGroup().name]"
     },
     "systemAssignedPrincipalId": {
       "type": "string",
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId, '')]",
       "metadata": {
         "description": "The principal ID of the system assigned identity."
-      }
+      },
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId, '')]"
     }
   }
 }
