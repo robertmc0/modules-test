@@ -56,6 +56,15 @@ param userAssignedIdentities object = {}
 ])
 param publicNetworkAccess string = 'Enabled'
 
+@description('Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key.')
+param allowSharedKeyAccess bool = false
+
+@description('Optional. Allow or disallow public access to all blobs or containers in the storage account.')
+param allowBlobPublicAccess bool = false
+
+@description('Optional. Indicates whether the default authentication is OAuth (AD Authentication) or not.')
+param defaultToOAuthAuthentication bool = true
+
 @description('Optional. Amount of days the soft deleted data is stored and available for recovery.')
 @minValue(1)
 @maxValue(365)
@@ -234,6 +243,9 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
     largeFileSharesState: largeFileSharesState
+    allowSharedKeyAccess: allowSharedKeyAccess
+    allowBlobPublicAccess: allowBlobPublicAccess
+    defaultToOAuthAuthentication: defaultToOAuthAuthentication
   }
 }
 
