@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "lrktestmi123456"
+    },
+    "location": {
+      "value": "australiaeast"
+    },
+    "skuName": {
+      "value": "GP_Gen5"
+    },
+    "storageSizeInGB": {
+      "value": 32
+    },
+    "vCores": {
+      "value": 4
+    },
+    "licenseType": {
+      "value": "BasePrice"
+    },
+    "subnetId": {
+      "value": "/subscriptions/cea152c5-334e-478a-83dc-31a089390e8e/resourceGroups/lz-ae-network-rg/providers/Microsoft.Network/virtualNetworks/lz-ae-app1-vnet/subnets/sqlmiSubnet"
+    },
+    "administrators": {
+      "value": {
+        "administratorType": "activeDirectory",
+        "login": "LandingZone-App1-NonProd-Contributor",
+        "sid": "917c73fd-27c0-4338-aee9-a297c01fa2e8",
+        "tenantId": "e6392fb5-c33f-44bc-9882-703f319f5f71",
+        "azureADOnlyAuthentication": true,
+        "principalType": "Group"
+      }
+    },
+    "userAssignedIdentities": {
+      "value": {
+        "/subscriptions/cea152c5-334e-478a-83dc-31a089390e8e/resourcegroups/dataplatform-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/sqlmi-identity": {}
+      }
+    },
+    "primaryUserAssignedIdentityId": {
+      "value": "/subscriptions/cea152c5-334e-478a-83dc-31a089390e8e/resourcegroups/dataplatform-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/sqlmi-identity"
+    },
+    //    "administratorLogin": {
+    //      "value": "sqlmiadmin"
+    //    },
+    "enableDiagnostics": {
+      "value": true
+    },
+    "diagnosticStorageAccountId": {
+      "value": "/subscriptions/cea152c5-334e-478a-83dc-31a089390e8e/resourceGroups/dataplatform-rg/providers/Microsoft.Storage/storageAccounts/qsgaedwdiag01sa"
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "value": "/subscriptions/cea152c5-334e-478a-83dc-31a089390e8e/resourcegroups/dataplatform-rg/providers/microsoft.operationalinsights/workspaces/qsgaedw-ws"
+    },
+    "dbNames": {
+      "value": [
+        "database1",
+        "database2"
+      ]
+    }
+  }
+}

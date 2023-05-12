@@ -1,0 +1,445 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.17.1.54307",
+      "templateHash": "5918753592552452842"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 63,
+      "metadata": {
+        "description": "The name of the Managed Instance."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "administratorLogin": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Administrator username for the server. Once created it cannot be changed. Required if \"administrators\" is not provided."
+      }
+    },
+    "administratorLoginPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The administrator login password. Required if \"administrators\" is not provided."
+      }
+    },
+    "administrators": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.sql/servers?pivots=deployment-language-bicep#serverexternaladministrator",
+        "example": {
+          "azureADOnlyAuthentication": true,
+          "login": "joe.bloggs@microsoft.com",
+          "objectId": "5be5d82b-4e7b-4c4a-8811-c51982b435e0"
+        },
+        "example2": {
+          "azureADOnlyAuthentication": true,
+          "login": "Group Name",
+          "principalType": "Group",
+          "objectId": "3c1060a3-7f8a-47bc-8fb0-375d3bfff7a1"
+        },
+        "description": "Optional. The Azure Active Directory administrator of the server. Required if \"administratorLogin\" and \"administratorLoginPassword\" is not provided."
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "allowedValues": [
+        "GP_Gen5",
+        "GP_G8IM",
+        "GP_G8IH",
+        "BC_Gen5",
+        "BC_G8IM",
+        "BC_G8IH"
+      ],
+      "metadata": {
+        "description": "Specifies the sku of the managed instance."
+      }
+    },
+    "vCores": {
+      "type": "int",
+      "allowedValues": [
+        4,
+        8,
+        16,
+        32,
+        40,
+        64,
+        80
+      ],
+      "metadata": {
+        "description": "Specifies the number of vCores provisioned."
+      }
+    },
+    "licenseType": {
+      "type": "string",
+      "defaultValue": "LicenseIncluded",
+      "allowedValues": [
+        "BasePrice",
+        "LicenseIncluded"
+      ],
+      "metadata": {
+        "description": "Optional. For Azure Hybrid Benefit, use BasePrice."
+      }
+    },
+    "requestedBackupStorageRedundancy": {
+      "type": "string",
+      "defaultValue": "geo",
+      "metadata": {
+        "description": "Optional. Set location of backups, geo, local or zone."
+      },
+      "allowedValues": [
+        "local",
+        "zone",
+        "geo"
+      ]
+    },
+    "managedInstanceCreateMode": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Default",
+        "PointInTimeRestore"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies the mode of database creation."
+      }
+    },
+    "restorePointInTime": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Specifies the point in time (ISO8601 format) of the source database that will be restored to create the new database."
+      }
+    },
+    "sourceManagedInstanceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The resource identifier of the source managed instance associated with create operation of this instance."
+      }
+    },
+    "collation": {
+      "type": "string",
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS",
+      "metadata": {
+        "description": "Optional. The Managed Instance Collation."
+      }
+    },
+    "publicDataEndpointEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Whether or not the public data endpoint is enabled."
+      }
+    },
+    "storageSizeInGB": {
+      "type": "int",
+      "metadata": {
+        "description": "Optional. Storage size in GB. Minimum value: 32. Increments of 32 GB allowed only."
+      }
+    },
+    "subnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. Subnet resource ID for the managed instance."
+      }
+    },
+    "zoneRedundant": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Whether or not the multi-az is enabled."
+      }
+    },
+    "proxyOverride": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Default",
+        "Proxy",
+        "Redirect"
+      ],
+      "metadata": {
+        "description": "Optional. The server connection type. Note private link requires Proxy."
+      }
+    },
+    "dnsZonePartner": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The resource id of another managed instance whose DNS zone this managed instance will share after creation."
+      }
+    },
+    "instancePoolId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The Id of the instance pool this managed server belongs to."
+      }
+    },
+    "servicePrincipalType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "SystemAssigned"
+      ],
+      "metadata": {
+        "description": "Optional. The managed instance service principal. (None or SystemAssigned)"
+      }
+    },
+    "timezoneId": {
+      "type": "string",
+      "defaultValue": "UTC",
+      "metadata": {
+        "description": "Optional. The Id of the TimeZone. (eg: \"AUS Eastern Standard Time\")"
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "primaryUserAssignedIdentityId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The resource ID of a user assigned identity to be used by default."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoriesToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllLogs"
+      ],
+      "allowedValues": [
+        "Audit",
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "CanNotDelete",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoriesToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/managedInstances",
+      "apiVersion": "2022-05-01-preview",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('skuName')]"
+      },
+      "identity": "[variables('identity')]",
+      "properties": {
+        "administratorLogin": "[if(not(empty(parameters('administratorLogin'))), parameters('administratorLogin'), null())]",
+        "administratorLoginPassword": "[if(not(empty(parameters('administratorLoginPassword'))), parameters('administratorLoginPassword'), null())]",
+        "administrators": "[if(not(empty(parameters('administrators'))), createObject('administratorType', 'ActiveDirectory', 'azureADOnlyAuthentication', parameters('administrators').azureADOnlyAuthentication, 'login', parameters('administrators').login, 'principalType', parameters('administrators').principalType, 'sid', parameters('administrators').sid, 'tenantId', if(contains(parameters('administrators'), 'tenantId'), parameters('administrators').tenantId, subscription().tenantId)), createObject())]",
+        "collation": "[parameters('collation')]",
+        "dnsZonePartner": "[if(not(empty(parameters('dnsZonePartner'))), parameters('dnsZonePartner'), null())]",
+        "instancePoolId": "[if(not(empty(parameters('instancePoolId'))), parameters('instancePoolId'), null())]",
+        "licenseType": "[parameters('licenseType')]",
+        "managedInstanceCreateMode": "[parameters('managedInstanceCreateMode')]",
+        "minimalTlsVersion": "1.2",
+        "primaryUserAssignedIdentityId": "[parameters('primaryUserAssignedIdentityId')]",
+        "proxyOverride": "[parameters('proxyOverride')]",
+        "publicDataEndpointEnabled": "[parameters('publicDataEndpointEnabled')]",
+        "restorePointInTime": "[if(not(empty(parameters('restorePointInTime'))), parameters('restorePointInTime'), null())]",
+        "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
+        "servicePrincipal": {
+          "type": "[parameters('servicePrincipalType')]"
+        },
+        "sourceManagedInstanceId": "[if(not(empty(parameters('sourceManagedInstanceId'))), parameters('sourceManagedInstanceId'), null())]",
+        "storageSizeInGB": "[parameters('storageSizeInGB')]",
+        "subnetId": "[parameters('subnetId')]",
+        "timezoneId": "[parameters('timezoneId')]",
+        "vCores": "[parameters('vCores')]",
+        "zoneRedundant": "[parameters('zoneRedundant')]"
+      }
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Sql/managedInstances/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "storageAccountId": "[if(not(empty(parameters('diagnosticStorageAccountId'))), parameters('diagnosticStorageAccountId'), null())]",
+        "workspaceId": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), parameters('diagnosticLogAnalyticsWorkspaceId'), null())]",
+        "eventHubAuthorizationRuleId": "[if(not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))), parameters('diagnosticEventHubAuthorizationRuleId'), null())]",
+        "eventHubName": "[if(not(empty(parameters('diagnosticEventHubName'))), parameters('diagnosticEventHubName'), null())]",
+        "metrics": "[variables('diagnosticsMetrics')]",
+        "logs": "[variables('diagnosticsLogs')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/managedInstances', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Sql/managedInstances/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/managedInstances', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the managed instance."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the managed instance."
+      },
+      "value": "[resourceId('Microsoft.Sql/managedInstances', parameters('name'))]"
+    }
+  }
+}

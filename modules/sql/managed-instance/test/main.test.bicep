@@ -110,25 +110,13 @@ module managedInstance '../main.bicep' = {
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     timezoneId: 'AUS Eastern Standard Time'
     administrators: {
-      administratorType: 'activeDirectory'
-      login: 'LandingZone-App1-NonProd-Contributor'
-      sid: '917c73fd-27c0-4338-aee9-a297c01fa2e8'
-      tenantId: subscription().tenantId
-      azureADOnlyAuthentication: true
-      principalType: 'Group'
-    }
-    dbNames: [
-      'database1'
-      'database2'
-    ]
-    /*     administrators: {
       administratorType: 'ActiveDirectory'
       azureADOnlyAuthentication: true
       login: 'DSG - All Consultants'
       principalType: 'Group'
       sid: '7d4930a7-f128-45af-9e70-07f1484c9c4a'
       tenantId: subscription().tenantId
-    } */
+    }
   }
 
 }

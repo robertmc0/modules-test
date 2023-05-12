@@ -130,9 +130,6 @@ param servicePrincipalType string = 'None'
 @description('Optional. The Id of the TimeZone. (eg: "AUS Eastern Standard Time")')
 param timezoneId string = 'UTC'
 
-@description('Optional. Names of databases to create on the Managed Instance.')
-param dbNames array = []
-
 @description('Optional. Enables system assigned managed identity on the resource.')
 param systemAssignedIdentity bool = false
 
@@ -260,16 +257,6 @@ resource managedInstance 'Microsoft.Sql/managedInstances@2022-05-01-preview' = {
 
   }
 }
-
-resource databases 'Microsoft.Sql/managedInstances/databases@2022-05-01-preview' = [for dbName in dbNames: {
-  name: dbName
-  parent: managedInstance
-  location: location
-  tags: tags
-  properties: {
-    collation: collation
-  }
-}]
 
 resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
   scope: managedInstance
