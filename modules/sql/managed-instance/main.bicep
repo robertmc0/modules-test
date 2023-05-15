@@ -130,6 +130,18 @@ param servicePrincipalType string = 'None'
 @description('Optional. The Id of the TimeZone. (eg: "AUS Eastern Standard Time")')
 param timezoneId string = 'UTC'
 
+@description('Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities.')
+param enableVulnerabilityAssessments bool = true
+
+@description('Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true". ')
+param vulnerabilityAssessmentStorageId string = ''
+
+@description('Optional. Specifies that the schedule scan notification will be is sent to the subscription administrators.')
+param emailAccountAdmins bool = false
+
+@description('Optional. Specifies an array of e-mail addresses to which the scan notification is sent.')
+param emailAddresses array = []
+
 @description('Optional. Enables system assigned managed identity on the resource.')
 param systemAssignedIdentity bool = false
 
@@ -138,6 +150,9 @@ param userAssignedIdentities object = {}
 
 @description('Optional. The resource ID of a user assigned identity to be used by default.')
 param primaryUserAssignedIdentityId string = ''
+
+@description('Optional. Specifies the number of days to keep in the Threat Detection audit logs. Zero means keep forever.')
+param threatDetectionRetentionDays int = 0
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -184,6 +199,12 @@ param diagnosticEventHubName string = ''
 ])
 param resourcelock string = 'CanNotDelete'
 
+var vulnerabilityAssessmentStorageResourceGroup = enableVulnerabilityAssessments ? split(vulnerabilityAssessmentStorageId, '/')[4] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+
+var vulnerabilityAssessmentStorageSubId = enableVulnerabilityAssessments ? split(vulnerabilityAssessmentStorageId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+
+var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments ? last(split(vulnerabilityAssessmentStorageId, '/')) : null
+
 var lockName = toLower('${managedInstance.name}-${resourcelock}-lck')
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
@@ -213,6 +234,20 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
     days: diagnosticLogsRetentionInDays
   }
 }]
+
+resource vulnerabilityAssessmentStorage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = if (enableVulnerabilityAssessments) {
+  scope: resourceGroup(vulnerabilityAssessmentStorageSubId, vulnerabilityAssessmentStorageResourceGroup)
+  name: vulnerabilityAssessmentStorageName
+}
+
+module vulnerabilityAssessmentRoleAssignment 'roleAssignment.bicep' = if (enableVulnerabilityAssessments && !empty(identity)) {
+  scope: resourceGroup(vulnerabilityAssessmentStorageSubId, vulnerabilityAssessmentStorageResourceGroup)
+  name: 'vulnerabilityAssessmentRoleAssignment'
+  params: {
+    storageAccountName: vulnerabilityAssessmentStorageName
+    principalId: managedInstance.identity.principalId
+  }
+}
 
 resource managedInstance 'Microsoft.Sql/managedInstances@2022-05-01-preview' = {
   name: name
@@ -258,7 +293,35 @@ resource managedInstance 'Microsoft.Sql/managedInstances@2022-05-01-preview' = {
   }
 }
 
-resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+resource securityThreatAlertPolicies 'Microsoft.Sql/managedInstances/securityAlertPolicies@2021-11-01' = {
+  parent: managedInstance
+  name: 'default'
+  properties: {
+    state: 'Enabled'
+    emailAccountAdmins: emailAccountAdmins
+    emailAddresses: emailAddresses
+    retentionDays: threatDetectionRetentionDays
+  }
+}
+
+resource vulnerabilityAssessments 'Microsoft.Sql/managedInstances/vulnerabilityAssessments@2021-11-01' = if (enableVulnerabilityAssessments) {
+  parent: managedInstance
+  name: 'default'
+  properties: {
+    storageContainerPath: enableVulnerabilityAssessments ? '${vulnerabilityAssessmentStorage.properties.primaryEndpoints.blob}vulnerability-assessment' : ''
+    recurringScans: {
+      isEnabled: true
+      emailSubscriptionAdmins: emailAccountAdmins
+      emails: emailAddresses
+    }
+  }
+  dependsOn: [
+    securityThreatAlertPolicies
+    vulnerabilityAssessmentRoleAssignment
+  ]
+}
+
+resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
   scope: managedInstance
   name: diagnosticsName
   properties: {
