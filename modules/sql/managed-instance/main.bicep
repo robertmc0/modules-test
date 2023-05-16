@@ -101,7 +101,7 @@ param publicDataEndpointEnabled bool = false
 param storageSizeInGB int
 
 @description('Optional. Subnet resource ID for the managed instance.')
-param subnetId string
+param subnetResourceId string
 
 @description('Optional. Whether or not the multi-az is enabled.')
 param zoneRedundant bool = false
@@ -131,7 +131,7 @@ param servicePrincipalType string = 'None'
 param timezoneId string = 'UTC'
 
 @description('Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities.')
-param enableVulnerabilityAssessments bool = true
+param enableVulnerabilityAssessments bool = false
 
 @description('Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true". ')
 param vulnerabilityAssessmentStorageId string = ''
@@ -197,7 +197,7 @@ param diagnosticEventHubName string = ''
   'ReadOnly'
   'CanNotDelete'
 ])
-param resourcelock string = 'CanNotDelete'
+param resourceLock string = 'NotSpecified'
 
 var vulnerabilityAssessmentStorageResourceGroup = enableVulnerabilityAssessments ? split(vulnerabilityAssessmentStorageId, '/')[4] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
@@ -205,7 +205,7 @@ var vulnerabilityAssessmentStorageSubId = enableVulnerabilityAssessments ? split
 
 var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments ? last(split(vulnerabilityAssessmentStorageId, '/')) : null
 
-var lockName = toLower('${managedInstance.name}-${resourcelock}-lck')
+var lockName = toLower('${managedInstance.name}-${resourceLock}-lck')
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
@@ -285,7 +285,7 @@ resource managedInstance 'Microsoft.Sql/managedInstances@2022-05-01-preview' = {
     }
     sourceManagedInstanceId: !empty(sourceManagedInstanceId) ? sourceManagedInstanceId : null
     storageSizeInGB: storageSizeInGB
-    subnetId: subnetId
+    subnetId: subnetResourceId
     timezoneId: timezoneId
     vCores: vCores
     zoneRedundant: zoneRedundant
@@ -334,12 +334,12 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
   scope: managedInstance
   name: lockName
   properties: {
-    level: resourcelock
-    notes: resourcelock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    level: resourceLock
+    notes: resourceLock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
 }
 

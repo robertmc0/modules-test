@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "5918753592552452842"
+      "templateHash": "15395050982161635614"
     }
   },
   "parameters": {
@@ -163,7 +163,7 @@
         "description": "Optional. Storage size in GB. Minimum value: 32. Increments of 32 GB allowed only."
       }
     },
-    "subnetId": {
+    "subnetResourceId": {
       "type": "string",
       "metadata": {
         "description": "Optional. Subnet resource ID for the managed instance."
@@ -220,6 +220,34 @@
         "description": "Optional. The Id of the TimeZone. (eg: \"AUS Eastern Standard Time\")"
       }
     },
+    "enableVulnerabilityAssessments": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities."
+      }
+    },
+    "vulnerabilityAssessmentStorageId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to \"true\". "
+      }
+    },
+    "emailAccountAdmins": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Specifies that the schedule scan notification will be is sent to the subscription administrators."
+      }
+    },
+    "emailAddresses": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. Specifies an array of e-mail addresses to which the scan notification is sent."
+      }
+    },
     "systemAssignedIdentity": {
       "type": "bool",
       "defaultValue": false,
@@ -239,6 +267,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional. The resource ID of a user assigned identity to be used by default."
+      }
+    },
+    "threatDetectionRetentionDays": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days to keep in the Threat Detection audit logs. Zero means keep forever."
       }
     },
     "enableDiagnostics": {
@@ -310,9 +345,9 @@
         "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
       }
     },
-    "resourcelock": {
+    "resourceLock": {
       "type": "string",
-      "defaultValue": "CanNotDelete",
+      "defaultValue": "NotSpecified",
       "allowedValues": [
         "NotSpecified",
         "ReadOnly",
@@ -351,7 +386,10 @@
         }
       }
     ],
-    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "vulnerabilityAssessmentStorageResourceGroup": "[if(parameters('enableVulnerabilityAssessments'), split(parameters('vulnerabilityAssessmentStorageId'), '/')[4], 'placeholder')]",
+    "vulnerabilityAssessmentStorageSubId": "[if(parameters('enableVulnerabilityAssessments'), split(parameters('vulnerabilityAssessmentStorageId'), '/')[2], 'placeholder')]",
+    "vulnerabilityAssessmentStorageName": "[if(parameters('enableVulnerabilityAssessments'), last(split(parameters('vulnerabilityAssessmentStorageId'), '/')), null())]",
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
@@ -387,11 +425,44 @@
         },
         "sourceManagedInstanceId": "[if(not(empty(parameters('sourceManagedInstanceId'))), parameters('sourceManagedInstanceId'), null())]",
         "storageSizeInGB": "[parameters('storageSizeInGB')]",
-        "subnetId": "[parameters('subnetId')]",
+        "subnetId": "[parameters('subnetResourceId')]",
         "timezoneId": "[parameters('timezoneId')]",
         "vCores": "[parameters('vCores')]",
         "zoneRedundant": "[parameters('zoneRedundant')]"
       }
+    },
+    {
+      "type": "Microsoft.Sql/managedInstances/securityAlertPolicies",
+      "apiVersion": "2021-11-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "state": "Enabled",
+        "emailAccountAdmins": "[parameters('emailAccountAdmins')]",
+        "emailAddresses": "[parameters('emailAddresses')]",
+        "retentionDays": "[parameters('threatDetectionRetentionDays')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/managedInstances', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableVulnerabilityAssessments')]",
+      "type": "Microsoft.Sql/managedInstances/vulnerabilityAssessments",
+      "apiVersion": "2021-11-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "storageContainerPath": "[if(parameters('enableVulnerabilityAssessments'), format('{0}vulnerability-assessment', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vulnerabilityAssessmentStorageSubId'), variables('vulnerabilityAssessmentStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('vulnerabilityAssessmentStorageName')), '2022-05-01').primaryEndpoints.blob), '')]",
+        "recurringScans": {
+          "isEnabled": true,
+          "emailSubscriptionAdmins": "[parameters('emailAccountAdmins')]",
+          "emails": "[parameters('emailAddresses')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/managedInstances', parameters('name'))]",
+        "[resourceId('Microsoft.Sql/managedInstances/securityAlertPolicies', parameters('name'), 'default')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vulnerabilityAssessmentStorageSubId'), variables('vulnerabilityAssessmentStorageResourceGroup')), 'Microsoft.Resources/deployments', 'vulnerabilityAssessmentRoleAssignment')]"
+      ]
     },
     {
       "condition": "[parameters('enableDiagnostics')]",
@@ -412,14 +483,81 @@
       ]
     },
     {
-      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2017-04-01",
       "scope": "[format('Microsoft.Sql/managedInstances/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
-        "level": "[parameters('resourcelock')]",
-        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/managedInstances', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[and(parameters('enableVulnerabilityAssessments'), not(empty(variables('identity'))))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "vulnerabilityAssessmentRoleAssignment",
+      "subscriptionId": "[variables('vulnerabilityAssessmentStorageSubId')]",
+      "resourceGroup": "[variables('vulnerabilityAssessmentStorageResourceGroup')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "storageAccountName": {
+            "value": "[variables('vulnerabilityAssessmentStorageName')]"
+          },
+          "principalId": {
+            "value": "[reference(resourceId('Microsoft.Sql/managedInstances', parameters('name')), '2022-05-01-preview', 'full').identity.principalId]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.17.1.54307",
+              "templateHash": "1768538609101732206"
+            }
+          },
+          "parameters": {
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Storage account name."
+              }
+            },
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Principal ID of the identity to grant storage account permissions to."
+              }
+            }
+          },
+          "variables": {
+            "storageBlobContributorRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+            "storageBlobContributorRoleDefinitionId": "[guid(parameters('storageAccountName'), variables('storageBlobContributorRoleId'), parameters('principalId'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+              "name": "[variables('storageBlobContributorRoleDefinitionId')]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[variables('storageBlobContributorRoleId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
       },
       "dependsOn": [
         "[resourceId('Microsoft.Sql/managedInstances', parameters('name'))]"

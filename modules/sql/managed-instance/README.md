@@ -34,16 +34,21 @@ This module performs the following
 | `collation`                             | `string`       | No       | Optional. The Managed Instance Collation.                                                                                                            |
 | `publicDataEndpointEnabled`             | `bool`         | No       | Optional. Whether or not the public data endpoint is enabled.                                                                                        |
 | `storageSizeInGB`                       | `int`          | Yes      | Optional. Storage size in GB. Minimum value: 32. Increments of 32 GB allowed only.                                                                   |
-| `subnetId`                              | `string`       | Yes      | Optional. Subnet resource ID for the managed instance.                                                                                               |
+| `subnetResourceId`                      | `string`       | Yes      | Optional. Subnet resource ID for the managed instance.                                                                                               |
 | `zoneRedundant`                         | `bool`         | No       | Optional. Whether or not the multi-az is enabled.                                                                                                    |
 | `proxyOverride`                         | `string`       | No       | Optional. The server connection type. Note private link requires Proxy.                                                                              |
 | `dnsZonePartner`                        | `string`       | No       | Optional. The resource id of another managed instance whose DNS zone this managed instance will share after creation.                                |
 | `instancePoolId`                        | `string`       | No       | Optional. The Id of the instance pool this managed server belongs to.                                                                                |
 | `servicePrincipalType`                  | `string`       | No       | Optional. The managed instance service principal. (None or SystemAssigned)                                                                           |
 | `timezoneId`                            | `string`       | No       | Optional. The Id of the TimeZone. (eg: "AUS Eastern Standard Time")                                                                                  |
+| `enableVulnerabilityAssessments`        | `bool`         | No       | Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities.                                                    |
+| `vulnerabilityAssessmentStorageId`      | `string`       | No       | Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true".         |
+| `emailAccountAdmins`                    | `bool`         | No       | Optional. Specifies that the schedule scan notification will be is sent to the subscription administrators.                                          |
+| `emailAddresses`                        | `array`        | No       | Optional. Specifies an array of e-mail addresses to which the scan notification is sent.                                                             |
 | `systemAssignedIdentity`                | `bool`         | No       | Optional. Enables system assigned managed identity on the resource.                                                                                  |
 | `userAssignedIdentities`                | `object`       | No       | Optional. The ID(s) to assign to the resource.                                                                                                       |
 | `primaryUserAssignedIdentityId`         | `string`       | No       | Optional. The resource ID of a user assigned identity to be used by default.                                                                         |
+| `threatDetectionRetentionDays`          | `int`          | No       | Optional. Specifies the number of days to keep in the Threat Detection audit logs. Zero means keep forever.                                          |
 | `enableDiagnostics`                     | `bool`         | No       | Optional. Enable diagnostic logging.                                                                                                                 |
 | `diagnosticLogCategoriesToEnable`       | `array`        | No       | Optional. The name of log category groups that will be streamed.                                                                                     |
 | `diagnosticMetricsToEnable`             | `array`        | No       | Optional. The name of metrics that will be streamed.                                                                                                 |
@@ -52,7 +57,7 @@ This module performs the following
 | `diagnosticLogAnalyticsWorkspaceId`     | `string`       | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                                                    |
 | `diagnosticEventHubAuthorizationRuleId` | `string`       | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.                              |
 | `diagnosticEventHubName`                | `string`       | No       | Optional. Event hub name. Only required if enableDiagnostics is set to true.                                                                         |
-| `resourcelock`                          | `string`       | No       | Optional. Specify the type of resource lock.                                                                                                         |
+| `resourceLock`                          | `string`       | No       | Optional. Specify the type of resource lock.                                                                                                         |
 
 ## Outputs
 
