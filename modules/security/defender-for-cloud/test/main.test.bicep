@@ -69,6 +69,6 @@ module defender '../main.bicep' = {
     pricingTierSqlServerVirtualMachines: 'Standard'
     pricingTierStorageAccounts: 'Standard'
     pricingTierVMs: 'Standard'
-    pricingTierApis: 'Standard'
+    pricingTierApi: 'Standard'
   }
 }
