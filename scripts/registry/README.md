@@ -1,6 +1,6 @@
 # Bicep Modules Registry Bootstrap
 
-The purpose of the scripts is to create initial resources in the client subscription to allow 'Done Right' deployments to utilise the bicep modules directly from a registry.
+The purpose of the scripts is to create initial resources in the client subscription to allow 'Done Right' deployments to utilise the bicep modules directly from a registry. The scripts can also be rerun to uplift an existing registry with new module versions.
 
 ## Steps
 
