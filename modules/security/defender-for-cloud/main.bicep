@@ -143,91 +143,91 @@ resource securityContacts 'Microsoft.Security/securityContacts@2020-01-01-previe
   }
 }
 
-resource cloudPosture 'Microsoft.Security/pricings@2022-03-01' = {
+resource cloudPosture 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'CloudPosture'
   properties: {
     pricingTier: pricingCloudPosture
   }
 }
 
-resource virtualMachines 'Microsoft.Security/pricings@2022-03-01' = {
+resource virtualMachines 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'VirtualMachines'
   properties: {
     pricingTier: pricingTierVMs
   }
 }
 
-resource sqlServers 'Microsoft.Security/pricings@2022-03-01' = {
+resource sqlServers 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'SqlServers'
   properties: {
     pricingTier: pricingTierSqlServers
   }
 }
 
-resource sqlServerVirtualMachines 'Microsoft.Security/pricings@2022-03-01' = {
+resource sqlServerVirtualMachines 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'SqlServerVirtualMachines'
   properties: {
     pricingTier: pricingTierSqlServerVirtualMachines
   }
 }
 
-resource openSourceRelationalDatabases 'Microsoft.Security/pricings@2022-03-01' = {
+resource openSourceRelationalDatabases 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'OpenSourceRelationalDatabases'
   properties: {
     pricingTier: pricingTierOpenSourceRelationalDatabases
   }
 }
 
-resource appServices 'Microsoft.Security/pricings@2022-03-01' = {
+resource appServices 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'AppServices'
   properties: {
     pricingTier: pricingTierAppServices
   }
 }
 
-resource storageAccounts 'Microsoft.Security/pricings@2022-03-01' = {
+resource storageAccounts 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'StorageAccounts'
   properties: {
     pricingTier: pricingTierStorageAccounts
   }
 }
 
-resource containers 'Microsoft.Security/pricings@2022-03-01' = {
+resource containers 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'Containers'
   properties: {
     pricingTier: pricingTierContainers
   }
 }
 
-resource keyVaults 'Microsoft.Security/pricings@2022-03-01' = {
+resource keyVaults 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'KeyVaults'
   properties: {
     pricingTier: pricingTierKeyVaults
   }
 }
 
-resource dns 'Microsoft.Security/pricings@2022-03-01' = {
+resource dns 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'Dns'
   properties: {
     pricingTier: pricingTierDns
   }
 }
 
-resource arm 'Microsoft.Security/pricings@2022-03-01' = {
+resource arm 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'Arm'
   properties: {
     pricingTier: pricingTierArm
   }
 }
 
-resource cosmos 'Microsoft.Security/pricings@2022-03-01' = {
+resource cosmos 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'CosmosDbs'
   properties: {
     pricingTier: pricingTierCosmosDbs
   }
 }
 
-resource api 'Microsoft.Security/pricings@2022-03-01' = {
+resource api 'Microsoft.Security/pricings@2023-01-01' = {
   name: 'Api'
   properties: {
     pricingTier: pricingTierApi
