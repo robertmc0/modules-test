@@ -120,13 +120,6 @@ param dnsZonePartner string = ''
 @description('Optional. The Id of the instance pool this managed server belongs to.')
 param instancePoolId string = ''
 
-@description('Optional. The managed instance service principal. (None or SystemAssigned)')
-@allowed([
-  'None'
-  'SystemAssigned'
-])
-param servicePrincipalType string = 'None'
-
 @description('Optional. The Id of the TimeZone. (eg: "AUS Eastern Standard Time")')
 param timezoneId string = 'UTC'
 
@@ -163,7 +156,7 @@ param enableDiagnostics bool = false
   'AllLogs'
 ])
 param diagnosticLogCategoriesToEnable array = [
-  'AllLogs'
+  'Audit'
 ]
 
 @description('Optional. The name of metrics that will be streamed.')
@@ -210,7 +203,7 @@ var lockName = toLower('${managedInstance.name}-${resourceLock}-lck')
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
 var identity = identityType != 'None' ? {
-  type: identityType
+  type: enableVulnerabilityAssessments && !empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : enableVulnerabilityAssessments && empty(userAssignedIdentities) ? 'SystemAssigned' : identityType
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
@@ -268,7 +261,6 @@ resource managedInstance 'Microsoft.Sql/managedInstances@2022-05-01-preview' = {
       sid: administrators.sid
       tenantId: contains(administrators, 'tenantId') ? administrators.tenantId : subscription().tenantId
     } : {}
-
     collation: collation
     dnsZonePartner: !empty(dnsZonePartner) ? dnsZonePartner : null
     instancePoolId: !empty(instancePoolId) ? instancePoolId : null
@@ -280,9 +272,6 @@ resource managedInstance 'Microsoft.Sql/managedInstances@2022-05-01-preview' = {
     publicDataEndpointEnabled: publicDataEndpointEnabled
     restorePointInTime: !empty(restorePointInTime) ? restorePointInTime : null
     requestedBackupStorageRedundancy: requestedBackupStorageRedundancy
-    servicePrincipal: {
-      type: servicePrincipalType
-    }
     sourceManagedInstanceId: !empty(sourceManagedInstanceId) ? sourceManagedInstanceId : null
     storageSizeInGB: storageSizeInGB
     subnetId: subnetResourceId

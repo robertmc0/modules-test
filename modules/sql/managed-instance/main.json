@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "15395050982161635614"
+      "templateHash": "3926383711068963122"
     }
   },
   "parameters": {
@@ -202,17 +202,6 @@
         "description": "Optional. The Id of the instance pool this managed server belongs to."
       }
     },
-    "servicePrincipalType": {
-      "type": "string",
-      "defaultValue": "None",
-      "allowedValues": [
-        "None",
-        "SystemAssigned"
-      ],
-      "metadata": {
-        "description": "Optional. The managed instance service principal. (None or SystemAssigned)"
-      }
-    },
     "timezoneId": {
       "type": "string",
       "defaultValue": "UTC",
@@ -286,7 +275,7 @@
     "diagnosticLogCategoriesToEnable": {
       "type": "array",
       "defaultValue": [
-        "AllLogs"
+        "Audit"
       ],
       "allowedValues": [
         "Audit",
@@ -391,7 +380,7 @@
     "vulnerabilityAssessmentStorageName": "[if(parameters('enableVulnerabilityAssessments'), last(split(parameters('vulnerabilityAssessmentStorageId'), '/')), null())]",
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
-    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('userAssignedIdentities')))), 'SystemAssigned,UserAssigned', if(and(parameters('enableVulnerabilityAssessments'), empty(parameters('userAssignedIdentities'))), 'SystemAssigned', variables('identityType'))), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
   },
   "resources": [
@@ -420,9 +409,6 @@
         "publicDataEndpointEnabled": "[parameters('publicDataEndpointEnabled')]",
         "restorePointInTime": "[if(not(empty(parameters('restorePointInTime'))), parameters('restorePointInTime'), null())]",
         "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
-        "servicePrincipal": {
-          "type": "[parameters('servicePrincipalType')]"
-        },
         "sourceManagedInstanceId": "[if(not(empty(parameters('sourceManagedInstanceId'))), parameters('sourceManagedInstanceId'), null())]",
         "storageSizeInGB": "[parameters('storageSizeInGB')]",
         "subnetId": "[parameters('subnetResourceId')]",
