@@ -112,7 +112,7 @@ param pricingTierCosmosDbs string = 'Free'
   'Standard'
   'Free'
 ])
-param pricingTierApis string = 'Free'
+param pricingTierApi string = 'Free'
 
 @description('Resource ID of the Log Analytics workspace.')
 param workspaceId string
@@ -230,7 +230,7 @@ resource cosmos 'Microsoft.Security/pricings@2022-03-01' = {
 resource api 'Microsoft.Security/pricings@2022-03-01' = {
   name: 'Api'
   properties: {
-    pricingTier: pricingTierApis
+    pricingTier: pricingTierApi
   }
 }
 
