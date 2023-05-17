@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "596735136395090398"
+      "version": "0.17.1.54307",
+      "templateHash": "1537585023523829462"
     }
   },
   "parameters": {
@@ -123,28 +123,6 @@
         "description": "Optional. The pricing tier for Microsoft Defender for Open Source Relational Databases."
       }
     },
-    "pricingTierKubernetesService": {
-      "type": "string",
-      "defaultValue": "Free",
-      "allowedValues": [
-        "Standard",
-        "Free"
-      ],
-      "metadata": {
-        "description": "Optional. The pricing tier for Microsoft Defender for Kubernetes."
-      }
-    },
-    "pricingTierContainerRegistry": {
-      "type": "string",
-      "defaultValue": "Free",
-      "allowedValues": [
-        "Standard",
-        "Free"
-      ],
-      "metadata": {
-        "description": "Optional. The pricing tier for Microsoft Defender for Azure Container Registry."
-      }
-    },
     "pricingTierContainers": {
       "type": "string",
       "defaultValue": "Free",
@@ -200,6 +178,17 @@
         "description": "Optional. The pricing tier for Microsoft Defender for CosmosDbs."
       }
     },
+    "pricingTierApi": {
+      "type": "string",
+      "defaultValue": "Free",
+      "allowedValues": [
+        "Standard",
+        "Free"
+      ],
+      "metadata": {
+        "description": "Optional. The pricing tier for Microsoft Defender for APIs."
+      }
+    },
     "workspaceId": {
       "type": "string",
       "metadata": {
@@ -242,7 +231,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "CloudPosture",
       "properties": {
         "pricingTier": "[parameters('pricingCloudPosture')]"
@@ -250,7 +239,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "VirtualMachines",
       "properties": {
         "pricingTier": "[parameters('pricingTierVMs')]"
@@ -258,7 +247,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "SqlServers",
       "properties": {
         "pricingTier": "[parameters('pricingTierSqlServers')]"
@@ -266,7 +255,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "SqlServerVirtualMachines",
       "properties": {
         "pricingTier": "[parameters('pricingTierSqlServerVirtualMachines')]"
@@ -274,7 +263,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "OpenSourceRelationalDatabases",
       "properties": {
         "pricingTier": "[parameters('pricingTierOpenSourceRelationalDatabases')]"
@@ -282,7 +271,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "AppServices",
       "properties": {
         "pricingTier": "[parameters('pricingTierAppServices')]"
@@ -290,7 +279,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "StorageAccounts",
       "properties": {
         "pricingTier": "[parameters('pricingTierStorageAccounts')]"
@@ -298,23 +287,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
-      "name": "KubernetesService",
-      "properties": {
-        "pricingTier": "[parameters('pricingTierKubernetesService')]"
-      }
-    },
-    {
-      "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
-      "name": "ContainerRegistry",
-      "properties": {
-        "pricingTier": "[parameters('pricingTierContainerRegistry')]"
-      }
-    },
-    {
-      "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "Containers",
       "properties": {
         "pricingTier": "[parameters('pricingTierContainers')]"
@@ -322,7 +295,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "KeyVaults",
       "properties": {
         "pricingTier": "[parameters('pricingTierKeyVaults')]"
@@ -330,7 +303,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "Dns",
       "properties": {
         "pricingTier": "[parameters('pricingTierDns')]"
@@ -338,7 +311,7 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "Arm",
       "properties": {
         "pricingTier": "[parameters('pricingTierArm')]"
@@ -346,10 +319,18 @@
     },
     {
       "type": "Microsoft.Security/pricings",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2023-01-01",
       "name": "CosmosDbs",
       "properties": {
         "pricingTier": "[parameters('pricingTierCosmosDbs')]"
+      }
+    },
+    {
+      "type": "Microsoft.Security/pricings",
+      "apiVersion": "2023-01-01",
+      "name": "Api",
+      "properties": {
+        "pricingTier": "[parameters('pricingTierApi')]"
       }
     },
     {
