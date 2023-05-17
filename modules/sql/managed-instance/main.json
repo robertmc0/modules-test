@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "3926383711068963122"
+      "templateHash": "6794023010037367566"
     }
   },
   "parameters": {
@@ -377,7 +377,7 @@
     ],
     "vulnerabilityAssessmentStorageResourceGroup": "[if(parameters('enableVulnerabilityAssessments'), split(parameters('vulnerabilityAssessmentStorageId'), '/')[4], 'placeholder')]",
     "vulnerabilityAssessmentStorageSubId": "[if(parameters('enableVulnerabilityAssessments'), split(parameters('vulnerabilityAssessmentStorageId'), '/')[2], 'placeholder')]",
-    "vulnerabilityAssessmentStorageName": "[if(parameters('enableVulnerabilityAssessments'), last(split(parameters('vulnerabilityAssessmentStorageId'), '/')), null())]",
+    "vulnerabilityAssessmentStorageName": "[if(parameters('enableVulnerabilityAssessments'), last(split(parameters('vulnerabilityAssessmentStorageId'), '/')), 'placeholder')]",
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('userAssignedIdentities')))), 'SystemAssigned,UserAssigned', if(and(parameters('enableVulnerabilityAssessments'), empty(parameters('userAssignedIdentities'))), 'SystemAssigned', variables('identityType'))), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",

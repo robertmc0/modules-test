@@ -196,7 +196,7 @@ var vulnerabilityAssessmentStorageResourceGroup = enableVulnerabilityAssessments
 
 var vulnerabilityAssessmentStorageSubId = enableVulnerabilityAssessments ? split(vulnerabilityAssessmentStorageId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
-var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments ? last(split(vulnerabilityAssessmentStorageId, '/')) : null
+var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments ? last(split(vulnerabilityAssessmentStorageId, '/')) : 'placeholder'
 
 var lockName = toLower('${managedInstance.name}-${resourceLock}-lck')
 
