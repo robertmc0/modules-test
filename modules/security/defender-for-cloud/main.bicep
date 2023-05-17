@@ -72,20 +72,6 @@ param pricingTierSqlServerVirtualMachines string = 'Free'
 ])
 param pricingTierOpenSourceRelationalDatabases string = 'Free'
 
-@description('Optional. The pricing tier for Microsoft Defender for Kubernetes.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierKubernetesService string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for Azure Container Registry.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierContainerRegistry string = 'Free'
-
 @description('Optional. The pricing tier for Microsoft Defender for Containers.')
 @allowed([
   'Standard'
@@ -120,6 +106,13 @@ param pricingTierArm string = 'Free'
   'Free'
 ])
 param pricingTierCosmosDbs string = 'Free'
+
+@description('Optional. The pricing tier for Microsoft Defender for APIs.')
+@allowed([
+  'Standard'
+  'Free'
+])
+param pricingTierApis string = 'Free'
 
 @description('Resource ID of the Log Analytics workspace.')
 param workspaceId string
@@ -199,20 +192,6 @@ resource storageAccounts 'Microsoft.Security/pricings@2022-03-01' = {
   }
 }
 
-resource kubernetesService 'Microsoft.Security/pricings@2022-03-01' = {
-  name: 'KubernetesService'
-  properties: {
-    pricingTier: pricingTierKubernetesService
-  }
-}
-
-resource containerRegistry 'Microsoft.Security/pricings@2022-03-01' = {
-  name: 'ContainerRegistry'
-  properties: {
-    pricingTier: pricingTierContainerRegistry
-  }
-}
-
 resource containers 'Microsoft.Security/pricings@2022-03-01' = {
   name: 'Containers'
   properties: {
@@ -245,6 +224,13 @@ resource cosmos 'Microsoft.Security/pricings@2022-03-01' = {
   name: 'CosmosDbs'
   properties: {
     pricingTier: pricingTierCosmosDbs
+  }
+}
+
+resource api 'Microsoft.Security/pricings@2022-03-01' = {
+  name: 'Api'
+  properties: {
+    pricingTier: pricingTierApis
   }
 }
 

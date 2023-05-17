@@ -60,16 +60,15 @@ module defender '../main.bicep' = {
     pricingCloudPosture: 'Standard'
     pricingTierAppServices: 'Standard'
     pricingTierArm: 'Standard'
-    pricingTierContainerRegistry: 'Standard'
     pricingTierContainers: 'Standard'
     pricingTierCosmosDbs: 'Standard'
     pricingTierDns: 'Standard'
     pricingTierKeyVaults: 'Standard'
-    pricingTierKubernetesService: 'Standard'
     pricingTierOpenSourceRelationalDatabases: 'Standard'
     pricingTierSqlServers: 'Standard'
     pricingTierSqlServerVirtualMachines: 'Standard'
     pricingTierStorageAccounts: 'Standard'
     pricingTierVMs: 'Standard'
+    pricingTierApis: 'Standard'
   }
 }
