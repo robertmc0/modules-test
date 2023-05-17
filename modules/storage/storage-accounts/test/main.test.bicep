@@ -146,7 +146,6 @@ module storageAccount '../main.bicep' = {
         metadata: {}
       }
     ]
-
     enableDiagnostics: true
     diagnosticLogsRetentionInDays: 7
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
@@ -161,18 +160,17 @@ module storageAccountNfs '../main.bicep' = {
     publicNetworkAccess: 'Disabled'
     sku: 'Premium_LRS'
     kind: 'FileStorage'
-
     fileShares: [
       {
         name: 'nfsfileshare'
         protocol: 'NFS'
       }
     ]
-
     systemAssignedIdentity: true
     enableDiagnostics: true
     diagnosticLogsRetentionInDays: 7
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    largeFileSharesState: 'Enabled'
   }
 }
 
