@@ -36,7 +36,7 @@
 
 
   .NOTES
-    Version:	1.0
+    Version:	1.1
     Author:		Scott Wilkinson
 
     Creation Date:			24/03/2023
@@ -48,7 +48,9 @@
 
     Limitations:  None
 
-    Version History:  [24/03/2023 - 1.0 - Scott Wilkinson]: Initial script development
+    Version History:
+      [24/03/2023 - 1.0 - Scott Wilkinson]: Initial script development
+      [17/05/2023 - 1.1 - Scott Wilkinson]: Added enhancements to supporting uplifting a registry with new module versions
 
 #>
 function Build-Registry {
@@ -79,7 +81,7 @@ function Build-Registry {
   CreateRegistry -AzureRegion $AzureRegion -TargetRegistryName $TargetRegistryName -TargetTenantId $TargetTenantId  -TargetSubscriptionName $TargetSubscriptionName -TargetRegistryResourceGroupName $TargetRegistryResourceGroupName -Tags $Tags
   ImportImagesToTargetRegistry -SourceRegistryToken $SourceRegistryToken -SourceRegistryName $SourceRegistryName -Images $Images -TargetTenantId $TargetTenantId -TargetSubscriptionName $TargetSubscriptionName -TargetRegistryName $TargetRegistryName
 
-  Write-Host "Build and registry import process was successful."
+  Write-Host "Registry build and import process was successful"
 }
 
 function ConnectToSourceRegistry {
@@ -101,7 +103,7 @@ function ConnectToSourceRegistry {
     }
   }
   try {
-    Write-Host "Connecting to source registry $SourceRegistryName."
+    Write-Host "Connecting to source registry $SourceRegistryName"
     $Token = az acr login -n $SourceRegistryName --expose-token 2>$null | ConvertFrom-Json
     return $Token
   }
@@ -117,10 +119,10 @@ function GetSourceRegistryImages {
     [string] $SourceRegistryName
   )
   $Repos = az acr repository list -n $SourceRegistryName | ConvertFrom-Json
-  Write-Host "Found $($($Repos).Count) source repositories."
+  Write-Host "Found $($($Repos).Count) modules in source registry"
   $Images = [System.Collections.ArrayList]@()
 
-  Write-Host "Scanning source repositories for images."
+  Write-Host "Scanning modules for versions"
   foreach ($Repo in $Repos) {
     $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo | ConvertFrom-Json
     foreach ($Tag in $Tags) {
@@ -169,7 +171,7 @@ function CreateRegistry() {
     Write-Host "Provisioning registry"
     $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags | ConvertFrom-Json
     if ($output.properties.provisioningState -eq "Succeeded") {
-      Write-Host "Successfully provisioned registry"
+      Write-Host "Successfully provisioned target registry"
     }
     else {
       $output
@@ -215,16 +217,44 @@ function ImportImagesToTargetRegistry {
     throw "Failed to locate target subscription $TargetSubscriptionName. Please ensure the target subscription name is correct. Error: $($_.Exception.Message)"
   }
 
-  Write-Host "Importing images to target registry"
+  Write-Host "Connecting to target registry $TargetRegistryName"
+  $Repos = az acr repository list -n $TargetRegistryName | ConvertFrom-Json
 
-  foreach ($Image in $Images) {
-    Write-Host "Importing Image $Image"
+  if (($($Repos).Count) -ne 0) {
+    Write-Host "Found $($($Repos).Count) modules in target registry"
+    $TargetImages = [System.Collections.ArrayList]@()
 
-    try {
-      az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$Image" -u "00000000-0000-0000-0000-000000000000" -p $SourceRegistryToken.accessToken
+    Write-Host "Scanning modules for versions"
+    foreach ($Repo in $Repos) {
+      $Tags = az acr repository show-tags -n $TargetRegistryName --repository $Repo | ConvertFrom-Json
+      foreach ($Tag in $Tags) {
+        $TargetImages += "${Repo}:${Tag}"
+      }
     }
-    catch {
-      throw "Failed to import image from source registry $SourceRegistryName to $TargetRegistryName. Please ensure the target registry name is valid. Error: $($_.Exception.Message)"
+
+    Write-Host "Calculating differences between source and target registries"
+
+    $newImages = $Images | Select-Object -Unique | Where-Object { $TargetImages -notcontains $_ }
+
+    Write-Host "$($($newImages).Count) new version(s) identified"
+  }
+  else {
+    $newImages = $Images
+  }
+
+  if ($($newImages).Count -ne 0) {
+    Write-Host "Importing module versions to target registry"
+
+    foreach ($Image in $newImages) {
+
+      Write-Host "Importing $Image"
+
+      try {
+        az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$Image" -u "00000000-0000-0000-0000-000000000000" -p $SourceRegistryToken.accessToken
+      }
+      catch {
+        throw "Failed to import module from source registry $SourceRegistryName to $TargetRegistryName. Please ensure the target registry name is valid. Error: $($_.Exception.Message)"
+      }
     }
   }
 }
