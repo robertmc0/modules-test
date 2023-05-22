@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "6794023010037367566"
+      "templateHash": "14914487775120426920"
     }
   },
   "parameters": {
@@ -419,7 +419,7 @@
     },
     {
       "type": "Microsoft.Sql/managedInstances/securityAlertPolicies",
-      "apiVersion": "2021-11-01",
+      "apiVersion": "2022-05-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {
         "state": "Enabled",
@@ -434,7 +434,7 @@
     {
       "condition": "[parameters('enableVulnerabilityAssessments')]",
       "type": "Microsoft.Sql/managedInstances/vulnerabilityAssessments",
-      "apiVersion": "2021-11-01",
+      "apiVersion": "2022-05-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {
         "storageContainerPath": "[if(parameters('enableVulnerabilityAssessments'), format('{0}vulnerability-assessment', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vulnerabilityAssessmentStorageSubId'), variables('vulnerabilityAssessmentStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('vulnerabilityAssessmentStorageName')), '2022-05-01').primaryEndpoints.blob), '')]",
@@ -471,7 +471,7 @@
     {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.Sql/managedInstances/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
