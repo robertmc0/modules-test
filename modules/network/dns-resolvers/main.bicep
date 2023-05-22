@@ -30,22 +30,7 @@ param outboundSubnetName string = 'snet-outbound'
 @description('Optional. Specify the type of resource lock.')
 param resourceLock string = 'NotSpecified'
 
-@description('Optional. Enable telemetry via a Globally Unique Identifier (GUID).')
-param enableDefaultTelemetry bool = true
-
 var lockName = toLower('${dnsResolver.name}-${resourceLock}-lck')
-
-resource defaultTelemetry 'Microsoft.Resources/deployments@2021-04-01' = if (enableDefaultTelemetry) {
-  name: 'pid-47ed15a6-730a-4827-bcb4-0fd963ffbd82-${uniqueString(deployment().name, location)}'
-  properties: {
-    mode: 'Incremental'
-    template: {
-      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
-      contentVersion: '1.0.0.0'
-      resources: []
-    }
-  }
-}
 
 resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
   name: virtualNetworkResourceName
@@ -99,7 +84,7 @@ resource dnsResolverOutboundEndpoint 'Microsoft.Network/dnsResolvers/outboundEnd
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: dnsResolver
   name: lockName
   properties: {
