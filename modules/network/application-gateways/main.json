@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "8610551348754667565"
+      "templateHash": "7032452909128495380"
     }
   },
   "parameters": {
@@ -223,7 +223,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Frontend private IP address for application gateway resource. IP address must be based on the supplied subnet supported IP range."
+        "description": "Optional. Frontend private IP address for application gateway resource. IP address must be based on the supplied subnet supported IP range."
       }
     },
     "probes": {

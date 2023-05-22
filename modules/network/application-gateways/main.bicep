@@ -162,7 +162,7 @@ param redirectConfigurations array = []
 })
 param frontEndPorts array
 
-@description('Frontend private IP address for application gateway resource. IP address must be based on the supplied subnet supported IP range.')
+@description('Optional. Frontend private IP address for application gateway resource. IP address must be based on the supplied subnet supported IP range.')
 param frontEndPrivateIpAddress string = ''
 
 @description('Optional. Probes of the application gateway resource.')
