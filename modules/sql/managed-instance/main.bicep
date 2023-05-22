@@ -282,7 +282,7 @@ resource managedInstance 'Microsoft.Sql/managedInstances@2022-05-01-preview' = {
   }
 }
 
-resource securityThreatAlertPolicies 'Microsoft.Sql/managedInstances/securityAlertPolicies@2021-11-01' = {
+resource securityThreatAlertPolicies 'Microsoft.Sql/managedInstances/securityAlertPolicies@2022-05-01-preview' = {
   parent: managedInstance
   name: 'default'
   properties: {
@@ -293,7 +293,7 @@ resource securityThreatAlertPolicies 'Microsoft.Sql/managedInstances/securityAle
   }
 }
 
-resource vulnerabilityAssessments 'Microsoft.Sql/managedInstances/vulnerabilityAssessments@2021-11-01' = if (enableVulnerabilityAssessments) {
+resource vulnerabilityAssessments 'Microsoft.Sql/managedInstances/vulnerabilityAssessments@2022-05-01-preview' = if (enableVulnerabilityAssessments) {
   parent: managedInstance
   name: 'default'
   properties: {
@@ -323,7 +323,7 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: managedInstance
   name: lockName
   properties: {
