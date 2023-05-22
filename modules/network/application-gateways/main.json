@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.10.61.36676",
-      "templateHash": "1011975656760865121"
+      "version": "0.17.1.54307",
+      "templateHash": "8610551348754667565"
     }
   },
   "parameters": {
@@ -144,6 +144,7 @@
         "name": "Name of the HTTP listener that is unique within an application gateway.",
         "protocol": "Protocol of the HTTP listener.",
         "frontEndPort": "Frontend port name of an application gateway.",
+        "frontEndType": "Frontend type of an application gateway. Value must be Public or Private. public is the default. ",
         "sslCertificate": "SSL certificate name of an application gateway (only required for HTTPS listeners).",
         "hostNames": [
           "List of host names for HTTP Listener that allows special wildcard characters as well."
@@ -216,6 +217,13 @@
         "name": "Name of the frontend port that is unique within an application gateway.",
         "port": "Frontend port.",
         "description": "Frontend ports of the application gateway resource."
+      }
+    },
+    "frontEndPrivateIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Frontend private IP address for application gateway resource. IP address must be based on the supplied subnet supported IP range."
       }
     },
     "probes": {
@@ -422,7 +430,27 @@
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
     "gatewayIpConfigurationName": "appGatewayIpConfig",
-    "frontendIpConfigurationName": "appGwPublicFrontendIp"
+    "frontendPublicIpConfigurationName": "appGwPublicFrontendIp",
+    "frontendPrivateIpConfigurationName": "appGwPrivateFrontendIp",
+    "frontendPublicIpConfiguration": {
+      "name": "[variables('frontendPublicIpConfigurationName')]",
+      "properties": {
+        "publicIPAddress": {
+          "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
+        }
+      }
+    },
+    "frontendPrivateIpConfiguration": {
+      "name": "[variables('frontendPrivateIpConfigurationName')]",
+      "properties": {
+        "privateIPAddress": "[parameters('frontEndPrivateIpAddress')]",
+        "privateIPAllocationMethod": "Static",
+        "subnet": {
+          "id": "[parameters('subnetResourceId')]"
+        }
+      }
+    },
+    "frontendIPConfigurations": "[if(empty(parameters('frontEndPrivateIpAddress')), createArray(variables('frontendPublicIpConfiguration')), createArray(variables('frontendPublicIpConfiguration'), variables('frontendPrivateIpConfiguration')))]"
   },
   "resources": [
     {
@@ -550,7 +578,7 @@
               "name": "[parameters('httpListeners')[copyIndex('httpListeners')].name]",
               "properties": {
                 "frontendIPConfiguration": {
-                  "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('name'), variables('frontendIpConfigurationName'))]"
+                  "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('name'), if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'frontEndType'), if(equals(toLower(parameters('httpListeners')[copyIndex('httpListeners')].frontEndType), 'private'), variables('frontendPrivateIpConfigurationName'), variables('frontendPublicIpConfigurationName')), variables('frontendPublicIpConfigurationName')))]"
                 },
                 "frontendPort": {
                   "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('name'), parameters('httpListeners')[copyIndex('httpListeners')].frontEndPort)]"
@@ -618,16 +646,7 @@
             }
           }
         ],
-        "frontendIPConfigurations": [
-          {
-            "name": "[variables('frontendIpConfigurationName')]",
-            "properties": {
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpAddressName'))]"
-              }
-            }
-          }
-        ],
+        "frontendIPConfigurations": "[variables('frontendIPConfigurations')]",
         "firewallPolicy": "[if(not(empty(parameters('firewallPolicyId'))), createObject('id', parameters('firewallPolicyId')), null())]",
         "sslPolicy": "[parameters('sslPolicy')]"
       },
@@ -671,17 +690,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed application gateway."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/applicationGateways', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed application gateway."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/applicationGateways', parameters('name'))]"
     }
   }
 }
