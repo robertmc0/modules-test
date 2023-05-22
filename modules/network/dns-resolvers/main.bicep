@@ -108,8 +108,8 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != '
   }
 }
 
-@description('The name of the deployed private dns zone.')
+@description('The name of the deployed private dns resolver.')
 output name string = dnsResolver.name
 
-@description('The resource ID of the deployed private dns zone.')
+@description('The resource ID of the deployed private dns resolver.')
 output resourceid string = dnsResolver.id
