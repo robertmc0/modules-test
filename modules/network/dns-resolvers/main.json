@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "367669695566418186"
+      "templateHash": "12360544296633656691"
     }
   },
   "parameters": {
@@ -32,24 +32,24 @@
         "description": "Optional. Resource tags."
       }
     },
-    "virtualNetworkResourceName": {
+    "virtualNetworkId": {
       "type": "string",
       "metadata": {
-        "description": "Existing virtual network name to create the DNS Resolver in."
+        "description": "Existing virtual network resource ID to create the dns resolver in."
       }
     },
     "inboundSubnetName": {
       "type": "string",
       "defaultValue": "snet-inbound",
       "metadata": {
-        "description": "Optional. Existing subnet name for inbound DNS requests."
+        "description": "Optional. Existing subnet name for inbound dns requests."
       }
     },
     "outboundSubnetName": {
       "type": "string",
       "defaultValue": "snet-outbound",
       "metadata": {
-        "description": "Optional. Existing subnet name for outbound DNS requests."
+        "description": "Optional. Existing subnet name for outbound dns requests."
       }
     },
     "resourceLock": {
@@ -63,33 +63,12 @@
         "NotSpecified",
         "ReadOnly"
       ]
-    },
-    "enableDefaultTelemetry": {
-      "type": "bool",
-      "defaultValue": true,
-      "metadata": {
-        "description": "Optional. Enable telemetry via a Globally Unique Identifier (GUID)."
-      }
     }
   },
   "variables": {
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
   },
   "resources": [
-    {
-      "condition": "[parameters('enableDefaultTelemetry')]",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2021-04-01",
-      "name": "[format('pid-47ed15a6-730a-4827-bcb4-0fd963ffbd82-{0}', uniqueString(deployment().name, parameters('location')))]",
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "resources": []
-        }
-      }
-    },
     {
       "type": "Microsoft.Network/dnsResolvers",
       "apiVersion": "2022-07-01",
@@ -98,7 +77,7 @@
       "tags": "[parameters('tags')]",
       "properties": {
         "virtualNetwork": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkResourceName'))]"
+          "id": "[parameters('virtualNetworkId')]"
         }
       }
     },
@@ -112,7 +91,7 @@
           {
             "privateIpAllocationMethod": "Dynamic",
             "subnet": {
-              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkResourceName'), parameters('inboundSubnetName'))]"
+              "id": "[format('{0}/subnets/{1}', parameters('virtualNetworkId'), parameters('inboundSubnetName'))]"
             }
           }
         ]
@@ -128,7 +107,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "subnet": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkResourceName'), parameters('outboundSubnetName'))]"
+          "id": "[format('{0}/subnets/{1}', parameters('virtualNetworkId'), parameters('outboundSubnetName'))]"
         }
       },
       "dependsOn": [
@@ -138,7 +117,7 @@
     {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.Network/dnsResolvers/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
@@ -154,14 +133,14 @@
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of the deployed private dns zone."
+        "description": "The name of the deployed private dns resolver."
       },
       "value": "[parameters('name')]"
     },
     "resourceid": {
       "type": "string",
       "metadata": {
-        "description": "The resource ID of the deployed private dns zone."
+        "description": "The resource ID of the deployed private dns resolver."
       },
       "value": "[resourceId('Microsoft.Network/dnsResolvers', parameters('name'))]"
     }
