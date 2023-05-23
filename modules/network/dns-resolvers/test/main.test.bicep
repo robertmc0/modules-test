@@ -60,8 +60,8 @@ TEST EXECUTION
 module privateDnsResolver '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-private-dns-resolver'
   params: {
-    name: '${shortIdentifier}-tst-nw-${uniqueString(deployment().name, 'dnsResolver', location)}'
-    virtualNetworkResourceName: vnet.name
+    name: '${shortIdentifier}-tst-dns-res-${uniqueString(deployment().name, 'dnsResolver', location)}'
+    virtualNetworkId: vnet.id
     location: location
     resourceLock: 'CanNotDelete'
   }

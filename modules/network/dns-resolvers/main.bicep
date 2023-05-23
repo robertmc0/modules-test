@@ -13,13 +13,13 @@ param location string
 })
 param tags object = {}
 
-@description('Existing virtual network name to create the DNS Resolver in.')
-param virtualNetworkResourceName string
+@description('Existing virtual network resource ID to create the dns resolver in.')
+param virtualNetworkId string
 
-@description('Optional. Existing subnet name for inbound DNS requests.')
+@description('Optional. Existing subnet name for inbound dns requests.')
 param inboundSubnetName string = 'snet-inbound'
 
-@description('Optional. Existing subnet name for outbound DNS requests.')
+@description('Optional. Existing subnet name for outbound dns requests.')
 param outboundSubnetName string = 'snet-outbound'
 
 @allowed([
@@ -32,27 +32,13 @@ param resourceLock string = 'NotSpecified'
 
 var lockName = toLower('${dnsResolver.name}-${resourceLock}-lck')
 
-resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
-  name: virtualNetworkResourceName
-}
-
-resource outboundSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
-  parent: vnet
-  name: outboundSubnetName
-}
-
-resource inboundSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
-  parent: vnet
-  name: inboundSubnetName
-}
-
 resource dnsResolver 'Microsoft.Network/dnsResolvers@2022-07-01' = {
   name: name
   location: location
   tags: tags
   properties: {
     virtualNetwork: {
-      id: vnet.id
+      id: virtualNetworkId
     }
   }
 }
@@ -66,7 +52,8 @@ resource dnsResolverInboundEndpoint 'Microsoft.Network/dnsResolvers/inboundEndpo
       {
         privateIpAllocationMethod: 'Dynamic'
         subnet: {
-          id: inboundSubnet.id
+          #disable-next-line use-resource-id-functions
+          id: '${virtualNetworkId}/subnets/${inboundSubnetName}'
         }
       }
     ]
@@ -79,7 +66,8 @@ resource dnsResolverOutboundEndpoint 'Microsoft.Network/dnsResolvers/outboundEnd
   location: location
   properties: {
     subnet: {
-      id: outboundSubnet.id
+      #disable-next-line use-resource-id-functions
+      id: '${virtualNetworkId}/subnets/${outboundSubnetName}'
     }
   }
 }
