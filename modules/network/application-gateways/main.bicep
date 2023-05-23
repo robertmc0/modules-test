@@ -337,7 +337,7 @@ var frontendPrivateIpConfiguration = {
 
 var frontendIPConfigurations = empty(frontEndPrivateIpAddress) ? [ frontendPublicIpConfiguration ] : [ frontendPublicIpConfiguration, frontendPrivateIpConfiguration ]
 
-resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-11-01' = {
   name: publicIpAddressName
   location: location
   tags: tags
@@ -363,7 +363,7 @@ resource diagnosticsPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   }
 }
 
-resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' = {
+resource applicationGateway 'Microsoft.Network/applicationGateways@2022-11-01' = {
   name: name
   location: location
   zones: availabilityZones
@@ -538,7 +538,7 @@ resource diagnosticsApplicationGateway 'Microsoft.Insights/diagnosticSettings@20
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: applicationGateway
   name: lockName
   properties: {
