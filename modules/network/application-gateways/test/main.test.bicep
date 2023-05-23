@@ -290,6 +290,102 @@ module appGatewayNoWaf '../main.bicep' = {
   }
 }
 
+module appGatewayPublicAndPrivateIpNoWaf '../main.bicep' = {
+  name: '${shortIdentifier}-tst-private-apgw-${uniqueString(deployment().name, 'applicationGateways', location)}'
+  params: {
+    name: '${uniqueString(deployment().name, location)}-pub-pr-appGateway'
+    location: location
+    sku: 'Standard_v2'
+    tier: 'Standard_v2'
+    availabilityZones: [
+      '1'
+      '2'
+      '3'
+    ]
+    publicIpAddressName: '${uniqueString(deployment().name, location)}-pub-pr-appGateway-pip'
+    subnetResourceId: '${vnet.id}/subnets/AzureWAFSubnet'
+    userAssignedIdentities: {
+      '${userIdentity.id}': {}
+    }
+    frontEndPorts: [
+      {
+        name: 'port_443'
+        port: 443
+      }
+    ]
+    frontEndPrivateIpAddress: '10.0.0.30'
+    httpListeners: [
+      {
+        name: 'https-443-public-listener'
+        protocol: 'Https'
+        frontEndPort: 'port_443'
+        frontEndType: 'Public'
+        sslCertificate: environmentHostingDomain
+        hostNames: [
+          '*.${environmentHostingDomain}'
+        ]
+      }
+      {
+        name: 'https-443-private-listener'
+        protocol: 'Https'
+        frontEndPort: 'port_443'
+        frontEndType: 'Private'
+        sslCertificate: environmentHostingDomain
+        hostNames: [
+          '*.${environmentHostingDomain}'
+        ]
+      }
+    ]
+    sslCertificates: [
+      {
+        name: environmentHostingDomain
+        keyVaultResourceId: keyVault.id
+        secretName: kvCert.outputs.certificateName
+      }
+    ]
+    backendAddressPools: [
+      {
+        name: 'myapp-backend-pool'
+        backendAddresses: [
+          {
+            ipAddress: '10.1.2.3'
+          }
+        ]
+      }
+    ]
+    backendHttpSettings: [
+      {
+        name: 'https-443-backend-settings'
+        port: 443
+        protocol: 'Https'
+        cookieBasedAffinity: 'Enabled'
+        affinityCookieName: 'MyCookieAffinityName'
+        requestTimeout: 300
+        connectionDraining: {
+          drainTimeoutInSec: 60
+          enabled: true
+        }
+      }
+    ]
+    requestRoutingRules: [
+      {
+        name: 'myapp-https-443-public-rule'
+        ruleType: 'Basic'
+        httpListener: 'https-443-public-listener'
+        backendAddressPool: 'myapp-backend-pool'
+        backendHttpSettings: 'https-443-backend-settings'
+      }
+      {
+        name: 'myapp-https-443-private-rule'
+        ruleType: 'Basic'
+        httpListener: 'https-443-private-listener'
+        backendAddressPool: 'myapp-backend-pool'
+        backendHttpSettings: 'https-443-backend-settings'
+      }
+    ]
+  }
+}
+
 module appGatewayWaf '../main.bicep' = {
   name: '${shortIdentifier}-tst-apgw-waf-${uniqueString(deployment().name, 'applicationGateways', location)}'
   params: {
