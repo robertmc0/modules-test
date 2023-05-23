@@ -54,13 +54,40 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
-module privateDnsResolver '../../dns-resolvers/main.bicep' = {
-  name: '${uniqueString(deployment().name, location)}-private-dns-resolver'
-  params: {
-    name: '${shortIdentifier}-tst-dns-res-${uniqueString(deployment().name, 'dnsResolver', location)}'
-    virtualNetworkId: vnet.id
-    location: location
-    resourceLock: 'CanNotDelete'
+resource dnsResolver 'Microsoft.Network/dnsResolvers@2022-07-01' = {
+  name: '${shortIdentifier}-tst-dns-res-${uniqueString(deployment().name, 'dnsResolvers', location)}'
+  location: location
+  properties: {
+    virtualNetwork: {
+      id: vnet.id
+    }
+  }
+}
+
+resource dnsResolverInboundEndpoint 'Microsoft.Network/dnsResolvers/inboundEndpoints@2022-07-01' = {
+  parent: dnsResolver
+  name: '${dnsResolver.name}-dnsinbound'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        privateIpAllocationMethod: 'Dynamic'
+        subnet: {
+          id: '${vnet.id}/subnets/snet-inbound'
+        }
+      }
+    ]
+  }
+}
+
+resource dnsResolverOutboundEndpoint 'Microsoft.Network/dnsResolvers/outboundEndpoints@2022-07-01' = {
+  parent: dnsResolver
+  name: '${dnsResolver.name}-dnsoutbound'
+  location: location
+  properties: {
+    subnet: {
+      id: '${vnet.id}/subnets/snet-outbound'
+    }
   }
 }
 
@@ -69,10 +96,13 @@ TEST EXECUTION
 ======================================================================*/
 module dnsFwdRuleset '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-dns-forwarding-ruleset'
+  dependsOn: [
+    dnsResolverOutboundEndpoint
+  ]
   params: {
     name: '${shortIdentifier}-tst-dns-fwd-${uniqueString(deployment().name, 'dnsFwdRuleset', location)}'
     virtualNetworkId: vnet.id
-    outboundEndpointId: '${privateDnsResolver.outputs.resourceid}/outboundEndpoints/${privateDnsResolver.outputs.name}-dnsoutbound'
+    outboundEndpointId: '${dnsResolver.id}/outboundEndpoints/${dnsResolver.name}-dnsoutbound'
     dnsFwdRules: [
       {
         name: 'Contoso'
