@@ -14,6 +14,12 @@ param location string
 param tags object = {}
 
 @description('IpAddresses/IpAddressPrefixes in the IpGroups resource.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/ipgroups?pivots=deployment-language-bicep#ipgrouppropertiesformat'
+  example: [
+    'string'
+  ]
+})
 param ipAddresses array
 
 @description('Optional. Specify the type of resource lock.')
