@@ -1,15 +1,17 @@
-# DNS Private Resolver Module
+# DNS Forwarding Ruleset Module
 
-This module deploys Microsoft.Network dnsResolvers.
+This module deploys Microsoft.Network dnsForwardingRulesets.
 
 ## Description
 
 This module performs the following
 
-- Creates Microsoft.Network privateDnsZones resource.
-- Links the Private DNS Zone to an existing virtual network if specified.
-- Enables auto-registration of virtual machine records if specified.
-- Applies a lock to the Private DNS Zone if the lock is specified.
+- Creates Microsoft.Network dnsForwardingRulesets resource.
+- Used in conjunction with a deployed Private DNS Resolver (see separate module dns-resolvers to deploy).
+- Can create multiple rules for the ruleset by specifying inside an array - see test file for details.
+- Links the created DNS Forwarding Ruleset to an existing virtual network where the Private DNS Resolver is deployed.
+- Associates the created Ruleset to the Outbound Endpoint on the previously created Private DNS Resolver.
+- Applies a lock to the DNS Forwarding Ruleset if the lock is specified.
 
 ## Parameters
 
