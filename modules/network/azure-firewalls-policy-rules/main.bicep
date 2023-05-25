@@ -51,6 +51,7 @@ resource ruleCollectionGroups 'Microsoft.Network/firewallPolicies/ruleCollection
     priority: rule.priority
     ruleCollections: [for ruleCollection in rule.ruleCollections: {
       name: ruleCollection.name
+      priority: ruleCollection.priority
       ruleCollectionType: ruleCollection.ruleCollectionType
       action: {
         type: ruleCollection.action.type

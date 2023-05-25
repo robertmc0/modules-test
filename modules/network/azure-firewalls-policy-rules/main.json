@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "2447613294749303638"
+      "templateHash": "10136266893524147883"
     }
   },
   "parameters": {
@@ -74,6 +74,7 @@
             "count": "[length(parameters('rules')[copyIndex()].ruleCollections)]",
             "input": {
               "name": "[parameters('rules')[copyIndex()].ruleCollections[copyIndex('ruleCollections')].name]",
+              "priority": "[parameters('rules')[copyIndex()].ruleCollections[copyIndex('ruleCollections')].priority]",
               "ruleCollectionType": "[parameters('rules')[copyIndex()].ruleCollections[copyIndex('ruleCollections')].ruleCollectionType]",
               "action": {
                 "type": "[parameters('rules')[copyIndex()].ruleCollections[copyIndex('ruleCollections')].action.type]"
