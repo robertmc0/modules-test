@@ -39,18 +39,43 @@ param firewallPolicyName string
 })
 param rules array = []
 
-resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' existing = {
+resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-11-01' existing = {
   name: firewallPolicyName
 }
 
 @batchSize(1) // required to process rules serially otherwise conflicts occur with pending updates from previous operations
-resource ruleCollectionGroups 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2022-01-01' = [for rule in rules: {
+resource ruleCollectionGroups 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2022-11-01' = [for rule in rules: {
   parent: firewallPolicy
-
   name: rule.ruleCollectionGroupName
   properties: {
     priority: rule.priority
-    ruleCollections: rule.ruleCollections
+    ruleCollections: [for ruleCollection in rule.ruleCollections: {
+      name: ruleCollection.name
+      ruleCollectionType: ruleCollection.ruleCollectionType
+      action: {
+        type: ruleCollection.action.type
+      }
+      rules: map(ruleCollection.rules, r => {
+          name: r.name
+          ruleType: r.ruleType
+          sourceIpGroups: contains(r, 'sourceIpGroups') ? map(r.sourceIpGroups, sgroup => az.resourceId('Microsoft.Network/ipGroups', sgroup)) : []
+          sourceAddresses: contains(r, 'sourceAddresses') ? r.sourceAddresses : []
+          destinationIpGroups: contains(r, 'destinationIpGroups') ? map(r.destinationIpGroups, dgroup => az.resourceId('Microsoft.Network/ipGroups', dgroup)) : []
+          destinationAddresses: contains(r, 'destinationAddresses') ? r.destinationAddresses : []
+          ipProtocols: contains(r, 'ipProtocols') ? r.ipProtocols : []
+          destinationPorts: contains(r, 'destinationPorts') ? r.destinationPorts : []
+          destinationFqdns: contains(r, 'destinationFqdns') ? r.destinationFqdns : []
+          translatedAddress: contains(r, 'translatedAddress') ? r.translatedAddress : ''
+          translatedFqdn: contains(r, 'translatedFqdn') ? r.translatedFqdn : ''
+          translatedPort: contains(r, 'translatedPort') ? r.translatedPort : ''
+          fqdnTags: contains(r, 'fqdnTags') ? r.fqdnTags : []
+          protocols: contains(r, 'protocols') ? r.protocols : []
+          targetFqdns: contains(r, 'targetFqdns') ? r.targetFqdns : []
+          targetUrls: contains(r, 'targetUrls') ? r.targetUrls : []
+          terminateTLS: contains(r, 'terminateTLS') ? r.terminateTLS : false
+          webCategories: contains(r, 'webCategories') ? r.webCategories : []
+        })
+    }]
   }
 }]
 

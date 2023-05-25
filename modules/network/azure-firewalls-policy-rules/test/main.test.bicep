@@ -15,9 +15,31 @@ TEST PREREQUISITES
 resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' = {
   name: '${shortIdentifier}-tst-afwp-${uniqueString(deployment().name, 'firewallPolicies', location)}'
   location: location
+  properties: {}
+}
+
+resource ipGroup1 'Microsoft.Network/ipGroups@2022-11-01' = {
+  name: '${shortIdentifier}-tst-ipGrp1-${uniqueString(deployment().name, 'ipGroup', location)}'
+  location: location
   properties: {
+    ipAddresses: [
+      '10.20.1.4'
+      '10.20.1.5'
+    ]
   }
 }
+
+resource ipGroup2 'Microsoft.Network/ipGroups@2022-11-01' = {
+  name: '${shortIdentifier}-tst-ipGrp2-${uniqueString(deployment().name, 'ipGroup', location)}'
+  location: location
+  properties: {
+    ipAddresses: [
+      '10.20.1.6'
+      '10.20.1.7'
+    ]
+  }
+}
+
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -86,6 +108,22 @@ module rules '../main.bicep' = {
                 ]
                 destinationPorts: [
                   '*'
+                ]
+              }
+              {
+                ruleType: 'NetworkRule'
+                name: 'net2'
+                ipProtocols: [
+                  'TCP'
+                ]
+                sourceIpGroups: [
+                  ipGroup1.name
+                ]
+                destinationIpGroups: [
+                  ipGroup2.name
+                ]
+                destinationPorts: [
+                  '443'
                 ]
               }
             ]

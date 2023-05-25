@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "13291829956867478569"
+      "version": "0.17.1.54307",
+      "templateHash": "2447613294749303638"
     }
   },
   "parameters": {
@@ -65,28 +65,41 @@
         "batchSize": 1
       },
       "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
-      "apiVersion": "2022-01-01",
+      "apiVersion": "2022-11-01",
       "name": "[format('{0}/{1}', parameters('firewallPolicyName'), parameters('rules')[copyIndex()].ruleCollectionGroupName)]",
       "properties": {
-        "priority": "[parameters('rules')[copyIndex()].priority]",
-        "ruleCollections": "[parameters('rules')[copyIndex()].ruleCollections]"
+        "copy": [
+          {
+            "name": "ruleCollections",
+            "count": "[length(parameters('rules')[copyIndex()].ruleCollections)]",
+            "input": {
+              "name": "[parameters('rules')[copyIndex()].ruleCollections[copyIndex('ruleCollections')].name]",
+              "ruleCollectionType": "[parameters('rules')[copyIndex()].ruleCollections[copyIndex('ruleCollections')].ruleCollectionType]",
+              "action": {
+                "type": "[parameters('rules')[copyIndex()].ruleCollections[copyIndex('ruleCollections')].action.type]"
+              },
+              "rules": "[map(parameters('rules')[copyIndex()].ruleCollections[copyIndex('ruleCollections')].rules, lambda('r', createObject('name', lambdaVariables('r').name, 'ruleType', lambdaVariables('r').ruleType, 'sourceIpGroups', if(contains(lambdaVariables('r'), 'sourceIpGroups'), map(lambdaVariables('r').sourceIpGroups, lambda('sgroup', resourceId('Microsoft.Network/ipGroups', lambdaVariables('sgroup')))), createArray()), 'sourceAddresses', if(contains(lambdaVariables('r'), 'sourceAddresses'), lambdaVariables('r').sourceAddresses, createArray()), 'destinationIpGroups', if(contains(lambdaVariables('r'), 'destinationIpGroups'), map(lambdaVariables('r').destinationIpGroups, lambda('dgroup', resourceId('Microsoft.Network/ipGroups', lambdaVariables('dgroup')))), createArray()), 'destinationAddresses', if(contains(lambdaVariables('r'), 'destinationAddresses'), lambdaVariables('r').destinationAddresses, createArray()), 'ipProtocols', if(contains(lambdaVariables('r'), 'ipProtocols'), lambdaVariables('r').ipProtocols, createArray()), 'destinationPorts', if(contains(lambdaVariables('r'), 'destinationPorts'), lambdaVariables('r').destinationPorts, createArray()), 'destinationFqdns', if(contains(lambdaVariables('r'), 'destinationFqdns'), lambdaVariables('r').destinationFqdns, createArray()), 'translatedAddress', if(contains(lambdaVariables('r'), 'translatedAddress'), lambdaVariables('r').translatedAddress, ''), 'translatedFqdn', if(contains(lambdaVariables('r'), 'translatedFqdn'), lambdaVariables('r').translatedFqdn, ''), 'translatedPort', if(contains(lambdaVariables('r'), 'translatedPort'), lambdaVariables('r').translatedPort, ''), 'fqdnTags', if(contains(lambdaVariables('r'), 'fqdnTags'), lambdaVariables('r').fqdnTags, createArray()), 'protocols', if(contains(lambdaVariables('r'), 'protocols'), lambdaVariables('r').protocols, createArray()), 'targetFqdns', if(contains(lambdaVariables('r'), 'targetFqdns'), lambdaVariables('r').targetFqdns, createArray()), 'targetUrls', if(contains(lambdaVariables('r'), 'targetUrls'), lambdaVariables('r').targetUrls, createArray()), 'terminateTLS', if(contains(lambdaVariables('r'), 'terminateTLS'), lambdaVariables('r').terminateTLS, false()), 'webCategories', if(contains(lambdaVariables('r'), 'webCategories'), lambdaVariables('r').webCategories, createArray()))))]"
+            }
+          }
+        ],
+        "priority": "[parameters('rules')[copyIndex()].priority]"
       }
     }
   ],
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('firewallPolicyName')]",
       "metadata": {
         "description": "The name of the deployed firewall policy."
-      }
+      },
+      "value": "[parameters('firewallPolicyName')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicyName'))]",
       "metadata": {
         "description": "The resource ID of the deployed firewall policy."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicyName'))]"
     }
   }
 }
