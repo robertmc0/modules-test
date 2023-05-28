@@ -95,6 +95,7 @@ param trustedRootCertificates array = []
   name: 'Name of the HTTP listener that is unique within an application gateway.'
   protocol: 'Protocol of the HTTP listener.'
   frontEndPort: 'Frontend port name of an application gateway.'
+  frontEndType: 'Frontend type of an application gateway. Value must be Public or Private. public is the default. '
   sslCertificate: 'SSL certificate name of an application gateway (only required for HTTPS listeners).'
   hostNames: [
     'List of host names for HTTP Listener that allows special wildcard characters as well.'
@@ -160,6 +161,9 @@ param redirectConfigurations array = []
   port: 'Frontend port.'
 })
 param frontEndPorts array
+
+@description('Optional. Frontend private IP address for application gateway resource. IP address must be based on the supplied subnet supported IP range.')
+param frontEndPrivateIpAddress string = ''
 
 @description('Optional. Probes of the application gateway resource.')
 @metadata({
@@ -308,9 +312,32 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
 
 var gatewayIpConfigurationName = 'appGatewayIpConfig'
 
-var frontendIpConfigurationName = 'appGwPublicFrontendIp'
+var frontendPublicIpConfigurationName = 'appGwPublicFrontendIp'
+var frontendPrivateIpConfigurationName = 'appGwPrivateFrontendIp'
 
-resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+var frontendPublicIpConfiguration = {
+  name: frontendPublicIpConfigurationName
+  properties: {
+    publicIPAddress: {
+      id: publicIpAddress.id
+    }
+  }
+}
+
+var frontendPrivateIpConfiguration = {
+  name: frontendPrivateIpConfigurationName
+  properties: {
+    privateIPAddress: frontEndPrivateIpAddress
+    privateIPAllocationMethod: 'Static'
+    subnet: {
+      id: subnetResourceId
+    }
+  }
+}
+
+var frontendIPConfigurations = empty(frontEndPrivateIpAddress) ? [ frontendPublicIpConfiguration ] : [ frontendPublicIpConfiguration, frontendPrivateIpConfiguration ]
+
+resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-11-01' = {
   name: publicIpAddressName
   location: location
   tags: tags
@@ -336,7 +363,7 @@ resource diagnosticsPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   }
 }
 
-resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' = {
+resource applicationGateway 'Microsoft.Network/applicationGateways@2022-11-01' = {
   name: name
   location: location
   zones: availabilityZones
@@ -362,16 +389,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         }
       }
     ]
-    frontendIPConfigurations: [
-      {
-        name: frontendIpConfigurationName
-        properties: {
-          publicIPAddress: {
-            id: publicIpAddress.id
-          }
-        }
-      }
-    ]
+    frontendIPConfigurations: frontendIPConfigurations
     frontendPorts: [for frontEndPort in frontEndPorts: {
       name: frontEndPort.name
       properties: {
@@ -424,10 +442,12 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         requestTimeout: backendHttpSetting.requestTimeout
         connectionDraining: backendHttpSetting.connectionDraining
         probe: contains(backendHttpSetting, 'probeName') ? {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/probes', name, backendHttpSetting.probeName)
         } : null
         trustedRootCertificates: contains(backendHttpSetting, 'trustedRootCertificate') ? [
           {
+            #disable-next-line use-resource-id-functions
             id: az.resourceId('Microsoft.Network/applicationGateways/trustedRootCertificates', name, backendHttpSetting.trustedRootCertificate)
           }
         ] : []
@@ -439,13 +459,16 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
       name: httpListener.name
       properties: {
         frontendIPConfiguration: {
-          id: az.resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', name, frontendIpConfigurationName)
+          #disable-next-line use-resource-id-functions
+          id: az.resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', name, contains(httpListener, 'frontEndType') ? toLower(httpListener.frontEndType) == 'private' ? frontendPrivateIpConfigurationName : frontendPublicIpConfigurationName : frontendPublicIpConfigurationName)
         }
         frontendPort: {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/frontendPorts', name, httpListener.frontEndPort)
         }
         protocol: httpListener.protocol
         sslCertificate: contains(httpListener, 'sslCertificate') ? {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/sslCertificates', name, httpListener.sslCertificate)
         } : null
         hostNames: contains(httpListener, 'hostNames') ? httpListener.hostNames : null
@@ -463,15 +486,19 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
       properties: {
         ruleType: rule.ruleType
         httpListener: contains(rule, 'httpListener') ? {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, rule.httpListener)
         } : null
         backendAddressPool: contains(rule, 'backendAddressPool') ? {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/backendAddressPools', name, rule.backendAddressPool)
         } : null
         backendHttpSettings: contains(rule, 'backendHttpSettings') ? {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', name, rule.backendHttpSettings)
         } : null
         redirectConfiguration: contains(rule, 'redirectConfiguration') ? {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/redirectConfigurations', name, rule.redirectConfiguration)
         } : null
       }
@@ -482,12 +509,14 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         redirectType: redirectConfiguration.redirectType
         targetUrl: redirectConfiguration.targetUrl
         targetListener: contains(redirectConfiguration, 'targetListener') ? {
+          #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, redirectConfiguration.targetListener)
         } : null
         includePath: redirectConfiguration.includePath
         includeQueryString: redirectConfiguration.includeQueryString
         requestRoutingRules: [
           {
+            #disable-next-line use-resource-id-functions
             id: az.resourceId('Microsoft.Network/applicationGateways/requestRoutingRules', name, redirectConfiguration.requestRoutingRule)
           }
         ]
@@ -509,7 +538,7 @@ resource diagnosticsApplicationGateway 'Microsoft.Insights/diagnosticSettings@20
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: applicationGateway
   name: lockName
   properties: {
