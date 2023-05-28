@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "16065091008759936796"
+      "templateHash": "16462678039541648410"
     }
   },
   "parameters": {
@@ -90,28 +90,26 @@
     },
     "enableVulnerabilityAssessments": {
       "type": "bool",
-      "defaultValue": false,
+      "defaultValue": true,
       "metadata": {
         "description": "Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities."
       }
     },
     "vulnerabilityAssessmentStorageId": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
         "description": "Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to \"true\". "
       }
     },
     "enableAudit": {
       "type": "bool",
-      "defaultValue": false,
+      "defaultValue": true,
       "metadata": {
         "description": "Optional. Enable Audit logging."
       }
     },
     "auditStorageAccountId": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
         "description": "Optional. Resource ID of the Storage Account to store Audit logs. Required when enableAudit set to \"true\"."
       }
@@ -288,12 +286,14 @@
         }
       }
     ],
-    "vulnerabilityAssessmentStorageResourceGroup": "[if(parameters('enableVulnerabilityAssessments'), split(parameters('vulnerabilityAssessmentStorageId'), '/')[4], 'placeholder')]",
-    "vulnerabilityAssessmentStorageSubId": "[if(parameters('enableVulnerabilityAssessments'), split(parameters('vulnerabilityAssessmentStorageId'), '/')[2], 'placeholder')]",
-    "vulnerabilityAssessmentStorageName": "[if(parameters('enableVulnerabilityAssessments'), last(split(parameters('vulnerabilityAssessmentStorageId'), '/')), null())]",
+    "vulnerabilityAssessmentStorageAccountProvided": "[not(empty(parameters('vulnerabilityAssessmentStorageId')))]",
+    "vulnerabilityAssessmentStorageResourceGroup": "[if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('vulnerabilityAssessmentStorageId')))), split(parameters('vulnerabilityAssessmentStorageId'), '/')[4], 'placeholder')]",
+    "vulnerabilityAssessmentStorageSubId": "[if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('vulnerabilityAssessmentStorageId')))), split(parameters('vulnerabilityAssessmentStorageId'), '/')[2], 'placeholder')]",
+    "vulnerabilityAssessmentStorageName": "[if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('vulnerabilityAssessmentStorageId')))), last(split(parameters('vulnerabilityAssessmentStorageId'), '/')), null())]",
     "auditStorageResourceGroup": "[if(parameters('enableAudit'), split(parameters('auditStorageAccountId'), '/')[4], 'placeholder')]",
-    "auditStorageSubId": "[if(parameters('enableAudit'), split(parameters('auditStorageAccountId'), '/')[2], 'placeholder')]",
-    "auditStorageName": "[if(parameters('enableAudit'), last(split(parameters('auditStorageAccountId'), '/')), null())]",
+    "auditStorageAccountProvided": "[not(empty(parameters('auditStorageAccountId')))]",
+    "auditStorageSubId": "[if(and(parameters('enableAudit'), not(empty(parameters('auditStorageAccountId')))), split(parameters('auditStorageAccountId'), '/')[2], 'placeholder')]",
+    "auditStorageName": "[if(and(parameters('enableAudit'), not(empty(parameters('auditStorageAccountId')))), last(split(parameters('auditStorageAccountId'), '/')), null())]",
     "userIdentityResourceGroup": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), split(parameters('primaryUserAssignedIdentityId'), '/')[4], null())]",
     "userIdentitySubId": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), split(parameters('primaryUserAssignedIdentityId'), '/')[2], null())]",
     "userIdentityName": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), last(split(parameters('primaryUserAssignedIdentityId'), '/')), null())]",

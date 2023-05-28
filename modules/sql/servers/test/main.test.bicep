@@ -96,6 +96,8 @@ module sqlServerMinimum '../main.bicep' = {
     enableVulnerabilityAssessments: false
     administratorLogin: '${shortIdentifier}sqladmin'
     administratorLoginPassword: sqlAdminPassword
+    vulnerabilityAssessmentStorageId: vulnStorageAccount.id
+    auditStorageAccountId: auditStorageAccount.id
   }
 }
 

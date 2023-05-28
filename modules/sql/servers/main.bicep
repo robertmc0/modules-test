@@ -55,16 +55,16 @@ param publicNetworkAccess string = 'Enabled'
 param connectionType string = 'Default'
 
 @description('Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities.')
-param enableVulnerabilityAssessments bool = false
+param enableVulnerabilityAssessments bool = true
 
 @description('Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true". ')
-param vulnerabilityAssessmentStorageId string = ''
+param vulnerabilityAssessmentStorageId string
 
 @description('Optional. Enable Audit logging.')
-param enableAudit bool = false
+param enableAudit bool = true
 
 @description('Optional. Resource ID of the Storage Account to store Audit logs. Required when enableAudit set to "true".')
-param auditStorageAccountId string = ''
+param auditStorageAccountId string
 
 @description('Optional. Specifies that the schedule scan notification will be is sent to the subscription administrators.')
 param emailAccountAdmins bool = false
@@ -145,17 +145,21 @@ param diagnosticEventHubName string = ''
 ])
 param resourceLock string = 'NotSpecified'
 
-var vulnerabilityAssessmentStorageResourceGroup = enableVulnerabilityAssessments ? split(vulnerabilityAssessmentStorageId, '/')[4] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+var vulnerabilityAssessmentStorageAccountProvided = !empty(vulnerabilityAssessmentStorageId)
 
-var vulnerabilityAssessmentStorageSubId = enableVulnerabilityAssessments ? split(vulnerabilityAssessmentStorageId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+var vulnerabilityAssessmentStorageResourceGroup = enableVulnerabilityAssessments && !empty(vulnerabilityAssessmentStorageId) ? split(vulnerabilityAssessmentStorageId, '/')[4] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
-var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments ? last(split(vulnerabilityAssessmentStorageId, '/')) : null
+var vulnerabilityAssessmentStorageSubId = enableVulnerabilityAssessments && !empty(vulnerabilityAssessmentStorageId) ? split(vulnerabilityAssessmentStorageId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+
+var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments && !empty(vulnerabilityAssessmentStorageId) ? last(split(vulnerabilityAssessmentStorageId, '/')) : null
 
 var auditStorageResourceGroup = enableAudit ? split(auditStorageAccountId, '/')[4] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
-var auditStorageSubId = enableAudit ? split(auditStorageAccountId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+var auditStorageAccountProvided = !empty(auditStorageAccountId)
 
-var auditStorageName = enableAudit ? last(split(auditStorageAccountId, '/')) : null
+var auditStorageSubId = enableAudit && !empty(auditStorageAccountId) ? split(auditStorageAccountId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
+
+var auditStorageName = enableAudit && !empty(auditStorageAccountId) ? last(split(auditStorageAccountId, '/')) : null
 
 var userIdentityResourceGroup = !empty(primaryUserAssignedIdentityId) ? split(primaryUserAssignedIdentityId, '/')[4] : null
 
@@ -204,7 +208,7 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-
   name: userIdentityName
 }
 
-resource vulnerabilityAssessmentStorage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = if (enableVulnerabilityAssessments) {
+resource vulnerabilityAssessmentStorage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = if (enableVulnerabilityAssessments && vulnerabilityAssessmentStorageAccountProvided) {
   scope: resourceGroup(vulnerabilityAssessmentStorageSubId, vulnerabilityAssessmentStorageResourceGroup)
   name: vulnerabilityAssessmentStorageName
 }
@@ -218,7 +222,7 @@ module vulnerabilityAssessmentRoleAssignment 'roleAssignment.bicep' = if (enable
   }
 }
 
-resource auditStorage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = if (enableAudit) {
+resource auditStorage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = if (enableAudit && auditStorageAccountProvided) {
   scope: resourceGroup(auditStorageSubId, auditStorageResourceGroup)
   name: auditStorageName
 }
