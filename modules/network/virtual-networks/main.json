@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "2309988155643198810"
+      "version": "0.17.1.54307",
+      "templateHash": "13026986475246449760"
     }
   },
   "parameters": {
@@ -216,7 +216,7 @@
                 "privateEndpointNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateEndpointNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateEndpointNetworkPolicies, 'Disabled')]",
                 "privateLinkServiceNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateLinkServiceNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateLinkServiceNetworkPolicies, 'Enabled')]",
                 "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, null())]",
-                "delegations": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'delegation'), createArray(createObject('name', parameters('subnets')[copyIndex('subnets')].delegation, 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegation))), createArray())]"
+                "delegations": "[if(and(contains(parameters('subnets')[copyIndex('subnets')], 'delegation'), not(equals(parameters('subnets')[copyIndex('subnets')].delegation, null()))), createArray(createObject('name', parameters('subnets')[copyIndex('subnets')].delegation, 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegation))), createArray())]"
               }
             }
           }
@@ -267,29 +267,29 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed virtual network."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed virtual network."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
     },
     "subnets": {
       "type": "array",
+      "metadata": {
+        "description": "List of subnets associated to the virtual network."
+      },
       "copy": {
         "count": "[length(parameters('subnets'))]",
         "input": {
-          "name": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name'))).subnets[copyIndex()].name]",
-          "id": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name'))).subnets[copyIndex()].id]"
+          "name": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name')), '2022-01-01').subnets[copyIndex()].name]",
+          "id": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name')), '2022-01-01').subnets[copyIndex()].id]"
         }
-      },
-      "metadata": {
-        "description": "List of subnets associated to the virtual network."
       }
     }
   }
