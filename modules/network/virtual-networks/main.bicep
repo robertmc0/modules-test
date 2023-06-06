@@ -151,7 +151,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
         privateEndpointNetworkPolicies: contains(subnet, 'privateEndpointNetworkPolicies') ? subnet.privateEndpointNetworkPolicies : 'Disabled'
         privateLinkServiceNetworkPolicies: contains(subnet, 'privateLinkServiceNetworkPolicies') ? subnet.privateLinkServiceNetworkPolicies : 'Enabled'
         serviceEndpoints: contains(subnet, 'serviceEndpoints') ? subnet.serviceEndpoints : null
-        delegations: contains(subnet, 'delegation') ? [
+        delegations: contains(subnet, 'delegation') && subnet.delegation != null ? [
           {
             name: subnet.delegation
             properties: {
