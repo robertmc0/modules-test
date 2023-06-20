@@ -43,4 +43,5 @@ You will need:-
 }
 ```
 
-5. Execute 'Done Right' deployment.
+5. Ensure the 'Done Right' service principal has acrPull permissions on the container registry.
+6. Execute 'Done Right' deployment.
