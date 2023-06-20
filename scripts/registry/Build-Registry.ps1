@@ -71,7 +71,7 @@ function Build-Registry {
     [Parameter(Mandatory = $true)]
     [string] $TargetRegistryResourceGroupName,
     [Parameter(Mandatory = $false)]
-    [string] $Tags
+    [string] $Tags = "{}"
   )
   $ErrorActionPreference = "Stop"
 
@@ -145,7 +145,7 @@ function CreateRegistry() {
     [Parameter(Mandatory = $true)]
     [string] $TargetRegistryResourceGroupName,
     [Parameter(Mandatory = $false)]
-    [string] $Tags = "{}"
+    [string] $Tags
   )
   $ErrorActionPreference = "Stop"
 
