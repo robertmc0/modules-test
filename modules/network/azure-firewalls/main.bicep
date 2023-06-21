@@ -176,7 +176,7 @@ var firewallProperties = sku == 'AZFW_VNet' ? {
   } : null
 }
 
-resource publicIpFirewall 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (sku == 'AZFW_VNet') {
+resource publicIpFirewall 'Microsoft.Network/publicIPAddresses@2022-11-01' = if (sku == 'AZFW_VNet') {
   name: sku == 'AZFW_VNet' ? publicIpAddressName : 'placeholder1' //placeholder value added as name cannot be null or empty and is evaulated.
   location: location
   tags: tags
@@ -202,7 +202,7 @@ resource diagnosticsPublicIpFirewall 'Microsoft.Insights/diagnosticSettings@2021
   }
 }
 
-resource publicIpFirewallMgmt 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (!empty(firewallManagementConfiguration) && (sku == 'AZFW_VNet')) {
+resource publicIpFirewallMgmt 'Microsoft.Network/publicIPAddresses@2022-11-01' = if (!empty(firewallManagementConfiguration) && (sku == 'AZFW_VNet')) {
   name: !empty(firewallManagementConfiguration) ? firewallManagementConfiguration.publicIpAddressName : 'placeholder2' //placeholder value added as name cannot be null or empty and is evaulated.
   location: location
   tags: tags
@@ -228,14 +228,14 @@ resource diagnosticsPublicIpFirewallMgmt 'Microsoft.Insights/diagnosticSettings@
   }
 }
 
-resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
+resource firewall 'Microsoft.Network/azureFirewalls@2022-11-01' = {
   name: name
   location: location
   tags: tags
   properties: firewallProperties
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: firewall
   name: lockName
   properties: {
