@@ -7,10 +7,11 @@ This module deploys Microsoft.Network azureFirewalls
 This module performs the following
 
 - Creates Microsoft.Network azureFirewalls resource.
-- Enables forced tunneling if specified.
-- Enables DNS proxy with customer DNS servers on firewall if specified.
-- Applies diagnostic settings.
-- Applies a lock to the bastion host if the lock is specified.
+- Optionally enables forced tunnelling.
+- Optionally associates the Azure Firewall to an existing firewall policy.
+- Optionally configures the Azure Firewall to an existing virtual hub.
+- Optionally configures diagnostic settings.
+- Optionally enables a resource lock on the resource.
 
 ## Parameters
 
@@ -24,10 +25,7 @@ This module performs the following
 | `subnetResourceId`                      | `string` | No       | Optional. Resource ID of the Azure firewall subnet.                                                                     |
 | `publicIpAddressName`                   | `string` | No       | Optional. Name of the Azure firewall public IP address.                                                                 |
 | `firewallManagementConfiguration`       | `object` | No       | Optional. IP configuration of the Azure Firewall used for management traffic.                                           |
-| `policyName`                            | `string` | Yes      | Firewall policy name.                                                                                                   |
-| `threatIntelMode`                       | `string` | No       | Optional. The operation mode for Threat Intelligence.                                                                   |
-| `enableDnsProxy`                        | `bool`   | No       | Optional. Enable DNS Proxy on Firewalls attached to the Firewall Policy.                                                |
-| `customDnsServers`                      | `array`  | No       | Optional. List of Custom DNS Servers. Only required when enableDnsProxy set to true.                                    |
+| `firewallPolicyId`                      | `string` | No       | Optional. Existing firewall policy id.                                                                                  |
 | `availabilityZones`                     | `array`  | No       | Optional. A list of availability zones denoting where the resource should be deployed.                                  |
 | `virtualHubResourceId`                  | `string` | No       | Optional. Resource ID of the Azure virtual hub.                                                                         |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                    |
@@ -42,11 +40,11 @@ This module performs the following
 
 ## Outputs
 
-| Name             | Type   | Description                                        |
-| :--------------- | :----: | :------------------------------------------------- |
-| name             | string | The name of the deployed Azure firewall.           |
-| resourceId       | string | The resource ID of the deployed Azure firewall.    |
-| privateIpAddress | string | Private IP address of the deployed Azure firewall. |
+| Name               | Type     | Description                                        |
+| :----------------- | :------: | :------------------------------------------------- |
+| `name`             | `string` | The name of the deployed Azure firewall.           |
+| `resourceId`       | `string` | The resource ID of the deployed Azure firewall.    |
+| `privateIpAddress` | `string` | Private IP address of the deployed Azure firewall. |
 
 ## Examples
 

@@ -41,17 +41,8 @@ param publicIpAddressName string = ''
 })
 param firewallManagementConfiguration object = {}
 
-@description('Firewall policy name.')
-param policyName string
-
-@description('Optional. The operation mode for Threat Intelligence.')
-param threatIntelMode string = 'Alert'
-
-@description('Optional. Enable DNS Proxy on Firewalls attached to the Firewall Policy.')
-param enableDnsProxy bool = false
-
-@description('Optional. List of Custom DNS Servers. Only required when enableDnsProxy set to true.')
-param customDnsServers array = []
+@description('Optional. Existing firewall policy id.')
+param firewallPolicyId string = ''
 
 @description('Optional. A list of availability zones denoting where the resource should be deployed.')
 @allowed([
@@ -164,9 +155,9 @@ var firewallProperties = sku == 'AZFW_VNet' ? {
       }
     }
   } : null
-  firewallPolicy: {
-    id: firewallPolicy.id
-  }
+  firewallPolicy: !empty(firewallPolicyId) ? {
+    id: firewallPolicyId
+  } : null
 } : {
   sku: {
     name: sku
@@ -180,9 +171,9 @@ var firewallProperties = sku == 'AZFW_VNet' ? {
   virtualHub: {
     id: virtualHubResourceId
   }
-  firewallPolicy: {
-    id: firewallPolicy.id
-  }
+  firewallPolicy: !empty(firewallPolicyId) ? {
+    id: firewallPolicyId
+  } : null
 }
 
 resource publicIpFirewall 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (sku == 'AZFW_VNet') {
@@ -242,22 +233,6 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
   location: location
   tags: tags
   properties: firewallProperties
-}
-
-resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' = {
-  name: policyName
-  location: location
-  tags: tags
-  properties: {
-    dnsSettings: {
-      enableProxy: enableDnsProxy
-      servers: customDnsServers
-    }
-    threatIntelMode: threatIntelMode
-    sku: {
-      tier: tier
-    }
-  }
 }
 
 resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {

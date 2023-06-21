@@ -61,8 +61,7 @@ resource vnet2 'Microsoft.Network/virtualNetworks@2021-05-01' = {
 resource virtualWan 'Microsoft.Network/virtualWans@2022-05-01' = {
   name: '${shortIdentifier}-tst-vwan-${uniqueString(deployment().name, 'virtualWan', location)}'
   location: location
-  properties: {
-  }
+  properties: {}
 }
 
 resource virtualHub 'Microsoft.Network/virtualHubs@2022-05-01' = {
@@ -74,6 +73,11 @@ resource virtualHub 'Microsoft.Network/virtualHubs@2022-05-01' = {
       id: virtualWan.id
     }
   }
+}
+
+resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-11-01' = {
+  name: '${shortIdentifier}-tst-afwp-${uniqueString(deployment().name, 'firewallPolicy', location)}'
+  location: location
 }
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
@@ -106,7 +110,6 @@ module firewallMinimum '../main.bicep' = {
     tier: 'Standard'
     subnetResourceId: '${vnet1.id}/subnets/AzureFirewallSubnet'
     publicIpAddressName: '${uniqueString(deployment().name, location)}-min-firewall-pip'
-    policyName: '${uniqueString(deployment().name, location)}-min-firewall-tst-afwp'
   }
 }
 
@@ -118,16 +121,11 @@ module firewall '../main.bicep' = {
     tier: 'Standard'
     subnetResourceId: '${vnet2.id}/subnets/AzureFirewallSubnet'
     publicIpAddressName: '${uniqueString(deployment().name, location)}-firewall-pip'
-    policyName: '${uniqueString(deployment().name, location)}-firewall-tst-afwp'
+    firewallPolicyId: firewallPolicy.id
     firewallManagementConfiguration: {
       publicIpAddressName: '${uniqueString(deployment().name, location)}-firewallmgmt-pip'
       subnetResourceId: '${vnet2.id}/subnets/AzureFirewallManagementSubnet'
     }
-    enableDnsProxy: true
-    customDnsServers: [
-      '10.1.2.3'
-      '10.3.4.5'
-    ]
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticStorageAccountId: diagnosticsStorageAccount.id
@@ -144,6 +142,6 @@ module firewallHub '../main.bicep' = {
     tier: 'Standard'
     sku: 'AZFW_Hub'
     virtualHubResourceId: virtualHub.id
-    policyName: '${uniqueString(deployment().name, location)}-hub-firewall-tst-afwp'
+    firewallPolicyId: firewallPolicy.id
   }
 }
