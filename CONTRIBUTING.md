@@ -8,7 +8,8 @@ You can use [codespaces](https://github.com/arincoau/arinco-bicep-modules/wiki/C
 
 Alternatively follow the steps below to install the required software on your machine.
 
-- Install [.NET 7.0 SDK](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks)
+- Install `.NET 7.0 SDK` by running:
+  - `winget install Microsoft.DotNet.SDK.7`
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
 - Install the following VSCode extensions as they are used for code formatting:
