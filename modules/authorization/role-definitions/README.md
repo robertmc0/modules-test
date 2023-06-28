@@ -4,7 +4,10 @@ Use this module to deploy a custom RBAC role to an Azure subscription or managem
 
 ## Description
 
-This module is used to deploy custom RBAC roles to Azure.
+This module is used to deploy custom RBAC roles to Azure. Keep in mind that `notActions`, `dataActions` and `notDataActions` cannot be deployed under management group scope. This is a limitation with Bicep.
+
+For a list of role operations, refer to the link below
+https://learn.microsoft.com/en-us/azure/role-based-access-control/resource-provider-operations
 
 ## Parameters
 
