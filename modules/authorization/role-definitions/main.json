@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.13.1.58284",
+      "templateHash": "10938196818209110910"
+    }
+  },
+  "parameters": {
+    "scopeType": {
+      "type": "string",
+      "metadata": {
+        "description": "The value that defines whether the role assignment will be deployed to a subscription or a management group."
+      }
+    },
+    "roleName": {
+      "type": "string",
+      "metadata": {
+        "description": "The display name of the custom role to be deployed."
+      }
+    },
+    "roleDescription": {
+      "type": "string",
+      "metadata": {
+        "description": "The description for the custom role to be deployed."
+      }
+    },
+    "scopeId": {
+      "type": "string",
+      "metadata": {
+        "description": "The target id of the deployment scope."
+      }
+    },
+    "actions": {
+      "type": "array",
+      "metadata": {
+        "description": "List of permissions for role actions."
+      }
+    },
+    "notActions": {
+      "type": "array",
+      "metadata": {
+        "description": "List of permissions for role not actions."
+      }
+    },
+    "dataActions": {
+      "type": "array",
+      "metadata": {
+        "description": "List of permissions for role data actions."
+      }
+    },
+    "notDataActions": {
+      "type": "array",
+      "metadata": {
+        "description": "List of permissions for role not data actions."
+      }
+    }
+  },
+  "variables": {
+    "customRoleUUID": "[guid(parameters('scopeId'), string(parameters('actions')), string(parameters('notActions')), string(parameters('dataActions')), string(parameters('notDataActions')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleDefinitions",
+      "apiVersion": "2022-04-01",
+      "name": "[variables('customRoleUUID')]",
+      "properties": {
+        "assignableScopes": [
+          "[if(equals(parameters('scopeType'), 'subscription'), format('/subscriptions/{0}', parameters('scopeId')), format('/providers/Microsoft.Management/managementGroups/{0}', parameters('scopeId')))]"
+        ],
+        "description": "[parameters('roleDescription')]",
+        "permissions": [
+          {
+            "actions": "[parameters('actions')]",
+            "notActions": "[parameters('notActions')]",
+            "dataActions": "[parameters('dataActions')]",
+            "notDataActions": "[parameters('notDataActions')]"
+          }
+        ],
+        "roleName": "[parameters('roleName')]",
+        "type": "customRole"
+      }
+    }
+  ]
+}
