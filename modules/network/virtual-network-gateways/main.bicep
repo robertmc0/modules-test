@@ -188,7 +188,7 @@ var ipConfigurations = activeActive ? [
   }
 ]
 
-resource primaryPublicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+resource primaryPublicIp 'Microsoft.Network/publicIPAddresses@2022-11-01' = {
   name: primaryPublicIpAddressName
   location: location
   sku: {
@@ -213,7 +213,7 @@ resource diagnosticsPrimaryPublicIp 'Microsoft.Insights/diagnosticSettings@2021-
   }
 }
 
-resource secondaryPublicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+resource secondaryPublicIp 'Microsoft.Network/publicIPAddresses@2022-11-01' = {
   name: secondaryPublicIpAddressName
   location: location
   sku: {
@@ -238,7 +238,7 @@ resource diagnosticsSecondaryPublicIp 'Microsoft.Insights/diagnosticSettings@202
   }
 }
 
-resource virtualNetworkGateway 'Microsoft.Network/virtualNetworkGateways@2022-01-01' = {
+resource virtualNetworkGateway 'Microsoft.Network/virtualNetworkGateways@2022-11-01' = {
   name: name
   location: location
   tags: tags
@@ -255,7 +255,7 @@ resource virtualNetworkGateway 'Microsoft.Network/virtualNetworkGateways@2022-01
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: virtualNetworkGateway
   name: lockName
   properties: {
