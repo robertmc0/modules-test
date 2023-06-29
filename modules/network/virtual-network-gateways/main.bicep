@@ -50,8 +50,8 @@ param gatewayType string
 ])
 param vpnType string = 'RouteBased'
 
-@description('Name of the virtual network gateway public IP address.')
-param publicIpAddressName string
+@description('Name of the primary virtual network gateway public IP address.')
+param primaryPublicIpAddressName string
 
 @description('Optional. A list of availability zones denoting the zone in which the virtual network gateway public IP address should be deployed.')
 @allowed([
@@ -63,6 +63,15 @@ param availabilityZones array = []
 
 @description('Resource ID of the virtual network gateway subnet.')
 param subnetResourceId string
+
+@description('Optional. Enable active-active mode.')
+param activeActive bool = false
+
+@description('Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true.')
+param secondaryPublicIpAddressName string = ''
+
+@description('Optional. Enable BGP')
+param enableBgp bool = false
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -113,7 +122,9 @@ var lockName = toLower('${virtualNetworkGateway.name}-${resourceLock}-lck')
 
 var vnetGatewayDiagnosticsName = toLower('${virtualNetworkGateway.name}-dgs')
 
-var publicIpDiagnosticsName = toLower('${publicIp.name}-dgs')
+var primaryPublicIpDiagnosticsName = toLower('${primaryPublicIp.name}-dgs')
+
+var secondaryPublicIpDiagnosticsName = toLower('${secondaryPublicIp.name}-dgs')
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
@@ -134,8 +145,51 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
-resource publicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
-  name: publicIpAddressName
+var ipConfigurations = activeActive ? [
+  {
+    name: 'default'
+    properties: {
+      privateIPAllocationMethod: 'Dynamic'
+      subnet: {
+        id: subnetResourceId
+      }
+      publicIPAddress: {
+        id: primaryPublicIp.id
+
+      }
+    }
+  }
+  {
+    name: 'activeActive'
+    properties: {
+      privateIPAllocationMethod: 'Dynamic'
+      subnet: {
+        id: subnetResourceId
+      }
+      publicIPAddress: {
+        id: secondaryPublicIp.id
+
+      }
+    }
+  }
+] : [
+  {
+    name: 'default'
+    properties: {
+      privateIPAllocationMethod: 'Dynamic'
+      subnet: {
+        id: subnetResourceId
+      }
+      publicIPAddress: {
+        id: primaryPublicIp.id
+
+      }
+    }
+  }
+]
+
+resource primaryPublicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+  name: primaryPublicIpAddressName
   location: location
   sku: {
     name: 'Standard'
@@ -146,9 +200,34 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   zones: availabilityZones
 }
 
-resource diagnosticsPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
-  scope: publicIp
-  name: publicIpDiagnosticsName
+resource diagnosticsPrimaryPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+  scope: primaryPublicIp
+  name: primaryPublicIpDiagnosticsName
+  properties: {
+    workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
+    storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
+  }
+}
+
+resource secondaryPublicIp 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+  name: secondaryPublicIpAddressName
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+  }
+  zones: availabilityZones
+}
+
+resource diagnosticsSecondaryPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics && activeActive) {
+  scope: secondaryPublicIp
+  name: secondaryPublicIpDiagnosticsName
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
@@ -164,26 +243,15 @@ resource virtualNetworkGateway 'Microsoft.Network/virtualNetworkGateways@2022-01
   location: location
   tags: tags
   properties: {
-    ipConfigurations: [
-      {
-        name: 'default'
-        properties: {
-          privateIPAllocationMethod: 'Dynamic'
-          subnet: {
-            id: subnetResourceId
-          }
-          publicIPAddress: {
-            id: publicIp.id
-          }
-        }
-      }
-    ]
+    ipConfigurations: ipConfigurations
     sku: {
       name: sku
       tier: sku
     }
     gatewayType: gatewayType
     vpnType: vpnType
+    activeActive: activeActive
+    enableBgp: enableBgp
   }
 }
 
