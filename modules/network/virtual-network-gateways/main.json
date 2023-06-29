@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.18.4.5664",
-      "templateHash": "17358528025749931181"
+      "templateHash": "1296557596239301796"
     }
   },
   "parameters": {
@@ -114,7 +114,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true."
+        "description": "Optional. Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true."
       }
     },
     "enableBgp": {

@@ -26,7 +26,7 @@ This module performs the following
 | `availabilityZones`                     | `array`  | No       | Optional. A list of availability zones denoting the zone in which the virtual network gateway public IP address should be deployed. |
 | `subnetResourceId`                      | `string` | Yes      | Resource ID of the virtual network gateway subnet.                                                                                  |
 | `activeActive`                          | `bool`   | No       | Optional. Enable active-active mode.                                                                                                |
-| `secondaryPublicIpAddressName`          | `string` | No       | Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true.                    |
+| `secondaryPublicIpAddressName`          | `string` | No       | Optional. Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true.          |
 | `enableBgp`                             | `bool`   | No       | Optional. Enable BGP.                                                                                                               |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                                |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                    |
