@@ -70,7 +70,7 @@ param activeActive bool = false
 @description('Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true.')
 param secondaryPublicIpAddressName string = ''
 
-@description('Optional. Enable BGP')
+@description('Optional. Enable BGP.')
 param enableBgp bool = false
 
 @description('Optional. Enable diagnostic logging.')

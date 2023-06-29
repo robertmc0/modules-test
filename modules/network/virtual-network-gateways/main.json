@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.18.4.5664",
-      "templateHash": "14703841473433103294"
+      "templateHash": "17358528025749931181"
     }
   },
   "parameters": {
@@ -121,7 +121,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enable BGP"
+        "description": "Optional. Enable BGP."
       }
     },
     "enableDiagnostics": {
