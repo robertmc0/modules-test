@@ -40,12 +40,14 @@ This module performs the following
 
 ## Outputs
 
-| Name                  | Type     | Description                                                                          |
-| :-------------------- | :------: | :----------------------------------------------------------------------------------- |
-| `name`                | `string` | The name of the deployed virtual network gateway.                                    |
-| `resourceId`          | `string` | The resource ID of the deployed virtual network gateway.                             |
-| `primaryPublicIpId`   | `string` | The resource ID of the deployed virtual network gateway primary public IP address.   |
-| `secondaryPublicIpId` | `string` | The resource ID of the deployed virtual network gateway secondary public IP address. |
+| Name                    | Type     | Description                                                                          |
+| :---------------------- | :------: | :----------------------------------------------------------------------------------- |
+| `name`                  | `string` | The name of the deployed virtual network gateway.                                    |
+| `resourceId`            | `string` | The resource ID of the deployed virtual network gateway.                             |
+| `primaryPublicIpName`   | `string` | The name of the deployed virtual network gateway primary public IP.                  |
+| `primaryPublicIpId`     | `string` | The resource ID of the deployed virtual network gateway primary public IP address.   |
+| `secondaryPublicIpName` | `string` | The name of the deployed virtual network gateway secondary public IP.                |
+| `secondaryPublicIpId`   | `string` | The resource ID of the deployed virtual network gateway secondary public IP address. |
 
 ## Examples
 

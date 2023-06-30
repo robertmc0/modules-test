@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.18.4.5664",
-      "templateHash": "158510468780749806"
+      "templateHash": "9943775083695271706"
     }
   },
   "parameters": {
@@ -373,12 +373,26 @@
       },
       "value": "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('name'))]"
     },
+    "primaryPublicIpName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed virtual network gateway primary public IP."
+      },
+      "value": "[parameters('primaryPublicIpAddressName')]"
+    },
     "primaryPublicIpId": {
       "type": "string",
       "metadata": {
         "description": "The resource ID of the deployed virtual network gateway primary public IP address."
       },
       "value": "[reference(resourceId('Microsoft.Network/virtualNetworkGateways', parameters('name')), '2022-11-01').ipConfigurations[0].properties.publicIPAddress.id]"
+    },
+    "secondaryPublicIpName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed virtual network gateway secondary public IP."
+      },
+      "value": "[parameters('secondaryPublicIpAddressName')]"
     },
     "secondaryPublicIpId": {
       "type": "string",
