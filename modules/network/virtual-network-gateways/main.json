@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.18.4.5664",
-      "templateHash": "4713850213114290315"
+      "templateHash": "9840454312136696535"
     }
   },
   "parameters": {
@@ -401,7 +401,7 @@
       },
       "value": "[parameters('secondaryPublicIpAddressName')]"
     },
-    "secondaryPublicIp": {
+    "secondaryPublicIpAddress": {
       "type": "string",
       "metadata": {
         "description": "The IP address of the deployed virtual network gateway secondary public IP."

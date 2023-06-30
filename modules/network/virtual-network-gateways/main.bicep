@@ -296,7 +296,7 @@ output primaryPublicIpId string = virtualNetworkGateway.properties.ipConfigurati
 output secondaryPublicIpName string = secondaryPublicIp.name
 
 @description('The IP address of the deployed virtual network gateway secondary public IP.')
-output secondaryPublicIp string = secondaryPublicIp.properties.ipAddress
+output secondaryPublicIpAddress string = secondaryPublicIp.properties.ipAddress
 
 @description('The resource ID of the deployed virtual network gateway secondary public IP address.')
 output secondaryPublicIpId string = activeActive ? virtualNetworkGateway.properties.ipConfigurations[1].properties.publicIPAddress.id : ''
