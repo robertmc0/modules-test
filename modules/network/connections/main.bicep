@@ -36,6 +36,7 @@ param enableBgp bool = false
 param connectionProtocol string
 
 @description('The IPSec shared key (PSK).')
+@secure()
 param sharedKey string
 
 @description('Optional. IPsec policies to be considered by this connection.')
