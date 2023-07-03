@@ -1,0 +1,217 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.18.4.5664",
+      "templateHash": "15235575625594966641"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "connectionType": {
+      "type": "string",
+      "allowedValues": [
+        "ExpressRoute",
+        "IPsec",
+        "VPNClient",
+        "Vnet2Vnet"
+      ],
+      "metadata": {
+        "description": "Gateway connection type."
+      }
+    },
+    "virtualNetworkGatewayId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the virtual network gateway."
+      }
+    },
+    "enableBgp": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable BGP for this connection."
+      }
+    },
+    "connectionProtocol": {
+      "type": "string",
+      "allowedValues": [
+        "IKEv1",
+        "IKEv2"
+      ],
+      "metadata": {
+        "description": "Connection protocol used for this connection."
+      }
+    },
+    "sharedKey": {
+      "type": "string",
+      "metadata": {
+        "description": "The IPSec shared key (PSK)."
+      }
+    },
+    "ipsecPolicies": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/connections?pivots=deployment-language-bicep#ipsecpolicy",
+        "example": {
+          "saLifeTimeSeconds": 28800,
+          "saDataSizeKilobytes": 102400000,
+          "ipsecEncryption": "AES256",
+          "ipsecIntegrity": "SHA256",
+          "ikeEncryption": "AES256",
+          "ikeIntegrity": "SHA256",
+          "dhGroup": "ECP384",
+          "pfsGroup": "PFS2048"
+        },
+        "description": "Optional. IPsec policies to be considered by this connection."
+      }
+    },
+    "usePolicyBasedTrafficSelectors": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Use policy-based traffic selectors for this connection."
+      }
+    },
+    "dpdTimeoutSeconds": {
+      "type": "int",
+      "defaultValue": 45,
+      "metadata": {
+        "description": "Optional. The dead peer detection timeout of this connection in seconds."
+      }
+    },
+    "connectionMode": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Default",
+        "ResponderOnly",
+        "InitiatorOnly"
+      ],
+      "metadata": {
+        "description": "Optional. The connection mode used for this connection."
+      }
+    },
+    "localNetworkGatewayId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the local network gateway."
+      }
+    },
+    "ingressNatRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "id": "Resource ID of the NAT rule.",
+        "description": "Optional. Ingress NAT rules for this connection."
+      }
+    },
+    "egressNatRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "id": "Resource ID of the NAT rule.",
+        "description": "Optional. Egress NAT rules for this connection."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/connections",
+      "apiVersion": "2022-11-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "connectionType": "[parameters('connectionType')]",
+        "virtualNetworkGateway1": {
+          "id": "[parameters('virtualNetworkGatewayId')]",
+          "properties": {}
+        },
+        "enableBgp": "[parameters('enableBgp')]",
+        "connectionProtocol": "[parameters('connectionProtocol')]",
+        "sharedKey": "[parameters('sharedKey')]",
+        "ipsecPolicies": "[parameters('ipsecPolicies')]",
+        "usePolicyBasedTrafficSelectors": "[parameters('usePolicyBasedTrafficSelectors')]",
+        "dpdTimeoutSeconds": "[parameters('dpdTimeoutSeconds')]",
+        "connectionMode": "[parameters('connectionMode')]",
+        "ingressNatRules": "[parameters('ingressNatRules')]",
+        "egressNatRules": "[parameters('egressNatRules')]",
+        "localNetworkGateway2": {
+          "id": "[parameters('localNetworkGatewayId')]",
+          "properties": {}
+        }
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Network/connections/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/connections', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed connection."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed connection."
+      },
+      "value": "[resourceId('Microsoft.Network/connections', parameters('name'))]"
+    }
+  }
+}
