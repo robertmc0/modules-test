@@ -11,16 +11,14 @@ https://learn.microsoft.com/en-us/azure/role-based-access-control/resource-provi
 
 ## Parameters
 
-| Name              | Type     | Required | Description                                                                                                  |
-| :---------------- | :------: | :------: | :----------------------------------------------------------------------------------------------------------- |
-| `scopeType`       | `string` | Yes      | The value that defines whether the role assignment will be deployed to a subscription or a management group. |
-| `roleName`        | `string` | Yes      | The display name of the custom role to be deployed.                                                          |
-| `roleDescription` | `string` | Yes      | The description for the custom role to be deployed.                                                          |
-| `scopeId`         | `string` | Yes      | The target id of the deployment scope.                                                                       |
-| `actions`         | `array`  | Yes      | List of permissions for role actions.                                                                        |
-| `notActions`      | `array`  | Yes      | List of permissions for role not actions.                                                                    |
-| `dataActions`     | `array`  | Yes      | List of permissions for role data actions.                                                                   |
-| `notDataActions`  | `array`  | Yes      | List of permissions for role not data actions.                                                               |
+| Name              | Type     | Required | Description                                         |
+| :---------------- | :------: | :------: | :-------------------------------------------------- |
+| `roleName`        | `string` | Yes      | The display name of the custom role to be deployed. |
+| `roleDescription` | `string` | Yes      | The description for the custom role to be deployed. |
+| `actions`         | `array`  | Yes      | List of permissions for role actions.               |
+| `notActions`      | `array`  | No       | List of permissions for role not actions.           |
+| `dataActions`     | `array`  | No       | List of permissions for role data actions.          |
+| `notDataActions`  | `array`  | No       | List of permissions for role not data actions.      |
 
 ## Outputs
 
