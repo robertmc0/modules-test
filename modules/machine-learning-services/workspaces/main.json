@@ -5,8 +5,250 @@
     "_generator": {
       "name": "bicep",
       "version": "0.18.4.5664",
-      "templateHash": "1944677433959251287"
+      "templateHash": "10334547207182781668"
     }
   },
-  "resources": []
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. Resource tags."
+      }
+    },
+    "storageAccountResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Required. ResourceId of the storage account associated with this workspace. This cannot be changed once the workspace has been created."
+      }
+    },
+    "keyVaultResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Required. ResourceId of the key vault associated with this workspace. This cannot be changed once the workspace has been created."
+      }
+    },
+    "applicationInsightsResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Required. ResourceId of the application insights associated with this workspace."
+      }
+    },
+    "containerRegistryResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. ResourceId of the container registry associated with this workspace."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "allLogs",
+        "audit"
+      ],
+      "allowedValues": [
+        "allLogs",
+        "audit"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "maxValue": 365,
+      "minValue": 0,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces",
+      "apiVersion": "2023-04-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "friendlyName": "[parameters('name')]",
+        "storageAccount": "[parameters('storageAccountResourceId')]",
+        "keyVault": "[parameters('keyVaultResourceId')]",
+        "applicationInsights": "[parameters('applicationInsightsResourceId')]",
+        "containerRegistry": "[if(empty(parameters('containerRegistryResourceId')), null(), parameters('containerRegistryResourceId'))]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.MachineLearningServices/workspaces/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.MachineLearningServices/workspaces/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed machine learning workspace."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed machine learning workspace."
+      },
+      "value": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('name'))]"
+    }
+  }
 }
