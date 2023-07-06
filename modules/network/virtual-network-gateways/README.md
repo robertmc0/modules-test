@@ -8,8 +8,9 @@ This module performs the following
 
 - Creates Microsoft.Network virtualNetworkGateways resource.
 - Enables availability zones on public IP address if specified. This is required in some configuration scenarios.
-- Applies diagnostic settings.
-- Applies a lock to the virtual network if the lock is specified.
+- Optionally enables active-active mode and/or BGP.
+- Applies diagnostic settings to all resources.
+- Applies a lock to the virtual network gateway if the lock is specified.
 
 ## Parameters
 
@@ -21,9 +22,12 @@ This module performs the following
 | `sku`                                   | `string` | Yes      | The sku of this virtual network gateway.                                                                                            |
 | `gatewayType`                           | `string` | Yes      | The type of this virtual network gateway.                                                                                           |
 | `vpnType`                               | `string` | No       | Optional. The type of this virtual network gateway.                                                                                 |
-| `publicIpAddressName`                   | `string` | Yes      | Name of the virtual network gateway public IP address.                                                                              |
+| `primaryPublicIpAddressName`            | `string` | Yes      | Name of the primary virtual network gateway public IP address.                                                                      |
 | `availabilityZones`                     | `array`  | No       | Optional. A list of availability zones denoting the zone in which the virtual network gateway public IP address should be deployed. |
 | `subnetResourceId`                      | `string` | Yes      | Resource ID of the virtual network gateway subnet.                                                                                  |
+| `activeActive`                          | `bool`   | No       | Optional. Enable active-active mode.                                                                                                |
+| `secondaryPublicIpAddressName`          | `string` | No       | Optional. Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true.          |
+| `enableBgp`                             | `bool`   | No       | Optional. Enable BGP.                                                                                                               |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                                |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                    |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                                |
@@ -36,10 +40,16 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                                              |
-| :--------- | :----: | :------------------------------------------------------- |
-| name       | string | The name of the deployed virtual network gateway.        |
-| resourceId | string | The resource ID of the deployed virtual network gateway. |
+| Name                       | Type     | Description                                                                          |
+| :------------------------- | :------: | :----------------------------------------------------------------------------------- |
+| `name`                     | `string` | The name of the deployed virtual network gateway.                                    |
+| `resourceId`               | `string` | The resource ID of the deployed virtual network gateway.                             |
+| `primaryPublicIpName`      | `string` | The name of the deployed virtual network gateway primary public IP.                  |
+| `primaryPublicIpAddress`   | `string` | The IP address of the deployed virtual network gateway primary public IP.            |
+| `primaryPublicIpId`        | `string` | The resource ID of the deployed virtual network gateway primary public IP address.   |
+| `secondaryPublicIpName`    | `string` | The name of the deployed virtual network gateway secondary public IP.                |
+| `secondaryPublicIpAddress` | `string` | The IP address of the deployed virtual network gateway secondary public IP.          |
+| `secondaryPublicIpId`      | `string` | The resource ID of the deployed virtual network gateway secondary public IP address. |
 
 ## Examples
 
