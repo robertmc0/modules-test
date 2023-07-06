@@ -80,7 +80,7 @@ module vnetGatewayMinimum '../main.bicep' = {
     location: location
     gatewayType: 'ExpressRoute'
     sku: 'Standard'
-    publicIpAddressName: '${uniqueString(deployment().name, location)}-min-vgw-pip'
+    primaryPublicIpAddressName: '${uniqueString(deployment().name, location)}-min-vgw-pip'
     subnetResourceId: '${vnet1.id}/subnets/GatewaySubnet'
   }
 }
@@ -93,7 +93,10 @@ module vnetGateway '../main.bicep' = {
     gatewayType: 'Vpn'
     sku: 'VpnGw2AZ'
     vpnType: 'RouteBased'
-    publicIpAddressName: '${uniqueString(deployment().name, location)}-vgw-pip'
+    activeActive: true
+    primaryPublicIpAddressName: '${uniqueString(deployment().name, location)}-vgw-pip01'
+    secondaryPublicIpAddressName: '${uniqueString(deployment().name, location)}-vgw-pip02'
+    enableBgp: true
     subnetResourceId: '${vnet2.id}/subnets/GatewaySubnet'
     availabilityZones: [
       '1'

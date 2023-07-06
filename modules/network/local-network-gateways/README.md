@@ -24,10 +24,10 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                                            |
-| :--------- | :----: | :----------------------------------------------------- |
-| name       | string | The name of the deployed local network gateway.        |
-| resourceId | string | The resource ID of the deployed local network gateway. |
+| Name         | Type     | Description                                            |
+| :----------- | :------: | :----------------------------------------------------- |
+| `name`       | `string` | The name of the deployed local network gateway.        |
+| `resourceId` | `string` | The resource ID of the deployed local network gateway. |
 
 ## Examples
 
