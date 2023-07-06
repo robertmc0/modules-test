@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "Azure Machine Learning Workspace Module",
+  "summary": "Deploys Azure Machine Learning Workspace",
+  "owner": "Arinco"
+}
