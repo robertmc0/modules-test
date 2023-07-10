@@ -52,6 +52,8 @@ var privateLinkServiceName = toLower('${targetResourceName}-${toLower(targetSubR
 
 var networkInterfaceName = '${privateEndpointName}-nic'
 
+var nicModuleName = 'nicInfo-${privateEndpoint.name}-${uniqueString(privateEndpoint.name, resourceGroup().name)}'
+
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
   name: privateEndpointName
   location: location
@@ -105,7 +107,7 @@ output resourceId string = privateEndpoint.id
 // Use a module to extract the network interface details of a private endpoint
 // This is required due to issues with using reference() against the private endpoint Nic
 module nicInfo 'nicInfo.bicep' = {
-  name: 'nicInfo-${privateEndpoint.name}-${uniqueString(privateEndpoint.name, resourceGroup().name)}'
+  name: length(nicModuleName) > 64 ? take(nicModuleName, 64) : nicModuleName
   params: {
     nicId: privateEndpoint.properties.networkInterfaces[0].id
   }
