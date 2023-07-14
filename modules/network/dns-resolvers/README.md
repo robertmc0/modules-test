@@ -25,10 +25,11 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                                           |
-| :--------- | :----: | :---------------------------------------------------- |
-| name       | string | The name of the deployed private dns resolver.        |
-| resourceid | string | The resource ID of the deployed private dns resolver. |
+| Name                              | Type     | Description                                                                   |
+| :-------------------------------- | :------: | :---------------------------------------------------------------------------- |
+| `name`                            | `string` | The name of the deployed private dns resolver.                                |
+| `resourceid`                      | `string` | The resource ID of the deployed private dns resolver.                         |
+| `inboundEndpointPrivateIpAddress` | `string` | The private IP Address of the deployed private dns resolver inbound endpoint. |
 
 ## Examples
 
