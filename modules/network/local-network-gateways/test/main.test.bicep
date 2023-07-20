@@ -22,10 +22,6 @@ module localNetworkGateway1 '../main.bicep' = {
     addressPrefixes: [
       '10.20.0.0/24'
     ]
-    bgpSettings: {
-      asn: 65570
-      bgpPeeringAddress: '10.20.2.3'
-    }
   }
 }
 
