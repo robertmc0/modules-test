@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.18.4.5664",
-      "templateHash": "10334547207182781668"
+      "version": "0.19.5.34762",
+      "templateHash": "8535716206655447013"
     }
   },
   "parameters": {
@@ -30,21 +30,18 @@
     },
     "storageAccountResourceId": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
         "description": "Required. ResourceId of the storage account associated with this workspace. This cannot be changed once the workspace has been created."
       }
     },
     "keyVaultResourceId": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
         "description": "Required. ResourceId of the key vault associated with this workspace. This cannot be changed once the workspace has been created."
       }
     },
     "applicationInsightsResourceId": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
         "description": "Required. ResourceId of the application insights associated with this workspace."
       }

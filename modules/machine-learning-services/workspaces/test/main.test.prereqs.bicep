@@ -1,17 +1,22 @@
+@description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
+@minLength(1)
+@maxLength(5)
+param shortIdentifier string = 'mls'
+
 @description('The storage account resource name.')
-param storageName string = 'sa${uniqueString(resourceGroup().id, 'mlsworkspace')}'
+param storageName string = '${shortIdentifier}tst${uniqueString(deployment().name, 'storageAccount', location)}'
 
 @description('Name of ApplicationInsights.')
-param applicationInsightsName string = 'ai${uniqueString(resourceGroup().id, 'mlsworkspace')}'
+param applicationInsightsName string = '${shortIdentifier}-tst-ai-${uniqueString(deployment().name, 'ai', location)}'
 
 @description('The geo-location where the resource lives.')
 param location string
 
 @description('The container registry bind to the workspace.')
-param containerRegistryName string = 'cr${uniqueString(resourceGroup().id, 'mlsworkspace')}'
+param containerRegistryName string = '${shortIdentifier}tst${uniqueString(deployment().name, 'cr', location)}'
 
 @description('Name of the key vault.')
-param keyVaultName string = 'kv${uniqueString(resourceGroup().id, 'mlsworkspace')}'
+param keyVaultName string = '${shortIdentifier}-tst-kv-${uniqueString(deployment().name, 'kv', location)}'
 
 var tenantId = subscription().tenantId
 

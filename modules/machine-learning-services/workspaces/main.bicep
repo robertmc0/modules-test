@@ -8,13 +8,13 @@ param location string
 param tags object = {}
 
 @description('Required. ResourceId of the storage account associated with this workspace. This cannot be changed once the workspace has been created.')
-param storageAccountResourceId string = ''
+param storageAccountResourceId string
 
 @description('Required. ResourceId of the key vault associated with this workspace. This cannot be changed once the workspace has been created.')
-param keyVaultResourceId string = ''
+param keyVaultResourceId string
 
 @description('Required. ResourceId of the application insights associated with this workspace.')
-param applicationInsightsResourceId string = ''
+param applicationInsightsResourceId string
 
 @description('Optional. ResourceId of the container registry associated with this workspace.')
 param containerRegistryResourceId string = ''

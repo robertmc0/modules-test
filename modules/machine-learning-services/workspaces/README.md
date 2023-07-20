@@ -15,9 +15,9 @@ Deploys Azure Machine Learning Workspace
 | `name`                                  | `string` | Yes      | The resource name.                                                                                                                      |
 | `location`                              | `string` | Yes      | The geo-location where the resource lives.                                                                                              |
 | `tags`                                  | `object` | No       | Optional. Resource tags.                                                                                                                |
-| `storageAccountResourceId`              | `string` | No       | Required. ResourceId of the storage account associated with this workspace. This cannot be changed once the workspace has been created. |
-| `keyVaultResourceId`                    | `string` | No       | Required. ResourceId of the key vault associated with this workspace. This cannot be changed once the workspace has been created.       |
-| `applicationInsightsResourceId`         | `string` | No       | Required. ResourceId of the application insights associated with this workspace.                                                        |
+| `storageAccountResourceId`              | `string` | Yes      | Required. ResourceId of the storage account associated with this workspace. This cannot be changed once the workspace has been created. |
+| `keyVaultResourceId`                    | `string` | Yes      | Required. ResourceId of the key vault associated with this workspace. This cannot be changed once the workspace has been created.       |
+| `applicationInsightsResourceId`         | `string` | Yes      | Required. ResourceId of the application insights associated with this workspace.                                                        |
 | `containerRegistryResourceId`           | `string` | No       | Optional. ResourceId of the container registry associated with this workspace.                                                          |
 | `systemAssignedIdentity`                | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                                     |
 | `userAssignedIdentities`                | `object` | No       | Optional. The ID(s) to assign to the resource.                                                                                          |

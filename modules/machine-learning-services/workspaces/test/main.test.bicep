@@ -5,7 +5,7 @@ GLOBAL CONFIGURATION
 targetScope = 'subscription'
 
 @description('The resource name.')
-param name string = 'mls-test-worskpace'
+param name string = 'mls-tst-${uniqueString(deployment().name, 'mls', location)}'
 
 @description('The location which test resources will be deployed to')
 param location string = 'australiaeast'
@@ -31,7 +31,7 @@ module minPrereqs 'main.test.prereqs.bicep' = {
 TEST EXECUTION
 ======================================================================*/
 
-module machienLearningServiceWorkspaceMin '../main.bicep' = {
+module machineLearningServiceWorkspaceMin '../main.bicep' = {
   scope: minResourceGroup
   name: name
   params: {
