@@ -1,3 +1,7 @@
+metadata name = 'Sql Server Module'
+metadata description = 'This module deploys Microsoft.Sql servers.'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -58,13 +62,13 @@ param connectionType string = 'Default'
 param enableVulnerabilityAssessments bool = true
 
 @description('Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true". ')
-param vulnerabilityAssessmentStorageId string
+param vulnerabilityAssessmentStorageId string = ''
 
 @description('Optional. Enable Audit logging.')
 param enableAudit bool = true
 
 @description('Optional. Resource ID of the Storage Account to store Audit logs. Required when enableAudit set to "true".')
-param auditStorageAccountId string
+param auditStorageAccountId string = ''
 
 @description('Optional. Specifies that the schedule scan notification will be is sent to the subscription administrators.')
 param emailAccountAdmins bool = false
@@ -151,7 +155,7 @@ var vulnerabilityAssessmentStorageResourceGroup = enableVulnerabilityAssessments
 
 var vulnerabilityAssessmentStorageSubId = enableVulnerabilityAssessments && !empty(vulnerabilityAssessmentStorageId) ? split(vulnerabilityAssessmentStorageId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
-var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments && !empty(vulnerabilityAssessmentStorageId) ? last(split(vulnerabilityAssessmentStorageId, '/')) : null
+var vulnerabilityAssessmentStorageName = enableVulnerabilityAssessments && !empty(vulnerabilityAssessmentStorageId) ? last(split(vulnerabilityAssessmentStorageId, '/')) : ''
 
 var auditStorageResourceGroup = enableAudit ? split(auditStorageAccountId, '/')[4] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
@@ -159,13 +163,13 @@ var auditStorageAccountProvided = !empty(auditStorageAccountId)
 
 var auditStorageSubId = enableAudit && !empty(auditStorageAccountId) ? split(auditStorageAccountId, '/')[2] : 'placeholder' // must contain placeholder value as it is evaulated as part of the scope of the role assignment module
 
-var auditStorageName = enableAudit && !empty(auditStorageAccountId) ? last(split(auditStorageAccountId, '/')) : null
+var auditStorageName = enableAudit && !empty(auditStorageAccountId) ? last(split(auditStorageAccountId, '/')) : ''
 
-var userIdentityResourceGroup = !empty(primaryUserAssignedIdentityId) ? split(primaryUserAssignedIdentityId, '/')[4] : null
+var userIdentityResourceGroup = !empty(primaryUserAssignedIdentityId) ? split(primaryUserAssignedIdentityId, '/')[4] : ''
 
-var userIdentitySubId = !empty(primaryUserAssignedIdentityId) ? split(primaryUserAssignedIdentityId, '/')[2] : null
+var userIdentitySubId = !empty(primaryUserAssignedIdentityId) ? split(primaryUserAssignedIdentityId, '/')[2] : ''
 
-var userIdentityName = !empty(primaryUserAssignedIdentityId) ? last(split(primaryUserAssignedIdentityId, '/')) : null
+var userIdentityName = !empty(primaryUserAssignedIdentityId) ? last(split(primaryUserAssignedIdentityId, '/')) : ''
 
 var lockName = toLower('${sqlServer.name}-${resourceLock}-lck')
 
@@ -173,7 +177,7 @@ var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'S
 
 var identity = identityType != 'None' ? {
   type: enableVulnerabilityAssessments && !empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : enableVulnerabilityAssessments && empty(userAssignedIdentities) ? 'SystemAssigned' : identityType
-  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : ''
 } : null
 
 var diagnosticsName = toLower('${sqlServer.name}-dgs')
@@ -203,12 +207,12 @@ var auditActionsAndGroups = [
   'FAILED_DATABASE_AUTHENTICATION_GROUP'
 ]
 
-resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = if (!empty(primaryUserAssignedIdentityId)) {
+resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (!empty(primaryUserAssignedIdentityId)) {
   scope: resourceGroup(userIdentitySubId, userIdentityResourceGroup)
   name: userIdentityName
 }
 
-resource vulnerabilityAssessmentStorage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = if (enableVulnerabilityAssessments && vulnerabilityAssessmentStorageAccountProvided) {
+resource vulnerabilityAssessmentStorage 'Microsoft.Storage/storageAccounts@2022-09-01' existing = if (enableVulnerabilityAssessments && vulnerabilityAssessmentStorageAccountProvided) {
   scope: resourceGroup(vulnerabilityAssessmentStorageSubId, vulnerabilityAssessmentStorageResourceGroup)
   name: vulnerabilityAssessmentStorageName
 }
@@ -222,7 +226,7 @@ module vulnerabilityAssessmentRoleAssignment 'roleAssignment.bicep' = if (enable
   }
 }
 
-resource auditStorage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = if (enableAudit && auditStorageAccountProvided) {
+resource auditStorage 'Microsoft.Storage/storageAccounts@2022-09-01' existing = if (enableAudit && auditStorageAccountProvided) {
   scope: resourceGroup(auditStorageSubId, auditStorageResourceGroup)
   name: auditStorageName
 }
@@ -248,11 +252,10 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
       administratorType: 'ActiveDirectory'
       azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
       login: administrators.login
-      principalType: contains(administrators, 'principalType') ? administrators.principalType : null
+      principalType: contains(administrators, 'principalType') ? administrators.principalType : ''
       sid: administrators.objectId
       tenantId: contains(administrators, 'tenantId') ? administrators.tenantId : subscription().tenantId
     } : {}
-    version: '12.0'
     publicNetworkAccess: publicNetworkAccess
     minimalTlsVersion: '1.2'
     primaryUserAssignedIdentityId: primaryUserAssignedIdentityId
@@ -313,7 +316,7 @@ resource auditSettings 'Microsoft.Sql/servers/auditingSettings@2021-11-01' = if 
     isAzureMonitorTargetEnabled: true
     isManagedIdentityInUse: true
     isDevopsAuditEnabled: true
-    storageEndpoint: enableAudit ? auditStorage.properties.primaryEndpoints.blob : null
+    storageEndpoint: enableAudit ? auditStorage.properties.primaryEndpoints.blob : ''
     storageAccountSubscriptionId: auditStorageSubId
   }
   dependsOn: [
@@ -327,7 +330,7 @@ resource microsoftSupportAuditSettings 'Microsoft.Sql/servers/devOpsAuditingSett
   properties: {
     state: 'Enabled'
     isAzureMonitorTargetEnabled: true
-    storageEndpoint: enableAudit ? auditStorage.properties.primaryEndpoints.blob : null
+    storageEndpoint: enableAudit ? auditStorage.properties.primaryEndpoints.blob : ''
     storageAccountSubscriptionId: auditStorageSubId
   }
   dependsOn: [
@@ -346,10 +349,10 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
   scope: sqlServerMasterDatabase
   name: diagnosticsName
   properties: {
-    workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
-    storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
-    eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
+    workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? '' : diagnosticLogAnalyticsWorkspaceId
+    storageAccountId: empty(diagnosticStorageAccountId) ? '' : diagnosticStorageAccountId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? '' : diagnosticEventHubAuthorizationRuleId
+    eventHubName: empty(diagnosticEventHubName) ? '' : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
   }

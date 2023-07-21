@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Sql servers.
 
-## Description
+## Details
 
 This module performs the following
 
@@ -29,9 +29,9 @@ This module performs the following
 | `publicNetworkAccess`                   | `string`       | No       | Optional. Whether or not public endpoint access is allowed for this server. Only Disable if you wish to restrict to just private endpoints and VNET. |
 | `connectionType`                        | `string`       | No       | Optional. The server connection type. Note private link requires Proxy.                                                                              |
 | `enableVulnerabilityAssessments`        | `bool`         | No       | Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities.                                                    |
-| `vulnerabilityAssessmentStorageId`      | `string`       | Yes      | Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true".         |
+| `vulnerabilityAssessmentStorageId`      | `string`       | No       | Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true".         |
 | `enableAudit`                           | `bool`         | No       | Optional. Enable Audit logging.                                                                                                                      |
-| `auditStorageAccountId`                 | `string`       | Yes      | Optional. Resource ID of the Storage Account to store Audit logs. Required when enableAudit set to "true".                                           |
+| `auditStorageAccountId`                 | `string`       | No       | Optional. Resource ID of the Storage Account to store Audit logs. Required when enableAudit set to "true".                                           |
 | `emailAccountAdmins`                    | `bool`         | No       | Optional. Specifies that the schedule scan notification will be is sent to the subscription administrators.                                          |
 | `emailAddresses`                        | `array`        | No       | Optional. Specifies an array of e-mail addresses to which the scan notification is sent.                                                             |
 | `subnetResourceId`                      | `string`       | No       | Optional. Resource ID of the virtual network subnet to configure as a virtual network rule.                                                          |
@@ -51,12 +51,12 @@ This module performs the following
 
 ## Outputs
 
-| Name                      | Type   | Description                                          |
-| :------------------------ | :----: | :--------------------------------------------------- |
-| name                      | string | The name of the sql server.                          |
-| resourceId                | string | The resource ID of the sql server.                   |
-| resourceGroupName         | string | The resource group the sql server was deployed into. |
-| systemAssignedPrincipalId | string | The principal ID of the system assigned identity.    |
+| Name                        | Type     | Description                                          |
+| :-------------------------- | :------: | :--------------------------------------------------- |
+| `name`                      | `string` | The name of the sql server.                          |
+| `resourceId`                | `string` | The resource ID of the sql server.                   |
+| `resourceGroupName`         | `string` | The resource group the sql server was deployed into. |
+| `systemAssignedPrincipalId` | `string` | The principal ID of the system assigned identity.    |
 
 ## Examples
 
