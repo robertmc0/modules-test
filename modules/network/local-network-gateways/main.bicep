@@ -56,21 +56,29 @@ param resourceLock string = 'NotSpecified'
 
 var lockName = toLower('${localNetworkGateway.name}-${resourceLock}-lck')
 
-resource localNetworkGateway 'Microsoft.Network/localNetworkGateways@2022-01-01' = {
-  name: name
-  location: location
-  tags: tags
-  properties: {
-    bgpSettings: bgpSettings
-    fqdn: endpointType == 'fqdn' ? endpoint : null
-    gatewayIpAddress: endpointType == 'ipAddress' ? endpoint : null
-    localNetworkAddressSpace: {
-      addressPrefixes: addressPrefixes
-    }
+var localNetworkGatewayConfig = !empty(bgpSettings) ? {
+  bgpSettings: bgpSettings
+  fqdn: endpointType == 'fqdn' ? endpoint : null
+  gatewayIpAddress: endpointType == 'ipAddress' ? endpoint : null
+  localNetworkAddressSpace: {
+    addressPrefixes: addressPrefixes
+  }
+} : {
+  fqdn: endpointType == 'fqdn' ? endpoint : null
+  gatewayIpAddress: endpointType == 'ipAddress' ? endpoint : null
+  localNetworkAddressSpace: {
+    addressPrefixes: addressPrefixes
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource localNetworkGateway 'Microsoft.Network/localNetworkGateways@2022-11-01' = {
+  name: name
+  location: location
+  tags: tags
+  properties: localNetworkGatewayConfig
+}
+
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: localNetworkGateway
   name: lockName
   properties: {

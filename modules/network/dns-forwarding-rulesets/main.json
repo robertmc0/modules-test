@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.18.4.5664",
-      "templateHash": "989080638008200306"
+      "version": "0.17.1.54307",
+      "templateHash": "3163878387809241800"
     }
   },
   "parameters": {
@@ -35,21 +35,34 @@
     "virtualNetworkId": {
       "type": "string",
       "metadata": {
-        "description": "Existing virtual network resource ID to create the dns resolver in."
+        "description": "Existing virtual network resource id where the private dns resolver has been deployed."
       }
     },
-    "inboundSubnetName": {
+    "outboundEndpointId": {
       "type": "string",
-      "defaultValue": "snet-inbound",
       "metadata": {
-        "description": "Optional. Existing subnet name for inbound dns requests."
+        "description": "Existing dns resolver outbound endpoint resource id."
       }
     },
-    "outboundSubnetName": {
-      "type": "string",
-      "defaultValue": "snet-outbound",
+    "dnsFwdRules": {
+      "type": "array",
       "metadata": {
-        "description": "Optional. Existing subnet name for outbound dns requests."
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/dnsforwardingrulesets/forwardingrules?pivots=deployment-language-bicep",
+        "example": {
+          "name": "name",
+          "domainName": "domainName",
+          "targetDnsServers": [
+            {
+              "ipAddress": "1.1.1.1",
+              "port": 53
+            },
+            {
+              "ipAddress": "1.1.1.2",
+              "port": 53
+            }
+          ]
+        },
+        "description": "Define dns fowarding rules to be applied to this ruleset."
       }
     },
     "resourceLock": {
@@ -70,62 +83,60 @@
   },
   "resources": [
     {
-      "type": "Microsoft.Network/dnsResolvers",
+      "type": "Microsoft.Network/dnsForwardingRulesets",
       "apiVersion": "2022-07-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": {
-        "virtualNetwork": {
-          "id": "[parameters('virtualNetworkId')]"
-        }
+        "dnsResolverOutboundEndpoints": [
+          {
+            "id": "[parameters('outboundEndpointId')]"
+          }
+        ]
       }
     },
     {
-      "type": "Microsoft.Network/dnsResolvers/inboundEndpoints",
+      "type": "Microsoft.Network/dnsForwardingRulesets/virtualNetworkLinks",
       "apiVersion": "2022-07-01",
-      "name": "[format('{0}/{1}', parameters('name'), format('{0}-dnsinbound', parameters('name')))]",
-      "location": "[parameters('location')]",
+      "name": "[format('{0}/{1}', parameters('name'), format('{0}-vnet-lnk', parameters('name')))]",
       "properties": {
-        "ipConfigurations": [
-          {
-            "privateIpAllocationMethod": "Dynamic",
-            "subnet": {
-              "id": "[format('{0}/subnets/{1}', parameters('virtualNetworkId'), parameters('inboundSubnetName'))]"
-            }
-          }
-        ]
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/dnsResolvers', parameters('name'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Network/dnsResolvers/outboundEndpoints",
-      "apiVersion": "2022-07-01",
-      "name": "[format('{0}/{1}', parameters('name'), format('{0}-dnsoutbound', parameters('name')))]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "subnet": {
-          "id": "[format('{0}/subnets/{1}', parameters('virtualNetworkId'), parameters('outboundSubnetName'))]"
+        "virtualNetwork": {
+          "id": "[parameters('virtualNetworkId')]"
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/dnsResolvers', parameters('name'))]"
+        "[resourceId('Microsoft.Network/dnsForwardingRulesets', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "dnsFwdingRules",
+        "count": "[length(parameters('dnsFwdRules'))]"
+      },
+      "type": "Microsoft.Network/dnsForwardingRulesets/forwardingRules",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('dnsFwdRules')[copyIndex()].name)]",
+      "properties": {
+        "domainName": "[parameters('dnsFwdRules')[copyIndex()].domainName]",
+        "targetDnsServers": "[parameters('dnsFwdRules')[copyIndex()].targetDnsServers]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/dnsForwardingRulesets', parameters('name'))]"
       ]
     },
     {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2020-05-01",
-      "scope": "[format('Microsoft.Network/dnsResolvers/{0}', parameters('name'))]",
+      "scope": "[format('Microsoft.Network/dnsForwardingRulesets/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
         "level": "[parameters('resourceLock')]",
         "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/dnsResolvers', parameters('name'))]"
+        "[resourceId('Microsoft.Network/dnsForwardingRulesets', parameters('name'))]"
       ]
     }
   ],
@@ -133,23 +144,16 @@
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of the deployed private dns resolver."
+        "description": "The name of the deployed DNS Forwarding Ruleset."
       },
       "value": "[parameters('name')]"
     },
     "resourceid": {
       "type": "string",
       "metadata": {
-        "description": "The resource ID of the deployed private dns resolver."
+        "description": "The resource ID of the deployed DNS Forwarding Ruleset."
       },
-      "value": "[resourceId('Microsoft.Network/dnsResolvers', parameters('name'))]"
-    },
-    "inboundEndpointPrivateIpAddress": {
-      "type": "string",
-      "metadata": {
-        "description": "The private IP Address of the deployed private dns resolver inbound endpoint."
-      },
-      "value": "[reference(resourceId('Microsoft.Network/dnsResolvers/inboundEndpoints', parameters('name'), format('{0}-dnsinbound', parameters('name'))), '2022-07-01').ipConfigurations[0].privateIpAddress]"
+      "value": "[resourceId('Microsoft.Network/dnsForwardingRulesets', parameters('name'))]"
     }
   }
 }
