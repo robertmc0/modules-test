@@ -2,7 +2,7 @@
 
 Deploys Azure Machine Learning Workspace
 
-## Description
+## Details
 
 - Creates Microsoft.MachineLearningServices workspaces resource.
 - Applies diagnostic settings.

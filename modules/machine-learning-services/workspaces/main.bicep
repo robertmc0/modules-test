@@ -1,3 +1,7 @@
+metadata name = 'Azure Machine Learning Workspace Module'
+metadata description = 'Deploys Azure Machine Learning Workspace'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 

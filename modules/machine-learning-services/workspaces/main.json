@@ -5,8 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.19.5.34762",
-      "templateHash": "8535716206655447013"
-    }
+      "templateHash": "4982634880785148703"
+    },
+    "name": "Azure Machine Learning Workspace Module",
+    "description": "Deploys Azure Machine Learning Workspace",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
