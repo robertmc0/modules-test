@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.19.5.34762",
-      "templateHash": "13970014106242089029"
+      "templateHash": "18013227312678304649"
     },
     "name": "Private DNS Zones VNET Link Module",
     "description": "This module deploys Microsoft.Network virtualNetworkLinks.",
@@ -15,20 +15,20 @@
     "virtualNetworkResourceId": {
       "type": "string",
       "metadata": {
-        "description": "Optional. Existing virtual network resource ID(s)."
+        "description": "Existing virtual network resource ID(s)."
       }
     },
     "registrationEnabled": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. The Private DNS Zone name."
+        "description": "Optional. VNET link Auto Registration."
       }
     },
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The resource name."
+        "description": "The Private DNS Zone name."
       }
     },
     "location": {
@@ -54,5 +54,21 @@
         }
       }
     }
-  ]
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed private dns zone link."
+      },
+      "value": "[format('{0}{1}', last(split(parameters('virtualNetworkResourceId'), '/')), variables('vnetLinkSuffix'))]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed private dns zone link."
+      },
+      "value": "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', parameters('name'), format('{0}{1}', last(split(parameters('virtualNetworkResourceId'), '/')), variables('vnetLinkSuffix')))]"
+    }
+  }
 }

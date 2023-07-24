@@ -13,15 +13,17 @@ This module performs the following
 
 | Name                       | Type     | Required | Description                                                   |
 | :------------------------- | :------: | :------: | :------------------------------------------------------------ |
-| `virtualNetworkResourceId` | `string` | Yes      | Optional. Existing virtual network resource ID(s).            |
-| `registrationEnabled`      | `bool`   | No       | Optional. The Private DNS Zone name.                          |
-| `name`                     | `string` | Yes      | The resource name.                                            |
+| `virtualNetworkResourceId` | `string` | Yes      | Existing virtual network resource ID(s).                      |
+| `registrationEnabled`      | `bool`   | No       | Optional. VNET link Auto Registration.                        |
+| `name`                     | `string` | Yes      | The Private DNS Zone name.                                    |
 | `location`                 | `string` | Yes      | Optional. The location where the Private DNS Zone is deployed |
 
 ## Outputs
 
-| Name | Type | Description |
-| :--- | :--: | :---------- |
+| Name         | Type     | Description                                            |
+| :----------- | :------: | :----------------------------------------------------- |
+| `name`       | `string` | The name of the deployed private dns zone link.        |
+| `resourceId` | `string` | The resource ID of the deployed private dns zone link. |
 
 ## Examples
 
