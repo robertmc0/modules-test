@@ -45,13 +45,11 @@ TEST EXECUTION
 ======================================================================*/
 module privateDnsZonesHub '../main.bicep' = [for (privateDnsZone, i) in dnsZoneLinking: {
   scope: resourceGroup(hubResourceGroupName)
-  dependsOn: [
-    vnet1
-  ]
+  dependsOn: []
   name: 'private-dns-zones-${uniqueString(deployment().name, location, '${i}')}'
   params: {
     name: toLower(privateDnsZone)
     location: location
-    virtualNetworkResourceId: vnet1.outputs.resourceId
+    virtualNetworkResourceId: vnet1.id
   }
 }]

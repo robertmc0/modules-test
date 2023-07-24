@@ -1,9 +1,8 @@
-# Private DNS Zones Module
+# Private DNS Zones VNET Link Module
 
 This module deploys Microsoft.Network virtualNetworkLinks.
-The module loops through an array or private DNS Zones and adds the vnet link.
 
-## Description
+## Details
 
 This module performs the following
 
@@ -12,13 +11,17 @@ This module performs the following
 
 ## Parameters
 
-| Name                        | Type     | Required | Description                                                                                                    |
-| :-------------------------- | :------: | :------: | :------------------------------------------------------------------------------------------------------------- |
-| `name`                      | `string` | Yes      | The Private DNS Zone name.                                                                                             |
-| `location`                  | `string` | Yes      | The geo-location where the resource lives.                                                                     |
-| `virtualNetworkResourceIds` | `array`  | No       | Optional. Existing virtual network resource ID(s). Only required if enableVirtualNeworkLink equals true.       |
-| `registrationEnabled`       | `bool`   | No       | Optional. Enable auto-registration of virtual machine records in the virtual network for the Private DNS zone. |
+| Name                       | Type     | Required | Description                                                   |
+| :------------------------- | :------: | :------: | :------------------------------------------------------------ |
+| `virtualNetworkResourceId` | `string` | Yes      | Optional. Existing virtual network resource ID(s).            |
+| `registrationEnabled`      | `bool`   | No       | Optional. The Private DNS Zone name.                          |
+| `name`                     | `string` | Yes      | The resource name.                                            |
+| `location`                 | `string` | Yes      | Optional. The location where the Private DNS Zone is deployed |
 
+## Outputs
+
+| Name | Type | Description |
+| :--- | :--: | :---------- |
 
 ## Examples
 

@@ -4,11 +4,27 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "10230708187801592569"
-    }
+      "version": "0.18.4.5664",
+      "templateHash": "2413551766385206278"
+    },
+    "name": "Private DNS Zones VNET Link Module",
+    "description": "This module deploys Microsoft.Network virtualNetworkLinks.",
+    "owner": "Arinco"
   },
   "parameters": {
+    "virtualNetworkResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. Existing virtual network resource ID(s)."
+      }
+    },
+    "registrationEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. The Private DNS Zone name."
+      }
+    },
     "name": {
       "type": "string",
       "metadata": {
@@ -18,117 +34,25 @@
     "location": {
       "type": "string",
       "metadata": {
-        "description": "The geo-location where the resource lives."
+        "description": "Optional. The location where the Private DNS Zone is deployed"
       }
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
-        "example": {
-          "tagKey": "string"
-        },
-        "description": "Optional. Resource tags."
-      }
-    },
-    "virtualNetworkResourceIds": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Optional. Existing virtual network resource ID(s). Only required if enableVirtualNeworkLink equals true."
-      }
-    },
-    "registrationEnabled": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Optional. Enable auto-registration of virtual machine records in the virtual network for the Private DNS zone."
-      }
-    },
-    "resourceLock": {
-      "type": "string",
-      "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of resource lock."
-      },
-      "allowedValues": [
-        "CanNotDelete",
-        "NotSpecified",
-        "ReadOnly"
-      ]
     }
   },
   "variables": {
-    "copy": [
-      {
-        "name": "vnetLinks",
-        "count": "[length(parameters('virtualNetworkResourceIds'))]",
-        "input": {
-          "name": "[format('{0}{1}', last(split(parameters('virtualNetworkResourceIds')[copyIndex('vnetLinks')], '/')), variables('vnetLinkSuffix'))]",
-          "properties": {
-            "registrationEnabled": "[parameters('registrationEnabled')]",
-            "virtualNetwork": {
-              "id": "[parameters('virtualNetworkResourceIds')[copyIndex('vnetLinks')]]"
-            }
-          }
-        }
-      }
-    ],
-    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "vnetLinkSuffix": "-vlnk"
   },
   "resources": [
     {
-      "type": "Microsoft.Network/privateDnsZones",
-      "apiVersion": "2020-06-01",
-      "name": "[parameters('name')]",
-      "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]"
-    },
-    {
-      "copy": {
-        "name": "privateDnsZoneVnetLink",
-        "count": "[length(variables('vnetLinks'))]"
-      },
       "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/{1}', parameters('name'), variables('vnetLinks')[copyIndex()].name)]",
+      "name": "[format('{0}/{1}', parameters('name'), format('{0}{1}', last(split(parameters('virtualNetworkResourceId'), '/')), variables('vnetLinkSuffix')))]",
       "location": "[parameters('location')]",
-      "properties": "[variables('vnetLinks')[copyIndex()].properties]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
-      ]
-    },
-    {
-      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
-      "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
-      "scope": "[format('Microsoft.Network/privateDnsZones/{0}', parameters('name'))]",
-      "name": "[variables('lockName')]",
       "properties": {
-        "level": "[parameters('resourceLock')]",
-        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
-      ]
-    }
-  ],
-  "outputs": {
-    "name": {
-      "type": "string",
-      "value": "[parameters('name')]",
-      "metadata": {
-        "description": "The name of the deployed private dns zone."
-      }
-    },
-    "resourceId": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]",
-      "metadata": {
-        "description": "The resource ID of the deployed private dns zone."
+        "registrationEnabled": "[parameters('registrationEnabled')]",
+        "virtualNetwork": {
+          "id": "[parameters('virtualNetworkResourceId')]"
+        }
       }
     }
-  }
+  ]
 }

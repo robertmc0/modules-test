@@ -1,3 +1,7 @@
+metadata name = 'Private DNS Zones VNET Link Module'
+metadata description = 'This module deploys Microsoft.Network virtualNetworkLinks.'
+metadata owner = 'Arinco'
+
 @description('Optional. Existing virtual network resource ID(s).')
 param virtualNetworkResourceId string
 
