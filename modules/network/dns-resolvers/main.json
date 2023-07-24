@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.17.1.54307",
-      "templateHash": "12360544296633656691"
+      "version": "0.18.4.5664",
+      "templateHash": "989080638008200306"
     }
   },
   "parameters": {
@@ -143,6 +143,13 @@
         "description": "The resource ID of the deployed private dns resolver."
       },
       "value": "[resourceId('Microsoft.Network/dnsResolvers', parameters('name'))]"
+    },
+    "inboundEndpointPrivateIpAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The private IP Address of the deployed private dns resolver inbound endpoint."
+      },
+      "value": "[reference(resourceId('Microsoft.Network/dnsResolvers/inboundEndpoints', parameters('name'), format('{0}-dnsinbound', parameters('name'))), '2022-07-01').ipConfigurations[0].privateIpAddress]"
     }
   }
 }

@@ -86,3 +86,6 @@ output name string = dnsResolver.name
 
 @description('The resource ID of the deployed private dns resolver.')
 output resourceid string = dnsResolver.id
+
+@description('The private IP Address of the deployed private dns resolver inbound endpoint.')
+output inboundEndpointPrivateIpAddress string = dnsResolverInboundEndpoint.properties.ipConfigurations[0].privateIpAddress
