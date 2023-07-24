@@ -1,11 +1,14 @@
 /*======================================================================
 GLOBAL CONFIGURATION
 ======================================================================*/
-@description('Optional. The geo-location where the resource lives.')
-param location string = 'global'
+@description('Optional. The geo-location where the Private DNS zone lives.')
+param dnsLocation string = 'global'
+
+@description('Optional. The geo-location where the Private DNS zone lives.')
+param location string = 'australiaeast'
 
 @description('Optional. Hub resource group name.')
-param hubResourceGroupName string = 'arn-ae-hub-rg'
+param hubResourceGroupName string = 'bicep-validation-rg'
 
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 @minLength(1)
@@ -20,6 +23,7 @@ var dnsZoneLinking = [
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
+
 resource vnet1 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   name: '${shortIdentifier}-tst-vnet1-${uniqueString(deployment().name, 'virtualNetworks', location)}'
   location: location
@@ -40,6 +44,11 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
+resource privateDns 'Microsoft.Network/privateDnsZones@2020-06-01' = [for (privateDnsZone, i) in dnsZoneLinking: {
+  name: privateDnsZone
+  location: dnsLocation
+}]
+
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -49,7 +58,7 @@ module privateDnsZonesHub '../main.bicep' = [for (privateDnsZone, i) in dnsZoneL
   name: 'private-dns-zones-${uniqueString(deployment().name, location, '${i}')}'
   params: {
     name: toLower(privateDnsZone)
-    location: location
+    location: dnsLocation
     virtualNetworkResourceId: vnet1.id
   }
 }]
