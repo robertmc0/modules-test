@@ -1,3 +1,7 @@
+metadata name = 'Role definitions module'
+metadata description = 'Use this module to deploy a custom RBAC role to an Azure subscription or management group'
+metadata owner = 'Arinco'
+
 targetScope = 'subscription'
 
 @description('The display name of the custom role to be deployed.')

@@ -1,6 +1,0 @@
-{
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
-  "name": "Role definitions module",
-  "summary": "Use this module to deploy a custom RBAC role to an Azure subscription or management group",
-  "owner": "Arinco"
-}

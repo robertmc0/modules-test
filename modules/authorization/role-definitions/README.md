@@ -2,7 +2,7 @@
 
 Use this module to deploy a custom RBAC role to an Azure subscription or management group
 
-## Description
+## Details
 
 This module is used to deploy custom RBAC roles to Azure.
 
