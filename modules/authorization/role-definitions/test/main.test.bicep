@@ -20,10 +20,13 @@ var roleDefinitions = [
   //}
   {
     roleName: 'App Insights Configuration Reader'
-    roleDescription: 'This is a description for the custom role definition'
+    roleDescription: 'Allow read access Application Insights and Web configuration, including data stream'
     actions: [
       'microsoft.web/*/read'
       'microsoft.insights/*/read'
+      'Microsoft.Web/sites/publish/Action'
+      'Microsoft.Web/sites/slots/publish/Action'
+      'Microsoft.Web/sites/config/list/action'
     ]
     notActions: []
     dataActions: []

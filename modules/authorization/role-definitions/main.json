@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "2496632935117182327"
+      "version": "0.19.5.34762",
+      "templateHash": "6054308319639055984"
     }
   },
   "parameters": {
@@ -23,6 +23,7 @@
     },
     "actions": {
       "type": "array",
+      "minLength": 1,
       "metadata": {
         "description": "List of permissions for role actions."
       }

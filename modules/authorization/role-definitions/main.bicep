@@ -7,6 +7,7 @@ param roleName string
 param roleDescription string
 
 @description('List of permissions for role actions.')
+@minLength(1)
 param actions array
 
 @description('List of permissions for role not actions.')
