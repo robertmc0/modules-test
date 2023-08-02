@@ -27,12 +27,12 @@ This module performs the following
 
 ## Outputs
 
-| Name               | Type   | Description                                |
-| :----------------- | :----: | :----------------------------------------- |
-| name               | string | The name of the private endpoint.          |
-| resourceId         | string | The resource ID of the private endpoint.   |
-| ipAddress          | string | The private endpoint IP address.           |
-| ipAllocationMethod | string | The private endpoint IP allocation method. |
+| Name                 | Type     | Description                                |
+| :------------------- | :------: | :----------------------------------------- |
+| `name`               | `string` | The name of the private endpoint.          |
+| `resourceId`         | `string` | The resource ID of the private endpoint.   |
+| `ipAddress`          | `string` | The private endpoint IP address.           |
+| `ipAllocationMethod` | `string` | The private endpoint IP allocation method. |
 
 ## Examples
 

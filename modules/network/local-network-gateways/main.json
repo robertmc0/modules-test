@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "9537314422364111698"
+      "version": "0.18.4.5664",
+      "templateHash": "4132495650626193220"
     }
   },
   "parameters": {
@@ -89,28 +89,22 @@
     }
   },
   "variables": {
-    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "localNetworkGatewayConfig": "[if(not(empty(parameters('bgpSettings'))), createObject('bgpSettings', parameters('bgpSettings'), 'fqdn', if(equals(parameters('endpointType'), 'fqdn'), parameters('endpoint'), null()), 'gatewayIpAddress', if(equals(parameters('endpointType'), 'ipAddress'), parameters('endpoint'), null()), 'localNetworkAddressSpace', createObject('addressPrefixes', parameters('addressPrefixes'))), createObject('fqdn', if(equals(parameters('endpointType'), 'fqdn'), parameters('endpoint'), null()), 'gatewayIpAddress', if(equals(parameters('endpointType'), 'ipAddress'), parameters('endpoint'), null()), 'localNetworkAddressSpace', createObject('addressPrefixes', parameters('addressPrefixes'))))]"
   },
   "resources": [
     {
       "type": "Microsoft.Network/localNetworkGateways",
-      "apiVersion": "2022-01-01",
+      "apiVersion": "2022-11-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
-      "properties": {
-        "bgpSettings": "[parameters('bgpSettings')]",
-        "fqdn": "[if(equals(parameters('endpointType'), 'fqdn'), parameters('endpoint'), null())]",
-        "gatewayIpAddress": "[if(equals(parameters('endpointType'), 'ipAddress'), parameters('endpoint'), null())]",
-        "localNetworkAddressSpace": {
-          "addressPrefixes": "[parameters('addressPrefixes')]"
-        }
-      }
+      "properties": "[variables('localNetworkGatewayConfig')]"
     },
     {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.Network/localNetworkGateways/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
@@ -125,17 +119,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed local network gateway."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/localNetworkGateways', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed local network gateway."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/localNetworkGateways', parameters('name'))]"
     }
   }
 }
