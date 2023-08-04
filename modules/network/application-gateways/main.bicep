@@ -378,7 +378,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-11-01' =
       maxCapacity: autoScaleMaxCapacity
     }
     enableHttp2: http2Enabled
-    webApplicationFirewallConfiguration: !empty(webApplicationFirewallConfig) ? webApplicationFirewallConfig : null
+    webApplicationFirewallConfiguration: !empty(webApplicationFirewallConfig) && empty(firewallPolicyId) ? webApplicationFirewallConfig : null
     gatewayIPConfigurations: [
       {
         name: gatewayIpConfigurationName
@@ -485,6 +485,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-11-01' =
       name: rule.name
       properties: {
         ruleType: rule.ruleType
+        priority: rule.priority
         httpListener: contains(rule, 'httpListener') ? {
           #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, rule.httpListener)
