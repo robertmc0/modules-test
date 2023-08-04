@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Network applicationGateways
 
-## Description
+## Details
 
 This module performs the following
 
@@ -57,10 +57,10 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                                          |
-| :--------- | :----: | :--------------------------------------------------- |
-| name       | string | The name of the deployed application gateway.        |
-| resourceId | string | The resource ID of the deployed application gateway. |
+| Name         | Type     | Description                                          |
+| :----------- | :------: | :--------------------------------------------------- |
+| `name`       | `string` | The name of the deployed application gateway.        |
+| `resourceId` | `string` | The resource ID of the deployed application gateway. |
 
 ## Examples
 

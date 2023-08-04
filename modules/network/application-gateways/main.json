@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.17.1.54307",
-      "templateHash": "5727471646249609836"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "14670211625333634437"
+    },
+    "name": "Application Gateways Module",
+    "description": "This module deploys Microsoft.Network applicationGateways",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -62,8 +65,8 @@
     "autoScaleMinCapacity": {
       "type": "int",
       "defaultValue": 2,
-      "maxValue": 32,
       "minValue": 1,
+      "maxValue": 32,
       "metadata": {
         "description": "Optional. Autoscale minimum capacity on application gateway resource."
       }
@@ -71,8 +74,8 @@
     "autoScaleMaxCapacity": {
       "type": "int",
       "defaultValue": 10,
-      "maxValue": 32,
       "minValue": 1,
+      "maxValue": 32,
       "metadata": {
         "description": "Optional. Autoscale maximum capacity on application gateway resource."
       }
@@ -349,8 +352,8 @@
     "diagnosticLogsRetentionInDays": {
       "type": "int",
       "defaultValue": 365,
-      "maxValue": 365,
       "minValue": 0,
+      "maxValue": 365,
       "metadata": {
         "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
@@ -599,6 +602,7 @@
               "name": "[parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].name]",
               "properties": {
                 "ruleType": "[parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].ruleType]",
+                "priority": "[parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].priority]",
                 "httpListener": "[if(contains(parameters('requestRoutingRules')[copyIndex('requestRoutingRules')], 'httpListener'), createObject('id', resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('name'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].httpListener)), null())]",
                 "backendAddressPool": "[if(contains(parameters('requestRoutingRules')[copyIndex('requestRoutingRules')], 'backendAddressPool'), createObject('id', resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('name'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].backendAddressPool)), null())]",
                 "backendHttpSettings": "[if(contains(parameters('requestRoutingRules')[copyIndex('requestRoutingRules')], 'backendHttpSettings'), createObject('id', resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('name'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].backendHttpSettings)), null())]",
@@ -635,7 +639,7 @@
           "maxCapacity": "[parameters('autoScaleMaxCapacity')]"
         },
         "enableHttp2": "[parameters('http2Enabled')]",
-        "webApplicationFirewallConfiguration": "[if(not(empty(parameters('webApplicationFirewallConfig'))), parameters('webApplicationFirewallConfig'), null())]",
+        "webApplicationFirewallConfiguration": "[if(and(not(empty(parameters('webApplicationFirewallConfig'))), empty(parameters('firewallPolicyId'))), parameters('webApplicationFirewallConfig'), null())]",
         "gatewayIPConfigurations": [
           {
             "name": "[variables('gatewayIpConfigurationName')]",
