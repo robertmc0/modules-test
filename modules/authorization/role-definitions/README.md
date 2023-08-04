@@ -19,13 +19,15 @@ This module is used to deploy custom RBAC roles to Azure.
 
 ## Outputs
 
-| Name | Type | Description |
-| :--- | :--: | :---------- |
+| Name             | Type     | Description                                             |
+| :--------------- | :------: | :------------------------------------------------------ |
+| `customRoleId`   | `string` | The resource ID of the deployed custom role definition. |
+| `customRoleName` | `string` | The name of the deployed custom role definition.        |
+| `customRoleUUID` | `string` | The role definition UUID that is deployed.              |
 
 ## Examples
 
 Role definitions are defined in the roleDefinition varable. Refer to the examples in the test template [here](test/main.test.bicep)
-
 
 ### Subscription
 
