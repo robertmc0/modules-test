@@ -24,27 +24,8 @@ This module is used to deploy custom RBAC roles to Azure.
 
 ## Examples
 
-Role definitions are defined in the roleDefinition varable. Refer to the examples below for reference
+Role definitions are defined in the roleDefinition varable. Refer to the examples in the test template [here](test/main.test.bicep)
 
-### Management group
-
-```
-var roleDefinitions = [
-  {
-    scopeId: 'mgmtgroup'
-    scopeType: 'managementGroup'
-    roleName: 'Custom Role Name'
-    roleDescription: 'This is a description for the custom role definition'
-    actions: [
-      'microsoft.web/*/read'
-      'microsoft.insights/*/read'
-    ]
-    notActions: []
-    dataActions: []
-    notDataActions: []
-  }
-]
-```
 
 ### Subscription
 
@@ -59,9 +40,6 @@ var roleDefinitions = [
       'microsoft.web/*/read'
       'microsoft.insights/*/read'
     ]
-    notActions: []
-    dataActions: []
-    notDataActions: []
   }
 ]
 ```

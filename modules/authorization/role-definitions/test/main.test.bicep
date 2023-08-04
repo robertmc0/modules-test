@@ -15,9 +15,6 @@ var roleDefinitionsActionsOnly = [
       'Microsoft.Web/sites/slots/publish/Action'
       'Microsoft.Web/sites/config/list/action'
     ]
-    notActions: []
-    dataActions: []
-    notDataActions: []
   }
 ]
 
@@ -39,8 +36,6 @@ var roleDefinitionsNotActions = [
       'Microsoft.Compute/sharedVMImages/versions/replicate/action'
       'Microsoft.Compute/sharedVMImages/versions/write'
     ]
-    dataActions: []
-    notDataActions: []
   }
 ]
 
@@ -53,13 +48,11 @@ var roleDefinitionsDataActions = [
       'Microsoft.OperationalInsights/operations/read'
       'microsoft.operationalinsights/operations/read'
     ]
-    notActions: []
     dataActions: [
       'Microsoft.AppPlatform/Spring/eurekaService/read'
       'Microsoft.AppPlatform/Spring/eurekaService/write'
       'Microsoft.AppPlatform/Spring/eurekaService/delete'
     ]
-    notDataActions: []
   }
 ]
 
@@ -72,8 +65,6 @@ var roleDefinitionsNotDataActions = [
       'Microsoft.OperationalInsights/operations/read'
       'microsoft.operationalinsights/operations/read'
     ]
-    notActions: []
-    dataActions: []
     notDataActions: [
       'Microsoft.AppPlatform/Spring/eurekaService/write'
       'Microsoft.AppPlatform/Spring/eurekaService/delete'
@@ -91,50 +82,41 @@ TEST PREREQUISITES
 TEST EXECUTION
 ======================================================================*/
 
-module customRoleActionsOnly '../main.bicep' = [for i in range(0, length(roleDefinitionsActionsOnly)): {
-  name: '${i}-custom_role'
+module customRoleActionsOnly '../main.bicep' = {
+  name: 'custom_role'
   params: {
-    roleName: roleDefinitionsActionsOnly[i].roleName
-    roleDescription: roleDefinitionsActionsOnly[i].roleDescription
-    actions: roleDefinitionsActionsOnly[i].actions
-    notActions: roleDefinitionsActionsOnly[i].notActions
-    dataActions: roleDefinitionsActionsOnly[i].dataActions
-    notDataActions: roleDefinitionsActionsOnly[i].notDataActions
+    roleName: roleDefinitionsActionsOnly[0].roleName
+    roleDescription: roleDefinitionsActionsOnly[0].roleDescription
+    actions: roleDefinitionsActionsOnly[0].actions
   }
-}]
+}
 
-module customRoleNotActions '../main.bicep' = [for i in range(0, length(roleDefinitionsNotActions)): {
-  name: '${i}-notActions-custom_role'
+module customRoleNotActions '../main.bicep' = {
+  name: 'notActions-custom_role'
   params: {
-    roleName: roleDefinitionsNotActions[i].roleName
-    roleDescription: roleDefinitionsNotActions[i].roleDescription
-    actions: roleDefinitionsNotActions[i].actions
-    notActions: roleDefinitionsNotActions[i].notActions
-    dataActions: roleDefinitionsNotActions[i].dataActions
-    notDataActions: roleDefinitionsNotActions[i].notDataActions
+    roleName: roleDefinitionsNotActions[0].roleName
+    roleDescription: roleDefinitionsNotActions[0].roleDescription
+    actions: roleDefinitionsNotActions[0].actions
+    notActions: roleDefinitionsNotActions[0].notActions
   }
-}]
+}
 
-module customRoleDataActions '../main.bicep' = [for i in range(0, length(roleDefinitionsDataActions)): {
-  name: '${i}-dataActions-custom_role'
+module customRoleDataActions '../main.bicep' = {
+  name: 'dataActions-custom_role'
   params: {
-    roleName: roleDefinitionsDataActions[i].roleName
-    roleDescription: roleDefinitionsDataActions[i].roleDescription
-    actions: roleDefinitionsDataActions[i].actions
-    notActions: roleDefinitionsDataActions[i].notActions
-    dataActions: roleDefinitionsDataActions[i].dataActions
-    notDataActions: roleDefinitionsDataActions[i].notDataActions
+    roleName: roleDefinitionsDataActions[0].roleName
+    roleDescription: roleDefinitionsDataActions[0].roleDescription
+    actions: roleDefinitionsDataActions[0].actions
+    dataActions: roleDefinitionsDataActions[0].dataActions
   }
-}]
+}
 
-module customRoleNotDataActions '../main.bicep' = [for i in range(0, length(roleDefinitionsNotDataActions)): {
-  name: '${i}-notDataActions-custom_role'
+module customRoleNotDataActions '../main.bicep' = {
+  name: 'notDataActions-custom_role'
   params: {
-    roleName: roleDefinitionsNotDataActions[i].roleName
-    roleDescription: roleDefinitionsNotDataActions[i].roleDescription
-    actions: roleDefinitionsNotDataActions[i].actions
-    notActions: roleDefinitionsNotDataActions[i].notActions
-    dataActions: roleDefinitionsNotDataActions[i].dataActions
-    notDataActions: roleDefinitionsNotDataActions[i].notDataActions
+    roleName: roleDefinitionsNotDataActions[0].roleName
+    roleDescription: roleDefinitionsNotDataActions[0].roleDescription
+    actions: roleDefinitionsNotDataActions[0].actions
+    notDataActions: roleDefinitionsNotDataActions[0].notDataActions
   }
-}]
+}
