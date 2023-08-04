@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "14670211625333634437"
+      "templateHash": "392717209141999096"
     },
     "name": "Application Gateways Module",
     "description": "This module deploys Microsoft.Network applicationGateways",
@@ -198,6 +198,7 @@
         "backendAddressPool": "Backend address pool name of the application gateway.",
         "backendHttpSettings": "Backend http settings name of the application gateway.",
         "redirectConfiguration": "Redirect configuration name of the application gateway.",
+        "priority": "The rule priority.",
         "description": "Request routing rules of the application gateway resource."
       }
     },
