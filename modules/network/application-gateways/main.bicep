@@ -145,6 +145,7 @@ param backendHttpSettings array = []
   backendAddressPool: 'Backend address pool name of the application gateway.'
   backendHttpSettings: 'Backend http settings name of the application gateway.'
   redirectConfiguration: 'Redirect configuration name of the application gateway.'
+  priority: 'The rule priority.'
 })
 param requestRoutingRules array
 
