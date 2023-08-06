@@ -42,7 +42,6 @@ This module performs the following
 | `probes`                                | `array`  | No       | Optional. Probes of the application gateway resource.                                                                                       |
 | `systemAssignedIdentity`                | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                                         |
 | `userAssignedIdentities`                | `object` | No       | Optional. The ID(s) to assign to the resource.                                                                                              |
-| `webApplicationFirewallConfig`          | `object` | No       | Optional. Web application firewall configuration.                                                                                           |
 | `firewallPolicyId`                      | `string` | No       | Optional. Resource ID of the firewall policy.                                                                                               |
 | `availabilityZones`                     | `array`  | No       | Optional. A list of availability zones denoting where the resource should be deployed.                                                      |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                                        |

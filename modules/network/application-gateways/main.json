@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "392717209141999096"
+      "templateHash": "10371181415417950917"
     },
     "name": "Application Gateways Module",
     "description": "This module deploys Microsoft.Network applicationGateways",
@@ -264,40 +264,6 @@
       "defaultValue": {},
       "metadata": {
         "description": "Optional. The ID(s) to assign to the resource."
-      }
-    },
-    "webApplicationFirewallConfig": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways?tabs=bicep#applicationgatewaywebapplicationfirewallconfiguration",
-        "example": {
-          "disabledRuleGroups": [
-            {
-              "ruleGroupName": "string",
-              "rules": [
-                1,
-                2
-              ]
-            }
-          ],
-          "enabled": true,
-          "exclusions": [
-            {
-              "matchVariable": "string",
-              "selector": "string",
-              "selectorMatchOperator": "string"
-            }
-          ],
-          "fileUploadLimitInMb": 10,
-          "firewallMode": "Detection",
-          "maxRequestBodySize": 5,
-          "maxRequestBodySizeInKb": 100,
-          "requestBodyCheck": false,
-          "ruleSetType": "string",
-          "ruleSetVersion": "string"
-        },
-        "description": "Optional. Web application firewall configuration."
       }
     },
     "firewallPolicyId": {
@@ -640,7 +606,6 @@
           "maxCapacity": "[parameters('autoScaleMaxCapacity')]"
         },
         "enableHttp2": "[parameters('http2Enabled')]",
-        "webApplicationFirewallConfiguration": "[if(and(not(empty(parameters('webApplicationFirewallConfig'))), empty(parameters('firewallPolicyId'))), parameters('webApplicationFirewallConfig'), null())]",
         "gatewayIPConfigurations": [
           {
             "name": "[variables('gatewayIpConfigurationName')]",
