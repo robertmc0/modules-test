@@ -203,11 +203,13 @@ module appGatewayMin '../main.bicep' = {
     ]
     requestRoutingRules: [
       {
+
         name: 'myapp-http-80-rule'
         ruleType: 'Basic'
         httpListener: 'http-80-listener'
         backendAddressPool: 'myapp-backend-pool'
         backendHttpSettings: 'http-80-backend-settings'
+        priority: 100
       }
     ]
   }
@@ -285,6 +287,7 @@ module appGatewayNoWaf '../main.bicep' = {
         httpListener: 'https-443-listener'
         backendAddressPool: 'myapp-backend-pool'
         backendHttpSettings: 'https-443-backend-settings'
+        priority: 100
       }
     ]
   }
@@ -374,6 +377,7 @@ module appGatewayPublicAndPrivateIpNoWaf '../main.bicep' = {
         httpListener: 'https-443-public-listener'
         backendAddressPool: 'myapp-backend-pool'
         backendHttpSettings: 'https-443-backend-settings'
+        priority: 100
       }
       {
         name: 'myapp-https-443-private-rule'
@@ -381,6 +385,7 @@ module appGatewayPublicAndPrivateIpNoWaf '../main.bicep' = {
         httpListener: 'https-443-private-listener'
         backendAddressPool: 'myapp-backend-pool'
         backendHttpSettings: 'https-443-backend-settings'
+        priority: 101
       }
     ]
   }
@@ -518,12 +523,14 @@ module appGatewayWaf '../main.bicep' = {
         httpListener: 'https-443-listener'
         backendAddressPool: 'myapp-backend-pool'
         backendHttpSettings: 'https-443-backend-settings'
+        priority: 100
       }
       {
         name: 'myapp-http-80-rule'
         ruleType: 'Basic'
         httpListener: 'http-80-listener'
         redirectConfiguration: 'myapp-redirect-rule'
+        priority: 101
       }
     ]
     redirectConfigurations: [
@@ -536,11 +543,6 @@ module appGatewayWaf '../main.bicep' = {
         requestRoutingRule: 'myapp-http-80-rule'
       }
     ]
-    webApplicationFirewallConfig: {
-      enabled: true
-      ruleSetType: 'OWASP'
-      ruleSetVersion: '3.2'
-    }
     firewallPolicyId: firewallPolicyDefault.id
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
