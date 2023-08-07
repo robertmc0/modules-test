@@ -19,11 +19,10 @@ This module is used to deploy custom RBAC roles to Azure.
 
 ## Outputs
 
-| Name             | Type     | Description                                             |
-| :--------------- | :------: | :------------------------------------------------------ |
-| `customRoleId`   | `string` | The resource ID of the deployed custom role definition. |
-| `customRoleName` | `string` | The name of the deployed custom role definition.        |
-| `customRoleUUID` | `string` | The role definition UUID that is deployed.              |
+| Name             | Type     | Description                                                                                             |
+| :--------------- | :------: | :------------------------------------------------------------------------------------------------------ |
+| `customRoleId`   | `string` | The resource ID of the deployed custom role definition.                                                 |
+| `customRoleName` | `string` | The name of the deployed custom role definition. Note the output value will be the role definition UUID |
 
 ## Examples
 

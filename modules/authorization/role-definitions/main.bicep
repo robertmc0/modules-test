@@ -50,8 +50,5 @@ resource customrole 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
 @description('The resource ID of the deployed custom role definition.')
 output customRoleId string = customrole.id
 
-@description('The name of the deployed custom role definition.')
+@description('The name of the deployed custom role definition. Note the output value will be the role definition UUID')
 output customRoleName string = customrole.name
-
-@description('The role definition UUID that is deployed.')
-output customRoleUUID string = customRoleUUID
