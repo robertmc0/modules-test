@@ -5,17 +5,19 @@ This module deploys a FortiGate Network Virtual Appliance with an active-active 
 ## Details
 
 This module deploys a FortiGate Network Virtual Appliance with an active-active architecture as documented [here](https://github.com/fortinet/azure-templates/tree/main/FortiGate/Active-Active-ELB-ILB).
-The FortiGate Network Virtual Appliance is deployed with;
+The FortiGate Network Virtual Appliance is deployed with:
 
-- Two network interfaces, one for the external (untrust) subnet and one for the internal (trust) subnet.
+- Two network interfaces, one for the external (untrusted) subnet and one for the internal (trusted) subnet.
 - A public load balancer for the external traffic load balanced between both appliances.
 - An internal load balancer for the internal traffic load balanced between both appliances.
 - A network security group associated to each network interface to ensure traffic flow.
-- Two FortiGate Network Virtual Appliance's are deployed to provide an active-active architecture.
+- Two FortiGate Network Virtual Appliances are deployed to provide an active-active architecture.
 - Optionally configure diagnostic settings.
 - Optionally enables resource locks on the required resources.
 
 The deployment integrates into an existing virtual network and the resources deployed will consume the last available IP addresses in the external and internal subnets.
+
+> Note: You will need to accept the legal terms before you can deploy this module. Terms can be accepted by running this command: Set-AzMarketplaceTerms -Name fortinet_fg-vm -Product fortinet_fortigate-vm_v5 -Publisher fortinet -Accept
 
 ## Parameters
 

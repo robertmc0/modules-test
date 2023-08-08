@@ -16,7 +16,7 @@ param adminPassword string = '${toUpper(uniqueString(resourceGroup().id))}-${new
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-resource vnet1 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+resource vnet1 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: '${shortIdentifier}-tst-vnet1-${uniqueString(deployment().name, 'virtualNetworks', location)}'
   location: location
   properties: {
@@ -42,7 +42,7 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
-resource vnet2 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+resource vnet2 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: '${shortIdentifier}-tst-vnet2-${uniqueString(deployment().name, 'virtualNetworks', location)}'
   location: location
   properties: {
@@ -68,12 +68,12 @@ resource vnet2 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', 'fortiGateActiveActive', location)}'
   location: location
 }
 
-resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsStorageAccount', 'fortiGateActiveActive', location)}'
   location: location
   kind: 'StorageV2'
@@ -81,7 +81,7 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01
     name: 'Standard_LRS'
   }
 }
-resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {
+resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2022-10-01-preview' = {
   name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsEventHubNamespace', 'fortiGateActiveActive', location)}'
   location: location
 }
@@ -123,7 +123,7 @@ module fortiGate '../main.bicep' = {
       platformFaultDomainCount: 2
       platformUpdateDomainCount: 5
     }
-    imageVersion: '7.4.0'
+    imageVersion: 'latest'
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticStorageAccountId: diagnosticsStorageAccount.id
