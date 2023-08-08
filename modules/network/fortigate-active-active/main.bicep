@@ -208,7 +208,7 @@ resource internalSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-04-01' e
   name: internalSubnetName
 }
 
-resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-08-01' = if (!empty(availabilitySetConfiguration)) {
+resource availabilitySet 'Microsoft.Compute/availabilitySets@2023-03-01' = if (!empty(availabilitySetConfiguration)) {
   name: !empty(availabilitySetConfiguration) ? availabilitySetConfiguration.name : 'placeholder'
   location: location
   tags: tags

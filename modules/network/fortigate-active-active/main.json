@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "11677018762584125449"
+      "templateHash": "6660103511404431826"
     },
     "name": "FortiGate Active Active Module",
     "description": "This module deploys a FortiGate Network Virtual Appliance with an active-active architecture",
@@ -288,7 +288,7 @@
     {
       "condition": "[not(empty(parameters('availabilitySetConfiguration')))]",
       "type": "Microsoft.Compute/availabilitySets",
-      "apiVersion": "2022-08-01",
+      "apiVersion": "2023-03-01",
       "name": "[if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
