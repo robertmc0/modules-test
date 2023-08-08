@@ -130,10 +130,12 @@ var externalLoadBalancerNatRuleSshFg1 = '50030-22-rule'
 var externalLoadBalancerNatRuleSshFg2 = '50031-22-rule'
 var externalLoadBalancerNatRuleAdminPermFg1 = '40030-443-rule'
 var externalLoadBalancerNatRuleAdminPermFg2 = '40031-443-rule'
+var externalLoadBalancerLockName = toLower('${externalLoadBalancer.name}-${resourceLock}-lck')
 var internalLoadBalancerFrontEndName = toLower('${internalLoadBalancerName}-frntip')
 var internalLoadBalancerBackEndPool = 'fortigate-bkpl'
 var internalLoadBalancerProbeName = 'fortigate-tcp-8008-prbe'
 var internalLoadBalancerBackEndId = resourceId('Microsoft.Network/loadBalancers/backendAddressPools', internalLoadBalancerName, internalLoadBalancerBackEndPool)
+var internalLoadBalancerLockName = toLower('${internalLoadBalancerName}-${resourceLock}-lck')
 var fortiGate1ExternalNicName = toLower('${namePrefix}01-ext-nic')
 var fortiGate1InternalNicName = toLower('${namePrefix}01-int-nic')
 var fortiGate2ExternalNicName = toLower('${namePrefix}02-ext-nic')
@@ -167,9 +169,11 @@ var internalSubnetAddressLastIp = split(internalSubnetAddressCidr.lastUsable, '.
 var fortiGateInternalLoadBalancerIpAddress = '${internalSubnetAddressLastIp[0]}.${internalSubnetAddressLastIp[1]}.${internalSubnetAddressLastIp[2]}.${int(last(internalSubnetAddressLastIp)) - 3}'
 var fortiGate1InternalIpAddress = '${internalSubnetAddressLastIp[0]}.${internalSubnetAddressLastIp[1]}.${internalSubnetAddressLastIp[2]}.${int(last(internalSubnetAddressLastIp)) - 2}'
 var fortiGate2InternalIpAddress = '${internalSubnetAddressLastIp[0]}.${internalSubnetAddressLastIp[1]}.${internalSubnetAddressLastIp[2]}.${int(last(internalSubnetAddressLastIp)) - 1}'
-var fortiGate1VmLockName = toLower('${fortiGate1Name}-${resourceLock}-lck')
-var fortiGate2VmLockName = toLower('${fortiGate2Name}-${resourceLock}-lck')
+var fortiGate1VmLockName = toLower('${fortiGate1Vm.name}-${resourceLock}-lck')
+var fortiGate2VmLockName = toLower('${fortiGate2Vm.name}-${resourceLock}-lck')
 var externalLoadBalancerPublicIpDiagnosticsName = toLower('${externalLoadBalancerPublicIp.name}-dgs')
+var nsgLockName = toLower('${nsg.name}-${resourceLock}-lck')
+var availabilitySetLockName = toLower('${availabilitySet.name}-${resourceLock}-lck')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
   enabled: true
@@ -218,6 +222,15 @@ resource availabilitySet 'Microsoft.Compute/availabilitySets@2023-03-01' = if (!
   properties: {
     platformFaultDomainCount: availabilitySetConfiguration.platformFaultDomainCount
     platformUpdateDomainCount: availabilitySetConfiguration.platformUpdateDomainCount
+  }
+}
+
+resource availabilitySetLock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified' && !empty(availabilitySetConfiguration)) {
+  scope: availabilitySet
+  name: availabilitySetLockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -374,6 +387,15 @@ resource externalLoadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
   }
 }
 
+resource externalLoadBalancerLock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
+  scope: externalLoadBalancer
+  name: externalLoadBalancerLockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+  }
+}
+
 resource internalLoadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
   name: internalLoadBalancerName
   location: location
@@ -435,6 +457,15 @@ resource internalLoadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
   }
 }
 
+resource internalLoadBalancerLock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
+  scope: internalLoadBalancer
+  name: internalLoadBalancerLockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+  }
+}
+
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-04-01' = {
   name: nsgName
   location: location
@@ -468,6 +499,15 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-04-01' = {
         }
       }
     ]
+  }
+}
+
+resource nsgLock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
+  scope: nsg
+  name: nsgLockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
   }
 }
 
