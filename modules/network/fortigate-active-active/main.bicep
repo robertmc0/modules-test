@@ -29,7 +29,7 @@ param tags object = {}
 ])
 param imageVersion string = 'latest'
 
-@description('Specifies the size of the virtual machine. Refer to https://learn.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#hardwareprofile for values.')
+@description('Optional. Specifies the size of the virtual machine. Refer to https://learn.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#hardwareprofile for values.')
 param size string = 'Standard_F2s'
 
 @description('Specifies the name of the administrator account.')
