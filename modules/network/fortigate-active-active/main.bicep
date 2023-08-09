@@ -793,14 +793,14 @@ resource fortiGate2VmLock 'Microsoft.Authorization/locks@2020-05-01' = if (resou
   }
 }
 
-@description('The name of the first FortiGate Network Virtual Appliance.')
-output fortiGate1Name string = fortiGate1Vm.name
+@description('The name of the FortiGate Network Virtual Appliances.')
+output fortiGateNames array = [
+  fortiGate1Name
+  fortiGate2Name
+]
 
-@description('The resource ID of the first FortiGate Network Virtual Appliance.')
-output fortiGate1ResourceId string = fortiGate1Vm.id
-
-@description('The name of the second FortiGate Network Virtual Appliance.')
-output fortiGate2Name string = fortiGate2Vm.name
-
-@description('The resource ID of the second FortiGate Network Virtual Appliance.')
-output fortiGate2ResourceId string = fortiGate2Vm.id
+@description('The resource ID of FortiGate Network Virtual Appliances.')
+output fortiGateResourceIds array = [
+  fortiGate1Vm.id
+  fortiGate2Vm.id
+]

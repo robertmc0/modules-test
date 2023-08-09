@@ -51,12 +51,10 @@ The deployment integrates into an existing virtual network and the resources dep
 
 ## Outputs
 
-| Name                   | Type     | Description                                                        |
-| :--------------------- | :------: | :----------------------------------------------------------------- |
-| `fortiGate1Name`       | `string` | The name of the first FortiGate Network Virtual Appliance.         |
-| `fortiGate1ResourceId` | `string` | The resource ID of the first FortiGate Network Virtual Appliance.  |
-| `fortiGate2Name`       | `string` | The name of the second FortiGate Network Virtual Appliance.        |
-| `fortiGate2ResourceId` | `string` | The resource ID of the second FortiGate Network Virtual Appliance. |
+| Name                   | Type    | Description                                              |
+| :--------------------- | :-----: | :------------------------------------------------------- |
+| `fortiGateNames`       | `array` | The name of the FortiGate Network Virtual Appliances.    |
+| `fortiGateResourceIds` | `array` | The resource ID of FortiGate Network Virtual Appliances. |
 
 ## Examples
 

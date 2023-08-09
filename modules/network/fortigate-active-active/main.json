@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "9544027397721564371"
+      "templateHash": "982821912096534318"
     },
     "name": "FortiGate Active Active Module",
     "description": "This module deploys a FortiGate Network Virtual Appliance with an active-active architecture",
@@ -942,33 +942,25 @@
     }
   ],
   "outputs": {
-    "fortiGate1Name": {
-      "type": "string",
+    "fortiGateNames": {
+      "type": "array",
       "metadata": {
-        "description": "The name of the first FortiGate Network Virtual Appliance."
+        "description": "The name of the FortiGate Network Virtual Appliances."
       },
-      "value": "[variables('fortiGate1Name')]"
+      "value": [
+        "[variables('fortiGate1Name')]",
+        "[variables('fortiGate2Name')]"
+      ]
     },
-    "fortiGate1ResourceId": {
-      "type": "string",
+    "fortiGateResourceIds": {
+      "type": "array",
       "metadata": {
-        "description": "The resource ID of the first FortiGate Network Virtual Appliance."
+        "description": "The resource ID of FortiGate Network Virtual Appliances."
       },
-      "value": "[resourceId('Microsoft.Compute/virtualMachines', variables('fortiGate1Name'))]"
-    },
-    "fortiGate2Name": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the second FortiGate Network Virtual Appliance."
-      },
-      "value": "[variables('fortiGate2Name')]"
-    },
-    "fortiGate2ResourceId": {
-      "type": "string",
-      "metadata": {
-        "description": "The resource ID of the second FortiGate Network Virtual Appliance."
-      },
-      "value": "[resourceId('Microsoft.Compute/virtualMachines', variables('fortiGate2Name'))]"
+      "value": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('fortiGate1Name'))]",
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('fortiGate2Name'))]"
+      ]
     }
   }
 }
