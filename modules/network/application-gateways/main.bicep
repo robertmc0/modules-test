@@ -1,3 +1,7 @@
+metadata name = 'Application Gateways Module'
+metadata description = 'This module deploys Microsoft.Network applicationGateways'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -141,6 +145,7 @@ param backendHttpSettings array = []
   backendAddressPool: 'Backend address pool name of the application gateway.'
   backendHttpSettings: 'Backend http settings name of the application gateway.'
   redirectConfiguration: 'Redirect configuration name of the application gateway.'
+  priority: 'The rule priority.'
 })
 param requestRoutingRules array
 
@@ -190,38 +195,6 @@ param systemAssignedIdentity bool = false
 
 @description('Optional. The ID(s) to assign to the resource.')
 param userAssignedIdentities object = {}
-
-@description('Optional. Web application firewall configuration.')
-@metadata({
-  doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways?tabs=bicep#applicationgatewaywebapplicationfirewallconfiguration'
-  example: {
-    disabledRuleGroups: [
-      {
-        ruleGroupName: 'string'
-        rules: [
-          1
-          2
-        ]
-      }
-    ]
-    enabled: true
-    exclusions: [
-      {
-        matchVariable: 'string'
-        selector: 'string'
-        selectorMatchOperator: 'string'
-      }
-    ]
-    fileUploadLimitInMb: 10
-    firewallMode: 'Detection'
-    maxRequestBodySize: 5
-    maxRequestBodySizeInKb: 100
-    requestBodyCheck: false
-    ruleSetType: 'string'
-    ruleSetVersion: 'string'
-  }
-})
-param webApplicationFirewallConfig object = {}
 
 @description('Optional. Resource ID of the firewall policy.')
 param firewallPolicyId string = ''
@@ -378,7 +351,6 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-11-01' =
       maxCapacity: autoScaleMaxCapacity
     }
     enableHttp2: http2Enabled
-    webApplicationFirewallConfiguration: !empty(webApplicationFirewallConfig) ? webApplicationFirewallConfig : null
     gatewayIPConfigurations: [
       {
         name: gatewayIpConfigurationName
@@ -485,6 +457,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-11-01' =
       name: rule.name
       properties: {
         ruleType: rule.ruleType
+        priority: rule.priority
         httpListener: contains(rule, 'httpListener') ? {
           #disable-next-line use-resource-id-functions
           id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, rule.httpListener)

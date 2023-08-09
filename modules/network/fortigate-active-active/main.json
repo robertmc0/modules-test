@@ -1,0 +1,966 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.20.4.51522",
+      "templateHash": "982821912096534318"
+    },
+    "name": "FortiGate Active Active Module",
+    "description": "This module deploys a FortiGate Network Virtual Appliance with an active-active architecture",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "namePrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 15,
+      "metadata": {
+        "description": "Specifies the name prefix for the FortiGate resources."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "imageVersion": {
+      "type": "string",
+      "defaultValue": "latest",
+      "allowedValues": [
+        "6.4.13",
+        "7.0.12",
+        "7.2.5",
+        "7.4.0",
+        "latest"
+      ],
+      "metadata": {
+        "description": "Optional. FortiGate image version. Only required when PAYG sku is selected."
+      }
+    },
+    "size": {
+      "type": "string",
+      "defaultValue": "Standard_F2s",
+      "metadata": {
+        "description": "Optional. Specifies the size of the virtual machine. Refer to https://learn.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#hardwareprofile for values."
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of the administrator account."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Specifies the password of the administrator account. Refer to https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#osprofile for password complexity requirements."
+      }
+    },
+    "availabilityZones": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "metadata": {
+        "description": "Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed."
+      }
+    },
+    "availabilitySetConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "name": "Availability set name.",
+        "platformFaultDomainCount": "Fault Domain count.",
+        "platformUpdateDomainCount": "Update Domain count.",
+        "description": "Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set."
+      }
+    },
+    "externalLoadBalancerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The external (public) load balancer name."
+      }
+    },
+    "externalLoadBalancerPublicIpName": {
+      "type": "string",
+      "metadata": {
+        "description": "The external (public) load balancer public IP name."
+      }
+    },
+    "internalLoadBalancerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal (private) load balancer name."
+      }
+    },
+    "nsgName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the network security group assoicated to the network interfaces."
+      }
+    },
+    "externalSubnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet ID for the external (untrust) subnet."
+      }
+    },
+    "internalSubnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet ID for the internal (trust) subnet."
+      }
+    },
+    "acceleratedNetworking": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable accelerated networking on network interfaces."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllLogs"
+      ],
+      "allowedValues": [
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticLogsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "minValue": 0,
+      "maxValue": 365,
+      "metadata": {
+        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": "[parameters('diagnosticLogsRetentionInDays')]"
+          }
+        }
+      }
+    ],
+    "externalLoadBalancerFrontEndName": "[toLower(format('{0}-frntip', parameters('externalLoadBalancerName')))]",
+    "externalLoadBalancerProbeName": "fortigate-tcp-8008-prbe",
+    "externalLoadBalancerBackEndPool": "fortigate-bkpl",
+    "externalLoadBalancerFrontEndId": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('externalLoadBalancerName'), variables('externalLoadBalancerFrontEndName'))]",
+    "externalLoadBalancerBackEndId": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('externalLoadBalancerName'), variables('externalLoadBalancerBackEndPool'))]",
+    "externalLoadBalancerProbeId": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('externalLoadBalancerName'), variables('externalLoadBalancerProbeName'))]",
+    "externalLoadBalancerNatRuleSshFg1": "50030-22-rule",
+    "externalLoadBalancerNatRuleSshFg2": "50031-22-rule",
+    "externalLoadBalancerNatRuleAdminPermFg1": "40030-443-rule",
+    "externalLoadBalancerNatRuleAdminPermFg2": "40031-443-rule",
+    "externalLoadBalancerLockName": "[toLower(format('{0}-{1}-lck', parameters('externalLoadBalancerName'), parameters('resourceLock')))]",
+    "internalLoadBalancerFrontEndName": "[toLower(format('{0}-frntip', parameters('internalLoadBalancerName')))]",
+    "internalLoadBalancerBackEndPool": "fortigate-bkpl",
+    "internalLoadBalancerProbeName": "fortigate-tcp-8008-prbe",
+    "internalLoadBalancerBackEndId": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('internalLoadBalancerName'), variables('internalLoadBalancerBackEndPool'))]",
+    "internalLoadBalancerLockName": "[toLower(format('{0}-{1}-lck', parameters('internalLoadBalancerName'), parameters('resourceLock')))]",
+    "fortiGate1ExternalNicName": "[toLower(format('{0}01-ext-nic', parameters('namePrefix')))]",
+    "fortiGate1InternalNicName": "[toLower(format('{0}01-int-nic', parameters('namePrefix')))]",
+    "fortiGate2ExternalNicName": "[toLower(format('{0}02-ext-nic', parameters('namePrefix')))]",
+    "fortiGate2InternalNicName": "[toLower(format('{0}02-int-nic', parameters('namePrefix')))]",
+    "fortiGate1Name": "[toLower(format('{0}01', parameters('namePrefix')))]",
+    "fortiGate2Name": "[toLower(format('{0}02', parameters('namePrefix')))]",
+    "imageReference": {
+      "publisher": "fortinet",
+      "offer": "fortinet_fortigate-vm_v5",
+      "sku": "fortinet_fg-vm",
+      "version": "[parameters('imageVersion')]"
+    },
+    "osDiskSuffix": "-osdisk",
+    "dataDiskSuffix": "-disk-",
+    "externalSubnetName": "[last(split(parameters('externalSubnetId'), '/'))]",
+    "externalSubnetSubId": "[split(parameters('externalSubnetId'), '/')[2]]",
+    "externalSubnetResourceGroup": "[split(parameters('externalSubnetId'), '/')[4]]",
+    "externalSubnetVnetName": "[split(parameters('externalSubnetId'), '/')[8]]",
+    "internalSubnetName": "[last(split(parameters('internalSubnetId'), '/'))]",
+    "internalSubnetSubId": "[split(parameters('internalSubnetId'), '/')[2]]",
+    "internalSubnetResourceGroup": "[split(parameters('internalSubnetId'), '/')[4]]",
+    "internalSubnetVnetName": "[split(parameters('internalSubnetId'), '/')[8]]",
+    "fortiGate1VmLockName": "[toLower(format('{0}-{1}-lck', variables('fortiGate1Name'), parameters('resourceLock')))]",
+    "fortiGate2VmLockName": "[toLower(format('{0}-{1}-lck', variables('fortiGate2Name'), parameters('resourceLock')))]",
+    "externalLoadBalancerPublicIpDiagnosticsName": "[toLower(format('{0}-dgs', parameters('externalLoadBalancerPublicIpName')))]",
+    "nsgLockName": "[toLower(format('{0}-{1}-lck', parameters('nsgName'), parameters('resourceLock')))]",
+    "availabilitySetLockName": "[toLower(format('{0}-{1}-lck', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'), parameters('resourceLock')))]"
+  },
+  "resources": [
+    {
+      "condition": "[not(empty(parameters('availabilitySetConfiguration')))]",
+      "type": "Microsoft.Compute/availabilitySets",
+      "apiVersion": "2023-03-01",
+      "name": "[if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Aligned"
+      },
+      "properties": {
+        "platformFaultDomainCount": "[parameters('availabilitySetConfiguration').platformFaultDomainCount]",
+        "platformUpdateDomainCount": "[parameters('availabilitySetConfiguration').platformUpdateDomainCount]"
+      }
+    },
+    {
+      "condition": "[and(not(equals(parameters('resourceLock'), 'NotSpecified')), not(empty(parameters('availabilitySetConfiguration'))))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Compute/availabilitySets/{0}', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))]",
+      "name": "[variables('availabilitySetLockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-04-01",
+      "name": "[parameters('externalLoadBalancerPublicIpName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "zones": "[parameters('availabilityZones')]",
+      "properties": {
+        "publicIPAllocationMethod": "static"
+      }
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', parameters('externalLoadBalancerPublicIpName'))]",
+      "name": "[variables('externalLoadBalancerPublicIpDiagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('externalLoadBalancerPublicIpName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2023-04-01",
+      "name": "[parameters('externalLoadBalancerName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[variables('externalLoadBalancerFrontEndName')]",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('externalLoadBalancerPublicIpName'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('externalLoadBalancerBackEndPool')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "http-80-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('externalLoadBalancerFrontEndId')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('externalLoadBalancerBackEndId')]"
+              },
+              "probe": {
+                "id": "[variables('externalLoadBalancerProbeId')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": true,
+              "idleTimeoutInMinutes": 5
+            }
+          },
+          {
+            "name": "udp-10551-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('externalLoadBalancerFrontEndId')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('externalLoadBalancerBackEndId')]"
+              },
+              "probe": {
+                "id": "[variables('externalLoadBalancerProbeId')]"
+              },
+              "protocol": "Udp",
+              "frontendPort": 10551,
+              "backendPort": 10551,
+              "enableFloatingIP": true,
+              "idleTimeoutInMinutes": 5
+            }
+          }
+        ],
+        "inboundNatRules": [
+          {
+            "name": "[variables('externalLoadBalancerNatRuleSshFg1')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('externalLoadBalancerFrontEndId')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 50030,
+              "backendPort": 22,
+              "enableFloatingIP": false
+            }
+          },
+          {
+            "name": "[variables('externalLoadBalancerNatRuleAdminPermFg1')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('externalLoadBalancerFrontEndId')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 40030,
+              "backendPort": 443,
+              "enableFloatingIP": false
+            }
+          },
+          {
+            "name": "[variables('externalLoadBalancerNatRuleSshFg2')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('externalLoadBalancerFrontEndId')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 50031,
+              "backendPort": 22,
+              "enableFloatingIP": false
+            }
+          },
+          {
+            "name": "[variables('externalLoadBalancerNatRuleAdminPermFg2')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('externalLoadBalancerFrontEndId')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 40031,
+              "backendPort": 443,
+              "enableFloatingIP": false
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[variables('externalLoadBalancerProbeName')]",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 8008,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('externalLoadBalancerPublicIpName'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Network/loadBalancers/{0}', parameters('externalLoadBalancerName'))]",
+      "name": "[variables('externalLoadBalancerLockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/loadBalancers', parameters('externalLoadBalancerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2023-04-01",
+      "name": "[parameters('internalLoadBalancerName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[variables('internalLoadBalancerFrontEndName')]",
+            "properties": {
+              "privateIPAddress": "[format('{0}.{1}.{2}.{3}', split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[0], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[1], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[2], sub(int(last(split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.'))), 3))]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[parameters('internalSubnetId')]"
+              }
+            },
+            "zones": "[parameters('availabilityZones')]"
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('internalLoadBalancerBackEndPool')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "all-rule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('internalLoadBalancerName'), variables('internalLoadBalancerFrontEndName'))]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('internalLoadBalancerBackEndId')]"
+              },
+              "probe": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('internalLoadBalancerName'), variables('internalLoadBalancerProbeName'))]"
+              },
+              "protocol": "all",
+              "frontendPort": 0,
+              "backendPort": 0,
+              "enableFloatingIP": true,
+              "idleTimeoutInMinutes": 5
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[variables('internalLoadBalancerProbeName')]",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 8008,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Network/loadBalancers/{0}', parameters('internalLoadBalancerName'))]",
+      "name": "[variables('internalLoadBalancerLockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/loadBalancers', parameters('internalLoadBalancerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-04-01",
+      "name": "[parameters('nsgName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AZ-Allow-Inbound-Any-Any-Any-Any",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AZ-Allow-Outbound-Any-Any-Any-Any",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 105,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Network/networkSecurityGroups/{0}', parameters('nsgName'))]",
+      "name": "[variables('nsgLockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-04-01",
+      "name": "[variables('fortiGate1ExternalNicName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[format('{0}.{1}.{2}.{3}', split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('externalSubnetSubId'), variables('externalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('externalSubnetVnetName'), variables('externalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[0], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('externalSubnetSubId'), variables('externalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('externalSubnetVnetName'), variables('externalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[1], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('externalSubnetSubId'), variables('externalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('externalSubnetVnetName'), variables('externalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[2], sub(int(last(split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('externalSubnetSubId'), variables('externalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('externalSubnetVnetName'), variables('externalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.'))), 2))]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[parameters('externalSubnetId')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[variables('externalLoadBalancerBackEndId')]"
+                }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', parameters('externalLoadBalancerName'), variables('externalLoadBalancerNatRuleSshFg1'))]"
+                },
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', parameters('externalLoadBalancerName'), variables('externalLoadBalancerNatRuleAdminPermFg1'))]"
+                }
+              ]
+            }
+          }
+        ],
+        "enableIPForwarding": true,
+        "enableAcceleratedNetworking": "[parameters('acceleratedNetworking')]",
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/loadBalancers', parameters('externalLoadBalancerName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-04-01",
+      "name": "[variables('fortiGate1InternalNicName')]",
+      "tags": "[parameters('tags')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[format('{0}.{1}.{2}.{3}', split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[0], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[1], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[2], sub(int(last(split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.'))), 2))]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[parameters('internalSubnetId')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[variables('internalLoadBalancerBackEndId')]"
+                }
+              ]
+            }
+          }
+        ],
+        "enableIPForwarding": true,
+        "enableAcceleratedNetworking": "[parameters('acceleratedNetworking')]",
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-04-01",
+      "name": "[variables('fortiGate2ExternalNicName')]",
+      "tags": "[parameters('tags')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[format('{0}.{1}.{2}.{3}', split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('externalSubnetSubId'), variables('externalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('externalSubnetVnetName'), variables('externalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[0], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('externalSubnetSubId'), variables('externalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('externalSubnetVnetName'), variables('externalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[1], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('externalSubnetSubId'), variables('externalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('externalSubnetVnetName'), variables('externalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[2], sub(int(last(split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('externalSubnetSubId'), variables('externalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('externalSubnetVnetName'), variables('externalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.'))), 1))]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[parameters('externalSubnetId')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[variables('externalLoadBalancerBackEndId')]"
+                }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', parameters('externalLoadBalancerName'), variables('externalLoadBalancerNatRuleSshFg2'))]"
+                },
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', parameters('externalLoadBalancerName'), variables('externalLoadBalancerNatRuleAdminPermFg2'))]"
+                }
+              ]
+            }
+          }
+        ],
+        "enableIPForwarding": true,
+        "enableAcceleratedNetworking": "[parameters('acceleratedNetworking')]",
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/loadBalancers', parameters('externalLoadBalancerName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-04-01",
+      "name": "[variables('fortiGate2InternalNicName')]",
+      "tags": "[parameters('tags')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[format('{0}.{1}.{2}.{3}', split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[0], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[1], split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.')[2], sub(int(last(split(parseCidr(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('internalSubnetSubId'), variables('internalSubnetResourceGroup')), 'Microsoft.Network/virtualNetworks/subnets', variables('internalSubnetVnetName'), variables('internalSubnetName')), '2023-04-01').addressPrefix).lastUsable, '.'))), 1))]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[parameters('internalSubnetId')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[variables('internalLoadBalancerBackEndId')]"
+                }
+              ]
+            }
+          }
+        ],
+        "enableIPForwarding": true,
+        "enableAcceleratedNetworking": "[parameters('acceleratedNetworking')]",
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-03-01",
+      "name": "[variables('fortiGate1Name')]",
+      "tags": "[parameters('tags')]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "zones": "[parameters('availabilityZones')]",
+      "plan": {
+        "name": "[variables('imageReference').sku]",
+        "publisher": "[variables('imageReference').publisher]",
+        "product": "[variables('imageReference').offer]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('size')]"
+        },
+        "availabilitySet": "[if(not(empty(parameters('availabilitySetConfiguration'))), createObject('id', resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))), null())]",
+        "osProfile": {
+          "computerName": "[variables('fortiGate1Name')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": "[variables('imageReference')]",
+          "osDisk": {
+            "name": "[format('{0}01{1}', parameters('namePrefix'), variables('osDiskSuffix'))]",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "name": "[format('{0}01{1}001', parameters('namePrefix'), variables('dataDiskSuffix'))]",
+              "diskSizeGB": 30,
+              "lun": 0,
+              "createOption": "Empty"
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "properties": {
+                "primary": true
+              },
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('fortiGate1ExternalNicName'))]"
+            },
+            {
+              "properties": {
+                "primary": false
+              },
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('fortiGate1InternalNicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('fortiGate1ExternalNicName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('fortiGate1InternalNicName'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Compute/virtualMachines/{0}', variables('fortiGate1Name'))]",
+      "name": "[variables('fortiGate1VmLockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('fortiGate1Name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-03-01",
+      "name": "[variables('fortiGate2Name')]",
+      "tags": "[parameters('tags')]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "zones": "[parameters('availabilityZones')]",
+      "plan": {
+        "name": "[variables('imageReference').sku]",
+        "publisher": "[variables('imageReference').publisher]",
+        "product": "[variables('imageReference').offer]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('size')]"
+        },
+        "availabilitySet": "[if(not(empty(parameters('availabilitySetConfiguration'))), createObject('id', resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))), null())]",
+        "osProfile": {
+          "computerName": "[variables('fortiGate2Name')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": "[variables('imageReference')]",
+          "osDisk": {
+            "name": "[format('{0}02{1}', parameters('namePrefix'), variables('osDiskSuffix'))]",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "name": "[format('{0}02{1}001', parameters('namePrefix'), variables('dataDiskSuffix'))]",
+              "diskSizeGB": 30,
+              "lun": 0,
+              "createOption": "Empty"
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "properties": {
+                "primary": true
+              },
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('fortiGate2ExternalNicName'))]"
+            },
+            {
+              "properties": {
+                "primary": false
+              },
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('fortiGate2InternalNicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('fortiGate2ExternalNicName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('fortiGate2InternalNicName'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Compute/virtualMachines/{0}', variables('fortiGate2Name'))]",
+      "name": "[variables('fortiGate2VmLockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('fortiGate2Name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "fortiGateNames": {
+      "type": "array",
+      "metadata": {
+        "description": "The name of the FortiGate Network Virtual Appliances."
+      },
+      "value": [
+        "[variables('fortiGate1Name')]",
+        "[variables('fortiGate2Name')]"
+      ]
+    },
+    "fortiGateResourceIds": {
+      "type": "array",
+      "metadata": {
+        "description": "The resource ID of FortiGate Network Virtual Appliances."
+      },
+      "value": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('fortiGate1Name'))]",
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('fortiGate2Name'))]"
+      ]
+    }
+  }
+}
