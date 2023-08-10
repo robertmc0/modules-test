@@ -123,14 +123,14 @@ function GetSourceRegistryImages {
   Write-Host "Found $($($Repos).Count) modules in source registry"
   $Images = [System.Collections.ArrayList]@()
 
-  # Write-Host "Scanning modules for versions"
-  # foreach ($Repo in $Repos) {
-  #   $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo | ConvertFrom-Json
-  #   foreach ($Tag in $Tags) {
-  #     $Images += "${Repo}:${Tag}"
-  #   }
-  # }
-  # return $Images
+  Write-Host "Scanning modules for versions"
+  foreach ($Repo in $Repos) {
+    $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo | ConvertFrom-Json
+    foreach ($Tag in $Tags) {
+      $Images += "${Repo}:${Tag}"
+    }
+  }
+  return $Images
 }
 
 function CreateRegistry() {
