@@ -1,3 +1,7 @@
+metadata name = 'Operational Insights Workspace Module.'
+metadata description = 'This module deploys Microsoft.OperationalInsights workspaces, aka Log Analytics workspaces.'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -88,11 +92,6 @@ param diagnosticMetricsToEnable array = [
   'AllMetrics'
 ]
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticStorageAccountId string = ''
 
@@ -112,20 +111,12 @@ var diagnosticsName = toLower('${logAnalyticsWorkspace.name}-dgs')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
@@ -155,6 +146,7 @@ resource logAnalyticsSolutions 'Microsoft.OperationsManagement/solutions@2015-11
 }]
 
 resource logAnalyticsAutomation 'Microsoft.OperationalInsights/workspaces/linkedServices@2020-08-01' = if (!empty(automationAccountId)) {
+  #disable-next-line use-parent-property
   name: '${logAnalyticsWorkspace.name}/Automation'
   properties: {
     resourceId: automationAccountId
@@ -162,6 +154,7 @@ resource logAnalyticsAutomation 'Microsoft.OperationalInsights/workspaces/linked
 }
 
 resource logAnalyticsDataSource 'Microsoft.OperationalInsights/workspaces/dataSources@2020-08-01' = [for dataSource in dataSources: {
+  #disable-next-line use-parent-property
   name: '${logAnalyticsWorkspace.name}/${dataSource.name}'
   kind: dataSource.kind
   properties: dataSource.properties
