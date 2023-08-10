@@ -51,7 +51,7 @@
     Version History:
       [24/03/2023 - 1.0 - Scott Wilkinson]: Initial script development
       [17/05/2023 - 1.1 - Scott Wilkinson]: Added enhancements to supporting uplifting a registry with new module versions
-      [10/08/2023 - 1.1 - AJ Bajada]: Added check for existing Azure container registry
+      [10/08/2023 - 1.2 - AJ Bajada]: Added check for existing Azure container registry
 
 #>
 function Build-Registry {
