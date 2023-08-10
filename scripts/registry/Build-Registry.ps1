@@ -51,6 +51,7 @@
     Version History:
       [24/03/2023 - 1.0 - Scott Wilkinson]: Initial script development
       [17/05/2023 - 1.1 - Scott Wilkinson]: Added enhancements to supporting uplifting a registry with new module versions
+      [10/08/2023 - 1.1 - AJ Bajada]: Added check for existing Azure container registry
 
 #>
 function Build-Registry {
@@ -122,14 +123,14 @@ function GetSourceRegistryImages {
   Write-Host "Found $($($Repos).Count) modules in source registry"
   $Images = [System.Collections.ArrayList]@()
 
-  Write-Host "Scanning modules for versions"
-  foreach ($Repo in $Repos) {
-    $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo | ConvertFrom-Json
-    foreach ($Tag in $Tags) {
-      $Images += "${Repo}:${Tag}"
-    }
-  }
-  return $Images
+  # Write-Host "Scanning modules for versions"
+  # foreach ($Repo in $Repos) {
+  #   $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo | ConvertFrom-Json
+  #   foreach ($Tag in $Tags) {
+  #     $Images += "${Repo}:${Tag}"
+  #   }
+  # }
+  # return $Images
 }
 
 function CreateRegistry() {
@@ -169,17 +170,23 @@ function CreateRegistry() {
 
   try {
     Write-Host "Provisioning registry"
-    $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags | ConvertFrom-Json
-    if ($output.properties.provisioningState -eq "Succeeded") {
-      Write-Host "Successfully provisioned target registry"
+    $checkAcrExists = az acr show --name $TargetRegistryName --resource-group $TargetRegistryResourceGroupName 2>nul
+    if ($checkAcrExists){
+      Write-Host "Skipping as registry already exists"
     }
-    else {
-      $output
-      throw "Provision failed. Please check output"
+    else{
+      $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags | ConvertFrom-Json
+      if ($output.properties.provisioningState -eq "Succeeded") {
+        Write-Host "Successfully provisioned target registry"
+      }
+      else {
+        $output
+        throw "Provision failed. Please check output"
+      }
     }
   }
   catch {
-    throw "Failed to deploy registry against target subscription $TargetSubscriptionName. Error: $($_.Exception.Message)"
+      throw "Failed to deploy registry against target subscription $TargetSubscriptionName. Error: $($_.Exception.Message)"
   }
 }
 
