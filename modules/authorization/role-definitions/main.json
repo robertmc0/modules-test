@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "2427529196494256313"
+      "templateHash": "7125130848866615295"
     },
     "name": "Role definitions module",
     "description": "Use this module to deploy a custom RBAC role to an Azure subscription or management group",
@@ -80,14 +80,14 @@
     }
   ],
   "outputs": {
-    "customRoleId": {
+    "resourceId": {
       "type": "string",
       "metadata": {
         "description": "The resource ID of the deployed custom role definition."
       },
       "value": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('customRoleUUID'))]"
     },
-    "customRoleName": {
+    "name": {
       "type": "string",
       "metadata": {
         "description": "The name of the deployed custom role definition. Note the output value will be the role definition UUID"
