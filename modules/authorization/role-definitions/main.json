@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "7125130848866615295"
+      "templateHash": "4324475026056863155"
     },
     "name": "Role definitions module",
     "description": "Use this module to deploy a custom RBAC role to an Azure subscription or management group",
@@ -90,7 +90,7 @@
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of the deployed custom role definition. Note the output value will be the role definition UUID"
+        "description": "The name of the deployed custom role definition. This is usually the globally unique identifier."
       },
       "value": "[variables('customRoleUUID')]"
     }
