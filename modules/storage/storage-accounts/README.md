@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.StorageAccounts and child resources
 
-## Description
+## Details
 
 This module performs the following
 
@@ -39,11 +39,11 @@ Applies a lock to the storage account if the lock is specified.
 | `tables`                                | `array`  | No       | Optional. Tables to create in the Storage Account.                                                                                                                                                        |
 | `networkAcls`                           | `object` | No       | Optional. Rule definitions governing the Storage network access.                                                                                                                                          |
 | `largeFileSharesState`                  | `string` | No       | Optional. Allow large file shares if set to Enabled. It cannot be disabled once it is enabled.                                                                                                            |
+| `managementPolicies`                    | `array`  | No       | Optional. Lifecycle management policies.                                                                                                                                                                  |
 | `resourcelock`                          | `string` | No       | Optional. Specify the type of resource lock.                                                                                                                                                              |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                                                                                                      |
-| `diagnosticLogCategoriesToEnable`       | `array`  | No       | Optional. The name of log categories that will be streamed.                                                                                                                                               |
+| `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                                                                                          |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                                                                                                      |
-| `diagnosticLogsRetentionInDays`         | `int`    | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.                                                                                            |
 | `diagnosticStorageAccountId`            | `string` | No       | Optional. Storage account resource id. Only required if enableDiagnostics is set to true.                                                                                                                 |
 | `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                                                                                                         |
 | `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.                                                                                   |
@@ -51,10 +51,10 @@ Applies a lock to the storage account if the lock is specified.
 
 ## Outputs
 
-| Name       | Type   | Description                                      |
-| :--------- | :----: | :----------------------------------------------- |
-| name       | string | The name of the deployed storage account.        |
-| resourceId | string | The resource ID of the deployed storage account. |
+| Name         | Type     | Description                                      |
+| :----------- | :------: | :----------------------------------------------- |
+| `name`       | `string` | The name of the deployed storage account.        |
+| `resourceId` | `string` | The resource ID of the deployed storage account. |
 
 ## Examples
 
