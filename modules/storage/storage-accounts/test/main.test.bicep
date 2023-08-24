@@ -146,8 +146,35 @@ module storageAccount '../main.bicep' = {
         metadata: {}
       }
     ]
+    managementPolicies: [
+      {
+        name: 'blob-lifecycle'
+        type: 'Lifecycle'
+        definition: {
+          actions: {
+            baseBlob: {
+              tierToCool: {
+                daysAfterModificationGreaterThan: 30
+              }
+              delete: {
+                daysAfterModificationGreaterThan: 365
+              }
+            }
+            snapshot: {
+              delete: {
+                daysAfterCreationGreaterThan: 365
+              }
+            }
+          }
+          filters: {
+            blobTypes: [
+              'blockBlob'
+            ]
+          }
+        }
+      }
+    ]
     enableDiagnostics: true
-    diagnosticLogsRetentionInDays: 7
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
   }
 }
@@ -168,7 +195,6 @@ module storageAccountNfs '../main.bicep' = {
     ]
     systemAssignedIdentity: true
     enableDiagnostics: true
-    diagnosticLogsRetentionInDays: 7
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     largeFileSharesState: 'Enabled'
   }
