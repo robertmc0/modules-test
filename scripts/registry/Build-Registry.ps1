@@ -257,7 +257,7 @@ function ImportImagesToTargetRegistry {
       Write-Host "Importing $Image"
 
       try {
-        az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$Image" -u "00000000-0000-0000-0000-000000000000" -p $SourceRegistryToken.accessToken
+        az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$Image" -u "00000000-0000-0000-0000-000000000000" -p $SourceRegistryToken.accessToken --resource-group $TargetRegistryResourceGroupName
       }
       catch {
         throw "Failed to import module from source registry $SourceRegistryName to $TargetRegistryName. Please ensure the target registry name is valid. Error: $($_.Exception.Message)"
