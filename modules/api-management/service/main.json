@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.16.1.55165",
-      "templateHash": "14250397233586215162"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "4959045401261497916"
+    },
+    "name": "API Management Module",
+    "description": "This module deploys API Management resource.",
+    "owner": "Arinco"
   },
   "parameters": {
     "additionalLocations": {
@@ -160,14 +163,14 @@
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      }
     },
     "restore": {
       "type": "bool",
@@ -386,15 +389,6 @@
         "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -410,11 +404,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -423,11 +413,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -439,7 +425,7 @@
   "resources": [
     {
       "type": "Microsoft.ApiManagement/service",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2023-03-01-preview",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -472,7 +458,7 @@
         "count": "[length(parameters('namedValues'))]"
       },
       "type": "Microsoft.ApiManagement/service/namedValues",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), format('{0}', parameters('namedValues')[copyIndex()].displayName))]",
       "properties": {
         "displayName": "[parameters('namedValues')[copyIndex()].displayName]",
@@ -486,7 +472,7 @@
     },
     {
       "type": "Microsoft.ApiManagement/service/namedValues",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'Logger-Credentials')]",
       "properties": {
         "displayName": "Logger-Credentials",
@@ -499,7 +485,7 @@
     },
     {
       "type": "Microsoft.ApiManagement/service/portalsettings",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'signin')]",
       "properties": {
         "enabled": true
@@ -510,7 +496,7 @@
     },
     {
       "type": "Microsoft.ApiManagement/service/loggers",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'applicationInsights')]",
       "properties": {
         "loggerType": "applicationInsights",
@@ -527,7 +513,7 @@
     },
     {
       "type": "Microsoft.ApiManagement/service/diagnostics",
-      "apiVersion": "2022-08-01",
+      "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'applicationinsights')]",
       "properties": {
         "alwaysLog": "allErrors",
@@ -550,7 +536,7 @@
     {
       "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.ApiManagement/service/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
@@ -608,7 +594,7 @@
       "metadata": {
         "description": "The principal ID of the system assigned identity."
       },
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2021-08-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2021-08-01', 'full').identity.principalId, '')]"
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-03-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-03-01-preview', 'full').identity.principalId, '')]"
     }
   }
 }
