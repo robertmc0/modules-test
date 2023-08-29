@@ -1,6 +1,6 @@
 # Role definitions module
 
-Use this module to deploy a custom RBAC role to an Azure subscription or management group
+Deploys a custom RBAC role at the subscription level
 
 ## Details
 

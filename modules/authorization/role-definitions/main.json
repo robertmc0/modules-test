@@ -5,10 +5,10 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "4324475026056863155"
+      "templateHash": "146687387291269093"
     },
     "name": "Role definitions module",
-    "description": "Use this module to deploy a custom RBAC role to an Azure subscription or management group",
+    "description": "Deploys a custom RBAC role at the subscription level",
     "owner": "Arinco"
   },
   "parameters": {
