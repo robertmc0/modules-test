@@ -1,3 +1,7 @@
+metadata name = 'API Management Module'
+metadata description = 'This module deploys API Management resource.'
+metadata owner = 'Arinco'
+
 @description('Optional. Additional datacenter locations of the API Management service.')
 @metadata({
   doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.apimanagement/2021-08-01/service?tabs=bicep#additionallocation'
@@ -253,11 +257,6 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 @description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.')
 param diagnosticEventHubName string = ''
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Resource ID of the diagnostic storage account.')
 param diagnosticStorageAccountId string = ''
 
@@ -268,20 +267,12 @@ var diagnosticsName = toLower('${apiManagementService.name}-dgs')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var applicationInsights = reference(applicationInsightsId, '2020-02-02', 'Full')
@@ -293,7 +284,7 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
-resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
+resource apiManagementService 'Microsoft.ApiManagement/service@2023-03-01-preview' = {
   name: name
   location: location
   tags: tags
@@ -321,7 +312,7 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
   }
 }
 
-resource nameValue 'Microsoft.ApiManagement/service/namedValues@2021-08-01' = [for namedValue in namedValues: {
+resource nameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = [for namedValue in namedValues: {
   parent: apiManagementService
   name: '${namedValue.displayName}'
   properties: {
@@ -332,7 +323,7 @@ resource nameValue 'Microsoft.ApiManagement/service/namedValues@2021-08-01' = [f
   }
 }]
 
-resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2021-08-01' = {
+resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
   parent: apiManagementService
   name: 'Logger-Credentials'
   properties: {
@@ -342,7 +333,7 @@ resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2021-08-01
   }
 }
 
-resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2021-08-01' = {
+resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-01-preview' = {
   parent: apiManagementService
   name: 'signin'
   properties: {
@@ -350,7 +341,7 @@ resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2021-08-0
   }
 }
 
-resource logger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
+resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = {
   parent: apiManagementService
   name: 'applicationInsights'
   properties: {
@@ -366,7 +357,7 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2021-08-01' = {
   ]
 }
 
-resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2022-08-01' = {
+resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = {
   parent: apiManagementService
   name: 'applicationinsights'
   properties: {
@@ -384,7 +375,7 @@ resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2022-08-01'
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != 'NotSpecified') {
   scope: apiManagementService
   name: lockName
   properties: {
