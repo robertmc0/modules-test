@@ -84,31 +84,25 @@ brm generate
 You should be able to see these files created in the module folder:
 | File Name | Description |
 | :--------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `metadata.json` | An JSON file containing module metadata. You must edit the file to provide the metadata values. |
-| `main.bicep` | An empty Bicep file that you need to update. This is the main module file. |
+| `main.bicep` | The Bicep file that you need to update. This is the main module file and contains metadata attributes to describe the module. |
 | `test/main.test.bicep` | A Bicep file to be deployed in the PR merge validation pipeline to test if `main.bicep` is deployable. You must add at least one test to the file. A module referencing `main.bicep` is considered a test. |
 | `main.json` | The main ARM template file compiled from `main.bicep`. This is the artifact that will be published to the Bicep public registry. You should not modify the file. |
-| `README.md` | The README file generated based on the contents of `metadata.json` and `main.bicep`. You need to update this file to add examples. |
+| `README.md` | The README file generated based on the contents of `main.bicep`. You need to update this file to add examples. |
 | `version.json` | The module version file. It is used together with `main.json` to calculate the patch version number of the module. Every time `main.json` is changed, the patch version number gets bumped. The full version (`<ModuleMajorVersion>.<ModuleMinorVersion>.<ModulePatchVersion>`) will then be assigned to the module before it gets published to the Bicep public module registry. The process is handled by the module publishing CI automatically. You should not edit this file. |
 
 ### Authoring module files
 
-The files that you need to edit are `metadata.json`, `main.bicep`, `test/main.test.bicep`, `README.md`, and `version.json`.
+The files that you need to edit are `main.bicep`, `test/main.test.bicep`, `README.md`, and `version.json`.
 
-The `metadata.json` file contains metadata of the module including `name`, `summary`, and `owner`. You must provide the values for them. Below is a sample metadata file with the constraints of each property commented:
+At the very top, the `main.bicep` file contains metadata of the module including `name`, `description`, and `owner`. You must provide the values for them. Below is sample metadata values:
 
-```JSONC
-{
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-schema#",
-  // The name of the module (10 - 60 characters).
-  "name": "Sample module",
-  // The summary of the module (10 - 1000 characters).
-  "summary": "Sample module summary",
-  // The owner of the module. Must be set to Arinco.
-  "owner": "Arinco"
-}
+![](./docs/media/module-metadata-attributes.png)
 
-```
+The constraints of each property are detailed below.
+
+- The name of the module must be 10 - 60 characters.
+- The description of the module must be 10 - 1000 characters.
+- The owner of the module must be set to Arinco.
 
 The `main.bicep` file is the public interface of the module. When authoring `main.bicep`, make sure to provide a description for each parameter and output. You are free to create other Bicep files inside the module folder and reference them as local modules in `main.bicep` if needed. You may also reference other registry modules to help build your module. If you do so, make sure to add them as external references with specific version numbers. You should not reference other registry modules through local file path, since they may get updated overtime.
 
@@ -323,9 +317,8 @@ You should increase the MINOR version when you change the module in a backward-c
 
 ### Bumping PATCH version
 
-If your change is non-breaking but does not require updating the MINOR version, the PATCH version will be bumped by the CI automatically when publishing the module to the Bicep registry once your pull request is merged. The PATCH version is increased by the git commit "height" since last time the `main.json` or `metadata.json` file of a module was changed on the `main` branch. Because we only allow squash merging, the git commit height is always 1 for each module update PR merged into `main`. The following scenarios will trigger a PATCH version bump:
+If your change is non-breaking but does not require updating the MINOR version, the PATCH version will be bumped by the CI automatically when publishing the module to the Bicep registry once your pull request is merged. The PATCH version is increased by the git commit "height" since last time the `main.json` was changed on the `main` branch. Because we only allow squash merging, the git commit height is always 1 for each module update PR merged into `main`. The following scenarios will trigger a PATCH version bump:
 
-- Updating the metadata file
 - Updating the description of a parameter
 - Updating the description of an output
 - Adding a variable

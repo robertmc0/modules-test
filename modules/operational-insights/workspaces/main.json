@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.2.30886",
-      "templateHash": "8303433647412711477"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "18317543349407409546"
+    },
+    "name": "Operational Insights Workspace Module.",
+    "description": "This module deploys Microsoft.OperationalInsights workspaces, aka Log Analytics workspaces.",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -35,9 +38,6 @@
     "sku": {
       "type": "string",
       "defaultValue": "PerGB2018",
-      "metadata": {
-        "description": "Optional. The SKU of the workspace."
-      },
       "allowedValues": [
         "PerGB2018",
         "Free",
@@ -45,13 +45,16 @@
         "PerNode",
         "Standard",
         "Premium"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. The SKU of the workspace."
+      }
     },
     "retentionInDays": {
       "type": "int",
       "defaultValue": 365,
-      "maxValue": 730,
       "minValue": 7,
+      "maxValue": 730,
       "metadata": {
         "description": "Optional. The workspace data retention in days. Allowed values are per pricing plan. See pricing tiers documentation for details."
       }
@@ -141,15 +144,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -186,11 +180,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -199,11 +189,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -213,7 +199,7 @@
   "resources": [
     {
       "type": "Microsoft.OperationalInsights/workspaces",
-      "apiVersion": "2021-06-01",
+      "apiVersion": "2022-10-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -295,7 +281,7 @@
     {
       "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
@@ -328,17 +314,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed log analytics workspace."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed log analytics workspace."
-      }
+      },
+      "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
     }
   }
 }
