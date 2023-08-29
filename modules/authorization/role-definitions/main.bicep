@@ -23,7 +23,7 @@ param dataActions array = []
 @description('List of permissions for role not data actions.')
 param notDataActions array = []
 
-//Bicep requires a role name to be in a form of a UUID. This generates a random UUID based on the assignable scope and permissions
+// The role definition name must be in a form of a UUID. This generates a random UUID based on the assignable scope and permissions
 var customRoleUUID = guid(subscription().subscriptionId, string(actions), string(notActions), string(dataActions), string(notDataActions))
 
 resource customrole 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
