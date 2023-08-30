@@ -1,8 +1,8 @@
-# Scaling Plans Module
+# Microsoft.DesktopVirtualization scalingPlans Module
 
 This module deploys Microsoft.DesktopVirtualization scalingPlans
 
-## Description
+## Details
 
 - Creates Microsoft.DesktopVirtualization scalingPlans resource.
 - Applies diagnostic settings if specified.
@@ -33,10 +33,10 @@ This module deploys Microsoft.DesktopVirtualization scalingPlans
 
 ## Outputs
 
-| Name       | Type   | Description                                   |
-| :--------- | :----: | :-------------------------------------------- |
-| name       | string | The name of the deployed scaling plan.        |
-| resourceId | string | The resource ID of the deployed scaling plan. |
+| Name         | Type     | Description                                   |
+| :----------- | :------: | :-------------------------------------------- |
+| `name`       | `string` | The name of the deployed scaling plan.        |
+| `resourceId` | `string` | The resource ID of the deployed scaling plan. |
 
 ## Examples
 

@@ -5,9 +5,9 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "10908609273288445396"
+      "templateHash": "1971974915309713885"
     },
-    "name": "Scaling Plans Module",
+    "name": "Microsoft.DesktopVirtualization scalingPlans Module",
     "description": "This module deploys Microsoft.DesktopVirtualization scalingPlans",
     "owner": "Arinco"
   },
@@ -126,15 +126,6 @@
         "description": "Optional. The name of log category groups that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -251,17 +242,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed scaling plan."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed scaling plan."
-      }
+      },
+      "value": "[resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name'))]"
     }
   }
 }
