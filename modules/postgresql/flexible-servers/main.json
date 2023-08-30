@@ -4,15 +4,18 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "10536812114239456602"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "14619985864193355456"
+    },
+    "name": "PostgreSQL flexibleServers",
+    "description": "Deploy Azure PostgreSQL Flexible Servers",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
       "type": "string",
-      "maxLength": 50,
       "minLength": 5,
+      "maxLength": 50,
       "metadata": {
         "description": "Name of your Azure PostgreSQL Flexible Server - if error ServerGroupDropping is received during deployment then the server name is not available and must be changed to one that is. This can be checked by running a console deployment."
       }
@@ -58,7 +61,7 @@
       }
     },
     "administratorLoginPassword": {
-      "type": "secureString",
+      "type": "securestring",
       "metadata": {
         "description": "The administrator login password (required for server creation)."
       }
@@ -206,15 +209,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -263,11 +257,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -276,11 +266,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -362,17 +348,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed PostgreSQL Flexible Server."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed PostgreSQL Flexible Server."
-      }
+      },
+      "value": "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('name'))]"
     }
   }
 }
