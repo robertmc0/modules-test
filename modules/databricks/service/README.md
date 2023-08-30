@@ -1,8 +1,8 @@
-# Azure Databricks Module
+# Databricks Module
 
-Deploys Azure Databricks using the premium sku
+This module deploys Microsoft.Databricks
 
-## Description
+## Details
 
 {{ Add detailed description for the module. }}
 
@@ -31,10 +31,10 @@ Deploys Azure Databricks using the premium sku
 
 ## Outputs
 
-| Name       | Type   | Description                                         |
-| :--------- | :----: | :-------------------------------------------------- |
-| name       | string | The name of the deployed databricks service.        |
-| resourceId | string | The resource ID of the deployed databricks service. |
+| Name         | Type     | Description                                         |
+| :----------- | :------: | :-------------------------------------------------- |
+| `name`       | `string` | The name of the deployed databricks service.        |
+| `resourceId` | `string` | The resource ID of the deployed databricks service. |
 
 ## Examples
 
