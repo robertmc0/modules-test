@@ -125,18 +125,12 @@ var diagnosticsName = toLower('${dataFactory.name}-dgs')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-  }
 }]
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-  }
 }]
 
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
