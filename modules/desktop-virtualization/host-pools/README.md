@@ -1,8 +1,8 @@
-# Host Pools Module
+# Desktop Virtualization hostPools Module
 
 This module deploys Microsoft.DesktopVirtualization hostPools
 
-## Description
+## Details
 
 - Creates Microsoft.DesktopVirtualization hostPools resource.
 - Applies diagnostic settings if specified.
@@ -33,10 +33,10 @@ This module deploys Microsoft.DesktopVirtualization hostPools
 
 ## Outputs
 
-| Name       | Type   | Description                                |
-| :--------- | :----: | :----------------------------------------- |
-| name       | string | The name of the deployed host pool.        |
-| resourceId | string | The resource ID of the deployed host pool. |
+| Name         | Type     | Description                                |
+| :----------- | :------: | :----------------------------------------- |
+| `name`       | `string` | The name of the deployed host pool.        |
+| `resourceId` | `string` | The resource ID of the deployed host pool. |
 
 ## Examples
 
