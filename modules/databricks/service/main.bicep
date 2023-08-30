@@ -1,3 +1,7 @@
+metadata name = 'Databricks Module'
+metadata description = 'This module deploys Microsoft.Databricks'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
