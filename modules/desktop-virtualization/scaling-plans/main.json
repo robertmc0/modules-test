@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "13990226727443392527"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "10908609273288445396"
+    },
+    "name": "Scaling Plans Module",
+    "description": "This module deploys Microsoft.DesktopVirtualization scalingPlans",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -180,11 +183,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
