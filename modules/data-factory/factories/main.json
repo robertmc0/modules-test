@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.11.1.770",
-      "templateHash": "7855564437794173118"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "10908609273288445396"
+    },
+    "name": "Data Factory Module",
+    "description": "This module deploys Microsoft.DataFactory",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -208,11 +211,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -221,11 +220,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
