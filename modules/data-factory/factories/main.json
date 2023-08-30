@@ -5,9 +5,9 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "10908609273288445396"
+      "templateHash": "11590933187541350539"
     },
-    "name": "Data Factory Module",
+    "name": "DataFactory Module",
     "description": "This module deploys Microsoft.DataFactory",
     "owner": "Arinco"
   },
@@ -66,13 +66,13 @@
     "gitRepoType": {
       "type": "string",
       "defaultValue": "FactoryGitHubConfiguration",
-      "metadata": {
-        "description": "Optional. Git repository type. Azure DevOps = FactoryVSTSConfiguration and GitHub = FactoryGitHubConfiguration."
-      },
       "allowedValues": [
         "FactoryVSTSConfiguration",
         "FactoryGitHubConfiguration"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Git repository type. Azure DevOps = FactoryVSTSConfiguration and GitHub = FactoryGitHubConfiguration."
+      }
     },
     "gitAccountName": {
       "type": "string",
@@ -152,15 +152,6 @@
       ],
       "metadata": {
         "description": "Optional. The name of metrics that will be streamed."
-      }
-    },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
     },
     "diagnosticStorageAccountId": {
@@ -313,24 +304,24 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed data factory."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.DataFactory/factories', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed data factory."
-      }
+      },
+      "value": "[resourceId('Microsoft.DataFactory/factories', parameters('name'))]"
     },
     "systemAssignedPrincipalId": {
       "type": "string",
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.DataFactory/factories', parameters('name')), '2018-06-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.DataFactory/factories', parameters('name')), '2018-06-01', 'full').identity.principalId, '')]",
       "metadata": {
         "description": "The principal ID of the system assigned identity."
-      }
+      },
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.DataFactory/factories', parameters('name')), '2018-06-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.DataFactory/factories', parameters('name')), '2018-06-01', 'full').identity.principalId, '')]"
     }
   }
 }

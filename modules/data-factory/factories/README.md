@@ -1,8 +1,8 @@
-# Data Factory Module
+# DataFactory Module
 
-This module deploys Microsoft.DataFactory factories
+This module deploys Microsoft.DataFactory
 
-## Description
+## Details
 
 This module performs the following
 
@@ -44,11 +44,11 @@ This module performs the following
 
 ## Outputs
 
-| Name                      | Type   | Description                                       |
-| :------------------------ | :----: | :------------------------------------------------ |
-| name                      | string | The name of the deployed data factory.            |
-| resourceId                | string | The resource ID of the deployed data factory.     |
-| systemAssignedPrincipalId | string | The principal ID of the system assigned identity. |
+| Name                        | Type     | Description                                       |
+| :-------------------------- | :------: | :------------------------------------------------ |
+| `name`                      | `string` | The name of the deployed data factory.            |
+| `resourceId`                | `string` | The resource ID of the deployed data factory.     |
+| `systemAssignedPrincipalId` | `string` | The principal ID of the system assigned identity. |
 
 ## Examples
 
