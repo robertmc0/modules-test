@@ -1,3 +1,7 @@
+metadata name = 'DataFactory Module'
+metadata description = 'This module deploys Microsoft.DataFactory'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
