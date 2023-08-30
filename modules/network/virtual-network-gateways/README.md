@@ -1,8 +1,8 @@
-# Virtual Network Gateways Module
+# Virtual Network Gateway Module
 
-This module deploys Microsoft.Network virtualNetworkGateways.
+This module deploys Microsoft.Network/virtualNetworkGateways
 
-## Description
+## Details
 
 This module performs the following
 
