@@ -1,3 +1,7 @@
+metadata name = 'Automation Accounts Module'
+metadata description = 'This module deploys Microsoft.Automation automationAccounts'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -31,6 +35,7 @@ param modules array = []
 @description('Optional. Variables to import into automation account.')
 @metadata({
   name: 'Variable name.'
+  #disable-next-line no-conflicting-metadata
   description: 'Variable Description.'
   isEncrypted: 'Variable is encypted.'
   value: 'Variable value.'
@@ -119,11 +124,6 @@ param diagnosticMetricsToEnable array = [
   'AllMetrics'
 ]
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticStorageAccountId string = ''
 
@@ -158,20 +158,12 @@ var diagnosticsName = toLower('${automationAccount.name}-dgs')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' = {
