@@ -1,0 +1,98 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.20.4.51522",
+      "templateHash": "146687387291269093"
+    },
+    "name": "Role definitions module",
+    "description": "Deploys a custom RBAC role at the subscription level",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "roleName": {
+      "type": "string",
+      "metadata": {
+        "description": "The display name of the custom role to be deployed."
+      }
+    },
+    "roleDescription": {
+      "type": "string",
+      "metadata": {
+        "description": "The description for the custom role to be deployed."
+      }
+    },
+    "actions": {
+      "type": "array",
+      "minLength": 1,
+      "metadata": {
+        "description": "List of permissions for role actions."
+      }
+    },
+    "notActions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "List of permissions for role not actions."
+      }
+    },
+    "dataActions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "List of permissions for role data actions."
+      }
+    },
+    "notDataActions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "List of permissions for role not data actions."
+      }
+    }
+  },
+  "variables": {
+    "customRoleUUID": "[guid(subscription().subscriptionId, string(parameters('actions')), string(parameters('notActions')), string(parameters('dataActions')), string(parameters('notDataActions')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleDefinitions",
+      "apiVersion": "2022-04-01",
+      "name": "[variables('customRoleUUID')]",
+      "properties": {
+        "assignableScopes": [
+          "[format('/subscriptions/{0}', subscription().subscriptionId)]"
+        ],
+        "description": "[parameters('roleDescription')]",
+        "permissions": [
+          {
+            "actions": "[parameters('actions')]",
+            "notActions": "[parameters('notActions')]",
+            "dataActions": "[parameters('dataActions')]",
+            "notDataActions": "[parameters('notDataActions')]"
+          }
+        ],
+        "roleName": "[parameters('roleName')]",
+        "type": "customRole"
+      }
+    }
+  ],
+  "outputs": {
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed custom role definition."
+      },
+      "value": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('customRoleUUID'))]"
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed custom role definition. This is usually the globally unique identifier."
+      },
+      "value": "[variables('customRoleUUID')]"
+    }
+  }
+}
