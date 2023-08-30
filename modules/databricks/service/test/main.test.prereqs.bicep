@@ -16,7 +16,7 @@ param publicSubnetName string = 'dbksPublic'
 @description('The name to use for virtual network private subnet')
 param privateSubnetName string = 'dbksPrivate'
 
-resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {//name needs to be addressed
   name: storageName
   location: location
   kind: 'BlobStorage'
@@ -25,6 +25,43 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
   sku: {
     name: 'Standard_GRS'
+  }
+}
+
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: storage
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
   }
 }
 
