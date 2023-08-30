@@ -1,8 +1,8 @@
-# Application Groups Module
+# Desktop-Virtualization Application Group Module
 
-This module deploys Microsoft.DesktopVirtualization applicationGroups
+This module deploys Microsoft.DesktopVirtualization Application Groups
 
-## Description
+## Details
 
 - Creates Microsoft.DesktopVirtualization applicationGroups resource.
 - Applies diagnostic settings if specified.
@@ -30,10 +30,10 @@ This module deploys Microsoft.DesktopVirtualization applicationGroups
 
 ## Outputs
 
-| Name       | Type   | Description                                        |
-| :--------- | :----: | :------------------------------------------------- |
-| name       | string | The name of the deployed application group.        |
-| resourceId | string | The resource ID of the deployed application group. |
+| Name         | Type     | Description                                        |
+| :----------- | :------: | :------------------------------------------------- |
+| `name`       | `string` | The name of the deployed application group.        |
+| `resourceId` | `string` | The resource ID of the deployed application group. |
 
 ## Examples
 

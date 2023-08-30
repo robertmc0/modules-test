@@ -1,6 +1,0 @@
-{
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
-  "name": "Application Groups Module",
-  "summary": "This module deploys Microsoft.DesktopVirtualization applicationGroups",
-  "owner": "Arinco"
-}
