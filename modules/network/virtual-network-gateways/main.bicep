@@ -123,7 +123,7 @@ var vnetGatewayDiagnosticsName = toLower('${virtualNetworkGateway.name}-dgs')
 
 var primaryPublicIpDiagnosticsName = toLower('${primaryPublicIp.name}-dgs')
 
-var secondaryPublicIpDiagnosticsName = toLower('${secondaryPublicIp.name}-dgs')
+var secondaryPublicIpDiagnosticsName = activeActive ? toLower('${secondaryPublicIp.name}-dgs') : 'placeholder'
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
@@ -179,7 +179,7 @@ var ipConfigurations = activeActive ? [
   }
 ]
 
-resource primaryPublicIp 'Microsoft.Network/publicIPAddresses@2022-11-01' = {
+resource primaryPublicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
   name: primaryPublicIpAddressName
   location: location
   sku: {
@@ -204,8 +204,8 @@ resource diagnosticsPrimaryPublicIp 'Microsoft.Insights/diagnosticSettings@2021-
   }
 }
 
-resource secondaryPublicIp 'Microsoft.Network/publicIPAddresses@2022-11-01' = {
-  name: secondaryPublicIpAddressName
+resource secondaryPublicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (activeActive) {
+  name: empty(secondaryPublicIpAddressName) ? 'placeholder' : secondaryPublicIpAddressName
   location: location
   sku: {
     name: 'Standard'
