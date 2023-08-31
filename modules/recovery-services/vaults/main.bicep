@@ -1,3 +1,7 @@
+metadata name = 'Recovery Services Vaults Module'
+metadata description = 'This module deploys Microsoft.RecoveryServices vaults'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -105,11 +109,6 @@ param diagnosticMetricsToEnable array = [
   'Health'
 ]
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticStorageAccountId string = ''
 
@@ -144,20 +143,12 @@ var diagnosticsName = toLower('${vault.name}-dgs')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 resource vault 'Microsoft.RecoveryServices/vaults@2022-04-01' = {
@@ -181,6 +172,7 @@ resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2022-03-
 }]
 
 resource vaultConfig 'Microsoft.RecoveryServices/vaults/backupstorageconfig@2022-03-01' = {
+  #disable-next-line use-parent-property
   name: '${vault.name}/vaultStorageConfig'
   properties: {
     crossRegionRestoreFlag: enablecrossRegionRestore
@@ -193,6 +185,7 @@ resource vaultProtectedItem 'Microsoft.RecoveryServices/vaults/backupFabrics/pro
   dependsOn: [
     backupPolicy
   ]
+  #disable-next-line use-parent-property
   name: '${vault.name}/${vm.backupFabric}/${vm.protectionContainer}/${vm.protectedItem}'
   properties: {
     protectedItemType: 'Microsoft.Compute/virtualMachines'
