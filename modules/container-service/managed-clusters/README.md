@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.ContainerService managedClusters
 
-## Description
+## Details
 
 This module performs the following:
 
@@ -67,7 +67,6 @@ This module performs the following:
 | `upgradeChannel`                        | `string` | No       | optional. Enable auto upgrade on the AKS cluster to perform periodic upgrades to the latest Kubernetes version.                                                                                     |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                                                                                    |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                                                                                                |
-| `diagnosticLogsRetentionInDays`         | `int`    | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.                                                                                      |
 | `diagnosticStorageAccountId`            | `string` | No       | Optional. Storage account resource id. Only required if enableDiagnostics is set to true.                                                                                                           |
 | `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                                                                                                   |
 | `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.                                                                             |
@@ -75,11 +74,11 @@ This module performs the following:
 
 ## Outputs
 
-| Name                      | Type   | Description                                       |
-| :------------------------ | :----: | :------------------------------------------------ |
-| name                      | string | The name of the deployed managed cluster.         |
-| resourceId                | string | The resource ID of the deployed managed cluster.  |
-| systemAssignedPrincipalId | string | The principal ID of the system assigned identity. |
+| Name                        | Type     | Description                                       |
+| :-------------------------- | :------: | :------------------------------------------------ |
+| `name`                      | `string` | The name of the deployed managed cluster.         |
+| `resourceId`                | `string` | The resource ID of the deployed managed cluster.  |
+| `systemAssignedPrincipalId` | `string` | The principal ID of the system assigned identity. |
 
 ## Examples
 
