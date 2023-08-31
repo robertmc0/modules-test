@@ -5,9 +5,9 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "10908609273288445396"
+      "templateHash": "5195607867798262735"
     },
-    "name": "Microsoft.DesktopVirtualization Workspaces Module",
+    "name": "Microsoft.DesktopVirtualization workspaces Module",
     "description": "This module deploys Microsoft.DesktopVirtualization Workspaces",
     "owner": "Arinco"
   },
@@ -189,17 +189,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed workspace."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.DesktopVirtualization/workspaces', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed workspace."
-      }
+      },
+      "value": "[resourceId('Microsoft.DesktopVirtualization/workspaces', parameters('name'))]"
     }
   }
 }

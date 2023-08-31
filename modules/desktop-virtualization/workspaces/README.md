@@ -1,8 +1,8 @@
-# Workspaces Module
+# Microsoft.DesktopVirtualization workspaces Module
 
-This module deploys Microsoft.DesktopVirtualization workspaces
+This module deploys Microsoft.DesktopVirtualization Workspaces
 
-## Description
+## Details
 
 - Creates Microsoft.DesktopVirtualization workspaces resource.
 - Applies diagnostic settings if specified.
@@ -29,10 +29,10 @@ This module deploys Microsoft.DesktopVirtualization workspaces
 
 ## Outputs
 
-| Name       | Type   | Description                                |
-| :--------- | :----: | :----------------------------------------- |
-| name       | string | The name of the deployed workspace.        |
-| resourceId | string | The resource ID of the deployed workspace. |
+| Name         | Type     | Description                                |
+| :----------- | :------: | :----------------------------------------- |
+| `name`       | `string` | The name of the deployed workspace.        |
+| `resourceId` | `string` | The resource ID of the deployed workspace. |
 
 ## Examples
 
