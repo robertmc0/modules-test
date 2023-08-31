@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "17667336127354535851"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "14122120140993320250"
+    },
+    "name": "Container Registry",
+    "description": "This module deploys Microsoft.ContainerRegistry registry at the subscription level",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -151,12 +154,12 @@
     },
     "diagnosticLogCategoryGroupsToEnable": {
       "type": "array",
+      "defaultValue": [
+        "audit"
+      ],
       "allowedValues": [
         "audit",
         "allLogs"
-      ],
-      "defaultValue": [
-        "audit"
       ],
       "metadata": {
         "description": "Optional. The name of log category groups that will be streamed."
@@ -164,23 +167,14 @@
     },
     "diagnosticMetricsToEnable": {
       "type": "array",
-      "allowedValues": [
+      "defaultValue": [
         "AllMetrics"
       ],
-      "defaultValue": [
+      "allowedValues": [
         "AllMetrics"
       ],
       "metadata": {
         "description": "Optional. The name of metrics that will be streamed."
-      }
-    },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
     },
     "diagnosticStorageAccountId": {
@@ -219,11 +213,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -232,11 +222,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -308,24 +294,24 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed key vault."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.ContainerRegistry/registries', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed key vault."
-      }
+      },
+      "value": "[resourceId('Microsoft.ContainerRegistry/registries', parameters('name'))]"
     },
     "loginServer": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries', parameters('name')), '2021-09-01').loginServer]",
       "metadata": {
         "description": "The login server URI of the deployed container registry."
-      }
+      },
+      "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries', parameters('name')), '2021-09-01').loginServer]"
     }
   }
 }

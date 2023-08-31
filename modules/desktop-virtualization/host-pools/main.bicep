@@ -1,3 +1,7 @@
+metadata name = 'Desktop Virtualization hostPools Module'
+metadata description = 'This module deploys Microsoft.DesktopVirtualization hostPools'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -71,11 +75,6 @@ param diagnosticLogCategoryGroupsToEnable array = [
   'AllLogs'
 ]
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticStorageAccountId string = ''
 
@@ -103,10 +102,6 @@ var diagnosticsName = toLower('${hostPool.name}-dgs')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 resource hostPool 'Microsoft.DesktopVirtualization/hostPools@2022-04-01-preview' = {

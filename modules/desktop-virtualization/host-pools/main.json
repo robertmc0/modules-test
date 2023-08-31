@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "9774590674327445028"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "13341796103920204535"
+    },
+    "name": "Desktop Virtualization hostPools Module",
+    "description": "This module deploys Microsoft.DesktopVirtualization hostPools",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -126,15 +129,6 @@
         "description": "Optional. The name of log category groups that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -183,11 +177,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -247,17 +237,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed host pool."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.DesktopVirtualization/hostPools', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed host pool."
-      }
+      },
+      "value": "[resourceId('Microsoft.DesktopVirtualization/hostPools', parameters('name'))]"
     }
   }
 }

@@ -1,6 +1,0 @@
-{
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
-  "name": "Bastion Host Module",
-  "summary": "This module deploys Microsoft.Network bastionHosts",
-  "owner": "Arinco"
-}
