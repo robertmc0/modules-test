@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.18.4.5664",
-      "templateHash": "9948293216780230864"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "8884054517834512633"
+    },
+    "name": "Virtual Network Gateway Module",
+    "description": "This module deploys Microsoft.Network/virtualNetworkGateways",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -156,15 +159,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -213,11 +207,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -226,24 +216,20 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "vnetGatewayDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "primaryPublicIpDiagnosticsName": "[toLower(format('{0}-dgs', parameters('primaryPublicIpAddressName')))]",
-    "secondaryPublicIpDiagnosticsName": "[toLower(format('{0}-dgs', parameters('secondaryPublicIpAddressName')))]",
-    "ipConfigurations": "[if(parameters('activeActive'), createArray(createObject('name', 'default', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName'))))), createObject('name', 'activeActive', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', parameters('secondaryPublicIpAddressName')))))), createArray(createObject('name', 'default', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName')))))))]"
+    "secondaryPublicIpDiagnosticsName": "[if(parameters('activeActive'), toLower(format('{0}-dgs', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')))), 'placeholder')]",
+    "ipConfigurations": "[if(parameters('activeActive'), createArray(createObject('name', 'default', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName'))))), createObject('name', 'activeActive', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName'))))))), createArray(createObject('name', 'default', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName')))))))]"
   },
   "resources": [
     {
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2022-11-01",
+      "apiVersion": "2023-04-01",
       "name": "[parameters('primaryPublicIpAddressName')]",
       "location": "[parameters('location')]",
       "sku": {
@@ -273,9 +259,10 @@
       ]
     },
     {
+      "condition": "[parameters('activeActive')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2022-11-01",
-      "name": "[parameters('secondaryPublicIpAddressName')]",
+      "apiVersion": "2023-04-01",
+      "name": "[if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName'))]",
       "location": "[parameters('location')]",
       "sku": {
         "name": "Standard"
@@ -289,7 +276,7 @@
       "condition": "[and(parameters('enableDiagnostics'), parameters('activeActive'))]",
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "2021-05-01-preview",
-      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', parameters('secondaryPublicIpAddressName'))]",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')))]",
       "name": "[variables('secondaryPublicIpDiagnosticsName')]",
       "properties": {
         "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
@@ -300,7 +287,7 @@
         "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('secondaryPublicIpAddressName'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')))]"
       ]
     },
     {
@@ -322,7 +309,7 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName'))]",
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('secondaryPublicIpAddressName'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')))]"
       ]
     },
     {
@@ -385,7 +372,7 @@
       "metadata": {
         "description": "The IP address of the deployed virtual network gateway primary public IP."
       },
-      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName')), '2022-11-01').ipAddress]"
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName')), '2023-04-01').ipAddress]"
     },
     "primaryPublicIpId": {
       "type": "string",
@@ -399,14 +386,14 @@
       "metadata": {
         "description": "The name of the deployed virtual network gateway secondary public IP."
       },
-      "value": "[if(parameters('activeActive'), parameters('secondaryPublicIpAddressName'), '')]"
+      "value": "[if(parameters('activeActive'), if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')), '')]"
     },
     "secondaryPublicIpAddress": {
       "type": "string",
       "metadata": {
         "description": "The IP address of the deployed virtual network gateway secondary public IP."
       },
-      "value": "[if(parameters('activeActive'), reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('secondaryPublicIpAddressName')), '2022-11-01').ipAddress, '')]"
+      "value": "[if(parameters('activeActive'), reference(resourceId('Microsoft.Network/publicIPAddresses', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName'))), '2023-04-01').ipAddress, '')]"
     },
     "secondaryPublicIpId": {
       "type": "string",

@@ -55,6 +55,43 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01
   }
 }
 
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: diagnosticsStorageAccount
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
 resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {
   name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsEventHubNamespace', location, uniqueId)}'
   location: location
@@ -123,7 +160,7 @@ module aksMax '../main.bicep' = {
     location: location
     nodeResourceGroup: '${resourceGroup().name}-nodepool'
     agentPoolCount: 2
-    kubernetesVersion: '1.23.12'
+    kubernetesVersion: '1.26.6'
     enableAvailabilityZones: true
     enableAutoScaling: true
     agentPoolMinCount: 1
