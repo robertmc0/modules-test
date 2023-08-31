@@ -4,7 +4,7 @@ param location string = 'australiaeast'
 @description('Resource Tags')
 param tags object = {}
 
-var uniqueName = uniqueString(deployment().name, location)
+var uniqueName = uniqueString(deployment().name, 'dedicated', location)
 
 module cosmosAccountDedicatedCompute '../main.bicep' = {
   name: '${uniqueName}-cosmos-account-dedicated-deploy'
