@@ -1,3 +1,7 @@
+metadata name = 'Sql Elastic Pool'
+metadata description = 'This module deploys Microsoft.Sql.Server Elastic Pool'
+metadata owner = 'Arinco'
+
 @description('Name of Elastic Pool to create.')
 param name string
 
@@ -68,11 +72,6 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 @description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.')
 param diagnosticEventHubName string = ''
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Resource ID of the diagnostic storage account.')
 param diagnosticStorageAccountId string = ''
 
@@ -94,10 +93,6 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 // Object map to help set SKU properties for elastic pool
