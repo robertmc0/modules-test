@@ -5,10 +5,10 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "1971974915309713885"
+      "templateHash": "17329548077327123507"
     },
-    "name": "Microsoft.DesktopVirtualization scalingPlans Module",
-    "description": "This module deploys Microsoft.DesktopVirtualization scalingPlans",
+    "name": "Desktop Virtualization Scaling Plan Module",
+    "description": "This module deploys Desktop Virtualization Scaling Plan Module",
     "owner": "Arinco"
   },
   "parameters": {

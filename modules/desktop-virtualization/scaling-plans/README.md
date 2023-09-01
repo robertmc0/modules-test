@@ -1,6 +1,6 @@
-# Microsoft.DesktopVirtualization scalingPlans Module
+# Desktop Virtualization Scaling Plan Module
 
-This module deploys Microsoft.DesktopVirtualization scalingPlans
+This module deploys Desktop Virtualization Scaling Plan Module
 
 ## Details
 
