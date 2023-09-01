@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "11783958586848809265"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "11716418039982361924"
+    },
+    "name": "Network Security Group Module",
+    "description": "This module deploys Microsoft.Network networkSecurityGroups.",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -92,15 +95,6 @@
         "description": "Optional. The name of log category groups that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -149,11 +143,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -215,17 +205,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed network security group."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the network security group."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('name'))]"
     }
   }
 }
