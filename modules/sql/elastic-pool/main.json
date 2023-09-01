@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.15.31.15270",
-      "templateHash": "3075436289616612202"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "15997691094707487200"
+    },
+    "name": "Sql Elastic Pool",
+    "description": "This module deploys Microsoft.Sql.Server Elastic Pool",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -98,14 +101,14 @@
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      }
     },
     "enableDiagnostics": {
       "type": "bool",
@@ -133,15 +136,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
-      }
-    },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
     },
     "diagnosticStorageAccountId": {
@@ -174,11 +168,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -270,17 +260,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the elastic pool."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Sql/servers/elasticPools', parameters('sqlServerName'), parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the elastic pool."
-      }
+      },
+      "value": "[resourceId('Microsoft.Sql/servers/elasticPools', parameters('sqlServerName'), parameters('name'))]"
     }
   }
 }

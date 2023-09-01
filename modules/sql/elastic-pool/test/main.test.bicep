@@ -39,6 +39,43 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-09-01
   }
 }
 
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: diagnosticsStorageAccount
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deploymentName, 'logAnalyticsWorkspace', location)}'
   location: location

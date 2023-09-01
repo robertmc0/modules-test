@@ -1,3 +1,7 @@
+metadata name = 'PostgreSQL flexibleServers'
+metadata description = 'Deploy Azure PostgreSQL Flexible Servers'
+metadata owner = 'Arinco'
+
 @description('Name of your Azure PostgreSQL Flexible Server - if error ServerGroupDropping is received during deployment then the server name is not available and must be changed to one that is. This can be checked by running a console deployment.')
 @minLength(5)
 @maxLength(50)
@@ -115,11 +119,6 @@ param diagnosticMetricsToEnable array = [
   'AllMetrics'
 ]
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticStorageAccountId string = ''
 
@@ -145,20 +144,12 @@ var diagnosticsName = toLower('${postgresql.name}-dgs')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var lockName = toLower('${postgresql.name}-${resourcelock}-lck')

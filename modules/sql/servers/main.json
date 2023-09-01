@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.19.5.34762",
-      "templateHash": "4258066489454046415"
+      "version": "0.20.4.51522",
+      "templateHash": "827607218077323809"
     },
     "name": "Sql Server Module",
     "description": "This module deploys Microsoft.Sql servers.",
@@ -213,15 +213,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -270,11 +261,7 @@
         "count": "[length(parameters('diagnosticLogCategoriesToEnable'))]",
         "input": {
           "category": "[parameters('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -283,11 +270,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -489,8 +472,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.19.5.34762",
-              "templateHash": "15478046138152131234"
+              "version": "0.20.4.51522",
+              "templateHash": "13577939556229738878"
             }
           },
           "parameters": {
@@ -554,8 +537,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.19.5.34762",
-              "templateHash": "15478046138152131234"
+              "version": "0.20.4.51522",
+              "templateHash": "13577939556229738878"
             }
           },
           "parameters": {

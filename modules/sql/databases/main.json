@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.15.31.15270",
-      "templateHash": "8304645359938692858"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "11860233927716186137"
+    },
+    "name": "Sql Server Database",
+    "description": "This module deploys Microsoft.Sql.Server databases",
+    "owner": "Arinco"
   },
   "parameters": {
     "sqlServerName": {
@@ -154,14 +157,14 @@
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      }
     },
     "enableDiagnostics": {
       "type": "bool",
@@ -189,15 +192,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
-      }
-    },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
     },
     "diagnosticStorageAccountId": {
@@ -240,11 +234,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -253,11 +243,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -370,17 +356,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('databaseName')]",
       "metadata": {
         "description": "The name of the sql database."
-      }
+      },
+      "value": "[parameters('databaseName')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('databaseName'))]",
       "metadata": {
         "description": "The resource ID of the sql database."
-      }
+      },
+      "value": "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('databaseName'))]"
     }
   }
 }
