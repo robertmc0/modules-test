@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.17.1.54307",
-      "templateHash": "14914487775120426920"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "997667554651592154"
+    },
+    "name": "SQL Managed Instance",
+    "description": "This module deploys Microsoft.Sql Managed Instance",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -109,14 +112,14 @@
     "requestedBackupStorageRedundancy": {
       "type": "string",
       "defaultValue": "geo",
-      "metadata": {
-        "description": "Optional. Set location of backups, geo, local or zone."
-      },
       "allowedValues": [
         "local",
         "zone",
         "geo"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Set location of backups, geo, local or zone."
+      }
     },
     "managedInstanceCreateMode": {
       "type": "string",
@@ -297,15 +300,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -354,11 +348,7 @@
         "count": "[length(parameters('diagnosticLogCategoriesToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -367,11 +357,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -508,8 +494,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.17.1.54307",
-              "templateHash": "1768538609101732206"
+              "version": "0.20.4.51522",
+              "templateHash": "13577939556229738878"
             }
           },
           "parameters": {
