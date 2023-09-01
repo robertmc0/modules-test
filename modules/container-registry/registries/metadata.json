@@ -1,6 +1,0 @@
-{
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
-  "name": "Container Registry",
-  "summary": "This module deploys Microsoft.ContainerRegistry registry at the subscription level",
-  "owner": "Arinco"
-}
