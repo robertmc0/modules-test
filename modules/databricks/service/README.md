@@ -4,7 +4,13 @@ This module deploys Microsoft.Databricks
 
 ## Details
 
-{{ Add detailed description for the module. }}
+This module performs the following
+
+- Creates Microsoft.Databricks resource.
+- Optionally enables public network access.
+- Configures managed resource group and network settings.
+- Applies diagnostic settings.
+- Applies a lock to resource if the lock is specified.
 
 ## Parameters
 
