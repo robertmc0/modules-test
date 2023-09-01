@@ -1,5 +1,5 @@
-metadata name = 'Microsoft.DesktopVirtualization scalingPlans Module'
-metadata description = 'This module deploys Microsoft.DesktopVirtualization scalingPlans'
+metadata name = 'Desktop Virtualization Scaling Plan Module'
+metadata description = 'This module deploys Desktop Virtualization Scaling Plan Module'
 metadata owner = 'Arinco'
 
 @description('The resource name.')
