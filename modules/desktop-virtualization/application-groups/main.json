@@ -5,9 +5,9 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "7200668620197911133"
+      "templateHash": "11429734793292784262"
     },
-    "name": "Desktop-Virtualization Application Group Module",
+    "name": "Desktop Virtualization Application Group Module",
     "description": "This module deploys Microsoft.DesktopVirtualization Application Groups",
     "owner": "Arinco"
   },

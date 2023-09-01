@@ -1,4 +1,4 @@
-# Desktop-Virtualization Application Group Module
+# Desktop Virtualization Application Group Module
 
 This module deploys Microsoft.DesktopVirtualization Application Groups
 
