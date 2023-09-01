@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "13990226727443392527"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "17329548077327123507"
+    },
+    "name": "Desktop Virtualization Scaling Plan Module",
+    "description": "This module deploys Desktop Virtualization Scaling Plan Module",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -123,15 +126,6 @@
         "description": "Optional. The name of log category groups that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -180,11 +174,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -252,17 +242,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed scaling plan."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed scaling plan."
-      }
+      },
+      "value": "[resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name'))]"
     }
   }
 }
