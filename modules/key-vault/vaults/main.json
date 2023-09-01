@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "16966751522738489882"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "14493796345547834047"
+    },
+    "name": "Key Vaults Module",
+    "description": "This module deploys Microsoft.KeyVault vaults",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -235,15 +238,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -280,11 +274,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -293,11 +283,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -307,7 +293,7 @@
   "resources": [
     {
       "type": "Microsoft.KeyVault/vaults",
-      "apiVersion": "2019-09-01",
+      "apiVersion": "2023-02-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -369,24 +355,24 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed key vault."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed key vault."
-      }
+      },
+      "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
     },
     "uri": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('name'))).vaultUri]",
       "metadata": {
         "description": "The uri of the deployed key vault."
-      }
+      },
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('name')), '2023-02-01').vaultUri]"
     }
   }
 }

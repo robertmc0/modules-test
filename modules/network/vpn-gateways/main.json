@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "14941130421121054412"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "1827506597421310368"
+    },
+    "name": "Virtual Network VPN Gateways Module",
+    "description": "This module deploys Microsoft.Network vpnGateways.",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -82,10 +85,10 @@
     },
     "diagnosticLogCategoryGroupsToEnable": {
       "type": "array",
-      "allowedValues": [
+      "defaultValue": [
         "AllLogs"
       ],
-      "defaultValue": [
+      "allowedValues": [
         "AllLogs"
       ],
       "metadata": {
@@ -94,23 +97,14 @@
     },
     "diagnosticMetricsToEnable": {
       "type": "array",
-      "allowedValues": [
+      "defaultValue": [
         "AllMetrics"
       ],
-      "defaultValue": [
+      "allowedValues": [
         "AllMetrics"
       ],
       "metadata": {
         "description": "Optional. The name of metrics that will be streamed."
-      }
-    },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
     },
     "diagnosticStorageAccountId": {
@@ -161,11 +155,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -174,11 +164,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -238,17 +224,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed vpn gateway."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/vpnGateways', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed vpn gateway."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/vpnGateways', parameters('name'))]"
     }
   }
 }
