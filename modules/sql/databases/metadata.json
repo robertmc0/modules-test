@@ -1,6 +1,0 @@
-{
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
-  "name": "Sql Server Database",
-  "summary": "This module deploys Microsoft.Sql.Server databases",
-  "owner": "Arinco"
-}
