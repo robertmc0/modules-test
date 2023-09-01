@@ -1,4 +1,4 @@
-metadata name = 'Desktop-Virtualization Application Group Module'
+metadata name = 'Desktop Virtualization Application Group Module'
 metadata description = 'This module deploys Microsoft.DesktopVirtualization Application Groups'
 metadata owner = 'Arinco'
 
