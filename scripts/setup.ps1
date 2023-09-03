@@ -89,6 +89,7 @@ function install_brm() {
   }
   catch {
     Write-Output "brm not found, installing"
+    dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org | Wait-Process
     dotnet tool install --global Azure.Bicep.RegistryModuleTool
   }
 }
