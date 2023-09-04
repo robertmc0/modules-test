@@ -1,3 +1,7 @@
+metadata name = 'SQL Managed Instance'
+metadata description = 'This module deploys Microsoft.Sql Managed Instance'
+metadata owner = 'Arinco'
+
 @description('The name of the Managed Instance.')
 @maxLength(63)
 param name string
@@ -167,11 +171,6 @@ param diagnosticMetricsToEnable array = [
   'AllMetrics'
 ]
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticStorageAccountId string = ''
 
@@ -212,20 +211,12 @@ var diagnosticsName = toLower('${managedInstance.name}-dgs')
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoriesToEnable: {
   categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 resource vulnerabilityAssessmentStorage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = if (enableVulnerabilityAssessments) {
