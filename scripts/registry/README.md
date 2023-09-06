@@ -12,7 +12,7 @@ Permissions:
 
 The role assignment `Contributor` is required to run the script and create the ACR resource. The role assignment `AcrPull` is required to pull the bicep modules from the registry.
 
-The Azure RBAC right `Microsoft.ContainerRegistry/registries/importImage/action` allows a user or service principal to import an image into an Azure Container Registry (ACR). This right is required to perform the `az acr import` command, which imports an image from a specified source to an ACR repository. The rbac role of `Contributor` includes this right.
+The Azure RBAC permission `Microsoft.ContainerRegistry/registries/importImage/action` allows a user or service principal to import an image into an Azure Container Registry (ACR). This permission is required to perform the `az acr import` command, which imports an image from a specified source to an ACR repository. The rbac role of `Contributor` includes this permission.
 
 Requirements:
 
