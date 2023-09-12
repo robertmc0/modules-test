@@ -65,12 +65,50 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01
     name: 'Standard_LRS'
   }
 }
+
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: diagnosticsStorageAccount
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
 resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {
   name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsEventHubNamespace', location)}'
   location: location
 }
 
-resource keyVault  'Microsoft.KeyVault/vaults@2022-07-01' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: '${shortIdentifier}-tst-kv-${uniqueString(deployment().name, 'keyVault5', location)}'
   location: location
   properties: {
@@ -118,8 +156,6 @@ resource key 'Microsoft.KeyVault/vaults/keys@2022-07-01' = {
   }
 }
 
-
-
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -155,7 +191,7 @@ module registryMaximum '../main.bicep' = if (deployMinimum == false) {
     zoneRedundancy: true
     disablePublicNetworkAccess: true
     allowNetworkRuleBypass: true
-    allowedIpRanges:[
+    allowedIpRanges: [
       '119.17.149.9'
       '119.17.149.10'
     ]

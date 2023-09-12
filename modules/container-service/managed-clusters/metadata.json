@@ -1,6 +1,0 @@
-{
-  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
-  "name": "Managed Clusters Module",
-  "summary": "This module deploys Microsoft.ContainerService managedClusters",
-  "owner": "Arinco"
-}

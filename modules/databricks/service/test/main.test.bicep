@@ -134,7 +134,6 @@ module databricksDiags '../main.bicep' = {
     managedResourceGroupId: diagsManagedResourceGroupId
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: diagsPrereqs.outputs.logAnalyticsResourceId
-    diagnosticLogsRetentionInDays: 30
     diagnosticStorageAccountId: diagsPrereqs.outputs.storageResourceId
   }
 }
@@ -170,7 +169,6 @@ module databricksMax '../main.bicep' = {
     resourcelock: 'CanNotDelete'
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: maxPrereqs.outputs.logAnalyticsResourceId
-    diagnosticLogsRetentionInDays: 30
     diagnosticStorageAccountId: maxPrereqs.outputs.storageResourceId
   }
 }
