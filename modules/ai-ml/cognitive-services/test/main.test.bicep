@@ -13,6 +13,12 @@ param location string = resourceGroup().location
 })
 param tags object = {}
 
+@description('The storage account resource name.')
+param storageName string = 'sa${uniqueString(deployment().name, location)}'
+
+@description('The log analytics resource name.')
+param logAnalyticsName string = 'law-${uniqueString(deployment().name, location)}'
+
 param cognitiveServiceOpenAIName string = 'openai-${uniqueString(deployment().name, location)}'
 
 param cognitiveServiceOpenAISku string = 'S0'
@@ -70,9 +76,75 @@ param cognitiveServiceUniversalKeyProperties object = {
   }
 }
 
+param cognitiveServiceDiagsName string = 'diags-${uniqueString(deployment().name, location)}'
+
+param cognitiveServiceDiagsSku string = 'S0'
+
+param cognitiveServiceDiagsDeployments array = []
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
+
+resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {//name needs to be addressed
+  name: storageName
+  location: location
+  kind: 'BlobStorage'
+  properties: {
+    accessTier: 'Hot'
+  }
+  sku: {
+    name: 'Standard_GRS'
+  }
+}
+
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: storage
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: logAnalyticsName
+  location: location
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 90
+  }
+}
 
 /*======================================================================
 TEST EXECUTION
@@ -123,5 +195,20 @@ module cognitiveServiceUniversalKey '../main.bicep' = {
     sku: cognitiveServiceUniversalKeySku
     deployments: cognitiveServiceUniversalKeyDeployments
     properties: cognitiveServiceUniversalKeyProperties
+  }
+}
+
+module diagnosticsEnabled '../main.bicep' = {
+  name: 'diags-${uniqueString(deployment().name, location)}'
+  params: {
+    name: cognitiveServiceDiagsName
+    location: location
+    kind: 'CognitiveServices'
+    tags: tags
+    sku: cognitiveServiceDiagsSku
+    deployments: cognitiveServiceDiagsDeployments
+    resourcelock: 'CanNotDelete'
+    enableDiagnostics: true
+    diagnosticLogAnalyticsWorkspaceId: logAnalytics.id
   }
 }
