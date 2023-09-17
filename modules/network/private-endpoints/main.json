@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.16.2.56959",
-      "templateHash": "3385893645631840929"
+      "version": "0.18.4.5664",
+      "templateHash": "8893734134469311579"
     }
   },
   "parameters": {
@@ -147,7 +147,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('nicInfo-{0}-{1}', variables('privateEndpointName'), uniqueString(variables('privateEndpointName'), resourceGroup().name))]",
+      "name": "[format('nicInfo-pe-{0}', uniqueString(deployment().name, variables('privateEndpointName'), resourceGroup().name))]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -164,8 +164,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.16.2.56959",
-              "templateHash": "16737518820198221049"
+              "version": "0.18.4.5664",
+              "templateHash": "5734780064815498787"
             }
           },
           "parameters": {
@@ -220,14 +220,14 @@
       "metadata": {
         "description": "The private endpoint IP address."
       },
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('nicInfo-{0}-{1}', variables('privateEndpointName'), uniqueString(variables('privateEndpointName'), resourceGroup().name))), '2022-09-01').outputs.privateIPAddress.value]"
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('nicInfo-pe-{0}', uniqueString(deployment().name, variables('privateEndpointName'), resourceGroup().name))), '2022-09-01').outputs.privateIPAddress.value]"
     },
     "ipAllocationMethod": {
       "type": "string",
       "metadata": {
         "description": "The private endpoint IP allocation method."
       },
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('nicInfo-{0}-{1}', variables('privateEndpointName'), uniqueString(variables('privateEndpointName'), resourceGroup().name))), '2022-09-01').outputs.privateIPAllocationMethod.value]"
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('nicInfo-pe-{0}', uniqueString(deployment().name, variables('privateEndpointName'), resourceGroup().name))), '2022-09-01').outputs.privateIPAllocationMethod.value]"
     }
   }
 }

@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.17.1.54307",
-      "templateHash": "8107451018300290307"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "11762224591771239039"
+    },
+    "name": "Storage Accounts",
+    "description": "This module deploys Microsoft.StorageAccounts and child resources",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -123,8 +126,8 @@
     "deleteRetentionPolicy": {
       "type": "int",
       "defaultValue": 7,
-      "maxValue": 365,
       "minValue": 1,
+      "maxValue": 365,
       "metadata": {
         "description": "Optional. Amount of days the soft deleted data is stored and available for recovery."
       }
@@ -213,17 +216,53 @@
         "description": "Optional. Allow large file shares if set to Enabled. It cannot be disabled once it is enabled."
       }
     },
+    "managementPolicies": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts/managementpolicies?pivots=deployment-language-bicep",
+        "example": [
+          {
+            "name": "blob-lifecycle",
+            "type": "Lifecycle",
+            "definition": {
+              "actions": {
+                "baseBlob": {
+                  "tierToCool": {
+                    "daysAfterModificationGreaterThan": 30
+                  },
+                  "delete": {
+                    "daysAfterModificationGreaterThan": 365
+                  }
+                },
+                "snapshot": {
+                  "delete": {
+                    "daysAfterCreationGreaterThan": 365
+                  }
+                }
+              },
+              "filters": {
+                "blobTypes": [
+                  "blockBlob"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Optional. Lifecycle management policies."
+      }
+    },
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of resource lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
     },
     "enableDiagnostics": {
       "type": "bool",
@@ -232,20 +271,17 @@
         "description": "Optional. Enable diagnostic logging."
       }
     },
-    "diagnosticLogCategoriesToEnable": {
+    "diagnosticLogCategoryGroupsToEnable": {
       "type": "array",
       "defaultValue": [
-        "StorageRead",
-        "StorageWrite",
-        "StorageDelete"
+        "Audit"
       ],
       "allowedValues": [
-        "StorageRead",
-        "StorageWrite",
-        "StorageDelete"
+        "Audit",
+        "AllLogs"
       ],
       "metadata": {
-        "description": "Optional. The name of log categories that will be streamed."
+        "description": "Optional. The name of log category groups that will be streamed."
       }
     },
     "diagnosticMetricsToEnable": {
@@ -258,15 +294,6 @@
       ],
       "metadata": {
         "description": "Optional. The name of metrics that will be streamed."
-      }
-    },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
     },
     "diagnosticStorageAccountId": {
@@ -302,14 +329,10 @@
     "copy": [
       {
         "name": "diagnosticsLogs",
-        "count": "[length(parameters('diagnosticLogCategoriesToEnable'))]",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
-          "category": "[parameters('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
         }
       },
       {
@@ -318,11 +341,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -336,7 +355,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2021-09-01",
+      "apiVersion": "2023-01-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -369,7 +388,7 @@
     {
       "condition": "[variables('supportsBlobService')]",
       "type": "Microsoft.Storage/storageAccounts/blobServices",
-      "apiVersion": "2021-04-01",
+      "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {
         "deleteRetentionPolicy": {
@@ -382,12 +401,26 @@
       ]
     },
     {
+      "condition": "[not(empty(parameters('managementPolicies')))]",
+      "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "policy": {
+          "rules": "[parameters('managementPolicies')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
       "copy": {
         "name": "blobContainers",
         "count": "[length(parameters('containers'))]"
       },
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('containers')[copyIndex()].name)]",
       "properties": {
         "publicAccess": "[parameters('containers')[copyIndex()].publicAccess]"
@@ -399,7 +432,7 @@
     {
       "condition": "[variables('supportsFileService')]",
       "type": "Microsoft.Storage/storageAccounts/fileServices",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {
         "shareDeleteRetentionPolicy": {
@@ -417,7 +450,7 @@
         "count": "[length(parameters('fileShares'))]"
       },
       "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('fileShares')[copyIndex()].name)]",
       "properties": {
         "accessTier": "[if(contains(parameters('fileShares')[copyIndex()], 'tier'), parameters('fileShares')[copyIndex()].tier, null())]",
@@ -431,7 +464,7 @@
     {
       "condition": "[not(empty(parameters('queues')))]",
       "type": "Microsoft.Storage/storageAccounts/queueServices",
-      "apiVersion": "2021-09-01",
+      "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {},
       "dependsOn": [
@@ -444,7 +477,7 @@
         "count": "[length(parameters('queues'))]"
       },
       "type": "Microsoft.Storage/storageAccounts/queueServices/queues",
-      "apiVersion": "2021-09-01",
+      "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('queues')[copyIndex()].name)]",
       "properties": {},
       "dependsOn": [
@@ -454,7 +487,7 @@
     {
       "condition": "[not(empty(parameters('tables')))]",
       "type": "Microsoft.Storage/storageAccounts/tableServices",
-      "apiVersion": "2021-09-01",
+      "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {},
       "dependsOn": [
@@ -467,7 +500,7 @@
         "count": "[length(parameters('tables'))]"
       },
       "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
-      "apiVersion": "2021-09-01",
+      "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('tables')[copyIndex()].name)]",
       "properties": {},
       "dependsOn": [
@@ -477,7 +510,7 @@
     {
       "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {

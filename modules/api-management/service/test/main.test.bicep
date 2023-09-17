@@ -10,7 +10,7 @@ param location string = 'australiaeast'
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints')
 @minLength(1)
 @maxLength(3)
-param companyShortName string = 'arn'
+param shortIdentifier string = 'arn'
 
 @description('Optional. The type of VPN in which API Management service needs to be configured in. None (Default Value) means the API Management service is not part of any Virtual Network, External means the API Management deployment is set up inside a Virtual Network having an internet Facing Endpoint, and Internal means that API Management deployment is setup inside a Virtual Network having an Intranet Facing Endpoint only.')
 @allowed([
@@ -40,7 +40,7 @@ param tags object = {}
 TEST PREREQUISITES
 ======================================================================*/
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: '${companyShortName}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
+  name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
   location: location
   properties: {
     sku: {
@@ -49,8 +49,59 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
   }
 }
 
+resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
+  name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsStorageAccount', location)}'
+  location: location
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+}
+
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: diagnosticsStorageAccount
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {
+  name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsEventHubNamespace', location)}'
+  location: location
+}
+
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${companyShortName}-tst-appi-${uniqueString(deployment().name, 'appi', location)}'
+  name: '${shortIdentifier}-tst-appi-${uniqueString(deployment().name, 'appi', location)}'
   location: location
   kind: 'web'
   properties: {
@@ -364,12 +415,12 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
 }
 
 resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
-  name: '${companyShortName}-tst-umi-${uniqueString(deployment().name, 'umi', location)}'
+  name: '${shortIdentifier}-tst-umi-${uniqueString(deployment().name, 'umi', location)}'
   location: location
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
-  name: '${companyShortName}-tst-kv-${uniqueString(deployment().name, 'kv', location)}'
+  name: '${shortIdentifier}-tst-kv-${uniqueString(deployment().name, 'kv', location)}'
   location: location
   properties: {
     sku: {
@@ -434,10 +485,22 @@ var nameValues = [
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
+module apimMin '../main.bicep' = {
+  name: 'deployApimMin'
+  params: {
+    name: '${shortIdentifier}-tst-apim-min-${uniqueString(deployment().name, 'apim', location)}'
+    location: location
+    sku: 'Developer'
+    skuCount: 1
+    publisherEmail: 'support@arinco.com.au'
+    publisherName: 'ARINCO'
+    applicationInsightsId: applicationInsights.id
+  }
+}
 module apim '../main.bicep' = {
   name: 'deployApim'
   params: {
-    name: '${companyShortName}-tst-apim-${uniqueString(deployment().name, 'apim', location)}'
+    name: '${shortIdentifier}-tst-apim-${uniqueString(deployment().name, 'apim', location)}'
     location: location
     sku: 'Developer'
     skuCount: 1
@@ -446,7 +509,8 @@ module apim '../main.bicep' = {
     tags: tags
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
-    diagnosticLogsRetentionInDays: 7
+    diagnosticStorageAccountId: diagnosticsStorageAccount.id
+    diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
     virtualNetworkType: virtualNetworkType
     publicIpAddressId: publicIpAddress.id
     subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''

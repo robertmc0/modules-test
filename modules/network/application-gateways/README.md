@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Network applicationGateways
 
-## Description
+## Details
 
 This module performs the following
 
@@ -42,13 +42,11 @@ This module performs the following
 | `probes`                                | `array`  | No       | Optional. Probes of the application gateway resource.                                                                                       |
 | `systemAssignedIdentity`                | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                                                                         |
 | `userAssignedIdentities`                | `object` | No       | Optional. The ID(s) to assign to the resource.                                                                                              |
-| `webApplicationFirewallConfig`          | `object` | No       | Optional. Web application firewall configuration.                                                                                           |
 | `firewallPolicyId`                      | `string` | No       | Optional. Resource ID of the firewall policy.                                                                                               |
 | `availabilityZones`                     | `array`  | No       | Optional. A list of availability zones denoting where the resource should be deployed.                                                      |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                                        |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                            |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                                        |
-| `diagnosticLogsRetentionInDays`         | `int`    | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.                              |
 | `diagnosticStorageAccountId`            | `string` | No       | Optional. Storage account resource id. Only required if enableDiagnostics is set to true.                                                   |
 | `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                                           |
 | `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.                     |
@@ -57,10 +55,10 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                                          |
-| :--------- | :----: | :--------------------------------------------------- |
-| name       | string | The name of the deployed application gateway.        |
-| resourceId | string | The resource ID of the deployed application gateway. |
+| Name         | Type     | Description                                          |
+| :----------- | :------: | :--------------------------------------------------- |
+| `name`       | `string` | The name of the deployed application gateway.        |
+| `resourceId` | `string` | The resource ID of the deployed application gateway. |
 
 ## Examples
 

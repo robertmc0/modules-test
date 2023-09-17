@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "9794441130269673086"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "8812875597724482528"
+    },
+    "name": "Bastion Host Module",
+    "description": "This module deploys Microsoft.Network bastionHosts",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -135,15 +138,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -192,11 +186,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -205,11 +195,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -319,17 +305,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed bastion host."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/bastionHosts', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed bastion host."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/bastionHosts', parameters('name'))]"
     }
   }
 }

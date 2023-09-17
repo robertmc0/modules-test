@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Sql servers.
 
-## Description
+## Details
 
 This module performs the following
 
@@ -24,7 +24,7 @@ This module performs the following
 | `location`                              | `string`       | Yes      | The geo-location where the resource lives.                                                                                                           |
 | `tags`                                  | `object`       | No       | Optional. Resource tags.                                                                                                                             |
 | `administratorLogin`                    | `string`       | No       | Optional. Administrator username for the server. Once created it cannot be changed. Required if "administrators" is not provided.                    |
-| `administratorLoginPassword`            | `secureString` | No       | Optional. The administrator login password. Required if "administrators" is not provided.                                                            |
+| `administratorLoginPassword`            | `securestring` | No       | Optional. The administrator login password. Required if "administrators" is not provided.                                                            |
 | `administrators`                        | `object`       | No       | Optional. The Azure Active Directory administrator of the server. Required if "administratorLogin" and "administratorLoginPassword" is not provided. |
 | `publicNetworkAccess`                   | `string`       | No       | Optional. Whether or not public endpoint access is allowed for this server. Only Disable if you wish to restrict to just private endpoints and VNET. |
 | `connectionType`                        | `string`       | No       | Optional. The server connection type. Note private link requires Proxy.                                                                              |
@@ -42,7 +42,6 @@ This module performs the following
 | `enableDiagnostics`                     | `bool`         | No       | Optional. Enable diagnostic logging.                                                                                                                 |
 | `diagnosticLogCategoriesToEnable`       | `array`        | No       | Optional. The name of log category groups that will be streamed.                                                                                     |
 | `diagnosticMetricsToEnable`             | `array`        | No       | Optional. The name of metrics that will be streamed.                                                                                                 |
-| `diagnosticLogsRetentionInDays`         | `int`          | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.                                       |
 | `diagnosticStorageAccountId`            | `string`       | No       | Optional. Storage account resource id. Only required if enableDiagnostics is set to true.                                                            |
 | `diagnosticLogAnalyticsWorkspaceId`     | `string`       | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                                                    |
 | `diagnosticEventHubAuthorizationRuleId` | `string`       | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.                              |
@@ -51,12 +50,12 @@ This module performs the following
 
 ## Outputs
 
-| Name                      | Type   | Description                                          |
-| :------------------------ | :----: | :--------------------------------------------------- |
-| name                      | string | The name of the sql server.                          |
-| resourceId                | string | The resource ID of the sql server.                   |
-| resourceGroupName         | string | The resource group the sql server was deployed into. |
-| systemAssignedPrincipalId | string | The principal ID of the system assigned identity.    |
+| Name                        | Type     | Description                                          |
+| :-------------------------- | :------: | :--------------------------------------------------- |
+| `name`                      | `string` | The name of the sql server.                          |
+| `resourceId`                | `string` | The resource ID of the sql server.                   |
+| `resourceGroupName`         | `string` | The resource group the sql server was deployed into. |
+| `systemAssignedPrincipalId` | `string` | The principal ID of the system assigned identity.    |
 
 ## Examples
 

@@ -10,7 +10,7 @@ param location string = 'australiaeast'
 @description('Resource Tags')
 param tags object = {}
 
-var uniqueName = uniqueString(deployment().name, location)
+var uniqueName = uniqueString(deployment().name, 'advanced', location)
 
 resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: '${uniqueName}-umi'
@@ -35,6 +35,52 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-09-01' = {
         }
       }
     ]
+  }
+}
+
+resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+  name: '${uniqueName}sa'
+  location: location
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+}
+
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: diagnosticsStorageAccount
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
   }
 }
 
@@ -75,7 +121,7 @@ var containerLevelScalingSettings = {
         maxThroughput: 4000
       }
     }
-    leases: { // required for change feed
+    leases: {// required for change feed
       autoscaleSettings: {
         maxThroughput: 1000
       }
@@ -221,6 +267,7 @@ module cosmosAccountMultiRegionWrite '../main.bicep' = {
     }
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    diagnosticStorageAccountId: diagnosticsStorageAccount.id
     diagnosticLogCategoryToEnable: [
       'ControlPlaneRequests'
       'DataPlaneRequests'

@@ -2,7 +2,7 @@
 
 This module deploys Cosmos DB Account and container resources.
 
-## Description
+## Details
 
 This module performs the following
 
@@ -57,15 +57,14 @@ Use https://cosmos.azure.com/?feature.enableAadDataPlane=true to acccess Cosmos 
 | `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Resource ID of the diagnostic log analytics workspace.                                                                                                                  |
 | `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.                        |
 | `diagnosticEventHubName`                | `string` | No       | Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category.                          |
-| `diagnosticLogsRetentionInDays`         | `int`    | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.                                                                    |
 | `diagnosticStorageAccountId`            | `string` | No       | Optional. Resource ID of the diagnostic storage account.                                                                                                                          |
 
 ## Outputs
 
-| Name       | Type   | Description                               |
-| :--------- | :----: | :---------------------------------------- |
-| name       | string | The name of the Cosmos DB account.        |
-| resourceId | string | The resource ID of the Cosmos DB account. |
+| Name         | Type     | Description                               |
+| :----------- | :------: | :---------------------------------------- |
+| `name`       | `string` | The name of the Cosmos DB account.        |
+| `resourceId` | `string` | The resource ID of the Cosmos DB account. |
 
 ## Examples
 

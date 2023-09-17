@@ -2,6 +2,27 @@
 
 The purpose of the scripts is to create initial resources in the client subscription to allow 'Done Right' deployments to utilise the bicep modules directly from a registry. The scripts can also be rerun to uplift an existing registry with new module versions.
 
+Permissions:
+
+| Task                   | Role Assignment | Description                                             |
+| ---------------------- | --------------- | ------------------------------------------------------- |
+| Create ACR and Modules | Contributor     | Required to run the script and create the ACR resource. |
+| Pull Bicep Modules     | AcrPull         | Required to pull the bicep modules from the registry.   |
+| Update Bicep Modules   | Contributor     | Required to run the script and update the ACR resource. |
+
+The role assignment `Contributor` is required to run the script and create the ACR resource. The role assignment `AcrPull` is required to pull the bicep modules from the registry.
+
+The Azure RBAC permission `Microsoft.ContainerRegistry/registries/importImage/action` allows a user or service principal to import an image into an Azure Container Registry (ACR). This permission is required to perform the `az acr import` command, which imports an image from a specified source to an ACR repository. The rbac role of `Contributor` includes this permission.
+
+Requirements:
+
+- AzureRegion. i.e australiaeast
+- TargetRegistryName. Name must not contain spaces or symbols. i.e \<companyPrefix\>\<locationIdentifier\>bicepmodulesacr
+- TargetTenantId
+- TargetSubscriptionName
+- TargetRegistryResourceGroupName i.e \<companyPrefix\>-\<locationIdentifier\>-bicep-registry-rg
+- Tags. Needs to be a JSON formatted string. i.e "{'Owner':'Contoso','Cost Center':'2345-324'}"
+
 ## Steps
 
 1. Open command prompt to the directory containing this README.
@@ -18,15 +39,6 @@ Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 Import-Module .\Build-Registry.ps1 -Force
 Build-Registry -AzureRegion <Region> -TargetRegistryName <Client registry name> -TargetTenantId <Client Tenant ID>  -TargetSubscriptionName <Client Subscription ID> -TargetRegistryResourceGroupName <Client registry resource group> -Tags <Tags>
 ```
-
-You will need:-
-
-- AzureRegion. i.e australiaeast
-- TargetRegistryName. Name must not contain spaces or symbols. i.e \<companyPrefix\>\<locationIdentifier\>bicepmodulesacr
-- TargetTenantId
-- TargetSubscriptionName
-- TargetRegistryResourceGroupName i.e \<companyPrefix\>-\<locationIdentifier\>-bicep-registry-rg
-- Tags. Needs to be a JSON formatted string. i.e "{'Owner':'Contoso','Cost Center':'2345-324'}"
 
 4. In the 'Done Right' deployment repository modify the **bicepconfig.json** file to point to the clients bicep registry where the registry name is '\<companyPrefix\>\<locationIdentifier\>bicepmodulesacr'.
 

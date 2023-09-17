@@ -13,6 +13,17 @@ param shortIdentifier string = 'arn'
 @description('SQL administrator login password')
 param sqlAdminPassword string = '${toUpper(uniqueString(resourceGroup().id))}-${newGuid()}'
 
+@description('Azure AD group for testing.')
+@metadata(
+  {
+    NOTE: '*** When testing ensure that the Azure AD group object exists, otherwise the test will fail!'
+  })
+param administrators object = {
+  login: 'azure_sql_demo_admins'
+  principalType: 'Group'
+  objectId: '5878f645-8400-47ec-8f9b-787c7c53a652'
+}
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -51,6 +62,43 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01
   kind: 'StorageV2'
   sku: {
     name: 'Standard_LRS'
+  }
+}
+
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: diagnosticsStorageAccount
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
   }
 }
 
@@ -96,6 +144,8 @@ module sqlServerMinimum '../main.bicep' = {
     enableVulnerabilityAssessments: false
     administratorLogin: '${shortIdentifier}sqladmin'
     administratorLoginPassword: sqlAdminPassword
+    vulnerabilityAssessmentStorageId: vulnStorageAccount.id
+    auditStorageAccountId: auditStorageAccount.id
   }
 }
 
@@ -105,9 +155,9 @@ module sqlServer '../main.bicep' = {
     location: location
     name: '${shortIdentifier}-tst-sql-${uniqueString(deployment().name, 'sqlServer', location)}'
     administrators: {
-      login: 'DSG - All Consultants'
-      principalType: 'Group'
-      objectId: '7d4930a7-f128-45af-9e70-07f1484c9c4a'
+      login: administrators.login
+      principalType: administrators.principalType
+      objectId: administrators.objectId
     }
     enableAudit: true
     auditStorageAccountId: auditStorageAccount.id

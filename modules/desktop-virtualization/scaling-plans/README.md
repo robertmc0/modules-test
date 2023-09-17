@@ -1,8 +1,8 @@
-# Scaling Plans Module
+# Desktop Virtualization Scaling Plan Module
 
-This module deploys Microsoft.DesktopVirtualization scalingPlans
+This module deploys Desktop Virtualization Scaling Plan Module
 
-## Description
+## Details
 
 - Creates Microsoft.DesktopVirtualization scalingPlans resource.
 - Applies diagnostic settings if specified.
@@ -25,7 +25,6 @@ This module deploys Microsoft.DesktopVirtualization scalingPlans
 | `schedules`                             | `array`  | Yes      | List of scaling plan definitions.                                                                                       |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                    |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                        |
-| `diagnosticLogsRetentionInDays`         | `int`    | No       | Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.          |
 | `diagnosticStorageAccountId`            | `string` | No       | Optional. Storage account resource id. Only required if enableDiagnostics is set to true.                               |
 | `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                       |
 | `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true. |
@@ -34,10 +33,10 @@ This module deploys Microsoft.DesktopVirtualization scalingPlans
 
 ## Outputs
 
-| Name       | Type   | Description                                   |
-| :--------- | :----: | :-------------------------------------------- |
-| name       | string | The name of the deployed scaling plan.        |
-| resourceId | string | The resource ID of the deployed scaling plan. |
+| Name         | Type     | Description                                   |
+| :----------- | :------: | :-------------------------------------------- |
+| `name`       | `string` | The name of the deployed scaling plan.        |
+| `resourceId` | `string` | The resource ID of the deployed scaling plan. |
 
 ## Examples
 

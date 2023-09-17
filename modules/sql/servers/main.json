@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.11.1.770",
-      "templateHash": "6045220108731776538"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "827607218077323809"
+    },
+    "name": "Sql Server Module",
+    "description": "This module deploys Microsoft.Sql servers.",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -40,7 +43,7 @@
       }
     },
     "administratorLoginPassword": {
-      "type": "secureString",
+      "type": "securestring",
       "defaultValue": "",
       "metadata": {
         "description": "Optional. The administrator login password. Required if \"administrators\" is not provided."
@@ -210,15 +213,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -267,11 +261,7 @@
         "count": "[length(parameters('diagnosticLogCategoriesToEnable'))]",
         "input": {
           "category": "[parameters('diagnosticLogCategoriesToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -280,26 +270,24 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
-    "vulnerabilityAssessmentStorageResourceGroup": "[if(parameters('enableVulnerabilityAssessments'), split(parameters('vulnerabilityAssessmentStorageId'), '/')[4], 'placeholder')]",
-    "vulnerabilityAssessmentStorageSubId": "[if(parameters('enableVulnerabilityAssessments'), split(parameters('vulnerabilityAssessmentStorageId'), '/')[2], 'placeholder')]",
-    "vulnerabilityAssessmentStorageName": "[if(parameters('enableVulnerabilityAssessments'), last(split(parameters('vulnerabilityAssessmentStorageId'), '/')), null())]",
+    "vulnerabilityAssessmentStorageAccountProvided": "[not(empty(parameters('vulnerabilityAssessmentStorageId')))]",
+    "vulnerabilityAssessmentStorageResourceGroup": "[if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('vulnerabilityAssessmentStorageId')))), split(parameters('vulnerabilityAssessmentStorageId'), '/')[4], 'placeholder')]",
+    "vulnerabilityAssessmentStorageSubId": "[if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('vulnerabilityAssessmentStorageId')))), split(parameters('vulnerabilityAssessmentStorageId'), '/')[2], 'placeholder')]",
+    "vulnerabilityAssessmentStorageName": "[if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('vulnerabilityAssessmentStorageId')))), last(split(parameters('vulnerabilityAssessmentStorageId'), '/')), '')]",
     "auditStorageResourceGroup": "[if(parameters('enableAudit'), split(parameters('auditStorageAccountId'), '/')[4], 'placeholder')]",
-    "auditStorageSubId": "[if(parameters('enableAudit'), split(parameters('auditStorageAccountId'), '/')[2], 'placeholder')]",
-    "auditStorageName": "[if(parameters('enableAudit'), last(split(parameters('auditStorageAccountId'), '/')), null())]",
-    "userIdentityResourceGroup": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), split(parameters('primaryUserAssignedIdentityId'), '/')[4], null())]",
-    "userIdentitySubId": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), split(parameters('primaryUserAssignedIdentityId'), '/')[2], null())]",
-    "userIdentityName": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), last(split(parameters('primaryUserAssignedIdentityId'), '/')), null())]",
+    "auditStorageAccountProvided": "[not(empty(parameters('auditStorageAccountId')))]",
+    "auditStorageSubId": "[if(and(parameters('enableAudit'), not(empty(parameters('auditStorageAccountId')))), split(parameters('auditStorageAccountId'), '/')[2], 'placeholder')]",
+    "auditStorageName": "[if(and(parameters('enableAudit'), not(empty(parameters('auditStorageAccountId')))), last(split(parameters('auditStorageAccountId'), '/')), '')]",
+    "userIdentityResourceGroup": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), split(parameters('primaryUserAssignedIdentityId'), '/')[4], '')]",
+    "userIdentitySubId": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), split(parameters('primaryUserAssignedIdentityId'), '/')[2], '')]",
+    "userIdentityName": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), last(split(parameters('primaryUserAssignedIdentityId'), '/')), '')]",
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
-    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('userAssignedIdentities')))), 'SystemAssigned,UserAssigned', if(and(parameters('enableVulnerabilityAssessments'), empty(parameters('userAssignedIdentities'))), 'SystemAssigned', variables('identityType'))), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', if(and(parameters('enableVulnerabilityAssessments'), not(empty(parameters('userAssignedIdentities')))), 'SystemAssigned,UserAssigned', if(and(parameters('enableVulnerabilityAssessments'), empty(parameters('userAssignedIdentities'))), 'SystemAssigned', variables('identityType'))), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), '')), null())]",
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "auditActionsAndGroups": [
       "BATCH_COMPLETED_GROUP",
@@ -318,8 +306,7 @@
       "properties": {
         "administratorLogin": "[if(not(empty(parameters('administratorLogin'))), parameters('administratorLogin'), null())]",
         "administratorLoginPassword": "[if(not(empty(parameters('administratorLoginPassword'))), parameters('administratorLoginPassword'), null())]",
-        "administrators": "[if(not(empty(parameters('administrators'))), createObject('administratorType', 'ActiveDirectory', 'azureADOnlyAuthentication', if(contains(parameters('administrators'), 'azureADOnlyAuthentication'), parameters('administrators').azureADOnlyAuthentication, true()), 'login', parameters('administrators').login, 'principalType', if(contains(parameters('administrators'), 'principalType'), parameters('administrators').principalType, null()), 'sid', parameters('administrators').objectId, 'tenantId', if(contains(parameters('administrators'), 'tenantId'), parameters('administrators').tenantId, subscription().tenantId)), createObject())]",
-        "version": "12.0",
+        "administrators": "[if(not(empty(parameters('administrators'))), createObject('administratorType', 'ActiveDirectory', 'azureADOnlyAuthentication', if(contains(parameters('administrators'), 'azureADOnlyAuthentication'), parameters('administrators').azureADOnlyAuthentication, true()), 'login', parameters('administrators').login, 'principalType', if(contains(parameters('administrators'), 'principalType'), parameters('administrators').principalType, ''), 'sid', parameters('administrators').objectId, 'tenantId', if(contains(parameters('administrators'), 'tenantId'), parameters('administrators').tenantId, subscription().tenantId)), createObject())]",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
         "minimalTlsVersion": "1.2",
         "primaryUserAssignedIdentityId": "[parameters('primaryUserAssignedIdentityId')]"
@@ -368,7 +355,7 @@
       "apiVersion": "2021-11-01",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {
-        "storageContainerPath": "[if(parameters('enableVulnerabilityAssessments'), format('{0}vulnerability-assessment', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vulnerabilityAssessmentStorageSubId'), variables('vulnerabilityAssessmentStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('vulnerabilityAssessmentStorageName')), '2022-05-01').primaryEndpoints.blob), '')]",
+        "storageContainerPath": "[if(parameters('enableVulnerabilityAssessments'), format('{0}vulnerability-assessment', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vulnerabilityAssessmentStorageSubId'), variables('vulnerabilityAssessmentStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('vulnerabilityAssessmentStorageName')), '2022-09-01').primaryEndpoints.blob), '')]",
         "recurringScans": {
           "isEnabled": true,
           "emailSubscriptionAdmins": "[parameters('emailAccountAdmins')]",
@@ -392,7 +379,7 @@
         "isAzureMonitorTargetEnabled": true,
         "isManagedIdentityInUse": true,
         "isDevopsAuditEnabled": true,
-        "storageEndpoint": "[if(parameters('enableAudit'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('auditStorageSubId'), variables('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('auditStorageName')), '2022-05-01').primaryEndpoints.blob, null())]",
+        "storageEndpoint": "[if(parameters('enableAudit'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('auditStorageSubId'), variables('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('auditStorageName')), '2022-09-01').primaryEndpoints.blob, '')]",
         "storageAccountSubscriptionId": "[variables('auditStorageSubId')]"
       },
       "dependsOn": [
@@ -408,7 +395,7 @@
       "properties": {
         "state": "Enabled",
         "isAzureMonitorTargetEnabled": true,
-        "storageEndpoint": "[if(parameters('enableAudit'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('auditStorageSubId'), variables('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('auditStorageName')), '2022-05-01').primaryEndpoints.blob, null())]",
+        "storageEndpoint": "[if(parameters('enableAudit'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('auditStorageSubId'), variables('auditStorageResourceGroup')), 'Microsoft.Storage/storageAccounts', variables('auditStorageName')), '2022-09-01').primaryEndpoints.blob, '')]",
         "storageAccountSubscriptionId": "[variables('auditStorageSubId')]"
       },
       "dependsOn": [
@@ -433,10 +420,10 @@
       "scope": "[format('Microsoft.Sql/servers/{0}/databases/{1}', parameters('name'), 'master')]",
       "name": "[variables('diagnosticsName')]",
       "properties": {
-        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
-        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
-        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
-        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), '', parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), '', parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), '', parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), '', parameters('diagnosticEventHubName'))]",
         "logs": "[variables('diagnosticsLogs')]",
         "metrics": "[variables('diagnosticsMetrics')]"
       },
@@ -462,7 +449,7 @@
     {
       "condition": "[and(parameters('enableVulnerabilityAssessments'), not(empty(variables('identity'))))]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "vulnerabilityAssessmentRoleAssignment",
       "subscriptionId": "[variables('vulnerabilityAssessmentStorageSubId')]",
       "resourceGroup": "[variables('vulnerabilityAssessmentStorageResourceGroup')]",
@@ -485,8 +472,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.11.1.770",
-              "templateHash": "3461631228597330390"
+              "version": "0.20.4.51522",
+              "templateHash": "13577939556229738878"
             }
           },
           "parameters": {
@@ -529,7 +516,7 @@
     {
       "condition": "[and(parameters('enableAudit'), not(empty(variables('identity'))))]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "auditStorageRoleAssignment",
       "subscriptionId": "[variables('auditStorageSubId')]",
       "resourceGroup": "[variables('auditStorageResourceGroup')]",
@@ -542,9 +529,7 @@
           "storageAccountName": {
             "value": "[variables('auditStorageName')]"
           },
-          "principalId": {
-            "value": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('userIdentitySubId'), variables('userIdentityResourceGroup')), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2018-11-30').principalId, reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId)]"
-          }
+          "principalId": "[if(not(empty(parameters('primaryUserAssignedIdentityId'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('userIdentitySubId'), variables('userIdentityResourceGroup')), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2023-01-31').principalId), createObject('value', reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId))]"
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -552,8 +537,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.11.1.770",
-              "templateHash": "3461631228597330390"
+              "version": "0.20.4.51522",
+              "templateHash": "13577939556229738878"
             }
           },
           "parameters": {
@@ -597,31 +582,31 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the sql server."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the sql server."
-      }
+      },
+      "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
     },
     "resourceGroupName": {
       "type": "string",
-      "value": "[resourceGroup().name]",
       "metadata": {
         "description": "The resource group the sql server was deployed into."
-      }
+      },
+      "value": "[resourceGroup().name]"
     },
     "systemAssignedPrincipalId": {
       "type": "string",
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId, '')]",
       "metadata": {
         "description": "The principal ID of the system assigned identity."
-      }
+      },
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full').identity.principalId, '')]"
     }
   }
 }
