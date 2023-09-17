@@ -1,0 +1,164 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.18.4.5664",
+      "templateHash": "10393601763574669343"
+    },
+    "name": "Azure Cognitive Service",
+    "description": "Deploys Azure Cognitive Service Account, including deployments as required.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Cognitive Service Account."
+      }
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "OpenAI",
+      "allowedValues": [
+        "CognitiveServices",
+        "TextTranslation",
+        "ComputerVision",
+        "OpenAI"
+      ],
+      "metadata": {
+        "description": "The kind Cognitive Service resource being created."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "S0",
+      "allowedValues": [
+        "F0",
+        "S0",
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2023-05-01/accounts?pivots=deployment-language-bicep#sku",
+        "example": {
+          "name": "S0"
+        },
+        "description": "The SKU used for your Cognitive Service."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Optional. The location of the Cognitive Service Account."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "customSubDomainName": {
+      "type": "string",
+      "defaultValue": "[parameters('name')]",
+      "metadata": {
+        "description": "Optional. The publicly visible subdomain for your Cognitive Service."
+      }
+    },
+    "deployments": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. Deployments for use when creating OpenAI Resources."
+      }
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Optional. Whether or not public endpoint access is allowed for this account."
+      }
+    },
+    "properties": {
+      "type": "object",
+      "defaultValue": {
+        "customSubDomainName": "[parameters('customSubDomainName')]",
+        "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
+      },
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2023-05-01/accounts?pivots=deployment-language-bicep#accountproperties",
+        "description": "Optional. The properties to be used for each individual cognitive service."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "kind": "[parameters('kind')]",
+      "properties": "[parameters('properties')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      }
+    },
+    {
+      "copy": {
+        "name": "deployment",
+        "count": "[length(parameters('deployments'))]",
+        "mode": "serial",
+        "batchSize": 1
+      },
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('deployments')[copyIndex()].name)]",
+      "properties": {
+        "model": "[parameters('deployments')[copyIndex()].model]",
+        "raiPolicyName": "[if(contains(parameters('deployments')[copyIndex()], 'raiPolicyName'), parameters('deployments')[copyIndex()].raiPolicyName, null())]"
+      },
+      "sku": "[if(contains(parameters('deployments')[copyIndex()], 'sku'), parameters('deployments')[copyIndex()].sku, createObject('name', 'Standard', 'capacity', 20))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "endpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "The endpoint (subdomain) of the deployed Cognitive Service."
+      },
+      "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('name')), '2023-05-01').endpoint]"
+    },
+    "id": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed Cognitive Service."
+      },
+      "value": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('name'))]"
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed Cognitive Service."
+      },
+      "value": "[parameters('name')]"
+    }
+  }
+}
