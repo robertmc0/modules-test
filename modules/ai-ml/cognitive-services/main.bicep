@@ -10,6 +10,7 @@ param name string
   'CognitiveServices'
   'TextTranslation'
   'ComputerVision'
+  'FormRecognizer'
   'OpenAI'
 ])
 param kind string = 'OpenAI'
