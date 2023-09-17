@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.18.4.5664",
-      "templateHash": "10393601763574669343"
+      "version": "0.21.1.54444",
+      "templateHash": "4773236389083348188"
     },
     "name": "Azure Cognitive Service",
     "description": "Deploys Azure Cognitive Service Account, including deployments as required.",
