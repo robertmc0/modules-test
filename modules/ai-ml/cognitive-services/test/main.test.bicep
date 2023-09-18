@@ -155,6 +155,7 @@ module openAI '../main.bicep' = {
   params: {
     name: cognitiveServiceOpenAIName
     location: location
+    kind: 'OpenAI'
     tags: tags
     sku: cognitiveServiceOpenAISku
     deployments: cognitiveServiceOpenAIDeployments

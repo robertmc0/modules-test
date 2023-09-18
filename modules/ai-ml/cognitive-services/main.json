@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "1318205637022848095"
+      "templateHash": "6407272628493403441"
     },
     "name": "Azure Cognitive Service",
     "description": "Deploys Azure Cognitive Service Account, including deployments as required.",
@@ -20,7 +20,6 @@
     },
     "kind": {
       "type": "string",
-      "defaultValue": "OpenAI",
       "allowedValues": [
         "CognitiveServices",
         "TextTranslation",
@@ -34,7 +33,6 @@
     },
     "sku": {
       "type": "string",
-      "defaultValue": "S0",
       "allowedValues": [
         "F0",
         "S0",

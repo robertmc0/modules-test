@@ -13,7 +13,7 @@ param name string
   'FormRecognizer'
   'OpenAI'
 ])
-param kind string = 'OpenAI'
+param kind string
 
 @description('The SKU used for your Cognitive Service.')
 @metadata({
@@ -30,7 +30,7 @@ param kind string = 'OpenAI'
   'S3'
   'S4'
 ])
-param sku string = 'S0'
+param sku string
 
 @description('Optional. The location of the Cognitive Service Account.')
 param location string = resourceGroup().location
