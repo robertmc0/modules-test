@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "918512826488125083"
+      "version": "0.21.1.54444",
+      "templateHash": "15358924592602540406"
     },
     "name": "Azure Firewalls Module",
     "description": "This module deploys Microsoft.Network azureFirewalls",
@@ -278,6 +278,7 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": "[variables('firewallProperties')]",
+      "zones": "[parameters('availabilityZones')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', if(equals(parameters('sku'), 'AZFW_VNet'), parameters('publicIpAddressName'), 'placeholder1'))]",
         "[resourceId('Microsoft.Network/publicIPAddresses', if(not(empty(parameters('firewallManagementConfiguration'))), parameters('firewallManagementConfiguration').publicIpAddressName, 'placeholder2'))]"

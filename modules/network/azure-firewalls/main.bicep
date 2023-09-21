@@ -224,6 +224,7 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-11-01' = {
   location: location
   tags: tags
   properties: firewallProperties
+  zones: availabilityZones
 }
 
 resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
