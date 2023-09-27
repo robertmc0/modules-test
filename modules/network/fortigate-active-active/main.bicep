@@ -228,7 +228,7 @@ resource externalLoadBalancerPublicIp 'Microsoft.Network/publicIPAddresses@2023-
   sku: {
     name: 'Standard'
   }
-  zones: availabilityZones
+  zones: [ availabilityZones[0] ]
   properties: {
     publicIPAllocationMethod: 'static'
   }
@@ -401,7 +401,7 @@ resource internalLoadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
             id: internalSubnetId
           }
         }
-        zones: availabilityZones
+        zones: [ availabilityZones[0] ]
       }
     ]
     backendAddressPools: [
@@ -641,7 +641,7 @@ resource fortiGate1Vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: availabilityZones
+  zones: [ availabilityZones[0] ]
   plan: {
     name: imageReference.sku
     publisher: imageReference.publisher
@@ -714,7 +714,7 @@ resource fortiGate2Vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: availabilityZones
+  zones: [ availabilityZones[0] ]
   plan: {
     name: imageReference.sku
     publisher: imageReference.publisher
