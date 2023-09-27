@@ -13,6 +13,9 @@ param shortIdentifier string = 'arn'
 @description('Optional. The password for the admin account.')
 param adminPassword string = '${toUpper(uniqueString(resourceGroup().id))}-${newGuid()}'
 
+@description('Optional. The number that defines the availability zone to use. Note, not all resources support multiple availability zones. Default value is 1')
+param availabilityZones array = [ '1' ]
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -140,6 +143,7 @@ module fortiGateMin '../main.bicep' = {
     externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-min-pip'
     nsgName: '${uniqueString(deployment().name, location)}-nsg-min-pip'
     internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-min-pip'
+    availabilityZones: availabilityZones
   }
 }
 
@@ -169,5 +173,6 @@ module fortiGate '../main.bicep' = {
     resourceLock: 'CanNotDelete'
     acceleratedNetworking: true
     size: 'Standard_F2s'
+    availabilityZones: availabilityZones
   }
 }

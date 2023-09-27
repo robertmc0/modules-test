@@ -45,7 +45,7 @@ param adminPassword string
   '2'
   '3'
 ])
-param availabilityZones array = []
+param availabilityZones array = [ '1' ]
 
 @description('Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set.')
 @metadata({
