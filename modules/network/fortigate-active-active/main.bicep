@@ -39,7 +39,7 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed.')
+@description('Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed. Note, not all resources support multiple availability zones. Default value is 1')
 @allowed([
   '1'
   '2'
