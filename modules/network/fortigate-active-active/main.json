@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "17383531015810950389"
+      "templateHash": "1255909459124753098"
     },
     "name": "FortiGate Active Active Module",
     "description": "This module deploys a FortiGate Network Virtual Appliance with an active-active architecture",
@@ -72,16 +72,13 @@
     },
     "availabilityZones": {
       "type": "array",
-      "defaultValue": [
-        "1"
-      ],
       "allowedValues": [
         "1",
         "2",
         "3"
       ],
       "metadata": {
-        "description": "Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed. Note, not all resources support multiple availability zones. Default value is 1"
+        "description": "A list of availability zones denoting the zone in which the virtual machine should be deployed. Note, not all resources support multiple availability zones."
       }
     },
     "availabilitySetConfiguration": {
@@ -312,9 +309,7 @@
       "sku": {
         "name": "Standard"
       },
-      "zones": [
-        "[parameters('availabilityZones')[0]]"
-      ],
+      "zones": "[parameters('availabilityZones')]",
       "properties": {
         "publicIPAllocationMethod": "static"
       }
@@ -502,9 +497,7 @@
                 "id": "[parameters('internalSubnetId')]"
               }
             },
-            "zones": [
-              "[parameters('availabilityZones')[0]]"
-            ]
+            "zones": "[parameters('availabilityZones')]"
           }
         ],
         "backendAddressPools": [

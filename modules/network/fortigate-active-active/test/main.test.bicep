@@ -13,8 +13,8 @@ param shortIdentifier string = 'arn'
 @description('Optional. The password for the admin account.')
 param adminPassword string = '${toUpper(uniqueString(resourceGroup().id))}-${newGuid()}'
 
-@description('Optional. The number that defines the availability zone to use. Note, not all resources support multiple availability zones. Default value is 1')
-param availabilityZones array = [ '1' ]
+@description('Optional. The number that defines the availability zone to use. Note, not all resources support multiple availability zones.')
+param availabilityZones array = [ '1', '2', '3' ]
 
 /*======================================================================
 TEST PREREQUISITES

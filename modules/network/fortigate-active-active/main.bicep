@@ -39,13 +39,13 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed. Note, not all resources support multiple availability zones. Default value is 1')
+@description('A list of availability zones denoting the zone in which the virtual machine should be deployed. Note, not all resources support multiple availability zones.')
 @allowed([
   '1'
   '2'
   '3'
 ])
-param availabilityZones array = [ '1' ]
+param availabilityZones array
 
 @description('Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set.')
 @metadata({
@@ -228,7 +228,7 @@ resource externalLoadBalancerPublicIp 'Microsoft.Network/publicIPAddresses@2023-
   sku: {
     name: 'Standard'
   }
-  zones: [ availabilityZones[0] ]
+  zones: availabilityZones
   properties: {
     publicIPAllocationMethod: 'static'
   }
@@ -401,7 +401,7 @@ resource internalLoadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
             id: internalSubnetId
           }
         }
-        zones: [ availabilityZones[0] ]
+        zones: availabilityZones
       }
     ]
     backendAddressPools: [
