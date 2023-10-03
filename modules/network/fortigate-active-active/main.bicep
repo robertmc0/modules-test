@@ -39,13 +39,13 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('A list of availability zones denoting the zone in which the virtual machine should be deployed. Note, not all resources support multiple availability zones.')
+@description('A list of availability zones denoting the zone in which the resources will be configured with. Note, not all resources and regions support availability zones.')
 @allowed([
   '1'
   '2'
   '3'
 ])
-param vmAvailabilityZones array
+param availabilityZones array = []
 
 @description('Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set.')
 @metadata({
@@ -228,7 +228,7 @@ resource externalLoadBalancerPublicIp 'Microsoft.Network/publicIPAddresses@2023-
   sku: {
     name: 'Standard'
   }
-  zones: [ '1', '2', '3' ] // Recommended to have all AZ for PaaS resources
+  zones: availabilityZones
   properties: {
     publicIPAllocationMethod: 'static'
   }
@@ -401,7 +401,7 @@ resource internalLoadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
             id: internalSubnetId
           }
         }
-        zones: [ '1', '2', '3' ] // Recommended to have all AZ for PaaS resources
+        zones: availabilityZones
       }
     ]
     backendAddressPools: [
@@ -641,7 +641,7 @@ resource fortiGate1Vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: !empty(vmAvailabilityZones) ? [ vmAvailabilityZones[0] ] : []
+  zones: !empty(availabilityZones) ? [ availabilityZones[0] ] : []
   plan: {
     name: imageReference.sku
     publisher: imageReference.publisher
@@ -714,7 +714,7 @@ resource fortiGate2Vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: !empty(vmAvailabilityZones) ? length(vmAvailabilityZones) > 1 ? [ vmAvailabilityZones[1] ] : [ vmAvailabilityZones[0] ] : []
+  zones: !empty(availabilityZones) ? length(availabilityZones) > 1 ? [ availabilityZones[1] ] : [ availabilityZones[0] ] : []
   plan: {
     name: imageReference.sku
     publisher: imageReference.publisher
