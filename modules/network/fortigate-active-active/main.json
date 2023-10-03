@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "1255909459124753098"
+      "templateHash": "13226312951706502176"
     },
     "name": "FortiGate Active Active Module",
     "description": "This module deploys a FortiGate Network Virtual Appliance with an active-active architecture",
@@ -70,7 +70,7 @@
         "description": "Specifies the password of the administrator account. Refer to https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#osprofile for password complexity requirements."
       }
     },
-    "availabilityZones": {
+    "vmAvailabilityZones": {
       "type": "array",
       "allowedValues": [
         "1",
@@ -309,7 +309,11 @@
       "sku": {
         "name": "Standard"
       },
-      "zones": "[parameters('availabilityZones')]",
+      "zones": [
+        "1",
+        "2",
+        "3"
+      ],
       "properties": {
         "publicIPAllocationMethod": "static"
       }
@@ -497,7 +501,11 @@
                 "id": "[parameters('internalSubnetId')]"
               }
             },
-            "zones": "[parameters('availabilityZones')]"
+            "zones": [
+              "1",
+              "2",
+              "3"
+            ]
           }
         ],
         "backendAddressPools": [
@@ -767,9 +775,7 @@
       "identity": {
         "type": "SystemAssigned"
       },
-      "zones": [
-        "[parameters('availabilityZones')[0]]"
-      ],
+      "zones": "[if(not(empty(parameters('vmAvailabilityZones'))), createArray(parameters('vmAvailabilityZones')[0]), createArray())]",
       "plan": {
         "name": "[variables('imageReference').sku]",
         "publisher": "[variables('imageReference').publisher]",
@@ -851,9 +857,7 @@
       "identity": {
         "type": "SystemAssigned"
       },
-      "zones": [
-        "[parameters('availabilityZones')[0]]"
-      ],
+      "zones": "[if(not(empty(parameters('vmAvailabilityZones'))), if(greater(length(parameters('vmAvailabilityZones')), 1), createArray(parameters('vmAvailabilityZones')[1]), createArray(parameters('vmAvailabilityZones')[0])), createArray())]",
       "plan": {
         "name": "[variables('imageReference').sku]",
         "publisher": "[variables('imageReference').publisher]",
