@@ -45,7 +45,7 @@ param adminPassword string
   '2'
   '3'
 ])
-param availabilityZones array
+param vmAvailabilityZones array
 
 @description('Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set.')
 @metadata({
@@ -228,7 +228,7 @@ resource externalLoadBalancerPublicIp 'Microsoft.Network/publicIPAddresses@2023-
   sku: {
     name: 'Standard'
   }
-  zones: availabilityZones
+  zones: [ '1', '2', '3' ] // Recommended to have all AZ for PaaS resources
   properties: {
     publicIPAllocationMethod: 'static'
   }
@@ -401,7 +401,7 @@ resource internalLoadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
             id: internalSubnetId
           }
         }
-        zones: availabilityZones
+        zones: [ '1', '2', '3' ] // Recommended to have all AZ for PaaS resources
       }
     ]
     backendAddressPools: [
@@ -641,7 +641,7 @@ resource fortiGate1Vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: [ availabilityZones[0] ]
+  zones: !empty(vmAvailabilityZones) ? [ vmAvailabilityZones[0] ] : []
   plan: {
     name: imageReference.sku
     publisher: imageReference.publisher
@@ -714,7 +714,7 @@ resource fortiGate2Vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: [ availabilityZones[0] ]
+  zones: !empty(vmAvailabilityZones) ? length(vmAvailabilityZones) > 1 ? [ vmAvailabilityZones[1] ] : [ vmAvailabilityZones[0] ] : []
   plan: {
     name: imageReference.sku
     publisher: imageReference.publisher
