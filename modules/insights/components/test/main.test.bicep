@@ -5,7 +5,9 @@
 @description('Optional. The geo-location where the resource lives.')
 param location string = resourceGroup().location
 
-@description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
+@description(
+  'Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.'
+)
 @minLength(1)
 @maxLength(4)
 param shortIdentifier string = 'arn'
@@ -24,7 +26,6 @@ module backingWorkspace '../../../operational-insights/workspaces/main.bicep' = 
   params: {
     location: location
     name: backingWorkspaceName
-    identityType: 'SystemAssigned'
   }
 }
 
