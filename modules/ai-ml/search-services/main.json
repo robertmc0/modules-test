@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "9933018385370019978"
+      "templateHash": "11240459323795317434"
     },
     "name": "Azure Search Service",
     "description": "Deploys Azure Search Service Account.",
@@ -350,7 +350,7 @@
     }
   ],
   "outputs": {
-    "id": {
+    "resourceId": {
       "type": "string",
       "metadata": {
         "description": "The resource ID of the deployed Search Service."

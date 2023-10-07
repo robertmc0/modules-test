@@ -240,6 +240,6 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != '
 }
 
 @description('The resource ID of the deployed Search Service.')
-output id string = account.id
+output resourceId string = account.id
 @description('The name of the deployed Search Service.')
 output name string = account.name

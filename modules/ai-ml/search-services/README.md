@@ -40,10 +40,10 @@ This module completes the following tasks:
 
 ## Outputs
 
-| Name   | Type     | Description                                     |
-| :----- | :------: | :---------------------------------------------- |
-| `id`   | `string` | The resource ID of the deployed Search Service. |
-| `name` | `string` | The name of the deployed Search Service.        |
+| Name         | Type     | Description                                     |
+| :----------- | :------: | :---------------------------------------------- |
+| `resourceId` | `string` | The resource ID of the deployed Search Service. |
+| `name`       | `string` | The name of the deployed Search Service.        |
 
 ## Examples
 
