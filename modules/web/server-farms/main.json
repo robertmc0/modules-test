@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.21.1.54444",
-      "templateHash": "5519029898852188887"
+      "version": "0.22.6.54827",
+      "templateHash": "5644233025636032084"
     },
     "name": "App Service Plans",
     "description": "This module deploys Microsoft.web/severFarms aka App Service Plans",
