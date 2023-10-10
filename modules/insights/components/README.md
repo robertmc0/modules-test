@@ -4,7 +4,10 @@ This module deploys Microsoft.Insights/components, aka Applications Insights.
 
 ## Details
 
-{{ Add detailed information about the module. }}
+This module completes the following tasks:
+
+- Creates Microsoft.Insights components resource.
+- Applies a lock to the component if specified.
 
 ## Parameters
 
@@ -32,12 +35,4 @@ This module deploys Microsoft.Insights/components, aka Applications Insights.
 
 ## Examples
 
-### Example 1
-
-```bicep
-```
-
-### Example 2
-
-```bicep
-```
+Please see the [Bicep Tests](test/main.test.bicep) file for examples.
