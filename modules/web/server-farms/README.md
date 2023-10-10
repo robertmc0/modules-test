@@ -4,7 +4,11 @@ This module deploys Microsoft.web/severFarms aka App Service Plans
 
 ## Details
 
-{{ Add detailed description for the module. }}
+This module completes the following tasks:
+
+- Creates Microsoft.Web severFarms resource.
+- Applies diagnostic settings if specified.
+- Applies a lock to the component if specified.
 
 ## Parameters
 
@@ -40,12 +44,4 @@ This module deploys Microsoft.web/severFarms aka App Service Plans
 
 ## Examples
 
-### Example 1
-
-```bicep
-```
-
-### Example 2
-
-```bicep
-```
+Please see the [Bicep Tests](test/main.test.bicep) file for examples.
