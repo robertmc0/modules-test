@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.21.1.54444",
-      "templateHash": "13262497344198970177"
+      "version": "0.22.6.54827",
+      "templateHash": "5038137953194029323"
     },
     "name": "Application Insights Module",
     "description": "This module deploys Microsoft.Insights/components, aka Applications Insights.",
