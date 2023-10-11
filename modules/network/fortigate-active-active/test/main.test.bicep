@@ -143,7 +143,7 @@ module fortiGateMin '../main.bicep' = {
     externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-min-pip'
     nsgName: '${uniqueString(deployment().name, location)}-nsg-min-pip'
     internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-min-pip'
-    availabilityZones: availabilityZones
+    availabilityZones: availabilityZones[0]
   }
 }
 
@@ -173,6 +173,22 @@ module fortiGate '../main.bicep' = {
     resourceLock: 'CanNotDelete'
     acceleratedNetworking: true
     size: 'Standard_F2s'
-    availabilityZones: availabilityZones
+    availabilityZones: availabilityZones[1]
+  }
+}
+
+module fortiGateNoAvailZone '../main.bicep' = {
+  name: '${shortIdentifier}-tst-fg-min-${uniqueString(deployment().name, 'fortiGate', location)}'
+  params: {
+    namePrefix: '${shortIdentifier}minnva'
+    location: location
+    adminUsername: 'arnforti'
+    adminPassword: adminPassword
+    externalSubnetId: '${vnet1.id}/subnets/untrust'
+    internalSubnetId: '${vnet1.id}/subnets/trust'
+    externalLoadBalancerName: '${uniqueString(deployment().name, location)}-externalLoadBalancer-min'
+    externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-min-pip'
+    nsgName: '${uniqueString(deployment().name, location)}-nsg-min-pip'
+    internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-min-pip'
   }
 }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "10088381266338969376"
+      "templateHash": "17126119302449807447"
     },
     "name": "FortiGate Active Active Module",
     "description": "This module deploys a FortiGate Network Virtual Appliance with an active-active architecture",
@@ -79,7 +79,7 @@
         "3"
       ],
       "metadata": {
-        "description": "A list of availability zones denoting the zone in which the resources will be configured with. Note, not all resources and regions support availability zones."
+        "description": "Optional. A list of availability zones denoting the zone in which the resources will be configured with. Note, not all resources and regions support availability zones."
       }
     },
     "availabilitySetConfiguration": {

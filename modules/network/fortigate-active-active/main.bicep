@@ -39,7 +39,7 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('A list of availability zones denoting the zone in which the resources will be configured with. Note, not all resources and regions support availability zones.')
+@description('Optional. A list of availability zones denoting the zone in which the resources will be configured with. Note, not all resources and regions support availability zones.')
 @allowed([
   '1'
   '2'
