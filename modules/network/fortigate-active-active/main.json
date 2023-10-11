@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.22.6.54827",
-      "templateHash": "16521120074894239810"
+      "version": "0.20.4.51522",
+      "templateHash": "12629572397148871221"
     },
     "name": "FortiGate Active Active Module",
     "description": "This module deploys a FortiGate Network Virtual Appliance with an active-active architecture",
@@ -79,7 +79,7 @@
         "3"
       ],
       "metadata": {
-        "description": "Optional. A list of availability zones denoting the zone in which the resources will be configured with. Note, not all resources and regions support availability zones."
+        "description": "Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed."
       }
     },
     "availabilitySetConfiguration": {
@@ -768,7 +768,7 @@
       "identity": {
         "type": "SystemAssigned"
       },
-      "zones": "[if(not(empty(parameters('availabilityZones'))), createArray(parameters('availabilityZones')[0]), createArray())]",
+      "zones": "[parameters('availabilityZones')]",
       "plan": {
         "name": "[variables('imageReference').sku]",
         "publisher": "[variables('imageReference').publisher]",
@@ -850,7 +850,7 @@
       "identity": {
         "type": "SystemAssigned"
       },
-      "zones": "[if(not(empty(parameters('availabilityZones'))), if(greater(length(parameters('availabilityZones')), 1), createArray(parameters('availabilityZones')[1]), createArray(parameters('availabilityZones')[0])), createArray())]",
+      "zones": "[parameters('availabilityZones')]",
       "plan": {
         "name": "[variables('imageReference').sku]",
         "publisher": "[variables('imageReference').publisher]",
