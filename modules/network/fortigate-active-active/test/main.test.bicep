@@ -176,7 +176,7 @@ module fortiGate '../main.bicep' = {
     resourceLock: 'CanNotDelete'
     acceleratedNetworking: true
     size: 'Standard_F2s'
-    availabilityZones: availabilityZones[1]
+    availabilityZones: availabilityZones
   }
 }
 
