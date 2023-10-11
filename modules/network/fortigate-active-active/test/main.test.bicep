@@ -178,17 +178,17 @@ module fortiGate '../main.bicep' = {
 }
 
 module fortiGateNoAvailZone '../main.bicep' = {
-  name: '${shortIdentifier}-tst-fg-min-${uniqueString(deployment().name, 'fortiGate', location)}'
+  name: '${shortIdentifier}-tst-fg-noavailzone-${uniqueString(deployment().name, 'fortiGate', location)}'
   params: {
-    namePrefix: '${shortIdentifier}minnva'
+    namePrefix: '${shortIdentifier}noavail'
     location: location
     adminUsername: 'arnforti'
     adminPassword: adminPassword
     externalSubnetId: '${vnet1.id}/subnets/untrust'
     internalSubnetId: '${vnet1.id}/subnets/trust'
-    externalLoadBalancerName: '${uniqueString(deployment().name, location)}-externalLoadBalancer-min'
-    externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-min-pip'
+    externalLoadBalancerName: '${uniqueString(deployment().name, location)}-externalLoadBalancer-noavail'
+    externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-noavail-pip'
     nsgName: '${uniqueString(deployment().name, location)}-nsg-min-pip'
-    internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-min-pip'
+    internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-noavail-pip'
   }
 }
