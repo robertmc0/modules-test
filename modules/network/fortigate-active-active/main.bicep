@@ -39,7 +39,7 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed.')
+@description('Optional. A list of availability zones denoting the zone in which the resources will be configured with. Note, not all resources and regions support availability zones.')
 @allowed([
   '1'
   '2'
@@ -641,7 +641,7 @@ resource fortiGate1Vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: availabilityZones
+  zones: !empty(availabilityZones) ? [ availabilityZones[0] ] : []
   plan: {
     name: imageReference.sku
     publisher: imageReference.publisher
@@ -714,7 +714,7 @@ resource fortiGate2Vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  zones: availabilityZones
+  zones: !empty(availabilityZones) ? length(availabilityZones) > 1 ? [ availabilityZones[1] ] : [ availabilityZones[0] ] : []
   plan: {
     name: imageReference.sku
     publisher: imageReference.publisher
