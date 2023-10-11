@@ -16,6 +16,12 @@ param adminPassword string = '${toUpper(uniqueString(resourceGroup().id))}-${new
 @description('Optional. The number that defines the availability zone to use. Note, not all resources support multiple availability zones.')
 param availabilityZones array = [ '1', '2', '3' ]
 
+@description('Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set.')
+param availabilitySetConfiguration object = {
+  name: '${uniqueString(deployment().name, location)}-availabilitySet-avail'
+  platformFaultDomainCount: 2
+  platformUpdateDomainCount: 5
+}
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -130,6 +136,8 @@ resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2022-10-01-
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
+
+// Deploy Fortigate using a minimal configuration with no availbility zones or sets
 module fortiGateMin '../main.bicep' = {
   name: '${shortIdentifier}-tst-fg-min-${uniqueString(deployment().name, 'fortiGate', location)}'
   params: {
@@ -143,10 +151,10 @@ module fortiGateMin '../main.bicep' = {
     externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-min-pip'
     nsgName: '${uniqueString(deployment().name, location)}-nsg-min-pip'
     internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-min-pip'
-    availabilityZones: availabilityZones[0]
   }
 }
 
+// Deploy Fortigate using a standard configuration with availability zone(s)
 module fortiGate '../main.bicep' = {
   name: '${shortIdentifier}-tst-fg-${uniqueString(deployment().name, 'fortiGate', location)}'
   params: {
@@ -160,11 +168,6 @@ module fortiGate '../main.bicep' = {
     externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-pip'
     nsgName: '${uniqueString(deployment().name, location)}-nsg-pip'
     internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-pip'
-    availabilitySetConfiguration: {
-      name: '${uniqueString(deployment().name, location)}-availabilitySet-avail'
-      platformFaultDomainCount: 2
-      platformUpdateDomainCount: 5
-    }
     imageVersion: 'latest'
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
@@ -177,18 +180,20 @@ module fortiGate '../main.bicep' = {
   }
 }
 
-module fortiGateNoAvailZone '../main.bicep' = {
+// Deploy Fortigate using an availability set configuration
+module fortiGateAvailSet '../main.bicep' = {
   name: '${shortIdentifier}-tst-fg-noavailzone-${uniqueString(deployment().name, 'fortiGate', location)}'
   params: {
-    namePrefix: '${shortIdentifier}noavail'
+    namePrefix: '${shortIdentifier}availset'
     location: location
     adminUsername: 'arnforti'
     adminPassword: adminPassword
     externalSubnetId: '${vnet1.id}/subnets/untrust'
     internalSubnetId: '${vnet1.id}/subnets/trust'
-    externalLoadBalancerName: '${uniqueString(deployment().name, location)}-externalLoadBalancer-noavail'
-    externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-noavail-pip'
+    externalLoadBalancerName: '${uniqueString(deployment().name, location)}-externalLoadBalancer-availset'
+    externalLoadBalancerPublicIpName: '${uniqueString(deployment().name, location)}-loadBalancer-availset-pip'
     nsgName: '${uniqueString(deployment().name, location)}-nsg-min-pip'
-    internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-noavail-pip'
+    internalLoadBalancerName: '${uniqueString(deployment().name, location)}-internalLoadbalancer-availset-pip'
+    availabilitySetConfiguration: availabilitySetConfiguration
   }
 }
