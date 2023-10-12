@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5038137953194029323"
+      "templateHash": "10852973188054737977"
     },
     "name": "Application Insights Module",
     "description": "This module deploys Microsoft.Insights/components, aka Applications Insights.",
@@ -157,14 +157,14 @@
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of the deployed log analytics workspace."
+        "description": "The name of the deployed applications insights resource."
       },
       "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
       "metadata": {
-        "description": "The resource ID of the deployed log analytics workspace."
+        "description": "The resource ID of the deployed applications insights resource."
       },
       "value": "[resourceId('Microsoft.Insights/components', parameters('name'))]"
     }

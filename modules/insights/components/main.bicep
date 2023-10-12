@@ -118,8 +118,8 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != '
 ** Outputs
 */
 
-@description('The name of the deployed log analytics workspace.')
+@description('The name of the deployed applications insights resource.')
 output name string = appInsights.name
 
-@description('The resource ID of the deployed log analytics workspace.')
+@description('The resource ID of the deployed applications insights resource.')
 output resourceId string = appInsights.id

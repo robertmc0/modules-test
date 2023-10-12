@@ -28,10 +28,10 @@ This module completes the following tasks:
 
 ## Outputs
 
-| Name         | Type     | Description                                              |
-| :----------- | :------: | :------------------------------------------------------- |
-| `name`       | `string` | The name of the deployed log analytics workspace.        |
-| `resourceId` | `string` | The resource ID of the deployed log analytics workspace. |
+| Name         | Type     | Description                                                     |
+| :----------- | :------: | :-------------------------------------------------------------- |
+| `name`       | `string` | The name of the deployed applications insights resource.        |
+| `resourceId` | `string` | The resource ID of the deployed applications insights resource. |
 
 ## Examples
 
