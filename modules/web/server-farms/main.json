@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5644233025636032084"
+      "templateHash": "18201457033469821381"
     },
     "name": "App Service Plans",
     "description": "This module deploys Microsoft.web/severFarms aka App Service Plans",
@@ -276,14 +276,14 @@
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of the deployed storage account."
+        "description": "The name of the deployed app service plan resource."
       },
       "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
       "metadata": {
-        "description": "The resource ID of the deployed storage account."
+        "description": "The resource ID of the deployed app service plan resource."
       },
       "value": "[resourceId('Microsoft.Web/serverfarms', parameters('name'))]"
     }

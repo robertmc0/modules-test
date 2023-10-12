@@ -214,8 +214,8 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
 ** Outputs
 */
 
-@description('The name of the deployed storage account.')
+@description('The name of the deployed app service plan resource.')
 output name string = appServicePlan.name
 
-@description('The resource ID of the deployed storage account.')
+@description('The resource ID of the deployed app service plan resource.')
 output resourceId string = appServicePlan.id

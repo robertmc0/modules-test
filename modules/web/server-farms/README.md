@@ -37,10 +37,10 @@ This module completes the following tasks:
 
 ## Outputs
 
-| Name         | Type     | Description                                      |
-| :----------- | :------: | :----------------------------------------------- |
-| `name`       | `string` | The name of the deployed storage account.        |
-| `resourceId` | `string` | The resource ID of the deployed storage account. |
+| Name         | Type     | Description                                                |
+| :----------- | :------: | :--------------------------------------------------------- |
+| `name`       | `string` | The name of the deployed app service plan resource.        |
+| `resourceId` | `string` | The resource ID of the deployed app service plan resource. |
 
 ## Examples
 
