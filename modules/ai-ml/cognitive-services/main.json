@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.21.1.54444",
-      "templateHash": "6407272628493403441"
+      "version": "0.22.6.54827",
+      "templateHash": "8853109160770465694"
     },
     "name": "Azure Cognitive Service",
     "description": "Deploys Azure Cognitive Service Account, including deployments as required.",
@@ -272,7 +272,7 @@
       },
       "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('name')), '2023-05-01').endpoint]"
     },
-    "id": {
+    "resourceId": {
       "type": "string",
       "metadata": {
         "description": "The resource ID of the deployed Cognitive Service."

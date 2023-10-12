@@ -171,6 +171,6 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != '
 @description('The endpoint (subdomain) of the deployed Cognitive Service.')
 output endpoint string = account.properties.endpoint
 @description('The resource ID of the deployed Cognitive Service.')
-output id string = account.id
+output resourceId string = account.id
 @description('The name of the deployed Cognitive Service.')
 output name string = account.name
