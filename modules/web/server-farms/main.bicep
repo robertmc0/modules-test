@@ -153,7 +153,7 @@ var diagnosticsName = toLower('${appServicePlan.name}-dgs')
 var lockName = toLower('${appServicePlan.name}-${resourceLock}-lck')
 
 /*
-** Main Resouce Deployment
+** Main Resource Deployment
 */
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
