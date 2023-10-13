@@ -82,7 +82,7 @@ param samplingPercentage int = 100
 var lockName = toLower('${appInsights.name}-${resourceLock}-lck')
 
 /*
-** Main Resouce Deployment
+** Main Resource Deployment
 */
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -94,8 +94,8 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     Application_Type: applicationType
     DisableIpMasking: disableIpMasking
     DisableLocalAuth: disableLocalAuth
-    publicNetworkAccessForIngestion: publicNetworkAccessForIngestion ? 'Enabled' :'Disabled'
-    publicNetworkAccessForQuery: publicNetworkAccessForQuery ? 'Enabled' :'Disabled'
+    publicNetworkAccessForIngestion: publicNetworkAccessForIngestion ? 'Enabled' : 'Disabled'
+    publicNetworkAccessForQuery: publicNetworkAccessForQuery ? 'Enabled' : 'Disabled'
     SamplingPercentage: samplingPercentage
     WorkspaceResourceId: workspaceResourceId
   }
