@@ -33,11 +33,11 @@ This module completes the following tasks:
 
 ## Outputs
 
-| Name       | Type     | Description                                                 |
-| :--------- | :------: | :---------------------------------------------------------- |
-| `endpoint` | `string` | The endpoint (subdomain) of the deployed Cognitive Service. |
-| `id`       | `string` | The resource ID of the deployed Cognitive Service.          |
-| `name`     | `string` | The name of the deployed Cognitive Service.                 |
+| Name         | Type     | Description                                                 |
+| :----------- | :------: | :---------------------------------------------------------- |
+| `endpoint`   | `string` | The endpoint (subdomain) of the deployed Cognitive Service. |
+| `resourceId` | `string` | The resource ID of the deployed Cognitive Service.          |
+| `name`       | `string` | The name of the deployed Cognitive Service.                 |
 
 ## Examples
 
