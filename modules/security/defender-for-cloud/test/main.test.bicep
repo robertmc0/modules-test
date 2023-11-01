@@ -50,10 +50,6 @@ param defenderPlansMax array = [
     pricingTier: 'Standard'
   }
   {
-    name: 'Dns'
-    pricingTier: 'Standard'
-  }
-  {
     name: 'Arm'
     pricingTier: 'Standard'
   }

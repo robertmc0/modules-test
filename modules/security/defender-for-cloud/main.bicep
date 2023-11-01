@@ -118,10 +118,6 @@ param defenderPlans array = [
     pricingTier: 'Free'
   }
   {
-    name: 'Dns'
-    pricingTier: 'Free'
-  }
-  {
     name: 'Arm'
     pricingTier: 'Free'
   }
