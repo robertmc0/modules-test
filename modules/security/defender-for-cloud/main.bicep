@@ -32,55 +32,51 @@ param notificationsByRole array = []
   defenderPlans: [
     {
       name: 'CloudPosture'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender CSPM plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'VirtualMachines'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender VirtualMachines plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'SqlServers'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender SqlServers plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'SqlServerVirtualMachines'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender SqlServerVirtualMachines plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'OpenSourceRelationalDatabases'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender OpenSourceRelationalDatabases plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'AppServices'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender AppServices plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'StorageAccounts'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender StorageAccounts plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'Containers'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender Containers plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'KeyVaults'
-      pricingTier: '[Standard/Free]'
-    }
-    {
-      name: 'Dns'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender KeyVaults plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'Arm'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender Arm plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'CosmosDbs'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender CosmosDbs plan. Allowed values "Standard" or "Free".'
     }
     {
       name: 'Api'
-      pricingTier: '[Standard/Free]'
+      pricingTier: 'The pricing tier of the Defender Api plan. Allowed values "Standard" or "Free".'
     }
   ]
 })
