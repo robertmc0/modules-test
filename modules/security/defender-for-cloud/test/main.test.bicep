@@ -11,6 +11,58 @@ param location string = deployment().location
 @maxLength(5)
 param shortIdentifier string = 'arn'
 
+@description('Defender for Cloud default values.')
+param defenderPlansMax array = [
+  {
+    name: 'CloudPosture'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'VirtualMachines'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'SqlServers'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'SqlServerVirtualMachines'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'OpenSourceRelationalDatabases'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'AppServices'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'StorageAccounts'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'Containers'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'KeyVaults'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'Arm'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'CosmosDbs'
+    pricingTier: 'Standard'
+  }
+  {
+    name: 'Api'
+    pricingTier: 'Standard'
+  }
+]
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -57,18 +109,6 @@ module defender '../main.bicep' = {
       'ServiceAdmin'
     ]
     phone: '+61412567890'
-    pricingCloudPosture: 'Standard'
-    pricingTierAppServices: 'Standard'
-    pricingTierArm: 'Standard'
-    pricingTierContainers: 'Standard'
-    pricingTierCosmosDbs: 'Standard'
-    pricingTierDns: 'Standard'
-    pricingTierKeyVaults: 'Standard'
-    pricingTierOpenSourceRelationalDatabases: 'Standard'
-    pricingTierSqlServers: 'Standard'
-    pricingTierSqlServerVirtualMachines: 'Standard'
-    pricingTierStorageAccounts: 'Standard'
-    pricingTierVMs: 'Standard'
-    pricingTierApi: 'Standard'
+    defenderPlans: defenderPlansMax
   }
 }

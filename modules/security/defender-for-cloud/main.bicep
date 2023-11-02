@@ -1,3 +1,7 @@
+metadata name = 'Defender for Cloud Module'
+metadata description = 'This module deploys Microsoft Defender for Cloud plans, contacts and configuration settings.'
+metadata owner = 'Arinco'
+
 targetScope = 'subscription'
 
 @description('Email address which will get notifications from Microsoft Defender for Cloud by the configurations defined in this security contact.')
@@ -23,96 +27,109 @@ param alertNotificationSeverity string
 ])
 param notificationsByRole array = []
 
-@description('Optional. The default pricing tier for Cloud Security Posture Management (CSPM) plan.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingCloudPosture string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for Servers.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierVMs string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for SQL.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierSqlServers string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for App Service.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierAppServices string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for Storage.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierStorageAccounts string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for SQL VMs.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierSqlServerVirtualMachines string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for Open Source Relational Databases.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierOpenSourceRelationalDatabases string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for Containers.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierContainers string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for Key Vaults.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierKeyVaults string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for DNS.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierDns string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for ARM.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierArm string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for CosmosDbs.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierCosmosDbs string = 'Free'
-
-@description('Optional. The pricing tier for Microsoft Defender for APIs.')
-@allowed([
-  'Standard'
-  'Free'
-])
-param pricingTierApi string = 'Free'
+@description('Optional. The plans Microsoft Defender for Cloud.')
+@metadata({
+  defenderPlans: [
+    {
+      name: 'CloudPosture'
+      pricingTier: 'The pricing tier of the Defender CSPM plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'VirtualMachines'
+      pricingTier: 'The pricing tier of the Defender VirtualMachines plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'SqlServers'
+      pricingTier: 'The pricing tier of the Defender SqlServers plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'SqlServerVirtualMachines'
+      pricingTier: 'The pricing tier of the Defender SqlServerVirtualMachines plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'OpenSourceRelationalDatabases'
+      pricingTier: 'The pricing tier of the Defender OpenSourceRelationalDatabases plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'AppServices'
+      pricingTier: 'The pricing tier of the Defender AppServices plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'StorageAccounts'
+      pricingTier: 'The pricing tier of the Defender StorageAccounts plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'Containers'
+      pricingTier: 'The pricing tier of the Defender Containers plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'KeyVaults'
+      pricingTier: 'The pricing tier of the Defender KeyVaults plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'Arm'
+      pricingTier: 'The pricing tier of the Defender Arm plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'CosmosDbs'
+      pricingTier: 'The pricing tier of the Defender CosmosDbs plan. Allowed values "Standard" or "Free".'
+    }
+    {
+      name: 'Api'
+      pricingTier: 'The pricing tier of the Defender Api plan. Allowed values "Standard" or "Free".'
+    }
+  ]
+})
+param defenderPlans array = [
+  {
+    name: 'CloudPosture'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'VirtualMachines'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'SqlServers'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'SqlServerVirtualMachines'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'OpenSourceRelationalDatabases'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'AppServices'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'StorageAccounts'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'Containers'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'KeyVaults'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'Arm'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'CosmosDbs'
+    pricingTier: 'Free'
+  }
+  {
+    name: 'Api'
+    pricingTier: 'Free'
+  }
+]
 
 @description('Resource ID of the Log Analytics workspace.')
 param workspaceId string
@@ -126,6 +143,8 @@ param workspaceScope string = subscription().subscriptionId
   'Off'
 ])
 param autoProvision string = 'On'
+
+var defaultPricingTier = 'Free'
 
 resource securityContacts 'Microsoft.Security/securityContacts@2020-01-01-preview' = {
   name: 'default'
@@ -143,96 +162,13 @@ resource securityContacts 'Microsoft.Security/securityContacts@2020-01-01-previe
   }
 }
 
-resource cloudPosture 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'CloudPosture'
+@batchSize(1)
+resource defenderPlan 'Microsoft.Security/pricings@2023-01-01' = [for plan in defenderPlans: {
+  name: plan.name
   properties: {
-    pricingTier: pricingCloudPosture
+    pricingTier: !empty(plan.pricingTier) ? plan.pricingTier : defaultPricingTier
   }
-}
-
-resource virtualMachines 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'VirtualMachines'
-  properties: {
-    pricingTier: pricingTierVMs
-  }
-}
-
-resource sqlServers 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'SqlServers'
-  properties: {
-    pricingTier: pricingTierSqlServers
-  }
-}
-
-resource sqlServerVirtualMachines 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'SqlServerVirtualMachines'
-  properties: {
-    pricingTier: pricingTierSqlServerVirtualMachines
-  }
-}
-
-resource openSourceRelationalDatabases 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'OpenSourceRelationalDatabases'
-  properties: {
-    pricingTier: pricingTierOpenSourceRelationalDatabases
-  }
-}
-
-resource appServices 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'AppServices'
-  properties: {
-    pricingTier: pricingTierAppServices
-  }
-}
-
-resource storageAccounts 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'StorageAccounts'
-  properties: {
-    pricingTier: pricingTierStorageAccounts
-  }
-}
-
-resource containers 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'Containers'
-  properties: {
-    pricingTier: pricingTierContainers
-  }
-}
-
-resource keyVaults 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'KeyVaults'
-  properties: {
-    pricingTier: pricingTierKeyVaults
-  }
-}
-
-resource dns 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'Dns'
-  properties: {
-    pricingTier: pricingTierDns
-  }
-}
-
-resource arm 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'Arm'
-  properties: {
-    pricingTier: pricingTierArm
-  }
-}
-
-resource cosmos 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'CosmosDbs'
-  properties: {
-    pricingTier: pricingTierCosmosDbs
-  }
-}
-
-resource api 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'Api'
-  properties: {
-    pricingTier: pricingTierApi
-  }
-}
+}]
 
 resource workspace 'Microsoft.Security/workspaceSettings@2017-08-01-preview' = {
   name: 'default'
