@@ -13,7 +13,7 @@ param shortIdentifier string = 'arn'
 TEST PREREQUISITES
 ======================================================================*/
 resource virtualWan 'Microsoft.Network/virtualWans@2022-05-01' = {
-  name: '${shortIdentifier}-tst-vwan-${uniqueString(deployment().name, 'virtualWans', location)}'
+  name: '${shortIdentifier}-tst-vwan-111'
   location: location
   properties: {
     type: 'Standard'
@@ -21,7 +21,7 @@ resource virtualWan 'Microsoft.Network/virtualWans@2022-05-01' = {
 }
 
 resource virtualHub 'Microsoft.Network/virtualHubs@2022-05-01' = {
-  name: '${shortIdentifier}-tst-vhub-${uniqueString(deployment().name, 'virtualHubs', location)}'
+  name: '${shortIdentifier}-tst-vhub-111'
   location: location
   properties: {
     addressPrefix: '10.1.0.0/16'
@@ -32,7 +32,7 @@ resource virtualHub 'Microsoft.Network/virtualHubs@2022-05-01' = {
 }
 
 resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
-  name: '${shortIdentifier}-tst-fwl-${uniqueString(deployment().name, 'azureFirewalls', location)}'
+  name: '${shortIdentifier}-tst-fwl-111'
   location: location
   properties: {
     sku: {
@@ -53,9 +53,8 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
-
 module routingIntent '../main.bicep' = {
-  name: 'main'
+  name: '${shortIdentifier}-tst-rtint-111'
   params: {
     virtualHubName: virtualHub.name
     nextHopId: firewall.id
