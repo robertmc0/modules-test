@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.23.1.45101",
+      "templateHash": "7967911084318914230"
+    }
+  },
+  "parameters": {
+    "virtualHubName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Hub name."
+      }
+    },
+    "routingIntentDestinations": {
+      "type": "array",
+      "defaultValue": [
+        "Internet",
+        "PrivateTraffic"
+      ],
+      "allowedValues": [
+        "Internet",
+        "PrivateTraffic"
+      ],
+      "metadata": {
+        "description": "Optional. The destinations of the routing intent."
+      }
+    },
+    "nextHopId": {
+      "type": "string",
+      "metadata": {
+        "description": "The next hop of the routing intent."
+      }
+    }
+  },
+  "variables": {
+    "routingPolicies": "[if(equals(parameters('routingIntentDestinations'), createArray('Internet', 'PrivateTraffic')), createArray(createObject('destinations', createArray('Internet'), 'name', format('{0}-routingIntentPrivate', parameters('virtualHubName')), 'nextHop', parameters('nextHopId')), createObject('destinations', createArray('PrivateTraffic'), 'name', format('{0}-routingIntentInternet', parameters('virtualHubName')), 'nextHop', parameters('nextHopId'))), if(equals(parameters('routingIntentDestinations'), createArray('PrivateTraffic')), createArray(createObject('destinations', createArray('PrivateTraffic'), 'name', format('{0}-routingIntentPrivateOnly', parameters('virtualHubName')), 'nextHop', parameters('nextHopId'))), if(equals(parameters('routingIntentDestinations'), createArray('Internet')), createArray(createObject('destinations', createArray('Internet'), 'name', format('{0}-routingIntentInternetOnly', parameters('virtualHubName')), 'nextHop', parameters('nextHopId'))), createArray())))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualHubs/routingIntent",
+      "apiVersion": "2023-04-01",
+      "name": "[format('{0}/{1}', parameters('virtualHubName'), format('{0}-routingIntent', parameters('virtualHubName')))]",
+      "properties": {
+        "routingPolicies": "[variables('routingPolicies')]"
+      },
+      "metadata": {
+        "description": "The routing intent resource."
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed routing intent."
+      },
+      "value": "[format('{0}-routingIntent', parameters('virtualHubName'))]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed virtual hub routing intent."
+      },
+      "value": "[resourceId('Microsoft.Network/virtualHubs/routingIntent', parameters('virtualHubName'), format('{0}-routingIntent', parameters('virtualHubName')))]"
+    }
+  }
+}
