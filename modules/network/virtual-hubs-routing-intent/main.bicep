@@ -1,3 +1,7 @@
+metadata name = 'Hub Routing Intent Module'
+metadata description = 'This module deploys Microsoft.Network/virtualHubs routingIntent.'
+metadata owner = 'Arinco'
+
 @description('Virtual Hub name.')
 param virtualHubName string
 

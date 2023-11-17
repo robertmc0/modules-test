@@ -5,8 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "7967911084318914230"
-    }
+      "templateHash": "7871471646489353783"
+    },
+    "name": "Hub Routing Intent Module",
+    "description": "This module deploys Microsoft.Network/virtualHubs routingIntent.",
+    "owner": "Arinco"
   },
   "parameters": {
     "virtualHubName": {
