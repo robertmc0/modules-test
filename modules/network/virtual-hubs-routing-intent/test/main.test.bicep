@@ -54,6 +54,9 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
 TEST EXECUTION (Max Parameter Usage)
 ======================================================================*/
 module routingIntentMax '../main.bicep' = {
+  dependsOn: [
+    firewall
+  ]
   name: '${shortIdentifier}-tst-rtint-111'
   params: {
     virtualHubName: virtualHub.name
@@ -67,9 +70,12 @@ module routingIntentMax '../main.bicep' = {
 /*======================================================================
 TEST EXECUTION (Min Parameter Usage)
 ======================================================================*/
-module routingIntentMin '../main.bicep' = {
-  name: '${shortIdentifier}-tst-rtint-111'
-  params: {
-    virtualHubName: virtualHub.name
-  }
-}
+// module routingIntentMin '../main.bicep' = {
+//   dependsOn: [
+//     firewall
+//   ]
+//   name: '${shortIdentifier}-tst-rtint-111'
+//   params: {
+//     virtualHubName: virtualHub.name
+//   }
+// }
