@@ -16,32 +16,29 @@ resource virtualHub 'Microsoft.Network/virtualHubs@2022-05-01' existing = {
   name: virtualHubName
 }
 
-@description('The next hop of the routing intent.')
-param nextHopId string
-
 @description('The routing policies of the routing intent.')
 var routingPolicies = routingIntentDestinations == [ 'Internet', 'PrivateTraffic' ] ? [
   {
     destinations: [ 'Internet' ]
     name: '${virtualHubName}-routingIntentPrivate'
-    nextHop: nextHopId
+    nextHop: virtualHub.properties.azureFirewall.id
   }
   {
     destinations: [ 'PrivateTraffic' ]
     name: '${virtualHubName}-routingIntentInternet'
-    nextHop: nextHopId
+    nextHop: virtualHub.properties.azureFirewall.id
   }
 ] : routingIntentDestinations == [ 'PrivateTraffic' ] ? [
   {
     destinations: [ 'PrivateTraffic' ]
     name: '${virtualHubName}-routingIntentPrivateOnly'
-    nextHop: nextHopId
+    nextHop: virtualHub.properties.azureFirewall.id
   }
 ] : routingIntentDestinations == [ 'Internet' ] ? [
   {
     destinations: [ 'Internet' ]
     name: '${virtualHubName}-routingIntentInternetOnly'
-    nextHop: nextHopId
+    nextHop: virtualHub.properties.azureFirewall.id
   }
 ] : []
 

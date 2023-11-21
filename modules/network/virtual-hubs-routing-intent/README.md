@@ -4,7 +4,10 @@ This module deploys Microsoft.Network/virtualHubs routingIntent.
 
 ## Details
 
-{{Add detailed information about the module}}
+This module performs the following
+
+- Creates Microsoft.Network/virtualHubs routingIntent resource.
+- Creates a single or multiple route intents within the routing intent policy.
 
 ## Parameters
 
@@ -12,7 +15,6 @@ This module deploys Microsoft.Network/virtualHubs routingIntent.
 | :-------------------------- | :------: | :------: | :------------------------------------------------ |
 | `virtualHubName`            | `string` | Yes      | Virtual Hub name.                                 |
 | `routingIntentDestinations` | `array`  | No       | Optional. The destinations of the routing intent. |
-| `nextHopId`                 | `string` | Yes      | The next hop of the routing intent.               |
 
 ## Outputs
 

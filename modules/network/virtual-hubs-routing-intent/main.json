@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "18206966278520393456"
+      "templateHash": "17777988516759144565"
     },
     "name": "Hub Routing Intent Module",
     "description": "This module deploys Microsoft.Network/virtualHubs routingIntent.",
@@ -31,16 +31,7 @@
       "metadata": {
         "description": "Optional. The destinations of the routing intent."
       }
-    },
-    "nextHopId": {
-      "type": "string",
-      "metadata": {
-        "description": "The next hop of the routing intent."
-      }
     }
-  },
-  "variables": {
-    "routingPolicies": "[if(equals(parameters('routingIntentDestinations'), createArray('Internet', 'PrivateTraffic')), createArray(createObject('destinations', createArray('Internet'), 'name', format('{0}-routingIntentPrivate', parameters('virtualHubName')), 'nextHop', parameters('nextHopId')), createObject('destinations', createArray('PrivateTraffic'), 'name', format('{0}-routingIntentInternet', parameters('virtualHubName')), 'nextHop', parameters('nextHopId'))), if(equals(parameters('routingIntentDestinations'), createArray('PrivateTraffic')), createArray(createObject('destinations', createArray('PrivateTraffic'), 'name', format('{0}-routingIntentPrivateOnly', parameters('virtualHubName')), 'nextHop', parameters('nextHopId'))), if(equals(parameters('routingIntentDestinations'), createArray('Internet')), createArray(createObject('destinations', createArray('Internet'), 'name', format('{0}-routingIntentInternetOnly', parameters('virtualHubName')), 'nextHop', parameters('nextHopId'))), createArray())))]"
   },
   "resources": [
     {
@@ -48,7 +39,7 @@
       "apiVersion": "2023-04-01",
       "name": "[format('{0}/{1}', parameters('virtualHubName'), format('{0}-routingIntent', parameters('virtualHubName')))]",
       "properties": {
-        "routingPolicies": "[variables('routingPolicies')]"
+        "routingPolicies": "[if(equals(parameters('routingIntentDestinations'), createArray('Internet', 'PrivateTraffic')), createArray(createObject('destinations', createArray('Internet'), 'name', format('{0}-routingIntentPrivate', parameters('virtualHubName')), 'nextHop', reference(resourceId('Microsoft.Network/virtualHubs', parameters('virtualHubName')), '2022-05-01').azureFirewall.id), createObject('destinations', createArray('PrivateTraffic'), 'name', format('{0}-routingIntentInternet', parameters('virtualHubName')), 'nextHop', reference(resourceId('Microsoft.Network/virtualHubs', parameters('virtualHubName')), '2022-05-01').azureFirewall.id)), if(equals(parameters('routingIntentDestinations'), createArray('PrivateTraffic')), createArray(createObject('destinations', createArray('PrivateTraffic'), 'name', format('{0}-routingIntentPrivateOnly', parameters('virtualHubName')), 'nextHop', reference(resourceId('Microsoft.Network/virtualHubs', parameters('virtualHubName')), '2022-05-01').azureFirewall.id)), if(equals(parameters('routingIntentDestinations'), createArray('Internet')), createArray(createObject('destinations', createArray('Internet'), 'name', format('{0}-routingIntentInternetOnly', parameters('virtualHubName')), 'nextHop', reference(resourceId('Microsoft.Network/virtualHubs', parameters('virtualHubName')), '2022-05-01').azureFirewall.id)), createArray())))]"
       },
       "metadata": {
         "description": "The routing intent resource."
