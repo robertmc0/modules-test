@@ -31,6 +31,17 @@ resource virtualHub 'Microsoft.Network/virtualHubs@2022-05-01' = {
   }
 }
 
+resource virtualHub2 'Microsoft.Network/virtualHubs@2022-05-01' = {
+  name: '${shortIdentifier}-tst-vhub-222'
+  location: location
+  properties: {
+    addressPrefix: '10.10.0.0/16'
+    virtualWan: {
+      id: virtualWan.id
+    }
+  }
+}
+
 resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
   name: '${shortIdentifier}-tst-fwl-111'
   location: location
@@ -46,6 +57,25 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-01-01' = {
     }
     virtualHub: {
       id: virtualHub.id
+    }
+  }
+}
+
+resource firewall2 'Microsoft.Network/azureFirewalls@2022-01-01' = {
+  name: '${shortIdentifier}-tst-fwl-222'
+  location: location
+  properties: {
+    sku: {
+      name: 'AZFW_Hub'
+      tier: 'Standard'
+    }
+    hubIPAddresses: {
+      publicIPs: {
+        count: 1
+      }
+    }
+    virtualHub: {
+      id: virtualHub2.id
     }
   }
 }
@@ -70,12 +100,12 @@ module routingIntentMax '../main.bicep' = {
 /*======================================================================
 TEST EXECUTION (Min Parameter Usage)
 ======================================================================*/
-// module routingIntentMin '../main.bicep' = {
-//   dependsOn: [
-//     firewall
-//   ]
-//   name: '${shortIdentifier}-tst-rtint-111'
-//   params: {
-//     virtualHubName: virtualHub.name
-//   }
-// }
+module routingIntentMin '../main.bicep' = {
+  dependsOn: [
+    firewall2
+  ]
+  name: '${shortIdentifier}-tst-rtint-222'
+  params: {
+    virtualHubName: virtualHub2.name
+  }
+}
