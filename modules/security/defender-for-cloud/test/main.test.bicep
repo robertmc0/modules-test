@@ -40,6 +40,7 @@ param defenderPlansMax array = [
   {
     name: 'StorageAccounts'
     pricingTier: 'Standard'
+    subPlan: 'DefenderForStorageV2'
   }
   {
     name: 'Containers'

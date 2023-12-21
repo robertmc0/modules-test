@@ -57,6 +57,7 @@ param notificationsByRole array = []
     {
       name: 'StorageAccounts'
       pricingTier: 'The pricing tier of the Defender StorageAccounts plan. Allowed values "Standard" or "Free".'
+      subPlan: 'The subPlan of the Defender StorageAccounts plan. Allowed values "DefenderForStorageV2".'
     }
     {
       name: 'Containers'
@@ -167,6 +168,7 @@ resource defenderPlan 'Microsoft.Security/pricings@2023-01-01' = [for plan in de
   name: plan.name
   properties: {
     pricingTier: !empty(plan.pricingTier) ? plan.pricingTier : defaultPricingTier
+    subPlan: contains(plan, 'subPlan') ? plan.subPlan : ''
   }
 }]
 
