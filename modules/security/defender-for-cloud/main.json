@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.22.6.54827",
-      "templateHash": "16991003723529529795"
+      "version": "0.24.24.22086",
+      "templateHash": "519543250664605660"
     },
     "name": "Defender for Cloud Module",
     "description": "This module deploys Microsoft Defender for Cloud plans, contacts and configuration settings.",
@@ -129,7 +129,8 @@
           },
           {
             "name": "StorageAccounts",
-            "pricingTier": "The pricing tier of the Defender StorageAccounts plan. Allowed values \"Standard\" or \"Free\"."
+            "pricingTier": "The pricing tier of the Defender StorageAccounts plan. Allowed values \"Standard\" or \"Free\".",
+            "subPlan": "The subPlan of the Defender StorageAccounts plan. Allowed values \"DefenderForStorageV2\"."
           },
           {
             "name": "Containers",
@@ -209,7 +210,8 @@
       "apiVersion": "2023-01-01",
       "name": "[parameters('defenderPlans')[copyIndex()].name]",
       "properties": {
-        "pricingTier": "[if(not(empty(parameters('defenderPlans')[copyIndex()].pricingTier)), parameters('defenderPlans')[copyIndex()].pricingTier, variables('defaultPricingTier'))]"
+        "pricingTier": "[if(not(empty(parameters('defenderPlans')[copyIndex()].pricingTier)), parameters('defenderPlans')[copyIndex()].pricingTier, variables('defaultPricingTier'))]",
+        "subPlan": "[if(contains(parameters('defenderPlans')[copyIndex()], 'subPlan'), parameters('defenderPlans')[copyIndex()].subPlan, '')]"
       }
     },
     {
