@@ -48,6 +48,12 @@ Applies a lock to the storage account if the lock is specified.
 | `diagnosticLogAnalyticsWorkspaceId`     | `string` | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                                                                                                         |
 | `diagnosticEventHubAuthorizationRuleId` | `string` | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.                                                                                   |
 | `diagnosticEventHubName`                | `string` | No       | Optional. Event hub name. Only required if enableDiagnostics is set to true.                                                                                                                              |
+| `enablechangeFeed`                      | `bool`   | No       | Optional.  If true, enable change feed.                                                                                                                                                                   |
+| `changeFeedRetentionPolicy`             | `int`    | No       | Optional. Amount of days the change feed data is stored and available for recovery.                                                                                                                       |
+| `enableblobVersioning`                  | `bool`   | No       | Optional.  If true, enable versioning for blobs.                                                                                                                                                          |
+| `enablecontainerDeleteRetentionPolicy`  | `bool`   | No       | Optional.  If true, enable container delete retention policy.                                                                                                                                             |
+| `containerDeleteRetentionPolicy`        | `int`    | No       | Optional. Amount of days the deleted container is available for recovery.                                                                                                                                 |
+| `enablerestorePolicy`                   | `bool`   | No       | Optional.  If true, enable point-in-time restore for containers policy.                                                                                                                                   |
 
 ## Outputs
 
