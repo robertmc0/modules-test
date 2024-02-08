@@ -209,3 +209,17 @@ module storageAccountDataLake '../main.bicep' = {
     resourcelock: 'CanNotDelete'
   }
 }
+
+module storageaccountpit '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-pitr-storage-account'
+  params: {
+    name: '${uniqueString(deployment().name, location)}pitrsa'
+    location: location
+    enablechangeFeed: true
+    changeFeedRetentionPolicy: 7
+    enableblobVersioning: true
+    enablecontainerDeleteRetentionPolicy: true
+    containerDeleteRetentionPolicy: 7
+    enablerestorePolicy: true
+  }
+}
