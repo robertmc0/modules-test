@@ -5,7 +5,7 @@
     "memory": "4gb"
   },
   "dockerFile": "Dockerfile",
-  "updateContentCommand": "dotnet tool install --global Azure.Bicep.RegistryModuleTool",
+  "updateContentCommand": "",
   "customizations": {
     "vscode": {
       "extensions": [

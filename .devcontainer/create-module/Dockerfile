@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:ubuntu
+FROM mcr.microsoft.com/dotnet/sdk:8.0
 
 WORKDIR /home/
 
@@ -10,6 +10,4 @@ RUN curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep
   chmod +x ./bicep && \
   mv ./bicep /usr/local/bin/bicep
 
-RUN echo "===> Installing .NET 7.0 SDK..."
-RUN sudo apt update && sudo apt -y install dotnet7 && \
-  dotnet --version
+RUN dotnet tool install Azure.Bicep.RegistryModuleTool --tool-path /usr/local/bin/
