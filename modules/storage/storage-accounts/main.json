@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.24.24.22086",
-      "templateHash": "11805217266679405287"
+      "version": "0.25.53.49325",
+      "templateHash": "2235626791934362357"
     },
     "name": "Storage Accounts",
     "description": "This module deploys Microsoft.StorageAccounts and child resources",
