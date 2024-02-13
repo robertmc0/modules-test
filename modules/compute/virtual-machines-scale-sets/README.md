@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Compute virtualMachineScaleSets
 
-## Description
+## Details
 
 - Creates Microsoft.Compute virtualMachineScaleSets resource.
 - Apply cloud-init configuration via customData.
@@ -26,7 +26,7 @@ This module deploys Microsoft.Compute virtualMachineScaleSets
 | `adminPassword`            | `securestring` | Yes      | Specifies the password of the administrator account. Refer to article for password requirements https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachinescalesets?pivots=deployment-language-bicep#virtualmachinescalesetosprofile. |
 | `subnetResourceId`         | `string`       | Yes      | Resource ID of the virtual machine scale set subnet.                                                                                                                                                                                                         |
 | `capacity`                 | `int`          | No       | Optional. Specifies the number of virtual machines in the scale set.                                                                                                                                                                                         |
-| `imageReference`           | `object`       | Yes      | Specifies information about the image to use.                                                                                                                                                                                                                |
+| `imageReference`           | `object`       | Yes      | Specifies information about the image to use. Refer to https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage for values.                                                                                                         |
 | `upgradePolicyMode`        | `string`       | No       | Optional. Specifies the mode of an upgrade to virtual machines in the scale set.                                                                                                                                                                             |
 | `customData`               | `string`       | No       | Optional. Specifies a base-64 encoded string of custom data. The base-64 encoded string is decoded to a binary array that is saved as a file on the Virtual Machine. The maximum length of the binary array is 65535 bytes.                                  |
 | `orchestrationMode`        | `string`       | No       | Optional. Specifies the orchestration mode for the virtual machine scale set.                                                                                                                                                                                |
@@ -43,10 +43,10 @@ This module deploys Microsoft.Compute virtualMachineScaleSets
 
 ## Outputs
 
-| Name       | Type   | Description                                                |
-| :--------- | :----: | :--------------------------------------------------------- |
-| name       | string | The name of the deployed virtual machine scale set.        |
-| resourceId | string | The resource ID of the deployed virtual machine scale set. |
+| Name         | Type     | Description                                                |
+| :----------- | :------: | :--------------------------------------------------------- |
+| `name`       | `string` | The name of the deployed virtual machine scale set.        |
+| `resourceId` | `string` | The resource ID of the deployed virtual machine scale set. |
 
 ## Examples
 

@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.16.2.56959",
-      "templateHash": "4632021752977725066"
-    }
+      "version": "0.24.24.22086",
+      "templateHash": "3400368082967096981"
+    },
+    "name": "Virtual Machine Scale Sets Module",
+    "description": "This module deploys Microsoft.Compute virtualMachineScaleSets",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -61,8 +64,8 @@
     },
     "computerNamePrefix": {
       "type": "string",
-      "maxLength": 15,
       "minLength": 1,
+      "maxLength": 15,
       "metadata": {
         "description": "Specifies the computer name prefix for all of the virtual machines in the scale set. Computer name prefixes must be 1 to 15 characters long."
       }
@@ -102,7 +105,7 @@
           "sku": "string",
           "version": "string"
         },
-        "description": "Specifies information about the image to use."
+        "description": "Specifies information about the image to use. Refer to https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage for values."
       }
     },
     "upgradePolicyMode": {
