@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.16.2.56959",
-      "templateHash": "15511378884145228272"
-    }
+      "version": "0.24.24.22086",
+      "templateHash": "5456896857712979312"
+    },
+    "name": "Virtual Machines Module",
+    "description": "This module deploys Microsoft.Compute virtualMachines",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -51,7 +54,7 @@
           "sku": "string",
           "version": "string"
         },
-        "description": "Specifies information about the image to use."
+        "description": "Specifies information about the image to use. Refer to https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage for values."
       }
     },
     "availabilityZones": {
