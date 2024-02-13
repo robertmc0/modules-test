@@ -210,6 +210,28 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 @description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
 param diagnosticEventHubName string = ''
 
+@description('Optional.  If true, enable change feed.')
+param enablechangeFeed bool = false
+
+@description('Optional. Amount of days the change feed data is stored and available for recovery.')
+@minValue(1)
+@maxValue(365)
+param changeFeedRetentionPolicy int = 7
+
+@description('Optional.  If true, enable versioning for blobs.')
+param enableblobVersioning bool = false
+
+@description('Optional.  If true, enable container delete retention policy.')
+param enablecontainerDeleteRetentionPolicy bool = false
+
+@description('Optional. Amount of days the deleted container is available for recovery.')
+@minValue(1)
+@maxValue(365)
+param containerDeleteRetentionPolicy int = 7
+
+@description('Optional.  If true, enable point-in-time restore for containers policy.')
+param enablerestorePolicy bool = false
+
 var supportsBlobService = kind == 'BlockBlobStorage' || kind == 'BlobStorage' || kind == 'StorageV2' || kind == 'Storage'
 
 var supportsFileService = kind == 'FileStorage' || kind == 'StorageV2' || kind == 'Storage'
@@ -235,6 +257,8 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   timeGrain: null
   enabled: true
 }]
+
+var restoreRetentionPolicy = max(deleteRetentionPolicy - 1, 1)
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: name
@@ -278,6 +302,25 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01
     deleteRetentionPolicy: {
       enabled: true
       days: deleteRetentionPolicy
+    }
+    changeFeed: enablechangeFeed ? {
+      enabled: true
+      retentionInDays: changeFeedRetentionPolicy
+    } : {
+      enabled: false
+    }
+    isVersioningEnabled: enableblobVersioning
+    containerDeleteRetentionPolicy: enablecontainerDeleteRetentionPolicy ? {
+      enabled: true
+      days: containerDeleteRetentionPolicy
+    } : {
+      enabled: false
+    }
+    restorePolicy: enablerestorePolicy ? {
+      enabled: true
+      days: restoreRetentionPolicy
+    } : {
+      enabled: false
     }
   }
 }

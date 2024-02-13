@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "11762224591771239039"
+      "version": "0.25.53.49325",
+      "templateHash": "2235626791934362357"
     },
     "name": "Storage Accounts",
     "description": "This module deploys Microsoft.StorageAccounts and child resources",
@@ -323,6 +323,52 @@
       "metadata": {
         "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
       }
+    },
+    "enablechangeFeed": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional.  If true, enable change feed."
+      }
+    },
+    "changeFeedRetentionPolicy": {
+      "type": "int",
+      "defaultValue": 7,
+      "minValue": 1,
+      "maxValue": 365,
+      "metadata": {
+        "description": "Optional. Amount of days the change feed data is stored and available for recovery."
+      }
+    },
+    "enableblobVersioning": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional.  If true, enable versioning for blobs."
+      }
+    },
+    "enablecontainerDeleteRetentionPolicy": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional.  If true, enable container delete retention policy."
+      }
+    },
+    "containerDeleteRetentionPolicy": {
+      "type": "int",
+      "defaultValue": 7,
+      "minValue": 1,
+      "maxValue": 365,
+      "metadata": {
+        "description": "Optional. Amount of days the deleted container is available for recovery."
+      }
+    },
+    "enablerestorePolicy": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional.  If true, enable point-in-time restore for containers policy."
+      }
     }
   },
   "variables": {
@@ -350,7 +396,8 @@
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
-    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "restoreRetentionPolicy": "[max(sub(parameters('deleteRetentionPolicy'), 1), 1)]"
   },
   "resources": [
     {
@@ -394,7 +441,11 @@
         "deleteRetentionPolicy": {
           "enabled": true,
           "days": "[parameters('deleteRetentionPolicy')]"
-        }
+        },
+        "changeFeed": "[if(parameters('enablechangeFeed'), createObject('enabled', true(), 'retentionInDays', parameters('changeFeedRetentionPolicy')), createObject('enabled', false()))]",
+        "isVersioningEnabled": "[parameters('enableblobVersioning')]",
+        "containerDeleteRetentionPolicy": "[if(parameters('enablecontainerDeleteRetentionPolicy'), createObject('enabled', true(), 'days', parameters('containerDeleteRetentionPolicy')), createObject('enabled', false()))]",
+        "restorePolicy": "[if(parameters('enablerestorePolicy'), createObject('enabled', true(), 'days', variables('restoreRetentionPolicy')), createObject('enabled', false()))]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
