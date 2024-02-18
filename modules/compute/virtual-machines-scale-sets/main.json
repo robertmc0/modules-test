@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.24.24.22086",
-      "templateHash": "3400368082967096981"
+      "version": "0.25.53.49325",
+      "templateHash": "2044813440422793552"
     },
     "name": "Virtual Machine Scale Sets Module",
     "description": "This module deploys Microsoft.Compute virtualMachineScaleSets",
