@@ -1,3 +1,7 @@
+metadata name = 'Virtual Machine Scale Sets Module'
+metadata description = 'This module deploys Microsoft.Compute virtualMachineScaleSets'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -50,7 +54,7 @@ param subnetResourceId string
 @description('Optional. Specifies the number of virtual machines in the scale set.')
 param capacity int = 1
 
-@description('Specifies information about the image to use.')
+@description('Specifies information about the image to use. Refer to https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage for values.')
 @metadata({
   doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachinescalesets?pivots=deployment-language-bicep#imagereference'
   example: {
