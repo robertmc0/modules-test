@@ -1,3 +1,7 @@
+metadata name = 'Virtual Machines Module'
+metadata description = 'This module deploys Microsoft.Compute virtualMachines'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 @maxLength(15)
 param name string
@@ -18,7 +22,7 @@ param tags object = {}
 @minValue(1)
 param instanceCount int = 1
 
-@description('Specifies information about the image to use.')
+@description('Specifies information about the image to use. Refer to https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage for values.')
 @metadata({
   doc: 'https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#imagereference'
   example: {
@@ -245,7 +249,7 @@ var osDiskSuffix = '-osdisk'
 
 var dataDiskSuffix = '-disk-'
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned, UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
 var identity = identityType != 'None' ? {
   type: identityType

@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Compute virtualMachines
 
-## Description
+## Details
 
 This module performs the following
 
@@ -26,7 +26,7 @@ This module performs the following
 | `location`                          | `string`       | Yes      | The geo-location where the resource lives.                                                                                                                                                                                        |
 | `tags`                              | `object`       | No       | Optional. Resource tags.                                                                                                                                                                                                          |
 | `instanceCount`                     | `int`          | No       | Optional. Number of virtual machine instances to deploy. Digit ## (e.g. 07) will be appended to the resource name if more than one instance is deployed.                                                                          |
-| `imageReference`                    | `object`       | Yes      | Specifies information about the image to use.                                                                                                                                                                                     |
+| `imageReference`                    | `object`       | Yes      | Specifies information about the image to use. Refer to https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage for values.                                                                              |
 | `availabilityZones`                 | `array`        | No       | Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed.                                                                                                                         |
 | `availabilitySetConfiguration`      | `object`       | No       | Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set.                                                                                                                   |
 | `size`                              | `string`       | Yes      | Specifies the size of the virtual machine. Refer to https://learn.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#hardwareprofile for values.                              |
@@ -55,10 +55,10 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type  | Description                                       |
-| :--------- | :---: | :------------------------------------------------ |
-| name       | array | The name of the deployed virtual machines.        |
-| resourceId | array | The resource ID of the deployed virtual machines. |
+| Name         | Type    | Description                                       |
+| :----------- | :-----: | :------------------------------------------------ |
+| `name`       | `array` | The name of the deployed virtual machines.        |
+| `resourceId` | `array` | The resource ID of the deployed virtual machines. |
 
 ## Examples
 

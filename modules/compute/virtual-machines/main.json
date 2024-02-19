@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.16.2.56959",
-      "templateHash": "15511378884145228272"
-    }
+      "version": "0.25.53.49325",
+      "templateHash": "9473017900239090573"
+    },
+    "name": "Virtual Machines Module",
+    "description": "This module deploys Microsoft.Compute virtualMachines",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -51,7 +54,7 @@
           "sku": "string",
           "version": "string"
         },
-        "description": "Specifies information about the image to use."
+        "description": "Specifies information about the image to use. Refer to https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage for values."
       }
     },
     "availabilityZones": {
@@ -343,7 +346,7 @@
     "networkInterfaceSuffix": "-nic",
     "osDiskSuffix": "-osdisk",
     "dataDiskSuffix": "-disk-",
-    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned, UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
   "resources": [
