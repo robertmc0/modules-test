@@ -1,0 +1,74 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.19.5.34762",
+      "templateHash": "18013227312678304649"
+    },
+    "name": "Private DNS Zones VNET Link Module",
+    "description": "This module deploys Microsoft.Network virtualNetworkLinks.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "virtualNetworkResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Existing virtual network resource ID(s)."
+      }
+    },
+    "registrationEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. VNET link Auto Registration."
+      }
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The Private DNS Zone name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. The location where the Private DNS Zone is deployed"
+      }
+    }
+  },
+  "variables": {
+    "vnetLinkSuffix": "-vlnk"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "apiVersion": "2020-06-01",
+      "name": "[format('{0}/{1}', parameters('name'), format('{0}{1}', last(split(parameters('virtualNetworkResourceId'), '/')), variables('vnetLinkSuffix')))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "registrationEnabled": "[parameters('registrationEnabled')]",
+        "virtualNetwork": {
+          "id": "[parameters('virtualNetworkResourceId')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed private dns zone link."
+      },
+      "value": "[format('{0}{1}', last(split(parameters('virtualNetworkResourceId'), '/')), variables('vnetLinkSuffix'))]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed private dns zone link."
+      },
+      "value": "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', parameters('name'), format('{0}{1}', last(split(parameters('virtualNetworkResourceId'), '/')), variables('vnetLinkSuffix')))]"
+    }
+  }
+}

@@ -1,3 +1,7 @@
+metadata name = 'Storage Accounts'
+metadata description = 'This module deploys Microsoft.StorageAccounts and child resources'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -55,6 +59,15 @@ param userAssignedIdentities object = {}
   'Disabled'
 ])
 param publicNetworkAccess string = 'Enabled'
+
+@description('Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key.')
+param allowSharedKeyAccess bool = false
+
+@description('Optional. Allow or disallow public access to all blobs or containers in the storage account.')
+param allowBlobPublicAccess bool = false
+
+@description('Optional. Indicates whether the default authentication is OAuth (AD Authentication) or not.')
+param defaultToOAuthAuthentication bool = true
 
 @description('Optional. Amount of days the soft deleted data is stored and available for recovery.')
 @minValue(1)
@@ -120,6 +133,43 @@ param tables array = []
 })
 param networkAcls object = {}
 
+@description('Optional. Allow large file shares if set to Enabled. It cannot be disabled once it is enabled.')
+param largeFileSharesState string = 'Disabled'
+
+@description('Optional. Lifecycle management policies.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts/managementpolicies?pivots=deployment-language-bicep'
+  example: [
+    {
+      name: 'blob-lifecycle'
+      type: 'Lifecycle'
+      definition: {
+        actions: {
+          baseBlob: {
+            tierToCool: {
+              daysAfterModificationGreaterThan: 30
+            }
+            delete: {
+              daysAfterModificationGreaterThan: 365
+            }
+          }
+          snapshot: {
+            delete: {
+              daysAfterCreationGreaterThan: 365
+            }
+          }
+        }
+        filters: {
+          blobTypes: [
+            'blockBlob'
+          ]
+        }
+      }
+    }
+  ]
+})
+param managementPolicies array = []
+
 @allowed([
   'CanNotDelete'
   'NotSpecified'
@@ -131,16 +181,13 @@ param resourcelock string = 'NotSpecified'
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
-@description('Optional. The name of log categories that will be streamed.')
+@description('Optional. The name of log category groups that will be streamed.')
 @allowed([
-  'StorageRead'
-  'StorageWrite'
-  'StorageDelete'
+  'Audit'
+  'AllLogs'
 ])
-param diagnosticLogCategoriesToEnable array = [
-  'StorageRead'
-  'StorageWrite'
-  'StorageDelete'
+param diagnosticLogCategoryGroupsToEnable array = [
+  'Audit'
 ]
 
 @description('Optional. The name of metrics that will be streamed.')
@@ -150,11 +197,6 @@ param diagnosticLogCategoriesToEnable array = [
 param diagnosticMetricsToEnable array = [
   'Transaction'
 ]
-
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
 
 @description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
 param diagnosticStorageAccountId string = ''
@@ -167,6 +209,28 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 
 @description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
 param diagnosticEventHubName string = ''
+
+@description('Optional.  If true, enable change feed.')
+param enablechangeFeed bool = false
+
+@description('Optional. Amount of days the change feed data is stored and available for recovery.')
+@minValue(1)
+@maxValue(365)
+param changeFeedRetentionPolicy int = 7
+
+@description('Optional.  If true, enable versioning for blobs.')
+param enableblobVersioning bool = false
+
+@description('Optional.  If true, enable container delete retention policy.')
+param enablecontainerDeleteRetentionPolicy bool = false
+
+@description('Optional. Amount of days the deleted container is available for recovery.')
+@minValue(1)
+@maxValue(365)
+param containerDeleteRetentionPolicy int = 7
+
+@description('Optional.  If true, enable point-in-time restore for containers policy.')
+param enablerestorePolicy bool = false
 
 var supportsBlobService = kind == 'BlockBlobStorage' || kind == 'BlobStorage' || kind == 'StorageV2' || kind == 'Storage'
 
@@ -183,26 +247,20 @@ var lockName = toLower('${storage.name}-${resourcelock}-lck')
 
 var diagnosticsName = toLower('${storage.name}-dgs')
 
-var diagnosticsLogs = [for category in diagnosticLogCategoriesToEnable: {
-  category: category
+var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+  categoryGroup: categoryGroup
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
-resource storage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
+var restoreRetentionPolicy = max(deleteRetentionPolicy - 1, 1)
+
+resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: name
   location: location
   tags: tags
@@ -230,10 +288,14 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
     publicNetworkAccess: publicNetworkAccess
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
+    largeFileSharesState: largeFileSharesState
+    allowSharedKeyAccess: allowSharedKeyAccess
+    allowBlobPublicAccess: allowBlobPublicAccess
+    defaultToOAuthAuthentication: defaultToOAuthAuthentication
   }
 }
 
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-04-01' = if (supportsBlobService) {
+resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = if (supportsBlobService) {
   parent: storage
   name: 'default'
   properties: {
@@ -241,10 +303,39 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-04-01
       enabled: true
       days: deleteRetentionPolicy
     }
+    changeFeed: enablechangeFeed ? {
+      enabled: true
+      retentionInDays: changeFeedRetentionPolicy
+    } : {
+      enabled: false
+    }
+    isVersioningEnabled: enableblobVersioning
+    containerDeleteRetentionPolicy: enablecontainerDeleteRetentionPolicy ? {
+      enabled: true
+      days: containerDeleteRetentionPolicy
+    } : {
+      enabled: false
+    }
+    restorePolicy: enablerestorePolicy ? {
+      enabled: true
+      days: restoreRetentionPolicy
+    } : {
+      enabled: false
+    }
   }
 }
 
-resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = [for container in containers: {
+resource managementPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = if (!empty(managementPolicies)) {
+  parent: storage
+  name: 'default'
+  properties: {
+    policy: {
+      rules: managementPolicies
+    }
+  }
+}
+
+resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = [for container in containers: {
   parent: blobServices
   name: container.name
   properties: {
@@ -252,7 +343,7 @@ resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containe
   }
 }]
 
-resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-08-01' = if (supportsFileService) {
+resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' = if (supportsFileService) {
   parent: storage
   name: 'default'
   properties: {
@@ -263,7 +354,7 @@ resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-08-01
   }
 }
 
-resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2021-08-01' = [for fileShare in fileShares: {
+resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = [for fileShare in fileShares: {
   parent: fileServices
   name: fileShare.name
   properties: {
@@ -273,31 +364,31 @@ resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2021-0
   }
 }]
 
-resource queueServices 'Microsoft.Storage/storageAccounts/queueServices@2021-09-01' = if (!empty(queues)) {
+resource queueServices 'Microsoft.Storage/storageAccounts/queueServices@2023-01-01' = if (!empty(queues)) {
   parent: storage
   name: 'default'
   properties: {}
 }
 
-resource storageQueues 'Microsoft.Storage/storageAccounts/queueServices/queues@2021-09-01' = [for queue in queues: {
+resource storageQueues 'Microsoft.Storage/storageAccounts/queueServices/queues@2023-01-01' = [for queue in queues: {
   parent: queueServices
   name: queue.name
   properties: {}
 }]
 
-resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2021-09-01' = if (!empty(tables)) {
+resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2023-01-01' = if (!empty(tables)) {
   parent: storage
   name: 'default'
   properties: {}
 }
 
-resource storageTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2021-09-01' = [for table in tables: {
+resource storageTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = [for table in tables: {
   parent: tableServices
   name: table.name
   properties: {}
 }]
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != 'NotSpecified') {
   scope: storage
   name: lockName
   properties: {

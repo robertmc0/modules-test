@@ -1,0 +1,178 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.13.1.58284",
+      "templateHash": "12999758513157703826"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 24,
+      "minLength": 1,
+      "metadata": {
+        "description": "Specifies the name of the policy assignment. Maximum length is 24 characters for management group scope."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[deployment().location]",
+      "metadata": {
+        "description": "Optional. The location of the policy assignment. Only required when utilizing managed identity."
+      }
+    },
+    "displayName": {
+      "type": "string",
+      "maxLength": 128,
+      "metadata": {
+        "description": "The display name of the policy assignment. Maximum length is 128 characters."
+      }
+    },
+    "description": {
+      "type": "string",
+      "metadata": {
+        "description": "This message will be part of response in case of policy violation."
+      }
+    },
+    "enforcementMode": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Default",
+        "DoNotEnforce"
+      ],
+      "metadata": {
+        "description": "Optional. The policy assignment enforcement mode."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policyassignments?pivots=deployment-language-bicep#identity",
+        "example": {
+          "identity": {
+            "type": "UserAssigned",
+            "userAssignedIdentities": {
+              "userAssignedManagedIdentity": {}
+            }
+          }
+        },
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "nonComplianceMessage": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The message that describe why a resource is non-compliant with the policy."
+      }
+    },
+    "notScopes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. The policy excluded scopes."
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policyassignments?pivots=deployment-language-bicep#policyassignmentproperties",
+        "example": {
+          "parameters": {
+            "listOfAllowedLocations": {
+              "type": "Array",
+              "metadata": {
+                "description": "The list of locations that can be specified when deploying resources.",
+                "strongType": "location",
+                "displayName": "Allowed locations"
+              },
+              "defaultValue": [
+                "australiaeast",
+                "australiasoutheast"
+              ]
+            }
+          }
+        },
+        "description": "Optional. The parameter values for the assigned policy rule. The keys are the parameter names."
+      }
+    },
+    "policyDefinitionId": {
+      "type": "string",
+      "metadata": {
+        "description": "The ID of the policy definition or policy set definition being assigned."
+      }
+    }
+  },
+  "variables": {
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/policyAssignments",
+      "apiVersion": "2021-06-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "description": "[parameters('description')]",
+        "displayName": "[parameters('displayName')]",
+        "enforcementMode": "[parameters('enforcementMode')]",
+        "nonComplianceMessages": "[if(not(empty(parameters('nonComplianceMessage'))), createArray(createObject('message', parameters('nonComplianceMessage'))), null())]",
+        "notScopes": "[parameters('notScopes')]",
+        "parameters": "[parameters('parameters')]",
+        "policyDefinitionId": "[parameters('policyDefinitionId')]"
+      }
+    },
+    {
+      "condition": "[not(empty(variables('identity')))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(parameters('name'), 'Microsoft.Authorization/policyAssignments', extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name')))]",
+      "properties": {
+        "principalId": "[reference(extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name')), '2021-06-01', 'full').identity.principalId]",
+        "roleDefinitionId": "[tenantResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the policy assignment."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the policy assignment."
+      }
+    },
+    "systemAssignedPrincipalId": {
+      "type": "string",
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name')), '2021-06-01', 'full').identity, 'principalId')), reference(extensionResourceId(managementGroup().id, 'Microsoft.Authorization/policyAssignments', parameters('name')), '2021-06-01', 'full').identity.principalId, '')]",
+      "metadata": {
+        "description": "The principal ID of the system assigned identity."
+      }
+    }
+  }
+}

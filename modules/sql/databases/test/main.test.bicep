@@ -35,6 +35,43 @@ resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-09-01
   }
 }
 
+resource diagnosticsStorageAccountPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = {
+  parent: diagnosticsStorageAccount
+  name: 'default'
+  properties: {
+    policy: {
+      rules: [
+        {
+          name: 'blob-lifecycle'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterModificationGreaterThan: 30
+                }
+                delete: {
+                  daysAfterModificationGreaterThan: 365
+                }
+              }
+              snapshot: {
+                delete: {
+                  daysAfterCreationGreaterThan: 365
+                }
+              }
+            }
+            filters: {
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deploymentName, 'logAnalyticsWorkspace', location)}'
   location: location
@@ -64,6 +101,19 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
       sid: '7d4930a7-f128-45af-9e70-07f1484c9c4a'
       tenantId: subscription().tenantId
     }
+  }
+}
+
+module elasticPool '../../elastic-pool/main.bicep' = {
+  name: '${shortIdentifier}-ep-${uniqueString(deploymentName, 'elasticpool', location)}'
+  params: {
+    location: location
+    sqlServerName: sqlServer.name
+    name: 'example-elastic-pool'
+    skuType: 'StandardPool'
+    skuCapacity: 50
+    databaseMaxCapacity: 50
+    maxPoolSize: 53687091200 // 50 GIG
   }
 }
 
@@ -99,5 +149,19 @@ module sqlDatabase2 '../main.bicep' = {
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     diagnosticStorageAccountId: diagnosticsStorageAccount.id
     maxDbSize: 10737418240 // 10 GIG
+  }
+}
+module sqlDatabase3 '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-elasticpool-sqldatabase'
+  params: {
+    location: location
+    sqlServerName: sqlServer.name
+    databaseName: 'example3-dev-db'
+    skuType: 'ElasticPool'
+    enableDiagnostics: true
+    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    diagnosticStorageAccountId: diagnosticsStorageAccount.id
+    maxDbSize: 10737418240 // 10 GIG
+    elasticPoolId: elasticPool.outputs.resourceId
   }
 }

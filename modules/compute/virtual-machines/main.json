@@ -1,0 +1,667 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.25.53.49325",
+      "templateHash": "9473017900239090573"
+    },
+    "name": "Virtual Machines Module",
+    "description": "This module deploys Microsoft.Compute virtualMachines",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 15,
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "instanceCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "metadata": {
+        "description": "Optional. Number of virtual machine instances to deploy. Digit ## (e.g. 07) will be appended to the resource name if more than one instance is deployed."
+      }
+    },
+    "imageReference": {
+      "type": "object",
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#imagereference",
+        "example": {
+          "publisher": "string",
+          "offer": "string",
+          "sku": "string",
+          "version": "string"
+        },
+        "description": "Specifies information about the image to use. Refer to https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage for values."
+      }
+    },
+    "availabilityZones": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "metadata": {
+        "description": "Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed."
+      }
+    },
+    "availabilitySetConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "name": "Availability set name.",
+        "platformFaultDomainCount": "Fault Domain count.",
+        "platformUpdateDomainCount": "Update Domain count.",
+        "description": "Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set."
+      }
+    },
+    "size": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the size of the virtual machine. Refer to https://learn.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#hardwareprofile for values."
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of the administrator account."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Specifies the password of the administrator account. Refer to https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#osprofile for password complexity requirements."
+      }
+    },
+    "customData": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Specifies a base-64 encoded string of custom data."
+      }
+    },
+    "linuxConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#linuxconfiguration",
+        "example": {
+          "disablePasswordAuthentication": "bool",
+          "patchSettings": {
+            "assessmentMode": "string",
+            "automaticByPlatformSettings": {
+              "rebootSetting": "string"
+            },
+            "patchMode": "string"
+          },
+          "provisionVMAgent": "bool",
+          "ssh": {
+            "publicKeys": {
+              "keyData": "string",
+              "path": "string"
+            }
+          }
+        },
+        "description": "Optional. Specifies the Linux operating system settings on the virtual machine."
+      }
+    },
+    "windowsConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?pivots=deployment-language-bicep#windowsconfiguration",
+        "example": {
+          "additionalUnattendContent": {
+            "componentName": "string",
+            "content": "string",
+            "passName": "OobeSystem",
+            "settingName": "string"
+          },
+          "enableAutomaticUpdates": "bool",
+          "patchSettings": {
+            "assessmentMode": "string",
+            "automaticByPlatformSettings": {
+              "rebootSetting": "string"
+            },
+            "enableHotpatching": "bool",
+            "patchMode": "string"
+          },
+          "provisionVMAgent": "bool",
+          "timeZone": "string",
+          "winRM": {
+            "listeners": [
+              {
+                "certificateUrl": "string",
+                "protocol": "string"
+              }
+            ]
+          }
+        },
+        "description": "Optional. Specifies Windows operating system settings on the virtual machine."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "osStorageAccountType": {
+      "type": "string",
+      "allowedValues": [
+        "PremiumV2_LRS",
+        "Premium_LRS",
+        "Premium_ZRS",
+        "StandardSSD_LRS",
+        "StandardSSD_ZRS",
+        "Standard_LRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "Specifies the storage account type for the os managed disk."
+      }
+    },
+    "dataDisks": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "storageAccountType": "Specifies the storage account type for the managed disk.",
+        "diskSizeGB": "Specifies the size of an empty data disk in gigabytes.",
+        "caching": "Specifies the caching requirements. Accepted values are \"None\", \"ReadOnly\" or \"ReadWrite\".",
+        "description": "Optional. Specifies the parameters that are used to add a data disk to a virtual machine."
+      }
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the virtual machine subnet."
+      }
+    },
+    "licenseType": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Specifies that the image or disk that is being used was licensed on-premises. Accepted values \"Windows_Client\", \"Windows_Server\", \"RHEL_BYOS\" or \"SLES_BYOS\"."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required to enable VM Diagnostics."
+      }
+    },
+    "antiMalwareConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "AntimalwareEnabled": "Enables the Antimalware service. Accepted values \"true or \"false\".",
+        "Exclusions": {
+          "Extensions": "List of file extensions to exclude from scanning.",
+          "Paths": "List of path to files or folders to exclude.",
+          "Processes": "List of process exclusions."
+        },
+        "RealtimeProtectionEnabled": "Enable real-time protection.",
+        "ScheduledScanSettings": {
+          "isEnabled": "Enables or disables a periodic scan. Accepted values \"true or \"false\".",
+          "scanType": "Scan scheduled type.",
+          "day": "0 - scan daily, 1 - Sunday, 2 - Monday, 3 - Tuesday..., 7 - Saturday, 8 - disabled.",
+          "time": "Hour at which to begin the scheduled scan. Measured in 60 minute increments. 60 mins = 1am, 120 mins = 2am."
+        },
+        "description": "Optional. Microsoft antimalware configuration. Will not be installed if left blank."
+      }
+    },
+    "domainJoinSettings": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "domainToJoin": "FQDN of the domain to which the session host virtual machines will be joined. E.g. contoso.com.",
+        "ouPath": "Organisational unit (OU) to place the session host virtual machines when joining the domain. E.g. OU=testOU;DC=domain;DC=Domain;DC=com.",
+        "domainJoinUser": "Username that has privileges to join the session host virtual machines to the domain.",
+        "domainJoinPassword": "Password for the domain join user account.",
+        "description": "Optional. Domain join configuration. Will not be domain joined if left blank."
+      }
+    },
+    "domainJoinPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Password for the domain join user account."
+      }
+    },
+    "dscConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/virtual-machines/extensions/dsc-windows",
+        "example": {
+          "configuration": {
+            "url": "http://validURLToConfigLocation",
+            "script": "ConfigurationScript.ps1",
+            "function": "ConfigurationFunction"
+          },
+          "configurationArguments": {
+            "argument1": "Value1",
+            "argument2": "Value2"
+          }
+        },
+        "description": "Optional. Desired state configuration. Will not be executed if left blank."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "enableSecurityProfile": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-au/azure/virtual-machines/trusted-launch",
+        "description": "Optional. Enables the Security related profile settings for the virtual machine. Only supported on Gen 2 VMs."
+      }
+    },
+    "encryptionAtHost": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable the encryption for all the disks including Resource/Temp disk at host itself."
+      }
+    },
+    "securityType": {
+      "type": "string",
+      "defaultValue": "TrustedLaunch",
+      "allowedValues": [
+        "TrustedLaunch",
+        "ConfidentialVM"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings."
+      }
+    },
+    "secureBootEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable secure boot on the virtual machine."
+      }
+    },
+    "vTpmEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable vTPM on the virtual machine."
+      }
+    }
+  },
+  "variables": {
+    "securityProfileSettings": {
+      "encryptionAtHost": "[parameters('encryptionAtHost')]",
+      "securityType": "[parameters('securityType')]",
+      "uefiSettings": {
+        "secureBootEnabled": "[parameters('secureBootEnabled')]",
+        "vTpmEnabled": "[parameters('vTpmEnabled')]"
+      }
+    },
+    "lockSuffix": "-lck",
+    "networkInterfaceSuffix": "-nic",
+    "osDiskSuffix": "-osdisk",
+    "dataDiskSuffix": "-disk-",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned, UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "networkInterface",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}{1}{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('networkInterfaceSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[parameters('subnetResourceId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[not(empty(parameters('availabilitySetConfiguration')))]",
+      "type": "Microsoft.Compute/availabilitySets",
+      "apiVersion": "2022-08-01",
+      "name": "[if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Aligned"
+      },
+      "properties": {
+        "platformFaultDomainCount": "[parameters('availabilitySetConfiguration').platformFaultDomainCount]",
+        "platformUpdateDomainCount": "[parameters('availabilitySetConfiguration').platformUpdateDomainCount]"
+      }
+    },
+    {
+      "copy": {
+        "name": "virtualMachine",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": "[variables('identity')]",
+      "zones": "[parameters('availabilityZones')]",
+      "properties": {
+        "availabilitySet": "[if(not(empty(parameters('availabilitySetConfiguration'))), createObject('id', resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))), null())]",
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}{1}{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('networkInterfaceSuffix')))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)))]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": "[if(not(empty(parameters('windowsConfiguration'))), parameters('windowsConfiguration'), null())]",
+          "linuxConfiguration": "[if(not(empty(parameters('linuxConfiguration'))), parameters('linuxConfiguration'), null())]",
+          "customData": "[if(not(empty(parameters('customData'))), parameters('customData'), null())]"
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('size')]"
+        },
+        "storageProfile": {
+          "copy": [
+            {
+              "name": "dataDisks",
+              "count": "[length(parameters('dataDisks'))]",
+              "input": {
+                "name": "[format('{0}{1}{2}{3}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('dataDiskSuffix'), format('{0:D3}', add(copyIndex('dataDisks'), 1)))]",
+                "diskSizeGB": "[parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB]",
+                "lun": "[copyIndex('dataDisks')]",
+                "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
+                "createOption": "Empty",
+                "managedDisk": {
+                  "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].storageAccountType]"
+                }
+              }
+            }
+          ],
+          "imageReference": "[parameters('imageReference')]",
+          "osDisk": {
+            "name": "[format('{0}{1}{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('osDiskSuffix'))]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "[parameters('osStorageAccountType')]"
+            }
+          }
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "securityProfile": "[if(parameters('enableSecurityProfile'), variables('securityProfileSettings'), createObject())]",
+        "licenseType": "[if(not(empty(parameters('licenseType'))), parameters('licenseType'), null())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))]",
+        "networkInterface"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_monitoring",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'Microsoft.EnterpriseCloud.Monitoring')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+        "type": "MicrosoftMonitoringAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), createObject('workspaceId', reference(parameters('diagnosticLogAnalyticsWorkspaceId'), '2015-03-20').customerId), null())]",
+        "protectedSettings": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), createObject('workspaceKey', listKeys(parameters('diagnosticLogAnalyticsWorkspaceId'), '2015-03-20').primarySharedKey), null())]"
+      },
+      "dependsOn": [
+        "extension_joinDomain",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_depAgent",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'DependencyAgentWindows')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+        "type": "DependencyAgentWindows",
+        "typeHandlerVersion": "9.5",
+        "autoUpgradeMinorVersion": true
+      },
+      "dependsOn": [
+        "extension_joinDomain",
+        "extension_monitoring",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_guestHealth",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'GuestHealthWindowsAgent')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitor.VirtualMachines.GuestHealth",
+        "type": "GuestHealthWindowsAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true
+      },
+      "dependsOn": [
+        "extension_depAgent",
+        "extension_joinDomain",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_azureMonitorWindowsAgent",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'AzureMonitorWindowsAgent')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitor",
+        "type": "AzureMonitorWindowsAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true
+      },
+      "dependsOn": [
+        "extension_guestHealth",
+        "extension_joinDomain",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_antimalware",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(empty(parameters('antiMalwareConfiguration')))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'IaaSAntimalware')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Security",
+        "type": "IaaSAntimalware",
+        "typeHandlerVersion": "1.3",
+        "autoUpgradeMinorVersion": true,
+        "settings": "[parameters('antiMalwareConfiguration')]"
+      },
+      "dependsOn": [
+        "extension_joinDomain",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_joinDomain",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[and(not(empty(parameters('domainJoinSettings'))), not(empty(parameters('domainJoinPassword'))))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'JoinDomain')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "JsonADDomainExtension",
+        "typeHandlerVersion": "1.3",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "name": "[parameters('domainJoinSettings').domainToJoin]",
+          "oUPath": "[parameters('domainJoinSettings').ouPath]",
+          "user": "[format('{0}\\{1}', parameters('domainJoinSettings').domainToJoin, parameters('domainJoinSettings').domainJoinUser)]",
+          "restart": "true",
+          "options": 3
+        },
+        "protectedSettings": {
+          "password": "[parameters('domainJoinPassword')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_dsc",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(empty(parameters('dscConfiguration')))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'Microsoft.Powershell.DSC')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.83",
+        "autoUpgradeMinorVersion": true,
+        "settings": "[parameters('dscConfiguration')]"
+      },
+      "dependsOn": [
+        "extension_joinDomain",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "lock",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Compute/virtualMachines/{0}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]",
+      "name": "[toLower(format('{0}{1}{2}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('lockSuffix')))]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "array",
+      "metadata": {
+        "description": "The name of the deployed virtual machines."
+      },
+      "copy": {
+        "count": "[length(range(0, parameters('instanceCount')))]",
+        "input": "[format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1)))]"
+      }
+    },
+    "resourceId": {
+      "type": "array",
+      "metadata": {
+        "description": "The resource ID of the deployed virtual machines."
+      },
+      "copy": {
+        "count": "[length(range(0, parameters('instanceCount')))]",
+        "input": "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      }
+    }
+  }
+}

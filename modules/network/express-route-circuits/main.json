@@ -1,0 +1,266 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.20.4.51522",
+      "templateHash": "10908609273288445396"
+    },
+    "name": "Express Route Circuits Module",
+    "description": "This module deploys Microsoft.Network expressRouteCircuits",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "tier": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Basic",
+        "Local",
+        "Premium",
+        "Standard"
+      ],
+      "metadata": {
+        "description": "Optional. The sku of this ExpressRoute circuit."
+      }
+    },
+    "billingModel": {
+      "type": "string",
+      "allowedValues": [
+        "MeteredData",
+        "UnlimitedData"
+      ],
+      "metadata": {
+        "description": "The billing model of the ExpressRoute circuit."
+      }
+    },
+    "allowClassicOperations": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Allow classic operations."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "bandwidthInMbps": {
+      "type": "int",
+      "metadata": {
+        "description": "The bandwidth of the ExpressRoute circuit."
+      }
+    },
+    "peeringLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The peering location."
+      }
+    },
+    "serviceProviderName": {
+      "type": "string",
+      "metadata": {
+        "description": "The service provider name."
+      }
+    },
+    "peeringConfig": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "name": "The name of the peering",
+        "peeringType": "The type of peering.",
+        "peerASN": "The peer ASN.",
+        "primaryPeerAddressPrefix": "The primary address prefix.",
+        "secondaryPeerAddressPrefix": "The secondary address prefix.",
+        "vlanId": "The VLAN ID.",
+        "description": "Optional. Peering configuration object."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllLogs"
+      ],
+      "allowedValues": [
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "peerings": "[if(not(empty(parameters('peeringConfig'))), createArray(createObject('name', parameters('peeringConfig').name, 'properties', createObject('peeringType', parameters('peeringConfig').peeringType, 'peerASN', parameters('peeringConfig').peerASN, 'primaryPeerAddressPrefix', parameters('peeringConfig').primaryPeerAddressPrefix, 'secondaryPeerAddressPrefix', parameters('peeringConfig').secondaryPeerAddressPrefix, 'vlanId', parameters('peeringConfig').vlanId))), createArray())]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/expressRouteCircuits",
+      "apiVersion": "2022-09-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[format('{0}_{1}', parameters('tier'), parameters('billingModel'))]",
+        "family": "[parameters('billingModel')]",
+        "tier": "[parameters('tier')]"
+      },
+      "properties": {
+        "allowClassicOperations": "[parameters('allowClassicOperations')]",
+        "serviceProviderProperties": {
+          "bandwidthInMbps": "[parameters('bandwidthInMbps')]",
+          "peeringLocation": "[parameters('peeringLocation')]",
+          "serviceProviderName": "[parameters('serviceProviderName')]"
+        },
+        "peerings": "[variables('peerings')]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Network/expressRouteCircuits/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/expressRouteCircuits', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/expressRouteCircuits/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/expressRouteCircuits', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed express route circuit."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed express route circuit."
+      },
+      "value": "[resourceId('Microsoft.Network/expressRouteCircuits', parameters('name'))]"
+    }
+  }
+}

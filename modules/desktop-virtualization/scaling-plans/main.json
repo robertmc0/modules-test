@@ -1,0 +1,258 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.20.4.51522",
+      "templateHash": "17329548077327123507"
+    },
+    "name": "Desktop Virtualization Scaling Plan Module",
+    "description": "This module deploys Desktop Virtualization Scaling Plan Module",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "friendlyName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Friendly name of scaling plan."
+      }
+    },
+    "scalingPlanDescription": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Description for scaling plan."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "exclusionTag": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Exclusion tag for scaling plan."
+      }
+    },
+    "hostPoolReferences": {
+      "type": "array",
+      "metadata": {
+        "description": "List of HostPool resource Ids."
+      }
+    },
+    "timeZone": {
+      "type": "string",
+      "metadata": {
+        "description": "Timezone of the scaling plan. E.g. \"AUS Eastern Standard Time\"."
+      }
+    },
+    "schedules": {
+      "type": "array",
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.desktopvirtualization/scalingplans?pivots=deployment-language-bicep#scalingschedule",
+        "example": {
+          "name": "string",
+          "daysOfWeek": "string array",
+          "rampUpStartTime": {
+            "hour": "int",
+            "minute": "int"
+          },
+          "rampUpLoadBalancingAlgorithm": "string",
+          "rampUpMinimumHostsPct": "int",
+          "rampUpCapacityThresholdPct": "int",
+          "peakStartTime": {
+            "hour": "int",
+            "minute": "int"
+          },
+          "peakLoadBalancingAlgorithm": "string",
+          "rampDownStartTime": {
+            "hour": "int",
+            "minute": "int"
+          },
+          "rampDownLoadBalancingAlgorithm": "string",
+          "rampDownMinimumHostsPct": "int",
+          "rampDownCapacityThresholdPct": "int",
+          "rampDownWaitTimeMinutes": "int",
+          "rampDownStopHostsWhen": "string",
+          "rampDownNotificationMessage": "string",
+          "offPeakStartTime": {
+            "hour": "int",
+            "minute": "int"
+          },
+          "offPeakLoadBalancingAlgorithm": "string",
+          "rampDownForceLogoffUsers": "bool"
+        },
+        "description": "List of scaling plan definitions."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllLogs"
+      ],
+      "allowedValues": [
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.DesktopVirtualization/scalingPlans",
+      "apiVersion": "2022-04-01-preview",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "copy": [
+          {
+            "name": "hostPoolReferences",
+            "count": "[length(parameters('hostPoolReferences'))]",
+            "input": {
+              "hostPoolArmPath": "[parameters('hostPoolReferences')[copyIndex('hostPoolReferences')]]",
+              "scalingPlanEnabled": true
+            }
+          }
+        ],
+        "friendlyName": "[parameters('friendlyName')]",
+        "description": "[parameters('scalingPlanDescription')]",
+        "exclusionTag": "[parameters('exclusionTag')]",
+        "hostPoolType": "Pooled",
+        "timeZone": "[parameters('timeZone')]",
+        "schedules": "[parameters('schedules')]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.DesktopVirtualization/scalingPlans/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.DesktopVirtualization/scalingPlans/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed scaling plan."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed scaling plan."
+      },
+      "value": "[resourceId('Microsoft.DesktopVirtualization/scalingPlans', parameters('name'))]"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Create-Module",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb"
+  },
+  "dockerFile": "Dockerfile",
+  "updateContentCommand": "",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "gitHub.vscode-pull-request-github",
+        "gitHub.github-vscode-theme",
+        "ms-vscode.powershell",
+        "esbenp.prettier-vscode",
+        "vscode-icons-team.vscode-icons",
+        "redhat.vscode-yaml",
+        "mhutchie.git-graph",
+        "usernamehw.errorlens",
+        "ms-azuretools.vscode-bicep",
+        "msazurermtools.azurerm-vscode-tools",
+        "streetsidesoftware.code-spell-checker"
+      ]
+    }
+  }
+}

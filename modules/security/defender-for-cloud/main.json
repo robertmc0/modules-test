@@ -1,0 +1,235 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.24.24.22086",
+      "templateHash": "519543250664605660"
+    },
+    "name": "Defender for Cloud Module",
+    "description": "This module deploys Microsoft Defender for Cloud plans, contacts and configuration settings.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "emailAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "Email address which will get notifications from Microsoft Defender for Cloud by the configurations defined in this security contact."
+      }
+    },
+    "phone": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The security contact's phone number."
+      }
+    },
+    "alertNotificationSeverity": {
+      "type": "string",
+      "allowedValues": [
+        "High",
+        "Medium",
+        "Low"
+      ],
+      "metadata": {
+        "description": "Defines the minimal alert severity which will be sent as email notifications."
+      }
+    },
+    "notificationsByRole": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "AccountAdmin",
+        "Contributor",
+        "Owner",
+        "ServiceAdmin"
+      ],
+      "metadata": {
+        "description": "Optional. Defines which RBAC roles will get email notifications from Microsoft Defender for Cloud."
+      }
+    },
+    "defenderPlans": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "CloudPosture",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "VirtualMachines",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "SqlServers",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "SqlServerVirtualMachines",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "OpenSourceRelationalDatabases",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "AppServices",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "StorageAccounts",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "Containers",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "KeyVaults",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "Arm",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "CosmosDbs",
+          "pricingTier": "Free"
+        },
+        {
+          "name": "Api",
+          "pricingTier": "Free"
+        }
+      ],
+      "metadata": {
+        "defenderPlans": [
+          {
+            "name": "CloudPosture",
+            "pricingTier": "The pricing tier of the Defender CSPM plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "VirtualMachines",
+            "pricingTier": "The pricing tier of the Defender VirtualMachines plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "SqlServers",
+            "pricingTier": "The pricing tier of the Defender SqlServers plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "SqlServerVirtualMachines",
+            "pricingTier": "The pricing tier of the Defender SqlServerVirtualMachines plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "OpenSourceRelationalDatabases",
+            "pricingTier": "The pricing tier of the Defender OpenSourceRelationalDatabases plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "AppServices",
+            "pricingTier": "The pricing tier of the Defender AppServices plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "StorageAccounts",
+            "pricingTier": "The pricing tier of the Defender StorageAccounts plan. Allowed values \"Standard\" or \"Free\".",
+            "subPlan": "The subPlan of the Defender StorageAccounts plan. Allowed values \"DefenderForStorageV2\"."
+          },
+          {
+            "name": "Containers",
+            "pricingTier": "The pricing tier of the Defender Containers plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "KeyVaults",
+            "pricingTier": "The pricing tier of the Defender KeyVaults plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "Arm",
+            "pricingTier": "The pricing tier of the Defender Arm plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "CosmosDbs",
+            "pricingTier": "The pricing tier of the Defender CosmosDbs plan. Allowed values \"Standard\" or \"Free\"."
+          },
+          {
+            "name": "Api",
+            "pricingTier": "The pricing tier of the Defender Api plan. Allowed values \"Standard\" or \"Free\"."
+          }
+        ],
+        "description": "Optional. The plans Microsoft Defender for Cloud."
+      }
+    },
+    "workspaceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the Log Analytics workspace."
+      }
+    },
+    "workspaceScope": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Optional. All the VMs in this scope will send their security data to the mentioned workspace unless overridden by a setting with more specific scope."
+      }
+    },
+    "autoProvision": {
+      "type": "string",
+      "defaultValue": "On",
+      "allowedValues": [
+        "On",
+        "Off"
+      ],
+      "metadata": {
+        "description": "Optional. Automatically enable new resources into the log analytics workspace."
+      }
+    }
+  },
+  "variables": {
+    "defaultPricingTier": "Free"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Security/securityContacts",
+      "apiVersion": "2020-01-01-preview",
+      "name": "default",
+      "properties": {
+        "emails": "[parameters('emailAddress')]",
+        "phone": "[if(not(empty(parameters('phone'))), parameters('phone'), null())]",
+        "notificationsByRole": "[if(not(empty(parameters('notificationsByRole'))), createObject('roles', parameters('notificationsByRole'), 'state', 'On'), createObject())]",
+        "alertNotifications": {
+          "minimalSeverity": "[parameters('alertNotificationSeverity')]",
+          "state": "On"
+        }
+      }
+    },
+    {
+      "copy": {
+        "name": "defenderPlan",
+        "count": "[length(parameters('defenderPlans'))]",
+        "mode": "serial",
+        "batchSize": 1
+      },
+      "type": "Microsoft.Security/pricings",
+      "apiVersion": "2023-01-01",
+      "name": "[parameters('defenderPlans')[copyIndex()].name]",
+      "properties": {
+        "pricingTier": "[if(not(empty(parameters('defenderPlans')[copyIndex()].pricingTier)), parameters('defenderPlans')[copyIndex()].pricingTier, variables('defaultPricingTier'))]",
+        "subPlan": "[if(contains(parameters('defenderPlans')[copyIndex()], 'subPlan'), parameters('defenderPlans')[copyIndex()].subPlan, '')]"
+      }
+    },
+    {
+      "type": "Microsoft.Security/workspaceSettings",
+      "apiVersion": "2017-08-01-preview",
+      "name": "default",
+      "properties": {
+        "scope": "[format('/subscriptions/{0}', parameters('workspaceScope'))]",
+        "workspaceId": "[parameters('workspaceId')]"
+      }
+    },
+    {
+      "type": "Microsoft.Security/autoProvisioningSettings",
+      "apiVersion": "2017-08-01-preview",
+      "name": "default",
+      "properties": {
+        "autoProvision": "[parameters('autoProvision')]"
+      }
+    }
+  ]
+}

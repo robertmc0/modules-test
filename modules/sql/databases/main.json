@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "5057328327908281729"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "11860233927716186137"
+    },
+    "name": "Sql Server Database",
+    "description": "This module deploys Microsoft.Sql.Server databases",
+    "owner": "Arinco"
   },
   "parameters": {
     "sqlServerName": {
@@ -53,7 +56,8 @@
         "Standard",
         "Premium",
         "vCoreGen5",
-        "vCoreGen5Serverless"
+        "vCoreGen5Serverless",
+        "ElasticPool"
       ],
       "metadata": {
         "description": "A predefined set of SkuTypes. Currently template not configured to support Hyper-Scale or Business Critical."
@@ -61,8 +65,9 @@
     },
     "skuCapacity": {
       "type": "int",
+      "defaultValue": 0,
       "metadata": {
-        "description": "If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless)."
+        "description": "Optional. If DTU model, define amount of DTU. If vCore model, define number of vCores (max for serverless). Not used for Elastic pool."
       }
     },
     "skuMinCapacity": {
@@ -131,6 +136,13 @@
         "description": "Optional. Set location of backups, geo, local or zone."
       }
     },
+    "elasticPoolId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Elastic Pool ID."
+      }
+    },
     "tags": {
       "type": "object",
       "defaultValue": {},
@@ -145,14 +157,14 @@
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      }
     },
     "enableDiagnostics": {
       "type": "bool",
@@ -180,15 +192,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
-      }
-    },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
     },
     "diagnosticStorageAccountId": {
@@ -231,11 +234,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -244,11 +243,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -259,46 +254,47 @@
         "name": "GP_S_Gen5",
         "tier": "GeneralPurpose",
         "family": "Gen5",
-        "kind": "v12.0,user,vcore"
+        "defaultCapacity": 2
       },
       "vCoreGen5Serverless": {
         "name": "GP_S_Gen5",
         "tier": "GeneralPurpose",
         "family": "Gen5",
-        "kind": "v12.0,user,vcore,serverless"
+        "defaultCapacity": 2
       },
       "Basic": {
         "name": "Basic",
         "tier": "Basic",
-        "family": "[json('null')]",
-        "kind": "v12.0,user"
+        "defaultCapacity": 10
       },
       "Standard": {
         "name": "Standard",
         "tier": "Standard",
-        "family": "[json('null')]",
-        "kind": "v12.0,user"
+        "defaultCapacity": 10
       },
       "Premium": {
         "name": "Premium",
         "tier": "Premium",
-        "family": "[json('null')]",
-        "kind": "v12.0,user"
+        "defaultCapacity": 10
+      },
+      "ElasticPool": {
+        "name": "ElasticPool",
+        "defaultCapacity": 0
       }
     }
   },
   "resources": [
     {
       "type": "Microsoft.Sql/servers/databases",
-      "apiVersion": "2021-02-01-preview",
+      "apiVersion": "2022-08-01-preview",
       "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {
         "name": "[variables('skuMap')[parameters('skuType')].name]",
-        "tier": "[variables('skuMap')[parameters('skuType')].tier]",
-        "family": "[variables('skuMap')[parameters('skuType')].family]",
-        "capacity": "[parameters('skuCapacity')]"
+        "tier": "[if(contains(variables('skuMap')[parameters('skuType')], 'tier'), variables('skuMap')[parameters('skuType')].tier, null())]",
+        "family": "[if(contains(variables('skuMap')[parameters('skuType')], 'family'), variables('skuMap')[parameters('skuType')].family, null())]",
+        "capacity": "[if(not(equals(parameters('skuCapacity'), 0)), parameters('skuCapacity'), variables('skuMap')[parameters('skuType')].defaultCapacity)]"
       },
       "properties": {
         "collation": "[parameters('databaseCollation')]",
@@ -306,15 +302,16 @@
         "zoneRedundant": "[parameters('zoneRedundant')]",
         "licenseType": "[parameters('licenseType')]",
         "readScale": "[parameters('readScaleOut')]",
-        "minCapacity": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('skuMinCapacity'), json('null'))]",
-        "autoPauseDelay": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('autoPauseDelay'), json('null'))]",
+        "minCapacity": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('skuMinCapacity'), null())]",
+        "autoPauseDelay": "[if(equals(parameters('skuType'), 'vCoreGen5Serverless'), parameters('autoPauseDelay'), null())]",
         "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
-        "createMode": "[parameters('createMode')]"
+        "createMode": "[parameters('createMode')]",
+        "elasticPoolId": "[if(not(empty(parameters('elasticPoolId'))), parameters('elasticPoolId'), null())]"
       }
     },
     {
       "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
-      "apiVersion": "2021-02-01-preview",
+      "apiVersion": "2022-08-01-preview",
       "name": "[format('{0}/{1}/{2}', parameters('sqlServerName'), parameters('databaseName'), 'default')]",
       "properties": {
         "retentionDays": "[parameters('retentionPeriod')]"
@@ -359,17 +356,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('databaseName')]",
       "metadata": {
         "description": "The name of the sql database."
-      }
+      },
+      "value": "[parameters('databaseName')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('databaseName'))]",
       "metadata": {
         "description": "The resource ID of the sql database."
-      }
+      },
+      "value": "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('databaseName'))]"
     }
   }
 }

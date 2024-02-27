@@ -49,6 +49,16 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
+resource rsv 'Microsoft.RecoveryServices/vaults@2022-04-01' = {
+  name: 'rsv'
+  location: location
+  properties: {}
+  sku: {
+    name: 'RS0'
+    tier: 'Standard'
+  }
+}
+
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -66,7 +76,7 @@ module storageAccount '../main.bicep' = {
   params: {
     name: '${uniqueString(deployment().name, location)}sa'
     location: location
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
     requireInfrastructureEncryption: true
     networkAcls: {
       bypass: 'AzureServices'
@@ -82,6 +92,13 @@ module storageAccount '../main.bicep' = {
           action: 'Allow'
           value: '1.1.1.1'
         }
+      ]
+      resourceAccessRules: [
+        {
+          tenantId: subscription().tenantId
+          resourceId: rsv.id
+        }
+
       ]
     }
 
@@ -129,9 +146,35 @@ module storageAccount '../main.bicep' = {
         metadata: {}
       }
     ]
-
+    managementPolicies: [
+      {
+        name: 'blob-lifecycle'
+        type: 'Lifecycle'
+        definition: {
+          actions: {
+            baseBlob: {
+              tierToCool: {
+                daysAfterModificationGreaterThan: 30
+              }
+              delete: {
+                daysAfterModificationGreaterThan: 365
+              }
+            }
+            snapshot: {
+              delete: {
+                daysAfterCreationGreaterThan: 365
+              }
+            }
+          }
+          filters: {
+            blobTypes: [
+              'blockBlob'
+            ]
+          }
+        }
+      }
+    ]
     enableDiagnostics: true
-    diagnosticLogsRetentionInDays: 7
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
   }
 }
@@ -144,18 +187,16 @@ module storageAccountNfs '../main.bicep' = {
     publicNetworkAccess: 'Disabled'
     sku: 'Premium_LRS'
     kind: 'FileStorage'
-
     fileShares: [
       {
         name: 'nfsfileshare'
         protocol: 'NFS'
       }
     ]
-
     systemAssignedIdentity: true
     enableDiagnostics: true
-    diagnosticLogsRetentionInDays: 7
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    largeFileSharesState: 'Enabled'
   }
 }
 
@@ -166,5 +207,19 @@ module storageAccountDataLake '../main.bicep' = {
     location: location
     enableHierarchicalNamespace: true
     resourcelock: 'CanNotDelete'
+  }
+}
+
+module storageaccountpit '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-pitr-storage-account'
+  params: {
+    name: '${uniqueString(deployment().name, location)}pitrsa'
+    location: location
+    enablechangeFeed: true
+    changeFeedRetentionPolicy: 7
+    enableblobVersioning: true
+    enablecontainerDeleteRetentionPolicy: true
+    containerDeleteRetentionPolicy: 7
+    enablerestorePolicy: true
   }
 }

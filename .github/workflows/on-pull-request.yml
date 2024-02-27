@@ -12,7 +12,7 @@ jobs:
       - name: Check Branch Name
         run: |
           LC_ALL=C
-          local_branch=$GITHUB_HEAD_REF          
+          local_branch=$GITHUB_HEAD_REF
           valid_branch_regex="^(feature|bugfix)\/[a-z0-9-]+$"
           message="INVALID! branch name. Branch names in this repo must adhere to this regex convention: $valid_branch_regex. Branching conventions can be found here: https://github.com/arincoau/arinco-bicep-modules/blob/main/CONTRIBUTING.md. Your commit will be rejected. You should rename your branch to a valid name and try again."
           if [[ ! $local_branch =~ $valid_branch_regex ]]
@@ -32,12 +32,12 @@ jobs:
     if: needs.get-module-to-validate.outputs.module_dir
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.0.x
 
       # Adding a step to explicitly install the latest Bicep CLI because there is
       # always a delay in updating Bicep CLI in the job runner environments.
@@ -59,10 +59,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "16"
 

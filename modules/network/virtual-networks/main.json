@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "2309988155643198810"
-    }
+      "version": "0.20.4.51522",
+      "templateHash": "17759535253567623335"
+    },
+    "name": "Virtual Network Module",
+    "description": "This module deploys Microsoft.Network/virtualNetworks",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -113,15 +116,6 @@
         "description": "Optional. The name of metrics that will be streamed."
       }
     },
-    "diagnosticLogsRetentionInDays": {
-      "type": "int",
-      "defaultValue": 365,
-      "maxValue": 365,
-      "minValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
-      }
-    },
     "diagnosticStorageAccountId": {
       "type": "string",
       "defaultValue": "",
@@ -170,11 +164,7 @@
         "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
         "input": {
           "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       },
       {
@@ -183,11 +173,7 @@
         "input": {
           "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
           "timeGrain": null,
-          "enabled": true,
-          "retentionPolicy": {
-            "enabled": true,
-            "days": "[parameters('diagnosticLogsRetentionInDays')]"
-          }
+          "enabled": true
         }
       }
     ],
@@ -216,7 +202,7 @@
                 "privateEndpointNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateEndpointNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateEndpointNetworkPolicies, 'Disabled')]",
                 "privateLinkServiceNetworkPolicies": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'privateLinkServiceNetworkPolicies'), parameters('subnets')[copyIndex('subnets')].privateLinkServiceNetworkPolicies, 'Enabled')]",
                 "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, null())]",
-                "delegations": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'delegation'), createArray(createObject('name', parameters('subnets')[copyIndex('subnets')].delegation, 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegation))), createArray())]"
+                "delegations": "[if(and(contains(parameters('subnets')[copyIndex('subnets')], 'delegation'), not(equals(parameters('subnets')[copyIndex('subnets')].delegation, null()))), createArray(createObject('name', parameters('subnets')[copyIndex('subnets')].delegation, 'properties', createObject('serviceName', parameters('subnets')[copyIndex('subnets')].delegation))), createArray())]"
               }
             }
           }
@@ -267,29 +253,29 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed virtual network."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed virtual network."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
     },
     "subnets": {
       "type": "array",
+      "metadata": {
+        "description": "List of subnets associated to the virtual network."
+      },
       "copy": {
         "count": "[length(parameters('subnets'))]",
         "input": {
-          "name": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name'))).subnets[copyIndex()].name]",
-          "id": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name'))).subnets[copyIndex()].id]"
+          "name": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name')), '2022-01-01').subnets[copyIndex()].name]",
+          "id": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('name')), '2022-01-01').subnets[copyIndex()].id]"
         }
-      },
-      "metadata": {
-        "description": "List of subnets associated to the virtual network."
       }
     }
   }

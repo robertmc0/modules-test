@@ -23,6 +23,23 @@ function getSubdirNames(fs, dir) {
     .map((x) => x.name);
 }
 
+function checkVersion(a, b) {
+  const x = a.split(".").map((e) => parseInt(e, 10));
+  const y = b.split(".").map((e) => parseInt(e, 10));
+
+  for (const i in x) {
+    y[i] = y[i] || 0;
+    if (x[i] === y[i]) {
+      continue;
+    } else if (x[i] > y[i]) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
+  return y.length > x.length ? -1 : 0;
+}
+
 /**
  * @param {ReturnType<typeof import("@actions/github").getOctokit>} github
  * @param {typeof import("@actions/github").context} context
@@ -33,11 +50,34 @@ async function generateModulesTable(github, context, fs, path) {
   const tableData = [["Module", "Version", "Docs"]];
   const moduleGroups = getSubdirNames(fs, "modules");
 
-  const tags = await github.rest.repos.listTags({
+  const listTagsParameters = {
     ...context.repo,
-  });
+  };
 
-  tags.data.forEach((x) => console.log(x.name));
+  const tagMap = new Map();
+
+  // iterate through each page of tags and collect latest versioned tag by moduleGroup/moduleName
+  // a tag is expected to be in the format moduleGroup/moduleName/major.minor.delta
+  for await (const response of github.paginate.iterator(
+    github.rest.repos.listTags,
+    listTagsParameters
+  )) {
+    response.data.forEach((x) => {
+      const lastSlash = x.name.lastIndexOf("/");
+      const name = x.name.substring(0, lastSlash);
+      const version = x.name.substring(lastSlash + 1);
+
+      console.log(`tag: ${name} ${version}`);
+
+      if (tagMap.has(name)) {
+        if (checkVersion(version, tagMap.get(name)) == 1)
+          tagMap.set(name, version);
+      } else tagMap.set(name, version);
+    });
+  }
+
+  console.log("Module versions");
+  tagMap.forEach((v, k) => console.log(`${k}: ${v}`));
 
   for (const moduleGroup of moduleGroups) {
     var moduleGroupPath = path.join("modules", moduleGroup);
@@ -50,11 +90,9 @@ async function generateModulesTable(github, context, fs, path) {
       console.log(modulePath);
 
       var version = "unknown";
-      var tag = tags.data.find((x) => x.name.startsWith(`${modulePath}/`));
-      if (tag != null) {
-        version = tag.name.substring(modulePath.length + 1);
-        console.log(version);
-      } else console.log(`unknown version - ${modulePath}`);
+      if (tagMap.has(modulePath)) {
+        version = tagMap.get(modulePath);
+      } else console.log(`version missing for module: ${modulePath}`);
 
       const badgeUrl = new URL(`https://img.shields.io/badge/${version}-blue`);
       console.log(badgeUrl.href);
