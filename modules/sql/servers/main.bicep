@@ -1,4 +1,3 @@
-// Azure SQL Server only.  Create Databases, Threat Protection and Audit settings seperately
 metadata name = 'Sql Server Module'
 metadata description = 'This module deploys Microsoft.Sql servers.'
 metadata owner = 'Arinco'
