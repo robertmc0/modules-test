@@ -38,6 +38,9 @@ param administrators object = {}
 ])
 param publicNetworkAccess string = 'Enabled'
 
+@description('Optional. Enables trusted Azure services to access the sql server bypassing firewall restrictions  PublicNetworkAccess must be enabled for this.')
+param allowTrustedAzureServices bool = false
+
 @description('Optional. The server connection type. - Default, Proxy, Redirect.  Note private link requires Proxy.')
 @allowed([
   'Default'
@@ -194,7 +197,6 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
     administratorLoginPassword: !empty(administratorLoginPassword) ? administratorLoginPassword : null
     administrators: !empty(administrators) ? {
       administratorType: 'ActiveDirectory'
-      azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
       login: administrators.login
       principalType: contains(administrators, 'principalType') ? administrators.principalType : null
       sid: administrators.objectId
@@ -206,11 +208,32 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
   }
 }
 
+// This must be a separate entry as having aadonly in the main sql server bicep would cause an error
+// if the provided value and the existing value on an already deployed sql server differs
+resource sqlServerAADAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2022-05-01-preview' = {
+  name: 'Default'
+  parent: sqlServer
+  properties: {
+    azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
+  }
+}
+
 resource virtualNetworkRules 'Microsoft.Sql/servers/virtualNetworkRules@2021-11-01-preview' = if (!empty(subnetResourceId)) {
   parent: sqlServer
   name: 'default'
   properties: {
     virtualNetworkSubnetId: subnetResourceId
+  }
+}
+
+// This rule is different to traditional firewall rules and is invoked by the name specificed below.
+// The start and end ips are not used.
+resource firewallAllowAzureTrustedServices 'Microsoft.Sql/servers/firewallRules@2021-08-01-preview' = if (allowTrustedAzureServices) {
+  parent: sqlServer
+  name: 'AllowAllWindowsAzureIps'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
   }
 }
 
