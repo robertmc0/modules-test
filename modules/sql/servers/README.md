@@ -4,8 +4,17 @@ This module deploys Microsoft.Sql servers.
 
 ## Details
 
-<<<<<<< HEAD
-{{Add detailed information about the module}}
+This module performs the following
+
+- Creates Microsoft.Sql server resource.
+- Associates given Azure AD account or group as SQL admin.
+- Creates a system managed identity if specified.
+- Associates existing user managed identity as SQL server primary identity if specified.
+- Enables Microsoft Defender (Security Threat Detection & Vulnerability Assessments) with destination of a storage account if specified (user managed identities not currently with Vulnerability Assessments).
+- Enables SQL auditing with destination of a storage account if specified.
+- Creates a virtual network subnet rule on the server resource if specified.
+- Applies diagnostic settings on master database if specified.
+- Applies a lock to the Sql server if the lock is specified.
 
 ## Parameters
 
