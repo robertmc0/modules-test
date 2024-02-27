@@ -1,16 +1,10 @@
-# Sql Server Module
+# SQL Server
 
-This module deploys Microsoft.Sql servers.
+This module deployes Microsoft.sql servers, threat protection, audit setting and lock
 
-## Description
+## Details
 
-This module performs the following
-
-- Creates Microsoft.Sql server resource.
-- Associates given Azure AD account ir group as SQL admin.
-- Enables Microsoft Defender (Security Threat Detection & Vulnerability Assessments)
-- Optionally enables auditing with destination of storage account or log analytics
-- Optionally links to the given virtual network subnet.
+{{Add detailed information about the module}}
 
 ## Parameters
 
@@ -19,9 +13,10 @@ This module performs the following
 | `name`                                         | `string`       | Yes      | Name of the Azure SQL resource.                                                                                                                          |
 | `location`                                     | `string`       | Yes      | Location of the resource.                                                                                                                                |
 | `administratorLogin`                           | `string`       | No       | Optional. Administrator username for the server. Required if no `administrators` object for AAD authentication is provided.                              |
-| `administratorLoginPassword`                   | `secureString` | No       | Optional. The administrator login password. Required if no `administrators` object for AAD authentication is provided.                                   |
+| `administratorLoginPassword`                   | `securestring` | No       | Optional. The administrator login password. Required if no `administrators` object for AAD authentication is provided.                                   |
 | `administrators`                               | `object`       | No       | Optional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided. |
 | `publicNetworkAccess`                          | `string`       | No       | Optional. Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET.                                 |
+| `allowTrustedAzureServices`                    | `bool`         | No       | Optional. Enables trusted Azure services to access the sql server bypassing firewall restrictions  PublicNetworkAccess must be enabled for this.         |
 | `connectionType`                               | `string`       | No       | Optional. The server connection type. - Default, Proxy, Redirect.  Note private link requires Proxy.                                                     |
 | `tags`                                         | `object`       | No       | Optional. Resource tags.                                                                                                                                 |
 | `vulnerabilityAssessmentStorageAccountName`    | `string`       | Yes      | Name of Storage Account to store Vulnerability Assessments.                                                                                              |
@@ -45,12 +40,12 @@ This module performs the following
 
 ## Outputs
 
-| Name                      | Type   | Description                                                      |
-| :------------------------ | :----: | :--------------------------------------------------------------- |
-| name                      | string | The name of the sql server.                                      |
-| resourceId                | string | The resource ID of the sql server.                               |
-| resourceGroupName         | string | The resource group the API management service was deployed into. |
-| systemAssignedPrincipalId | string | The principal ID of the system assigned identity.                |
+| Name                        | Type     | Description                                                      |
+| :-------------------------- | :------: | :--------------------------------------------------------------- |
+| `name`                      | `string` | The name of the sql server.                                      |
+| `resourceId`                | `string` | The resource ID of the sql server.                               |
+| `resourceGroupName`         | `string` | The resource group the API management service was deployed into. |
+| `systemAssignedPrincipalId` | `string` | The principal ID of the system assigned identity.                |
 
 ## Examples
 

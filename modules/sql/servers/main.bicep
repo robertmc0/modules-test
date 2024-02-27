@@ -1,4 +1,7 @@
 // Azure SQL Server only.  Create Databases, Threat Protection and Audit settings seperately
+metadata name = 'SQL Server'
+metadata description = 'This module deployes Microsoft.sql servers, threat protection, audit setting and lock'
+metadata owner = 'Arinco'
 
 @description('Name of the Azure SQL resource.')
 param name string

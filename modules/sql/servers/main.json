@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "14023823067224504717"
-    }
+      "version": "0.25.53.49325",
+      "templateHash": "15753904445710668482"
+    },
+    "name": "SQL Server",
+    "description": "This module deployes Microsoft.sql servers, threat protection, audit setting and lock",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -29,7 +32,7 @@
       }
     },
     "administratorLoginPassword": {
-      "type": "secureString",
+      "type": "securestring",
       "defaultValue": "",
       "metadata": {
         "description": "Optional. The administrator login password. Required if no `administrators` object for AAD authentication is provided."
@@ -62,6 +65,13 @@
       ],
       "metadata": {
         "description": "Optional. Enable/Disable Public Network Access. Only Disable if you wish to restrict to just private endpoints and VNET."
+      }
+    },
+    "allowTrustedAzureServices": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables trusted Azure services to access the sql server bypassing firewall restrictions  PublicNetworkAccess must be enabled for this."
       }
     },
     "connectionType": {
@@ -124,14 +134,14 @@
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of lock."
+      }
     },
     "subnetResourceId": {
       "type": "string",
@@ -195,8 +205,8 @@
     "auditLogsRetentionInDays": {
       "type": "int",
       "defaultValue": 365,
-      "maxValue": 365,
       "minValue": 0,
+      "maxValue": 365,
       "metadata": {
         "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
       }
@@ -262,11 +272,22 @@
       "properties": {
         "administratorLogin": "[if(not(empty(parameters('administratorLogin'))), parameters('administratorLogin'), null())]",
         "administratorLoginPassword": "[if(not(empty(parameters('administratorLoginPassword'))), parameters('administratorLoginPassword'), null())]",
-        "administrators": "[if(not(empty(parameters('administrators'))), createObject('administratorType', 'ActiveDirectory', 'azureADOnlyAuthentication', if(contains(parameters('administrators'), 'azureADOnlyAuthentication'), parameters('administrators').azureADOnlyAuthentication, true()), 'login', parameters('administrators').login, 'principalType', if(contains(parameters('administrators'), 'principalType'), parameters('administrators').principalType, null()), 'sid', parameters('administrators').objectId, 'tenantId', if(contains(parameters('administrators'), 'tenantId'), parameters('administrators').tenantId, subscription().tenantId)), null())]",
+        "administrators": "[if(not(empty(parameters('administrators'))), createObject('administratorType', 'ActiveDirectory', 'login', parameters('administrators').login, 'principalType', if(contains(parameters('administrators'), 'principalType'), parameters('administrators').principalType, null()), 'sid', parameters('administrators').objectId, 'tenantId', if(contains(parameters('administrators'), 'tenantId'), parameters('administrators').tenantId, subscription().tenantId)), null())]",
         "version": "12.0",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
         "minimalTlsVersion": "1.2"
       }
+    },
+    {
+      "type": "Microsoft.Sql/servers/azureADOnlyAuthentications",
+      "apiVersion": "2022-05-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'Default')]",
+      "properties": {
+        "azureADOnlyAuthentication": "[if(contains(parameters('administrators'), 'azureADOnlyAuthentication'), parameters('administrators').azureADOnlyAuthentication, true())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
     },
     {
       "condition": "[not(empty(parameters('subnetResourceId')))]",
@@ -275,6 +296,19 @@
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
       "properties": {
         "virtualNetworkSubnetId": "[parameters('subnetResourceId')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('allowTrustedAzureServices')]",
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "apiVersion": "2021-08-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'AllowAllWindowsAzureIps')]",
+      "properties": {
+        "startIpAddress": "0.0.0.0",
+        "endIpAddress": "0.0.0.0"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
@@ -401,7 +435,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "vulnerabilityAssessmentRoleAssignment",
       "subscriptionId": "[parameters('vulnerabilityAssessmentStorageSubscriptionId')]",
       "resourceGroup": "[parameters('vulnerabilityAssessmentStorageResourceGroup')]",
@@ -424,8 +458,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.8.9.13224",
-              "templateHash": "6455520508070411693"
+              "version": "0.25.53.49325",
+              "templateHash": "3288301704002341610"
             }
           },
           "parameters": {
@@ -467,7 +501,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2022-09-01",
       "name": "auditStorageRoleAssignment",
       "subscriptionId": "[parameters('auditStorageSubscriptionId')]",
       "resourceGroup": "[parameters('auditStorageResourceGroup')]",
@@ -490,8 +524,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.8.9.13224",
-              "templateHash": "6455520508070411693"
+              "version": "0.25.53.49325",
+              "templateHash": "3288301704002341610"
             }
           },
           "parameters": {
@@ -535,31 +569,31 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the sql server."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the sql server."
-      }
+      },
+      "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
     },
     "resourceGroupName": {
       "type": "string",
-      "value": "[resourceGroup().name]",
       "metadata": {
         "description": "The resource group the API management service was deployed into."
-      }
+      },
+      "value": "[resourceGroup().name]"
     },
     "systemAssignedPrincipalId": {
       "type": "string",
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-05-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-05-01-preview', 'full').identity.principalId, '')]",
       "metadata": {
         "description": "The principal ID of the system assigned identity."
-      }
+      },
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-05-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-05-01-preview', 'full').identity.principalId, '')]"
     }
   }
 }
