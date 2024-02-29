@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.14.85.62628",
-      "templateHash": "3885790349594700739"
-    }
+      "version": "0.25.53.49325",
+      "templateHash": "9516022365045772534"
+    },
+    "name": "Maintenance Configuration module",
+    "description": "This module deploys Microsoft.Maintenance maintenanceConfigurations",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -136,6 +139,32 @@
       "metadata": {
         "description": "Optional. Choose classification of patches to include in Windows patching."
       }
+    },
+    "windowsKbNumbersToExclude": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.maintenance/maintenanceconfigurations?pivots=deployment-language-bicep#inputwindowsparameters",
+        "example": {
+          "tagKey": [
+            "KB5034439"
+          ]
+        },
+        "description": "Optional. Choose patch KB to exclude from Windows patching."
+      }
+    },
+    "linuxPackageNameMasksToExclude": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.maintenance/maintenanceconfigurations?pivots=deployment-language-bicep#inputwindowsparameters",
+        "example": {
+          "tagKey": [
+            "openjdk-*"
+          ]
+        },
+        "description": "Optional. Choose packages to exclude from linux updates."
+      }
     }
   },
   "variables": {
@@ -158,10 +187,12 @@
         "installPatches": {
           "rebootSetting": "[parameters('rebootSetting')]",
           "windowsParameters": {
-            "classificationsToInclude": "[parameters('windowsClassificationsToInclude')]"
+            "classificationsToInclude": "[if(not(empty(parameters('windowsClassificationsToInclude'))), parameters('windowsClassificationsToInclude'), null())]",
+            "kbNumbersToExclude": "[if(not(empty(parameters('windowsKbNumbersToExclude'))), parameters('windowsKbNumbersToExclude'), null())]"
           },
           "linuxParameters": {
-            "classificationsToInclude": "[parameters('linuxClassificationsToInclude')]"
+            "classificationsToInclude": "[if(not(empty(parameters('linuxClassificationsToInclude'))), parameters('linuxClassificationsToInclude'), null())]",
+            "packageNameMasksToExclude": "[if(not(empty(parameters('linuxPackageNameMasksToExclude'))), parameters('linuxPackageNameMasksToExclude'), null())]"
           }
         }
       }
@@ -184,17 +215,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the Maintenance Configuration."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the Maintenance Configuration."
-      }
+      },
+      "value": "[resourceId('Microsoft.Maintenance/maintenanceConfigurations', parameters('name'))]"
     }
   }
 }

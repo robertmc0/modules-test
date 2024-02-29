@@ -1,3 +1,7 @@
+metadata name = 'Maintenance Configuration module'
+metadata description = 'This module deploys Microsoft.Maintenance maintenanceConfigurations'
+metadata owner = 'Arinco'
+
 @description('Maintenance Configuration Name.')
 param name string
 
