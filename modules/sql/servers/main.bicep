@@ -253,7 +253,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
 
 // This must be a separate entry as having aadonly in the main sql server bicep would cause an error
 // if the provided value and the existing value on an already deployed sql server differs
-resource sqlServerAADAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2022-05-01-preview' = {
+resource sqlServerAADAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2022-05-01-preview' = if (!empty(administrators)) {
   name: 'Default'
   parent: sqlServer
   properties: {
