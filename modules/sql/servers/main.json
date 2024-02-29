@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "4520206962444347281"
+      "templateHash": "13904318271799042017"
     },
     "name": "Sql Server Module",
     "description": "This module deploys Microsoft.Sql servers.",
@@ -320,11 +320,12 @@
       }
     },
     {
+      "condition": "[not(empty(parameters('administrators')))]",
       "type": "Microsoft.Sql/servers/azureADOnlyAuthentications",
       "apiVersion": "2022-05-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'Default')]",
       "properties": {
-        "azureADOnlyAuthentication": "[if(contains(parameters('administrators'), 'azureADOnlyAuthentication'), parameters('administrators').azureADOnlyAuthentication, true())]"
+        "azureADOnlyAuthentication": "[if(contains(parameters('administrators'), 'azureADOnlyAuthentication'), parameters('administrators').azureADOnlyAuthentication, false())]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
