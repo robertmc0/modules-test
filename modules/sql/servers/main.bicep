@@ -257,7 +257,7 @@ resource sqlServerAADAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2022
   name: 'Default'
   parent: sqlServer
   properties: {
-    azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
+    azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : false
   }
 }
 
