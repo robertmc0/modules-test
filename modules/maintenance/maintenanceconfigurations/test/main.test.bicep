@@ -58,3 +58,43 @@ module maintenanceConfiguration '../main.bicep' = {
     ]
   }
 }
+
+module maintenanceConfigurationPatchExclusions '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-maintenance-configuration'
+  params: {
+    name: '${uniqueString(deployment().name, location)}-mcfg'
+    location: location
+    maintenanceWindow: {
+      startDateTime: '2022-12-28 03:00'
+      duration: '02:00'
+      timeZone: 'AUS Eastern Standard Time'
+      recurEvery: '1Month Fourth Wednesday'
+    }
+    rebootSetting: 'IfRequired'
+    inGuestPatchMode: 'User'
+    maintenanceScope: 'InGuestPatch'
+    visibility: 'Custom'
+    resourceLock: 'NotSpecified'
+    windowsClassificationsToInclude: [
+      'Critical'
+      'Security'
+      'UpdateRollup'
+      'FeaturePack'
+      'ServicePack'
+      'Definition'
+      'Tools'
+      'Updates'
+    ]
+    windowsKbNumbersToExclude: [
+      'KB5034439'
+    ]
+    linuxClassificationsToInclude: [
+      'Critical'
+      'Security'
+      'Other'
+    ]
+    linuxPackageNameMasksToExclude: [
+      'openjdk-*'
+    ]
+  }
+}
