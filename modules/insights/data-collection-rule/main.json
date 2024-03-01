@@ -1,0 +1,254 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.25.53.49325",
+      "templateHash": "12936041359775316909"
+    },
+    "name": "Insights data collection rule Module.",
+    "description": "This module deploys Microsoft.Insights dataCollectionRules.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Required. Name of the Data collection rule."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "workspaceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Required. Resource ID of the Log Analytics Workspace that has the VM Insights data."
+      }
+    },
+    "shortenedUniqueString": {
+      "type": "string",
+      "defaultValue": "[substring(uniqueString(utcNow()), 0, 4)]",
+      "metadata": {
+        "description": "Optional. A random generated set of strings for resource naming"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "",
+      "allowedValues": [
+        "Windows",
+        "Linux",
+        ""
+      ],
+      "metadata": {
+        "description": "The operating system kind in which DCR will be configured to."
+      }
+    },
+    "dataCollectionEndpointId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The resource ID of the data collection endpoint that this rule can be used with."
+      }
+    },
+    "performanceCounterSpecifiers": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionrules?pivots=deployment-language-bicep#perfcounterdatasource",
+        "example": [
+          "\\System\\Processes"
+        ],
+        "description": "Optional. A list of specifier names for VM Performance telemetry to collect."
+      }
+    },
+    "insightsMetricsCounterSpecifiers": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionrules?pivots=deployment-language-bicep#perfcounterdatasource",
+        "example": [
+          "\\VmInsights\\DetailedMetrics"
+        ],
+        "description": "Optional. A list of specifier names for VM insights telemetry to collect."
+      }
+    },
+    "eventLogsxPathQueries": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionrules?pivots=deployment-language-bicep#windowseventlogdatasource",
+        "example": [
+          "Microsoft-Windows-Shell-AuthUI-Shutdown/Diagnostic!*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=0)]]"
+        ],
+        "description": "Optional. A list of Windows Event Log queries in XPATH format. Only applicable if kind is Windows."
+      }
+    },
+    "destinationFriendlyName": {
+      "type": "string",
+      "defaultValue": "myloganalyticsworkspace",
+      "metadata": {
+        "description": "Optional. A friendly name for the destination. This name should be unique across all destinations (regardless of type) within the data collection rule."
+      }
+    },
+    "dataFlows": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "destinations": [
+            "[parameters('destinationFriendlyName')]"
+          ],
+          "streams": [
+            "Microsoft-Event",
+            "Microsoft-InsightsMetrics",
+            "Microsoft-Perf",
+            "Microsoft-Syslog"
+          ]
+        }
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionrules?pivots=deployment-language-bicep#dataflow",
+        "example": [
+          {
+            "destinations": [
+              "Destination-FriendlyName"
+            ],
+            "streams": [
+              "Microsoft-Event"
+            ]
+          }
+        ],
+        "description": "Optional. The specification of data flows."
+      }
+    },
+    "dcrExtensions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionrules?pivots=deployment-language-bicep#extensiondatasource",
+        "example": [
+          {
+            "name": "DependencyAgentDataSource",
+            "streams": [
+              "Microsoft-ServiceMap"
+            ],
+            "extensionName": "DependencyAgent"
+          }
+        ],
+        "description": "Optional. The list of Azure VM extension data source configurations."
+      }
+    }
+  },
+  "variables": {
+    "performanceCounters": [
+      {
+        "name": "insightsMetricsCounterSpecifiers",
+        "streams": [
+          "Microsoft-InsightsMetrics"
+        ],
+        "samplingFrequencyInSeconds": 60,
+        "counterSpecifiers": "[parameters('insightsMetricsCounterSpecifiers')]"
+      },
+      {
+        "name": "perfCounterDataSource60",
+        "streams": [
+          "Microsoft-Perf"
+        ],
+        "samplingFrequencyInSeconds": 60,
+        "counterSpecifiers": "[parameters('performanceCounterSpecifiers')]"
+      }
+    ],
+    "windowsEventLogs": [
+      {
+        "name": "DS_WindowsEventLogs",
+        "streams": [
+          "Microsoft-Event"
+        ],
+        "xPathQueries": "[parameters('eventLogsxPathQueries')]"
+      }
+    ],
+    "linuxSyslogs": [
+      {
+        "name": "[format('sysLogsDataSource_{0}', parameters('shortenedUniqueString'))]",
+        "streams": [
+          "Microsoft-Syslog"
+        ],
+        "facilityNames": [
+          "*"
+        ],
+        "logLevels": [
+          "Debug",
+          "Info",
+          "Notice",
+          "Warning",
+          "Error",
+          "Critical",
+          "Alert",
+          "Emergency"
+        ]
+      }
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/dataCollectionRules",
+      "apiVersion": "2022-06-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "dataCollectionEndpointId": "[if(not(empty(parameters('dataCollectionEndpointId'))), parameters('dataCollectionEndpointId'), null())]",
+        "dataSources": {
+          "performanceCounters": "[variables('performanceCounters')]",
+          "syslog": "[if(or(equals(parameters('kind'), ''), equals(parameters('kind'), 'Windows')), createArray(), variables('linuxSyslogs'))]",
+          "windowsEventLogs": "[if(or(equals(parameters('kind'), ''), equals(parameters('kind'), 'Linux')), createArray(), variables('windowsEventLogs'))]",
+          "extensions": "[parameters('dcrExtensions')]"
+        },
+        "dataFlows": "[parameters('dataFlows')]",
+        "destinations": {
+          "logAnalytics": [
+            {
+              "workspaceResourceId": "[parameters('workspaceId')]",
+              "name": "[parameters('destinationFriendlyName')]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "dcrId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource id of the data collection rule (DCR)."
+      },
+      "value": "[resourceId('Microsoft.Insights/dataCollectionRules', parameters('name'))]"
+    },
+    "dcrPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "The principal id of the data collection rule for identity purposes."
+      },
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionRules', parameters('name')), '2022-06-01', 'full').identity.principalId]"
+    }
+  }
+}
