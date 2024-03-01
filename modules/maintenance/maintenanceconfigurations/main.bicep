@@ -112,7 +112,7 @@ param linuxPackageNameMasksToExclude array = []
 
 var lockName = toLower('${maintenanceConfiguration.name}-${resourceLock}-lck')
 
-resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfigurations@2023-10-01-preview' = {
+resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfigurations@2023-04-01' = {
   name: name
   location: location
   tags: tags
