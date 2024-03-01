@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "9516022365045772534"
+      "templateHash": "6508490744953282788"
     },
     "name": "Maintenance Configuration module",
     "description": "This module deploys Microsoft.Maintenance maintenanceConfigurations",
@@ -173,7 +173,7 @@
   "resources": [
     {
       "type": "Microsoft.Maintenance/maintenanceConfigurations",
-      "apiVersion": "2022-11-01-preview",
+      "apiVersion": "2023-04-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -200,7 +200,7 @@
     {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.Maintenance/maintenanceConfigurations/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
