@@ -112,7 +112,7 @@ param linuxPackageNameMasksToExclude array = []
 
 var lockName = toLower('${maintenanceConfiguration.name}-${resourceLock}-lck')
 
-resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfigurations@2022-11-01-preview' = {
+resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfigurations@2023-10-01-preview' = {
   name: name
   location: location
   tags: tags
@@ -137,7 +137,7 @@ resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfiguratio
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: maintenanceConfiguration
   name: lockName
   properties: {
