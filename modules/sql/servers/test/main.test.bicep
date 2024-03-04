@@ -7,7 +7,7 @@ param location string = resourceGroup().location
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 @minLength(1)
 @maxLength(5)
-param shortIdentifier string = 'arn'
+param shortIdentifier string = 'sl'
 
 @secure()
 @description('SQL administrator login password')
@@ -23,6 +23,7 @@ param administrators object = {
   login: 'azure_sql_demo_admins'
   principalType: 'Group'
   objectId: '5878f645-8400-47ec-8f9b-787c7c53a652'
+  // objectId: '3b3867b1-6653-422d-b8fb-d37d39b27b09'
 }
 
 /*======================================================================
