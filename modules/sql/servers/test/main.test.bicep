@@ -23,7 +23,6 @@ param administrators object = {
   login: 'azure_sql_demo_admins'
   principalType: 'Group'
   objectId: '5878f645-8400-47ec-8f9b-787c7c53a652'
-  // objectId: '3b3867b1-6653-422d-b8fb-d37d39b27b09'
 }
 
 /*======================================================================

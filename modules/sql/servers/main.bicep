@@ -240,6 +240,9 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
     administratorLoginPassword: !empty(administratorLoginPassword) ? administratorLoginPassword : null
     administrators: !empty(administrators) ? {
       administratorType: 'ActiveDirectory'
+      // This property must be enabled during initial creation.  Other wise, the deployment will fail with the error
+      // Invalid value given for parameter Login. Specify a valid parameter value.
+      azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
       login: administrators.login
       principalType: contains(administrators, 'principalType') ? administrators.principalType : ''
       sid: administrators.objectId
@@ -252,7 +255,8 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
 }
 
 // This must be a separate entry as having aadonly in the main sql server bicep would cause an error
-// if the provided value and the existing value on an already deployed sql server differs
+// if the provided value and the existing value on an already deployed sql server differs.
+// If this were to be used, please comment out the azureADOnlyAuthentication property in the main file above
 resource sqlServerAADAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2022-05-01-preview' = if (!empty(administrators)) {
   name: 'Default'
   parent: sqlServer
