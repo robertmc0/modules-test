@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "13904318271799042017"
+      "templateHash": "11634672492006613839"
     },
     "name": "Sql Server Module",
     "description": "This module deploys Microsoft.Sql servers.",
@@ -313,7 +313,7 @@
       "properties": {
         "administratorLogin": "[if(not(empty(parameters('administratorLogin'))), parameters('administratorLogin'), null())]",
         "administratorLoginPassword": "[if(not(empty(parameters('administratorLoginPassword'))), parameters('administratorLoginPassword'), null())]",
-        "administrators": "[if(not(empty(parameters('administrators'))), createObject('administratorType', 'ActiveDirectory', 'login', parameters('administrators').login, 'principalType', if(contains(parameters('administrators'), 'principalType'), parameters('administrators').principalType, ''), 'sid', parameters('administrators').objectId, 'tenantId', if(contains(parameters('administrators'), 'tenantId'), parameters('administrators').tenantId, subscription().tenantId)), createObject())]",
+        "administrators": "[if(not(empty(parameters('administrators'))), createObject('administratorType', 'ActiveDirectory', 'azureADOnlyAuthentication', if(contains(parameters('administrators'), 'azureADOnlyAuthentication'), parameters('administrators').azureADOnlyAuthentication, true()), 'login', parameters('administrators').login, 'principalType', if(contains(parameters('administrators'), 'principalType'), parameters('administrators').principalType, ''), 'sid', parameters('administrators').objectId, 'tenantId', if(contains(parameters('administrators'), 'tenantId'), parameters('administrators').tenantId, subscription().tenantId)), createObject())]",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
         "minimalTlsVersion": "1.2",
         "primaryUserAssignedIdentityId": "[parameters('primaryUserAssignedIdentityId')]"
