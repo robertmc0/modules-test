@@ -7,7 +7,7 @@ param location string = resourceGroup().location
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 @minLength(1)
 @maxLength(5)
-param shortIdentifier string = 'sl'
+param shortIdentifier string = 'arn'
 
 @secure()
 @description('SQL administrator login password')
