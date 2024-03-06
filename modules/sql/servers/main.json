@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "827607218077323809"
+      "version": "0.25.53.49325",
+      "templateHash": "1776778312923371758"
     },
     "name": "Sql Server Module",
     "description": "This module deploys Microsoft.Sql servers.",
@@ -77,6 +77,13 @@
       ],
       "metadata": {
         "description": "Optional. Whether or not public endpoint access is allowed for this server. Only Disable if you wish to restrict to just private endpoints and VNET."
+      }
+    },
+    "allowTrustedAzureServices": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables trusted Azure services to access the sql server bypassing firewall restrictions  PublicNetworkAccess must be enabled for this."
       }
     },
     "connectionType": {
@@ -325,6 +332,19 @@
       ]
     },
     {
+      "condition": "[parameters('allowTrustedAzureServices')]",
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "apiVersion": "2021-08-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), 'AllowAllWindowsAzureIps')]",
+      "properties": {
+        "startIpAddress": "0.0.0.0",
+        "endIpAddress": "0.0.0.0"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+      ]
+    },
+    {
       "type": "Microsoft.Sql/servers/connectionPolicies",
       "apiVersion": "2021-11-01",
       "name": "[format('{0}/{1}', parameters('name'), 'default')]",
@@ -472,8 +492,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "13577939556229738878"
+              "version": "0.25.53.49325",
+              "templateHash": "3288301704002341610"
             }
           },
           "parameters": {
@@ -537,8 +557,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "13577939556229738878"
+              "version": "0.25.53.49325",
+              "templateHash": "3288301704002341610"
             }
           },
           "parameters": {
