@@ -4,6 +4,9 @@ GLOBAL CONFIGURATION
 @description('Optional. The geo-location where the resource lives.')
 param location string = resourceGroup().location
 
+@description('Optional. The UTC time used for the start time for a maintenance window. The time must not be less than current time')
+param currentUtcDate string = '${utcNow('yyyy-MM-dd')} 01:00'
+
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -31,7 +34,7 @@ module maintenanceConfiguration '../main.bicep' = {
     name: '${uniqueString(deployment().name, location)}-mcfg'
     location: location
     maintenanceWindow: {
-      startDateTime: '2022-12-28 03:00'
+      startDateTime: currentUtcDate
       duration: '02:00'
       timeZone: 'AUS Eastern Standard Time'
       recurEvery: '1Month Fourth Wednesday'
@@ -65,7 +68,7 @@ module maintenanceConfigurationPatchExclusions '../main.bicep' = {
     name: '${uniqueString(deployment().name, location)}-mcfg'
     location: location
     maintenanceWindow: {
-      startDateTime: '2022-12-28 03:00'
+      startDateTime: currentUtcDate
       duration: '02:00'
       timeZone: 'AUS Eastern Standard Time'
       recurEvery: '1Month Fourth Wednesday'
