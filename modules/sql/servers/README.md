@@ -16,6 +16,20 @@ This module performs the following
 - Applies diagnostic settings on master database if specified.
 - Applies a lock to the Sql server if the lock is specified.
 
+Known issue
+
+The template is not idempotent for the property `azureADOnlyAuthentication`.  The value in the workspace being deployed to must be identical to that specificed in the template.  Otherwise, the deployment will fail.  It's easiest to manually make the change.  If IaC is preferred, please use the following code for updating said property.
+
+```
+resource sqlServerAADAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2022-05-01-preview' = {
+  name: 'Default'
+  parent: sqlServer
+  properties: {
+    azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
+  }
+}
+```
+
 ## Parameters
 
 | Name                                    | Type           | Required | Description                                                                                                                                          |
