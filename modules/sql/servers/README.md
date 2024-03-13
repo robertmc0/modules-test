@@ -16,6 +16,20 @@ This module performs the following
 - Applies diagnostic settings on master database if specified.
 - Applies a lock to the Sql server if the lock is specified.
 
+Known issue
+
+The template is not idempotent for the property `azureADOnlyAuthentication`.  The value in the workspace being deployed to must be identical to that specificed in the template.  Otherwise, the deployment will fail.  It's easiest to manually make the change.  If IaC is preferred, please use the following code for updating said property.
+
+```
+resource sqlServerAADAuth 'Microsoft.Sql/servers/azureADOnlyAuthentications@2022-05-01-preview' = {
+  name: 'Default'
+  parent: sqlServer
+  properties: {
+    azureADOnlyAuthentication: contains(administrators, 'azureADOnlyAuthentication') ? administrators.azureADOnlyAuthentication : true
+  }
+}
+```
+
 ## Parameters
 
 | Name                                    | Type           | Required | Description                                                                                                                                          |
@@ -27,6 +41,7 @@ This module performs the following
 | `administratorLoginPassword`            | `securestring` | No       | Optional. The administrator login password. Required if "administrators" is not provided.                                                            |
 | `administrators`                        | `object`       | No       | Optional. The Azure Active Directory administrator of the server. Required if "administratorLogin" and "administratorLoginPassword" is not provided. |
 | `publicNetworkAccess`                   | `string`       | No       | Optional. Whether or not public endpoint access is allowed for this server. Only Disable if you wish to restrict to just private endpoints and VNET. |
+| `allowTrustedAzureServices`             | `bool`         | No       | Optional. Enables trusted Azure services to access the sql server bypassing firewall restrictions  PublicNetworkAccess must be enabled for this.     |
 | `connectionType`                        | `string`       | No       | Optional. The server connection type. Note private link requires Proxy.                                                                              |
 | `enableVulnerabilityAssessments`        | `bool`         | No       | Optional. Enable Vulnerability Assessments. Not currently supported with user managed identities.                                                    |
 | `vulnerabilityAssessmentStorageId`      | `string`       | No       | Optional. Resource ID of the Storage Account to store Vulnerability Assessments. Required when enableVulnerabilityAssessments set to "true".         |

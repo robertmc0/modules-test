@@ -50,6 +50,9 @@ param administrators object = {}
 ])
 param publicNetworkAccess string = 'Enabled'
 
+@description('Optional. Enables trusted Azure services to access the sql server bypassing firewall restrictions  PublicNetworkAccess must be enabled for this.')
+param allowTrustedAzureServices bool = false
+
 @description('Optional. The server connection type. Note private link requires Proxy.')
 @allowed([
   'Default'
@@ -254,6 +257,17 @@ resource virtualNetworkRules 'Microsoft.Sql/servers/virtualNetworkRules@2021-11-
   name: 'default'
   properties: {
     virtualNetworkSubnetId: subnetResourceId
+  }
+}
+
+// This rule is different to traditional firewall rules and is invoked by the name specificed below.
+// The start and end ips are not used.
+resource firewallAllowAzureTrustedServices 'Microsoft.Sql/servers/firewallRules@2021-08-01-preview' = if (allowTrustedAzureServices) {
+  parent: sqlServer
+  name: 'AllowAllWindowsAzureIps'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
   }
 }
 

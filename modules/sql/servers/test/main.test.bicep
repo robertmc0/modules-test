@@ -19,6 +19,7 @@ param sqlAdminPassword string = '${toUpper(uniqueString(resourceGroup().id))}-${
     NOTE: '*** When testing ensure that the Azure AD group object exists, otherwise the test will fail!'
   })
 param administrators object = {
+  azureADOnlyAuthentication: true
   login: 'azure_sql_demo_admins'
   principalType: 'Group'
   objectId: '5878f645-8400-47ec-8f9b-787c7c53a652'
@@ -154,11 +155,7 @@ module sqlServer '../main.bicep' = {
   params: {
     location: location
     name: '${shortIdentifier}-tst-sql-${uniqueString(deployment().name, 'sqlServer', location)}'
-    administrators: {
-      login: administrators.login
-      principalType: administrators.principalType
-      objectId: administrators.objectId
-    }
+    administrators: administrators
     enableAudit: true
     auditStorageAccountId: auditStorageAccount.id
     userAssignedIdentities: {
