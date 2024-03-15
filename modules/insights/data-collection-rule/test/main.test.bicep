@@ -39,16 +39,15 @@ module dcrTestLinuxMinimalMetrics '../main.bicep' = {
   }
 }
 
-/* Currently not supported. However, this may be a feature in the future*/
-// module dcrTestMultiOsMinimalMetrics '../main.bicep' = {
-//   name: '${uniqueString(deployment().name, location)}-multiOs-minimal-dcr'
-//   params: {
-//     name: '${name}-multiOs-minimal-dcr'
-//     location: location
-//     kind: 'All'
-//     workspaceId: logAnalyticsWorkspace.id
-//   }
-// }
+module dcrTestMultiOsMinimalMetrics '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-multiOs-minimal-dcr'
+  params: {
+    name: '${name}-multiOs-minimal-dcr'
+    location: location
+    kind: 'All'
+    workspaceId: logAnalyticsWorkspace.id
+  }
+}
 
 module dcrTestWindowsFull '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-win-full-dcr'

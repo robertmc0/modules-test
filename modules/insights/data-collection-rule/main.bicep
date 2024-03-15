@@ -27,12 +27,11 @@ param tags object = {}
 
 // Data collection settings parameters //
 
-/* At this stage. Bicep currently does not support the deployment of a DCR for multi OS types. For 2 DCR's supporting Windows and Linux,
-   Please deploy DCR separately for each OS*/
 @description('Required. The operating system kind in which DCR will be configured to.')
 @allowed([
   'Windows'
   'Linux'
+  'All'
 ])
 param kind string
 
@@ -178,7 +177,7 @@ var linuxSyslogs = [
   }
 ]
 
-resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
+resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = if (kind != 'All') {
   name: name
   location: location
   tags: tags
@@ -192,6 +191,34 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
       performanceCounters: performanceCounters
       syslog: (kind == 'Linux') ? linuxSyslogs : []
       windowsEventLogs: (kind == 'Windows') ? windowsEventLogs : []
+      extensions: dcrExtensions
+    }
+    dataFlows: dataFlows
+    destinations: {
+      logAnalytics: [
+        {
+          workspaceResourceId: workspaceId
+          name: destinationFriendlyName
+        }
+      ]
+    }
+  }
+}
+
+resource dcrMultiOs 'Microsoft.Insights/dataCollectionRules@2022-06-01' = if (kind == 'All') {
+  name: name
+  location: location
+  tags: tags
+  kind: kind
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
+    dataSources: {
+      performanceCounters: performanceCounters
+      syslog: linuxSyslogs
+      windowsEventLogs: windowsEventLogs
       extensions: dcrExtensions
     }
     dataFlows: dataFlows
