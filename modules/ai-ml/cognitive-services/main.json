@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "11172779171453420747"
+      "templateHash": "3393938480021546674"
     },
     "name": "Azure Cognitive Service",
     "description": "Deploys Azure Cognitive Service Account, including deployments as required.",
@@ -225,7 +225,7 @@
       "properties": {
         "model": "[parameters('deployments')[copyIndex()].model]",
         "raiPolicyName": "[if(contains(parameters('deployments')[copyIndex()], 'raiPolicyName'), parameters('deployments')[copyIndex()].raiPolicyName, null())]",
-        "versionUpgradeOption": "[parameters('deployments')[copyIndex()].versionUpgradeOption]"
+        "versionUpgradeOption": "[if(contains(parameters('deployments')[copyIndex()], 'versionUpgradeOption'), parameters('deployments')[copyIndex()].versionUpgradeOption, null())]"
       },
       "sku": "[if(contains(parameters('deployments')[copyIndex()], 'sku'), parameters('deployments')[copyIndex()].sku, createObject('name', 'Standard', 'capacity', 20))]",
       "dependsOn": [
