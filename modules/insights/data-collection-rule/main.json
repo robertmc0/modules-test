@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "551837119599333092"
+      "templateHash": "7151927188460352411"
     },
     "name": "Insights data collection rule Module.",
     "description": "This module deploys Microsoft.Insights dataCollectionRules.",
@@ -252,7 +252,6 @@
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
-      "kind": "[parameters('kind')]",
       "identity": {
         "type": "SystemAssigned"
       },

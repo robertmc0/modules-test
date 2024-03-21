@@ -133,7 +133,9 @@ var performanceCounters = [
       'Microsoft-InsightsMetrics'
     ]
     samplingFrequencyInSeconds: 60
-    counterSpecifiers: !empty(insightsMetricsCounterSpecifiers) ? insightsMetricsCounterSpecifiers : [ '\\VmInsights\\DetailedMetrics' ] // Cannot be empty
+    counterSpecifiers: !empty(insightsMetricsCounterSpecifiers)
+      ? insightsMetricsCounterSpecifiers
+      : ['\\VmInsights\\DetailedMetrics'] // Cannot be empty
   }
   {
     name: 'perfCounterDataSource60'
@@ -141,7 +143,7 @@ var performanceCounters = [
       'Microsoft-Perf'
     ]
     samplingFrequencyInSeconds: 60
-    counterSpecifiers: !empty(performanceCounterSpecifiers) ? performanceCounterSpecifiers : [ '\\System\\Processes' ] // Cannot be empty
+    counterSpecifiers: !empty(performanceCounterSpecifiers) ? performanceCounterSpecifiers : ['\\System\\Processes'] // Cannot be empty
   }
 ]
 
@@ -177,61 +179,62 @@ var linuxSyslogs = [
   }
 ]
 
-resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = if (kind != 'All') {
-  name: name
-  location: location
-  tags: tags
-  kind: kind
-  identity: {
-    type: 'SystemAssigned'
-  }
-  properties: {
-    dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
-    dataSources: {
-      performanceCounters: performanceCounters
-      syslog: (kind == 'Linux') ? linuxSyslogs : []
-      windowsEventLogs: (kind == 'Windows') ? windowsEventLogs : []
-      extensions: dcrExtensions
+resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' =
+  if (kind != 'All') {
+    name: name
+    location: location
+    tags: tags
+    kind: kind
+    identity: {
+      type: 'SystemAssigned'
     }
-    dataFlows: dataFlows
-    destinations: {
-      logAnalytics: [
-        {
-          workspaceResourceId: workspaceId
-          name: destinationFriendlyName
-        }
-      ]
+    properties: {
+      dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
+      dataSources: {
+        performanceCounters: performanceCounters
+        syslog: (kind == 'Linux') ? linuxSyslogs : []
+        windowsEventLogs: (kind == 'Windows') ? windowsEventLogs : []
+        extensions: dcrExtensions
+      }
+      dataFlows: dataFlows
+      destinations: {
+        logAnalytics: [
+          {
+            workspaceResourceId: workspaceId
+            name: destinationFriendlyName
+          }
+        ]
+      }
     }
   }
-}
 
-resource dcrMultiOs 'Microsoft.Insights/dataCollectionRules@2022-06-01' = if (kind == 'All') {
-  name: name
-  location: location
-  tags: tags
-  kind: kind
-  identity: {
-    type: 'SystemAssigned'
-  }
-  properties: {
-    dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
-    dataSources: {
-      performanceCounters: performanceCounters
-      syslog: linuxSyslogs
-      windowsEventLogs: windowsEventLogs
-      extensions: dcrExtensions
+resource dcrMultiOs 'Microsoft.Insights/dataCollectionRules@2022-06-01' =
+  if (kind == 'All') {
+    name: name
+    location: location
+    tags: tags
+    identity: {
+      type: 'SystemAssigned'
     }
-    dataFlows: dataFlows
-    destinations: {
-      logAnalytics: [
-        {
-          workspaceResourceId: workspaceId
-          name: destinationFriendlyName
-        }
-      ]
+    properties: {
+      dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
+      dataSources: {
+        performanceCounters: performanceCounters
+        syslog: linuxSyslogs
+        windowsEventLogs: windowsEventLogs
+        extensions: dcrExtensions
+      }
+      dataFlows: dataFlows
+      destinations: {
+        logAnalytics: [
+          {
+            workspaceResourceId: workspaceId
+            name: destinationFriendlyName
+          }
+        ]
+      }
     }
   }
-}
 
 @description('The resource id of the data collection rule (DCR).')
 output resourceId string = dcr.id
