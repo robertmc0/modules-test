@@ -29,8 +29,9 @@ param cognitiveServiceOpenAIDeployments array = [
     model: {
       format: 'OpenAI'
       name: 'gpt-35-turbo'
-      version: '0301'
+      version: '0613'
     }
+    versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
     sku: {
       name: 'Standard'
       capacity: 30
@@ -41,7 +42,7 @@ param cognitiveServiceOpenAIDeployments array = [
     model: {
       format: 'OpenAI'
       name: 'gpt-35-turbo'
-      version: '0301'
+      version: '0613'
     }
     sku: {
       name: 'Standard'
@@ -86,7 +87,8 @@ param cognitiveServiceDiagsDeployments array = []
 TEST PREREQUISITES
 ======================================================================*/
 
-resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {//name needs to be addressed
+resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  //name needs to be addressed
   name: storageName
   location: location
   kind: 'BlobStorage'
