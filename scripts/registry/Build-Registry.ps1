@@ -1,4 +1,4 @@
-#requires -version 6.0
+#requires -Version 7.0
 <#
   .SYNOPSIS
     Script used to build and copy bicep modules from a container registry to another registry in a different tenant. The script uses AD Authentication to access
@@ -31,12 +31,15 @@
   .PARAMETER TargetRegistryResourceGroupName
   Mandatory. The name of the resource group where the target container registry is created.
 
+  .PARAMETER ParallelisationFactor
+  Optional. The number of parallel threads to use when scanning & importing images. Defaults to 30.
+
   .EXAMPLE
     Build-Registry -AzureRegion australiaeast -TargetRegistryName msaebicepregistryacr -TargetTenantId 5be09980-4733-4c85-bebb-8c68f87d8ec0 -TargetSubscriptionName ms-platform-sub -TargetRegistryResourceGroupName ms-aue-bicep-registry-rg
 
 
   .NOTES
-    Version:	1.1
+    Version:	1.3
     Author:		Scott Wilkinson
 
     Creation Date:			24/03/2023
@@ -52,6 +55,7 @@
       [24/03/2023 - 1.0 - Scott Wilkinson]: Initial script development
       [17/05/2023 - 1.1 - Scott Wilkinson]: Added enhancements to supporting uplifting a registry with new module versions
       [10/08/2023 - 1.2 - AJ Bajada]: Added check for existing Azure container registry
+      [01/04/2024 - 1.3 - Ben Ranford]: Added support for parallel scanning/importing
 
 #>
 function Build-Registry {
@@ -72,7 +76,10 @@ function Build-Registry {
     [Parameter(Mandatory = $true)]
     [string] $TargetRegistryResourceGroupName,
     [Parameter(Mandatory = $false)]
-    [string] $Tags = "{}"
+    [string] $Tags = "{}",
+    [Parameter(Mandatory = $false)]
+    [int] $ParallelisationFactor = 30
+
   )
   $ErrorActionPreference = "Stop"
 
@@ -123,11 +130,13 @@ function GetSourceRegistryImages {
   Write-Host "Found $($($Repos).Count) modules in source registry"
   $Images = [System.Collections.ArrayList]@()
 
-  Write-Host "Scanning modules for versions"
-  foreach ($Repo in $Repos) {
+  Write-Host "Scanning modules for versions with" $ParallelisationFactor "threads"
+  $Images = $Repos | ForEach-Object -Parallel {
+    $Repo = $_
+    $SourceRegistryName = $using:SourceRegistryName
     $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo | ConvertFrom-Json
     foreach ($Tag in $Tags) {
-      $Images += "${Repo}:${Tag}"
+      "${Repo}:${Tag}"
     }
   }
   return $Images
@@ -171,10 +180,10 @@ function CreateRegistry() {
   try {
     Write-Host "Provisioning registry"
     $checkAcrExists = az acr show --name $TargetRegistryName --resource-group $TargetRegistryResourceGroupName 2>nul
-    if ($checkAcrExists){
+    if ($checkAcrExists) {
       Write-Host "Skipping as registry already exists"
     }
-    else{
+    else {
       $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags | ConvertFrom-Json
       if ($output.properties.provisioningState -eq "Succeeded") {
         Write-Host "Successfully provisioned target registry"
@@ -186,7 +195,7 @@ function CreateRegistry() {
     }
   }
   catch {
-      throw "Failed to deploy registry against target subscription $TargetSubscriptionName. Error: $($_.Exception.Message)"
+    throw "Failed to deploy registry against target subscription $TargetSubscriptionName. Error: $($_.Exception.Message)"
   }
 }
 
@@ -252,10 +261,14 @@ function ImportImagesToTargetRegistry {
   if ($($newImages).Count -ne 0) {
     Write-Host "Importing module versions to target registry"
 
-    foreach ($Image in $newImages) {
+    $newImages | ForEach-Object  -ThrottleLimit $ParallelisationFactor -Parallel {
+      $Image = $_
+      $TargetRegistryName = $using:TargetRegistryName
+      $SourceRegistryName = $using:SourceRegistryName
+      $SourceRegistryToken = $using:SourceRegistryToken
+      $TargetRegistryResourceGroupName = $using:TargetRegistryResourceGroupName
 
       Write-Host "Importing $Image"
-
       try {
         az acr import -n $TargetRegistryName --force --source "$SourceRegistryName.azurecr.io/$Image" -u "00000000-0000-0000-0000-000000000000" -p $SourceRegistryToken.accessToken --resource-group $TargetRegistryResourceGroupName
       }
