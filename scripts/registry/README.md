@@ -14,14 +14,18 @@ The role assignment `Contributor` is required to run the script and create the A
 
 The Azure RBAC permission `Microsoft.ContainerRegistry/registries/importImage/action` allows a user or service principal to import an image into an Azure Container Registry (ACR). This permission is required to perform the `az acr import` command, which imports an image from a specified source to an ACR repository. The rbac role of `Contributor` includes this permission.
 
-Requirements:
+Required Parameters:
 
 - AzureRegion. i.e australiaeast
 - TargetRegistryName. Name must not contain spaces or symbols. i.e \<companyPrefix\>\<locationIdentifier\>bicepmodulesacr
 - TargetTenantId
 - TargetSubscriptionName
 - TargetRegistryResourceGroupName i.e \<companyPrefix\>-\<locationIdentifier\>-bicep-registry-rg
+
+Optional Parameters:
+
 - Tags. Needs to be a JSON formatted string. i.e "{'Owner':'Contoso','Cost Center':'2345-324'}"
+- ParallelisationFactor (A number, i.e. 15 - defaults to 30 if not set)
 
 ## Steps
 
