@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "13015544498431058655"
+      "templateHash": "10976342885680919338"
     },
     "name": "Azure Firewall Policy Module",
     "description": "This module deploys Microsoft.Network firewallPolicies",
@@ -171,7 +171,7 @@
     }
   },
   "variables": {
-    "dnsProperties": "[if(equals(parameters('tier'), 'Basic'), null(), if(not(equals(parameters('tier'), 'Basic')), createObject('enableProxy', parameters('enableDnsProxy'), 'servers', parameters('customDnsServers')), null()))]",
+    "dnsProperties": "[if(equals(parameters('tier'), 'Basic'), null(), createObject('enableProxy', parameters('enableDnsProxy'), 'servers', parameters('customDnsServers')))]",
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
