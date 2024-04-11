@@ -1,4 +1,4 @@
-metadata name = 'Vault Secret'
+metadata name = 'Key Vaults Secrets Module'
 metadata description = 'This module deploys Microsoft.KeyVault/vaults/secrets'
 metadata owner = 'Arinco'
 
@@ -33,7 +33,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
 }
 
-resource secret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+resource secret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   parent: keyVault
   name: name
   tags: tags

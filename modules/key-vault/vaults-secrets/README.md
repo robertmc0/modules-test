@@ -4,7 +4,10 @@ This module deploys Microsoft.KeyVault/vaults/secrets
 
 ## Details
 
-{{Add detailed information about the module}}
+- Creates Microsoft.KeyVault.Vaults.Secret secret resource.
+- Adds secrets to existing key vaults.
+- Defines value of the vault secret.
+- Applies Expiry Date and Not Before Date if specified.
 
 ## Parameters
 
