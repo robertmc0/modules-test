@@ -14,6 +14,7 @@ param tags object = {}
 param keyVaultName string
 
 @description('The value of the secret.')
+@secure()
 param value string
 
 @description('Optional. The attributes of the secret.')
