@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.18.4.5664",
-      "templateHash": "8872694488292429200"
-    }
+      "version": "0.26.54.24096",
+      "templateHash": "13015544498431058655"
+    },
+    "name": "Azure Firewall Policy Module",
+    "description": "This module deploys Microsoft.Network firewallPolicies",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {

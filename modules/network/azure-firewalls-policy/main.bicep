@@ -1,3 +1,7 @@
+metadata name = 'Azure Firewall Policy Module'
+metadata description = 'This module deploys Microsoft.Network firewallPolicies'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 

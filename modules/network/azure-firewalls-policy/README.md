@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Network firewallPolicies
 
-## Description
+## Details
 
 This module performs the following
 
@@ -16,8 +16,6 @@ This module performs the following
 
 > Note: TLS Inspection, IDPS, URL Filtering and Web Categories are only available on the Premium SKU.
 
-> Note: Custom DNS Servers & DNS Proxy are unavailable on the Basic SKU. These values will be filtered out if the `tier` variable is passed as "Basic"
-
 > Note: Azure RBAC is not currently supported for key vault integration with Azure Firewall Policy, refer to: https://learn.microsoft.com/en-us/azure/firewall/premium-certificates#azure-key-vault
 
 ## Parameters
@@ -27,7 +25,7 @@ This module performs the following
 | `name`                   | `string` | Yes      | The resource name.                                                                   |
 | `location`               | `string` | Yes      | The geo-location where the resource lives.                                           |
 | `tags`                   | `object` | No       | Optional. Resource tags.                                                             |
-| `tier`                   | `string` | Yes      | Tier of an Azure Firewall.                                                           |
+| `tier`                   | `string` | Yes      | Tier of the Azure Firewall Policy.                                                   |
 | `threatIntelMode`        | `string` | No       | Optional. The operation mode for Threat Intelligence.                                |
 | `threatIntelAllowlist`   | `object` | No       | Optional. Threat Intelligence Allowlist.                                             |
 | `systemAssignedIdentity` | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                  |
