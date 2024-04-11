@@ -57,12 +57,10 @@ param customDnsServers array = []
 @description('Assembles the DNS settings for the Firewall Policy based off the defined Tier.')
 var dnsProperties = tier == 'Basic'
   ? null
-  : tier != 'Basic'
-      ? {
-          enableProxy: enableDnsProxy
-          servers: customDnsServers
-        }
-      : null
+  : {
+      enableProxy: enableDnsProxy
+      servers: customDnsServers
+    }
 
 @description('Optional. Intrusion Detection Configuration. Requires Premium SKU.')
 @metadata({
