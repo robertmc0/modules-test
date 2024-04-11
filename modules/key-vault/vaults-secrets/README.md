@@ -1,4 +1,4 @@
-# Vault Secret
+# Key Vaults Secrets Module
 
 This module deploys Microsoft.KeyVault/vaults/secrets
 

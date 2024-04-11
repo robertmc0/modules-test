@@ -5,9 +5,9 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "18014747611626671858"
+      "templateHash": "8943543330865364998"
     },
-    "name": "Vault Secret",
+    "name": "Key Vaults Secrets Module",
     "description": "This module deploys Microsoft.KeyVault/vaults/secrets",
     "owner": "Arinco"
   },
@@ -55,7 +55,7 @@
   "resources": [
     {
       "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2021-11-01-preview",
+      "apiVersion": "2022-07-01",
       "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('name'))]",
       "tags": "[parameters('tags')]",
       "properties": {
@@ -84,14 +84,14 @@
       "metadata": {
         "description": "The uri of the deployed secret."
       },
-      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name')), '2021-11-01-preview').secretUri]"
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name')), '2022-07-01').secretUri]"
     },
     "uriWithVersion": {
       "type": "string",
       "metadata": {
         "description": "The uri with version of the deployed secret."
       },
-      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name')), '2021-11-01-preview').secretUriWithVersion]"
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name')), '2022-07-01').secretUriWithVersion]"
     }
   }
 }
