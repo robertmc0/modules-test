@@ -1,13 +1,10 @@
-# Key Vaults Secrets Module
+# Vault Secret
 
-This module deploys Microsoft.KeyVault vaults/secrets
+This module deploys Microsoft.KeyVault/vaults/secrets
 
-## Description
+## Details
 
-This module performs the following
-
-- Creates Microsoft.Automation Microsoft.KeyVault vaults/secrets resource.
-- Applies secret expiry if specified.
+{{Add detailed information about the module}}
 
 ## Parameters
 
@@ -21,12 +18,12 @@ This module performs the following
 
 ## Outputs
 
-| Name           | Type   | Description                                  |
-| :------------- | :----: | :------------------------------------------- |
-| name           | string | The name of the deployed secret.             |
-| resourceId     | string | The resource ID of the deployed secret.      |
-| uri            | string | The uri of the deployed secret.              |
-| uriWithVersion | string | The uri with version of the deployed secret. |
+| Name             | Type     | Description                                  |
+| :--------------- | :------: | :------------------------------------------- |
+| `name`           | `string` | The name of the deployed secret.             |
+| `resourceId`     | `string` | The resource ID of the deployed secret.      |
+| `uri`            | `string` | The uri of the deployed secret.              |
+| `uriWithVersion` | `string` | The uri with version of the deployed secret. |
 
 ## Examples
 

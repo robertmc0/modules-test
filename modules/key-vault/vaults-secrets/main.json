@@ -5,8 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "17440426763799796708"
-    }
+      "templateHash": "18014747611626671858"
+    },
+    "name": "Vault Secret",
+    "description": "This module deploys Microsoft.KeyVault/vaults/secrets",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {

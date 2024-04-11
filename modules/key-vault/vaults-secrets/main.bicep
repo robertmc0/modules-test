@@ -1,3 +1,7 @@
+metadata name = 'Vault Secret'
+metadata description = 'This module deploys Microsoft.KeyVault/vaults/secrets'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
