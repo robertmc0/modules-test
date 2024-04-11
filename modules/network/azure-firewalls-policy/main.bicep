@@ -13,7 +13,7 @@ param location string
 })
 param tags object = {}
 
-@description('Tier of an Azure Firewall.')
+@description('Tier of the Azure Firewall Policy.')
 @allowed([
   'Basic'
   'Standard'
@@ -32,8 +32,8 @@ param threatIntelMode string = 'Alert'
 @description('Optional. Threat Intelligence Allowlist.')
 @metadata({
   example: {
-    ipAddresses: [ '10.0.1.6' ]
-    fqdns: [ 'contoso.com' ]
+    ipAddresses: ['10.0.1.6']
+    fqdns: ['contoso.com']
   }
 })
 param threatIntelAllowlist object = {}
@@ -49,6 +49,16 @@ param enableDnsProxy bool = false
 
 @description('Optional. List of Custom DNS Servers. Only required when enableDnsProxy set to true.')
 param customDnsServers array = []
+
+@description('Assembles the DNS settings for the Firewall Policy based off the defined Tier.')
+var dnsProperties = tier == 'Basic'
+  ? null
+  : tier != 'Basic'
+      ? {
+          enableProxy: enableDnsProxy
+          servers: customDnsServers
+        }
+      : null
 
 @description('Optional. Intrusion Detection Configuration. Requires Premium SKU.')
 @metadata({
@@ -73,9 +83,9 @@ param customDnsServers array = []
         {
           name: 'Application 1'
           description: 'Bypass traffic for Application #1'
-          sourceAddresses: [ '*' ]
-          destinationAddresses: [ '10.0.1.6' ]
-          destinationPorts: [ '443' ]
+          sourceAddresses: ['*']
+          destinationAddresses: ['10.0.1.6']
+          destinationPorts: ['443']
           protocol: 'TCP'
         }
       ]
@@ -107,12 +117,16 @@ param resourceLock string = 'NotSpecified'
 
 var lockName = toLower('${firewallPolicy.name}-${resourceLock}-lck')
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = systemAssignedIdentity
+  ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned')
+  : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
-var identity = identityType != 'None' ? {
-  type: identityType
-  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
-} : null
+var identity = identityType != 'None'
+  ? {
+      type: identityType
+      userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+    }
+  : null
 
 resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' = {
   name: name
@@ -120,10 +134,7 @@ resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' = {
   tags: tags
   identity: identity
   properties: {
-    dnsSettings: {
-      enableProxy: enableDnsProxy
-      servers: customDnsServers
-    }
+    dnsSettings: dnsProperties
     sku: {
       tier: tier
     }
@@ -134,14 +145,17 @@ resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' = {
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
-  scope: firewallPolicy
-  name: lockName
-  properties: {
-    level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+resource lock 'Microsoft.Authorization/locks@2020-05-01' =
+  if (resourceLock != 'NotSpecified') {
+    scope: firewallPolicy
+    name: lockName
+    properties: {
+      level: resourceLock
+      notes: (resourceLock == 'CanNotDelete')
+        ? 'Cannot delete resource or child resources.'
+        : 'Cannot modify the resource or child resources.'
+    }
   }
-}
 
 @description('The name of the deployed Azure firewall policy.')
 output name string = firewallPolicy.name

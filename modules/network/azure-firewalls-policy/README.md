@@ -16,6 +16,8 @@ This module performs the following
 
 > Note: TLS Inspection, IDPS, URL Filtering and Web Categories are only available on the Premium SKU.
 
+> Note: Custom DNS Servers & DNS Proxy are unavailable on the Basic SKU. These values will be filtered out if the `tier` variable is passed as "Basic"
+
 > Note: Azure RBAC is not currently supported for key vault integration with Azure Firewall Policy, refer to: https://learn.microsoft.com/en-us/azure/firewall/premium-certificates#azure-key-vault
 
 ## Parameters
