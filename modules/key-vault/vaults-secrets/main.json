@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "7623032284917242518"
+      "version": "0.23.1.45101",
+      "templateHash": "14264778034242295503"
     }
   },
   "parameters": {
@@ -33,7 +33,7 @@
       }
     },
     "value": {
-      "type": "string",
+      "type": "securestring",
       "metadata": {
         "description": "The value of the secret."
       }
@@ -64,31 +64,31 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed secret."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed secret."
-      }
+      },
+      "value": "[resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))]"
     },
     "uri": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))).secretUri]",
       "metadata": {
         "description": "The uri of the deployed secret."
-      }
+      },
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name')), '2021-11-01-preview').secretUri]"
     },
     "uriWithVersion": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name'))).secretUriWithVersion]",
       "metadata": {
         "description": "The uri with version of the deployed secret."
-      }
+      },
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('name')), '2021-11-01-preview').secretUriWithVersion]"
     }
   }
 }

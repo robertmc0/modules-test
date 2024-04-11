@@ -11,13 +11,13 @@ This module performs the following
 
 ## Parameters
 
-| Name           | Type     | Required | Description                             |
-| :------------- | :------: | :------: | :-------------------------------------- |
-| `name`         | `string` | Yes      | The resource name.                      |
-| `tags`         | `object` | No       | Optional. Resource tags.                |
-| `keyVaultName` | `string` | Yes      | The name of the existing key vault.     |
-| `value`        | `string` | Yes      | The value of the secret.                |
-| `attributes`   | `object` | No       | Optional. The attributes of the secret. |
+| Name           | Type           | Required | Description                             |
+| :------------- | :------------: | :------: | :-------------------------------------- |
+| `name`         | `string`       | Yes      | The resource name.                      |
+| `tags`         | `object`       | No       | Optional. Resource tags.                |
+| `keyVaultName` | `string`       | Yes      | The name of the existing key vault.     |
+| `value`        | `securestring` | Yes      | The value of the secret.                |
+| `attributes`   | `object`       | No       | Optional. The attributes of the secret. |
 
 ## Outputs
 
