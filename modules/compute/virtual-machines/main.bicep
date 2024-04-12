@@ -255,222 +255,263 @@ var osDiskSuffix = '-osdisk'
 
 var dataDiskSuffix = '-disk-'
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned, UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = systemAssignedIdentity
+  ? (!empty(userAssignedIdentities) ? 'SystemAssigned, UserAssigned' : 'SystemAssigned')
+  : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
-var identity = identityType != 'None' ? {
-  type: identityType
-  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
-} : null
+var identity = identityType != 'None'
+  ? {
+      type: identityType
+      userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+    }
+  : null
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@2022-07-01' = [for i in range(0, instanceCount): {
-  name: '${name}${format('{0:D2}', i + 1)}${networkInterfaceSuffix}'
-  location: location
-  tags: tags
-  properties: {
-    ipConfigurations: [
-      {
-        name: 'ipconfig1'
-        properties: {
-          subnet: {
-            id: subnetResourceId
-          }
-          privateIPAllocationMethod: 'Dynamic'
-        }
-      }
-    ]
-  }
-}]
-
-resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-08-01' = if (!empty(availabilitySetConfiguration)) {
-  name: !empty(availabilitySetConfiguration) ? availabilitySetConfiguration.name : 'placeholder'
-  location: location
-  tags: tags
-  sku: {
-    name: 'Aligned'
-  }
-  properties: {
-    platformFaultDomainCount: availabilitySetConfiguration.platformFaultDomainCount
-    platformUpdateDomainCount: availabilitySetConfiguration.platformUpdateDomainCount
-  }
-}
-
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [for i in range(0, instanceCount): {
-  dependsOn: [
-    networkInterface
-  ]
-  name: '${name}${format('{0:D2}', i + 1)}'
-  location: location
-  tags: tags
-  identity: identity
-  zones: availabilityZones
-  properties: {
-    availabilitySet: !empty(availabilitySetConfiguration) ? {
-      id: availabilitySet.id
-    } : null
-    networkProfile: {
-      networkInterfaces: [
+resource networkInterface 'Microsoft.Network/networkInterfaces@2022-07-01' = [
+  for i in range(0, instanceCount): {
+    name: '${name}${format('{0:D2}', i + 1)}${networkInterfaceSuffix}'
+    location: location
+    tags: tags
+    properties: {
+      ipConfigurations: [
         {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/networkInterfaces', '${name}${format('{0:D2}', i + 1)}${networkInterfaceSuffix}')
+          name: 'ipconfig1'
+          properties: {
+            subnet: {
+              id: subnetResourceId
+            }
+            privateIPAllocationMethod: 'Dynamic'
+          }
         }
       ]
     }
-    osProfile: {
-      computerName: '${name}${format('{0:D2}', i + 1)}'
-      adminUsername: adminUsername
-      adminPassword: adminPassword
-      windowsConfiguration: !empty(windowsConfiguration) ? windowsConfiguration : null
-      linuxConfiguration: !empty(linuxConfiguration) ? linuxConfiguration : null
-      customData: !empty(customData) ? customData : null
+  }
+]
+
+resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-08-01' =
+  if (!empty(availabilitySetConfiguration)) {
+    name: !empty(availabilitySetConfiguration) ? availabilitySetConfiguration.name : 'placeholder'
+    location: location
+    tags: tags
+    sku: {
+      name: 'Aligned'
     }
-    hardwareProfile: {
-      vmSize: size
+    properties: {
+      platformFaultDomainCount: availabilitySetConfiguration.platformFaultDomainCount
+      platformUpdateDomainCount: availabilitySetConfiguration.platformUpdateDomainCount
     }
-    storageProfile: {
-      imageReference: imageReference
-      osDisk: {
-        name: '${name}${format('{0:D2}', i + 1)}${osDiskSuffix}'
-        createOption: 'FromImage'
-        managedDisk: {
-          storageAccountType: osStorageAccountType
+  }
+
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [
+  for i in range(0, instanceCount): {
+    dependsOn: [
+      networkInterface
+    ]
+    name: '${name}${format('{0:D2}', i + 1)}'
+    location: location
+    tags: tags
+    identity: identity
+    zones: availabilityZones
+    properties: {
+      availabilitySet: !empty(availabilitySetConfiguration)
+        ? {
+            id: availabilitySet.id
+          }
+        : null
+      networkProfile: {
+        networkInterfaces: [
+          {
+            #disable-next-line use-resource-id-functions
+            id: az.resourceId(
+              'Microsoft.Network/networkInterfaces',
+              '${name}${format('{0:D2}', i + 1)}${networkInterfaceSuffix}'
+            )
+          }
+        ]
+      }
+      osProfile: {
+        computerName: '${name}${format('{0:D2}', i + 1)}'
+        adminUsername: adminUsername
+        adminPassword: adminPassword
+        windowsConfiguration: !empty(windowsConfiguration) ? windowsConfiguration : null
+        linuxConfiguration: !empty(linuxConfiguration) ? linuxConfiguration : null
+        customData: !empty(customData) ? customData : null
+      }
+      hardwareProfile: {
+        vmSize: size
+      }
+      storageProfile: {
+        imageReference: imageReference
+        osDisk: {
+          name: '${name}${format('{0:D2}', i + 1)}${osDiskSuffix}'
+          createOption: 'FromImage'
+          managedDisk: {
+            storageAccountType: osStorageAccountType
+          }
+        }
+        dataDisks: [
+          for (disk, index) in dataDisks: {
+            name: '${name}${format('{0:D2}', i + 1)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
+            diskSizeGB: disk.diskSizeGB
+            lun: index
+            caching: disk.caching
+            createOption: 'Empty'
+            managedDisk: {
+              storageAccountType: disk.storageAccountType
+            }
+          }
+        ]
+      }
+      diagnosticsProfile: {
+        bootDiagnostics: {
+          enabled: true
         }
       }
-      dataDisks: [for (disk, index) in dataDisks: {
-        name: '${name}${format('{0:D2}', i + 1)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
-        diskSizeGB: disk.diskSizeGB
-        lun: index
-        caching: disk.caching
-        createOption: 'Empty'
-        managedDisk: {
-          storageAccountType: disk.storageAccountType
-        }
-      }]
+      securityProfile: enableSecurityProfile ? securityProfileSettings : {}
+      licenseType: !empty(licenseType) ? licenseType : null
     }
-    diagnosticsProfile: {
-      bootDiagnostics: {
-        enabled: true
+  }
+]
+
+resource extension_monitoring 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+    parent: virtualMachine[i]
+    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
+      ? [
+          extension_joinDomain
+        ]
+      : []
+    name: 'Microsoft.EnterpriseCloud.Monitoring'
+    location: location
+    properties: {
+      publisher: 'Microsoft.EnterpriseCloud.Monitoring'
+      type: 'MicrosoftMonitoringAgent'
+      typeHandlerVersion: '1.0'
+      autoUpgradeMinorVersion: true
+      settings: !empty(diagnosticLogAnalyticsWorkspaceId)
+        ? {
+            workspaceId: reference(diagnosticLogAnalyticsWorkspaceId, '2015-03-20').customerId
+          }
+        : null
+      protectedSettings: !empty(diagnosticLogAnalyticsWorkspaceId)
+        ? {
+            workspaceKey: listKeys(diagnosticLogAnalyticsWorkspaceId, '2015-03-20').primarySharedKey
+          }
+        : null
+    }
+  }
+]
+
+resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+    parent: virtualMachine[i]
+    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
+      ? [
+          extension_joinDomain
+          extension_monitoring
+        ]
+      : [
+          extension_monitoring
+        ]
+    name: 'DependencyAgentWindows'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Azure.Monitoring.DependencyAgent'
+      type: 'DependencyAgentWindows'
+      typeHandlerVersion: '9.5'
+      autoUpgradeMinorVersion: true
+    }
+  }
+]
+
+resource extension_guestHealth 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+    parent: virtualMachine[i]
+    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
+      ? [
+          extension_joinDomain
+          extension_depAgent
+        ]
+      : [
+          extension_depAgent
+        ]
+    name: 'GuestHealthWindowsAgent'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Azure.Monitor.VirtualMachines.GuestHealth'
+      type: 'GuestHealthWindowsAgent'
+      typeHandlerVersion: '1.0'
+      autoUpgradeMinorVersion: true
+    }
+  }
+]
+
+resource extension_azureMonitorWindowsAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+    parent: virtualMachine[i]
+    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
+      ? [
+          extension_joinDomain
+          extension_guestHealth
+        ]
+      : [
+          extension_guestHealth
+        ]
+    name: 'AzureMonitorWindowsAgent'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Azure.Monitor'
+      type: 'AzureMonitorWindowsAgent'
+      typeHandlerVersion: '1.0'
+      autoUpgradeMinorVersion: true
+    }
+  }
+]
+
+resource extension_antimalware 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (!empty(antiMalwareConfiguration)) {
+    parent: virtualMachine[i]
+    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
+      ? [
+          extension_joinDomain
+        ]
+      : []
+    name: 'IaaSAntimalware'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Azure.Security'
+      type: 'IaaSAntimalware'
+      typeHandlerVersion: '1.3'
+      autoUpgradeMinorVersion: true
+      settings: antiMalwareConfiguration
+    }
+  }
+]
+
+resource extension_joinDomain 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (!empty(domainJoinSettings) && !empty(domainJoinPassword)) {
+    parent: virtualMachine[i]
+    name: 'JoinDomain'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Compute'
+      type: 'JsonADDomainExtension'
+      typeHandlerVersion: '1.3'
+      autoUpgradeMinorVersion: true
+      settings: {
+        name: domainJoinSettings.domainToJoin
+        oUPath: domainJoinSettings.ouPath
+        user: '${domainJoinSettings.domainToJoin}\\${domainJoinSettings.domainJoinUser}'
+        restart: 'true'
+        options: 3 // Join Domain and Create Computer Account
+      }
+      protectedSettings: {
+        password: domainJoinPassword
       }
     }
-    securityProfile: enableSecurityProfile ? securityProfileSettings : {}
-    licenseType: !empty(licenseType) ? licenseType : null
   }
-}]
+]
 
-resource extension_monitoring 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
-  parent: virtualMachine[i]
-  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
-    extension_joinDomain
-  ] : []
-  name: 'Microsoft.EnterpriseCloud.Monitoring'
-  location: location
-  properties: {
-    publisher: 'Microsoft.EnterpriseCloud.Monitoring'
-    type: 'MicrosoftMonitoringAgent'
-    typeHandlerVersion: '1.0'
-    autoUpgradeMinorVersion: true
-    settings: !empty(diagnosticLogAnalyticsWorkspaceId) ? {
-      workspaceId: reference(diagnosticLogAnalyticsWorkspaceId, '2015-03-20').customerId
-    } : null
-    protectedSettings: !empty(diagnosticLogAnalyticsWorkspaceId) ? {
-      workspaceKey: listKeys(diagnosticLogAnalyticsWorkspaceId, '2015-03-20').primarySharedKey
-    } : null
-  }
-}]
-
-resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
-  parent: virtualMachine[i]
-  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
-    extension_joinDomain
-    extension_monitoring
-  ] : [
-    extension_monitoring
-  ]
-  name: 'DependencyAgentWindows'
-  location: location
-  properties: {
-    publisher: 'Microsoft.Azure.Monitoring.DependencyAgent'
-    type: 'DependencyAgentWindows'
-    typeHandlerVersion: '9.5'
-    autoUpgradeMinorVersion: true
-  }
-
-}]
-
-resource extension_guestHealth 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
-  parent: virtualMachine[i]
-  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
-    extension_joinDomain
-    extension_depAgent
-  ] : [
-    extension_depAgent
-  ]
-  name: 'GuestHealthWindowsAgent'
-  location: location
-  properties: {
-    publisher: 'Microsoft.Azure.Monitor.VirtualMachines.GuestHealth'
-    type: 'GuestHealthWindowsAgent'
-    typeHandlerVersion: '1.0'
-    autoUpgradeMinorVersion: true
-  }
-}]
-
-resource extension_azureMonitorWindowsAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
-  parent: virtualMachine[i]
-  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
-    extension_joinDomain
-    extension_guestHealth
-  ] : [
-    extension_guestHealth
-  ]
-  name: 'AzureMonitorWindowsAgent'
-  location: location
-  properties: {
-    publisher: 'Microsoft.Azure.Monitor'
-    type: 'AzureMonitorWindowsAgent'
-    typeHandlerVersion: '1.0'
-    autoUpgradeMinorVersion: true
-  }
-}]
-
-resource extension_antimalware 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(antiMalwareConfiguration)) {
-  parent: virtualMachine[i]
-  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
-    extension_joinDomain
-  ] : []
-  name: 'IaaSAntimalware'
-  location: location
-  properties: {
-    publisher: 'Microsoft.Azure.Security'
-    type: 'IaaSAntimalware'
-    typeHandlerVersion: '1.3'
-    autoUpgradeMinorVersion: true
-    settings: antiMalwareConfiguration
-  }
-}]
-
-resource extension_joinDomain 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(domainJoinSettings) && !empty(domainJoinPassword)) {
-  parent: virtualMachine[i]
-  name: 'JoinDomain'
-  location: location
-  properties: {
-    publisher: 'Microsoft.Compute'
-    type: 'JsonADDomainExtension'
-    typeHandlerVersion: '1.3'
-    autoUpgradeMinorVersion: true
-    settings: {
-      name: domainJoinSettings.domainToJoin
-      oUPath: domainJoinSettings.ouPath
-      user: '${domainJoinSettings.domainToJoin}\\${domainJoinSettings.domainJoinUser}'
-      restart: 'true'
-      options: 3 // Join Domain and Create Computer Account
-    }
-    protectedSettings: {
-      password: domainJoinPassword
-    }
-  }
-}]
-
-resource extension_aadjoin 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+resource extension_aadLogin 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
   for i in range(0, instanceCount): if (enableAadLogin) {
     parent: virtualMachine[i]
     name: 'AADLoginForWindows'
@@ -484,7 +525,7 @@ resource extension_aadjoin 'Microsoft.Compute/virtualMachines/extensions@2022-08
   }
 ]
 
-resource extension_aadjoinWithIntune 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+resource extension_aadLoginWithIntune 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
   for i in range(0, instanceCount): if (enableAadLoginWithIntune) {
     parent: virtualMachine[i]
     dependsOn: [extension_monitoring[i], extension_guestHealth[i], extension_depAgent[i]]
@@ -502,31 +543,38 @@ resource extension_aadjoinWithIntune 'Microsoft.Compute/virtualMachines/extensio
   }
 ]
 
-
-resource extension_dsc 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(dscConfiguration)) {
-  parent: virtualMachine[i]
-  dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword) ? [
-    extension_joinDomain
-  ] : []
-  name: 'Microsoft.Powershell.DSC'
-  location: location
-  properties: {
-    publisher: 'Microsoft.Powershell'
-    type: 'DSC'
-    typeHandlerVersion: '2.83'
-    autoUpgradeMinorVersion: true
-    settings: dscConfiguration
+resource extension_dsc 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (!empty(dscConfiguration)) {
+    parent: virtualMachine[i]
+    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
+      ? [
+          extension_joinDomain
+        ]
+      : []
+    name: 'Microsoft.Powershell.DSC'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Powershell'
+      type: 'DSC'
+      typeHandlerVersion: '2.83'
+      autoUpgradeMinorVersion: true
+      settings: dscConfiguration
+    }
   }
-}]
+]
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = [for i in range(0, instanceCount): if (resourceLock != 'NotSpecified') {
-  scope: virtualMachine[i]
-  name: toLower('${name}${format('{0:D2}', i + 1)}${lockSuffix}')
-  properties: {
-    level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = [
+  for i in range(0, instanceCount): if (resourceLock != 'NotSpecified') {
+    scope: virtualMachine[i]
+    name: toLower('${name}${format('{0:D2}', i + 1)}${lockSuffix}')
+    properties: {
+      level: resourceLock
+      notes: (resourceLock == 'CanNotDelete')
+        ? 'Cannot delete resource or child resources.'
+        : 'Cannot modify the resource or child resources.'
+    }
   }
-}]
+]
 
 @description('The name of the deployed virtual machines.')
 output name array = [for i in range(0, instanceCount): virtualMachine[i].name]
