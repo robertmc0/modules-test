@@ -12,6 +12,8 @@ This module performs the following
 - Applies Azure Monitor extension if specified.
 - Applies Microsoft Antimalware extension if specified.
 - Applies AD Domain Join extension if specified.
+- Applies AAD Login extension is specified.
+- Applies AAD Logis and Microsoft Intune extension if specified.
 - Applies DSC extension if specified.
 - Adds data disks if specified.
 - Adds custom data if specified.
