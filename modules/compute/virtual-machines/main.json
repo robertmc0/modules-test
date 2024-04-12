@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.25.53.49325",
-      "templateHash": "9473017900239090573"
+      "version": "0.26.54.24096",
+      "templateHash": "8681188722875619580"
     },
     "name": "Virtual Machines Module",
     "description": "This module deploys Microsoft.Compute virtualMachines",
@@ -259,6 +259,20 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional. Password for the domain join user account."
+      }
+    },
+    "enableAadLogin": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable AAD login extension for VM."
+      }
+    },
+    "enableAadLoginWithIntune": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Microsoft Intune for VM."
       }
     },
     "dscConfiguration": {
@@ -598,6 +612,52 @@
         }
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_aadjoin",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[parameters('enableAadLogin')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'AADLoginForWindows')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.ActiveDirectory",
+        "type": "AADLoginForWindows",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_aadjoinWithIntune",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[parameters('enableAadLoginWithIntune')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'AADLoginForWindowsWithIntune')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.ActiveDirectory",
+        "type": "AADLoginForWindows",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "mdmId": "0000000a-0000-0000-c000-000000000000"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), 'DependencyAgentWindows')]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), 'GuestHealthWindowsAgent')]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), 'Microsoft.EnterpriseCloud.Monitoring')]",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
       ]
     },

@@ -185,6 +185,12 @@ param domainJoinSettings object = {}
 @secure()
 param domainJoinPassword string = ''
 
+@description('Optional. Enable AAD login extension for VM.')
+param enableAadLogin bool = false
+
+@description('Optional. Enable Microsoft Intune for VM.')
+param enableAadLoginWithIntune bool = false
+
 @description('Optional. Desired state configuration. Will not be executed if left blank.')
 @metadata({
   doc: 'https://learn.microsoft.com/en-us/azure/virtual-machines/extensions/dsc-windows'
@@ -463,6 +469,39 @@ resource extension_joinDomain 'Microsoft.Compute/virtualMachines/extensions@2022
     }
   }
 }]
+
+resource extension_aadjoin 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (enableAadLogin) {
+    parent: virtualMachine[i]
+    name: 'AADLoginForWindows'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Azure.ActiveDirectory'
+      type: 'AADLoginForWindows'
+      typeHandlerVersion: '1.0'
+      autoUpgradeMinorVersion: true
+    }
+  }
+]
+
+resource extension_aadjoinWithIntune 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+  for i in range(0, instanceCount): if (enableAadLoginWithIntune) {
+    parent: virtualMachine[i]
+    dependsOn: [extension_monitoring[i], extension_guestHealth[i], extension_depAgent[i]]
+    name: 'AADLoginForWindowsWithIntune'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Azure.ActiveDirectory'
+      type: 'AADLoginForWindows'
+      typeHandlerVersion: '1.0'
+      autoUpgradeMinorVersion: true
+      settings: {
+        mdmId: '0000000a-0000-0000-c000-000000000000'
+      }
+    }
+  }
+]
+
 
 resource extension_dsc 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [for i in range(0, instanceCount): if (!empty(dscConfiguration)) {
   parent: virtualMachine[i]
