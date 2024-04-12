@@ -12,6 +12,8 @@ This module performs the following
 - Applies Azure Monitor extension if specified.
 - Applies Microsoft Antimalware extension if specified.
 - Applies AD Domain Join extension if specified.
+- Applies AAD Login extension is specified.
+- Applies AAD Logis and Microsoft Intune extension if specified.
 - Applies DSC extension if specified.
 - Adds data disks if specified.
 - Adds custom data if specified.
@@ -45,6 +47,8 @@ This module performs the following
 | `antiMalwareConfiguration`          | `object`       | No       | Optional. Microsoft antimalware configuration. Will not be installed if left blank.                                                                                                                                               |
 | `domainJoinSettings`                | `object`       | No       | Optional. Domain join configuration. Will not be domain joined if left blank.                                                                                                                                                     |
 | `domainJoinPassword`                | `securestring` | No       | Optional. Password for the domain join user account.                                                                                                                                                                              |
+| `enableAadLogin`                    | `bool`         | No       | Optional. Enable AAD login extension for VM.                                                                                                                                                                                      |
+| `enableAadLoginWithIntune`          | `bool`         | No       | Optional. Enable Microsoft Intune for VM.                                                                                                                                                                                         |
 | `dscConfiguration`                  | `object`       | No       | Optional. Desired state configuration. Will not be executed if left blank.                                                                                                                                                        |
 | `resourceLock`                      | `string`       | No       | Optional. Specify the type of resource lock.                                                                                                                                                                                      |
 | `enableSecurityProfile`             | `bool`         | No       | Optional. Enables the Security related profile settings for the virtual machine. Only supported on Gen 2 VMs.                                                                                                                     |
