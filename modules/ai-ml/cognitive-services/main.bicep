@@ -110,16 +110,20 @@ var lockName = toLower('${account.name}-${resourcelock}-lck')
 
 var diagnosticsName = toLower('${account.name}-dgs')
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
-  enabled: true
-}]
+var diagnosticsLogs = [
+  for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+    categoryGroup: categoryGroup
+    enabled: true
+  }
+]
 
-var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-}]
+var diagnosticsMetrics = [
+  for metric in diagnosticMetricsToEnable: {
+    category: metric
+    timeGrain: null
+    enabled: true
+  }
+]
 
 resource account 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
   name: name
@@ -133,40 +137,51 @@ resource account 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
 }
 
 @batchSize(1)
-resource deployment 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = [for deployment in deployments: {
-  parent: account
-  name: deployment.name
-  properties: {
-    model: deployment.model
-    raiPolicyName: contains(deployment, 'raiPolicyName') ? deployment.raiPolicyName : null
+resource deployment 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = [
+  for deployment in deployments: {
+    parent: account
+    name: deployment.name
+    properties: {
+      model: deployment.model
+      raiPolicyName: contains(deployment, 'raiPolicyName') ? deployment.raiPolicyName : null
+      versionUpgradeOption: contains(deployment, 'versionUpgradeOption') ? deployment.versionUpgradeOption : null
+    }
+    sku: contains(deployment, 'sku')
+      ? deployment.sku
+      : {
+          name: 'Standard'
+          capacity: 20
+        }
   }
-  sku: contains(deployment, 'sku') ? deployment.sku : {
-    name: 'Standard'
-    capacity: 20
-  }
-}]
+]
 
-resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
-  scope: account
-  name: diagnosticsName
-  properties: {
-    storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
-    workspaceId: !empty(diagnosticLogAnalyticsWorkspaceId) ? diagnosticLogAnalyticsWorkspaceId : null
-    eventHubAuthorizationRuleId: !empty(diagnosticEventHubAuthorizationRuleId) ? diagnosticEventHubAuthorizationRuleId : null
-    eventHubName: !empty(diagnosticEventHubName) ? diagnosticEventHubName : null
-    metrics: diagnosticsMetrics
-    logs: diagnosticsLogs
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' =
+  if (enableDiagnostics) {
+    scope: account
+    name: diagnosticsName
+    properties: {
+      storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
+      workspaceId: !empty(diagnosticLogAnalyticsWorkspaceId) ? diagnosticLogAnalyticsWorkspaceId : null
+      eventHubAuthorizationRuleId: !empty(diagnosticEventHubAuthorizationRuleId)
+        ? diagnosticEventHubAuthorizationRuleId
+        : null
+      eventHubName: !empty(diagnosticEventHubName) ? diagnosticEventHubName : null
+      metrics: diagnosticsMetrics
+      logs: diagnosticsLogs
+    }
   }
-}
 
-resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != 'NotSpecified') {
-  scope: account
-  name: lockName
-  properties: {
-    level: resourcelock
-    notes: resourcelock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+resource lock 'Microsoft.Authorization/locks@2020-05-01' =
+  if (resourcelock != 'NotSpecified') {
+    scope: account
+    name: lockName
+    properties: {
+      level: resourcelock
+      notes: resourcelock == 'CanNotDelete'
+        ? 'Cannot delete resource or child resources.'
+        : 'Cannot modify the resource or child resources.'
+    }
   }
-}
 
 @description('The endpoint (subdomain) of the deployed Cognitive Service.')
 output endpoint string = account.properties.endpoint

@@ -1,13 +1,10 @@
-# Maintenance Configurations Module
+# Maintenance Configuration module
 
 This module deploys Microsoft.Maintenance maintenanceConfigurations
 
-## Description
+## Details
 
-This module performs the following:
-
-- Creates Microsoft.Maintenance maintenanceConfigurations resource.
-- Applies a lock if required.
+{{Add detailed information about the module}}
 
 ## Parameters
 
@@ -24,13 +21,15 @@ This module performs the following:
 | `tags`                            | `object` | No       | Optional. Resource tags.                                                                   |
 | `visibility`                      | `string` | No       | Optional. Gets or sets the visibility of the configuration. The default value is 'Custom'. |
 | `windowsClassificationsToInclude` | `array`  | No       | Optional. Choose classification of patches to include in Windows patching.                 |
+| `windowsKbNumbersToExclude`       | `array`  | No       | Optional. Choose patch KB to exclude from Windows patching.                                |
+| `linuxPackageNameMasksToExclude`  | `array`  | No       | Optional. Choose packages to exclude from linux updates.                                   |
 
 ## Outputs
 
-| Name       | Type   | Description                                       |
-| :--------- | :----: | :------------------------------------------------ |
-| name       | string | The name of the Maintenance Configuration.        |
-| resourceId | string | The resource ID of the Maintenance Configuration. |
+| Name         | Type     | Description                                       |
+| :----------- | :------: | :------------------------------------------------ |
+| `name`       | `string` | The name of the Maintenance Configuration.        |
+| `resourceId` | `string` | The resource ID of the Maintenance Configuration. |
 
 ## Examples
 

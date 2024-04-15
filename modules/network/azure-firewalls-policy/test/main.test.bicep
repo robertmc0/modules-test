@@ -73,10 +73,19 @@ module createFirewallCACert 'main.test.prereqs.bicep' = {
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
-module firewallPolicyMinimum '../main.bicep' = {
+module firewallPolicyBasic '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-min-firewall-pol'
   params: {
-    name: '${shortIdentifier}-tst-min-fwl-pol-${uniqueString(deployment().name, 'azureFirewallPolicy', location)}'
+    name: '${shortIdentifier}-tst-bsc-fwl-pol-${uniqueString(deployment().name, 'azureFirewallPolicy', location)}'
+    location: location
+    tier: 'Basic'
+  }
+}
+
+module firewallPolicyStandard '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-min-firewall-pol'
+  params: {
+    name: '${shortIdentifier}-tst-std-fwl-pol-${uniqueString(deployment().name, 'azureFirewallPolicy', location)}'
     location: location
     tier: 'Standard'
   }
@@ -96,8 +105,8 @@ module firewallPolicy '../main.bicep' = {
     ]
     threatIntelMode: 'Deny'
     threatIntelAllowlist: {
-      ipAddresses: [ '10.0.1.10' ]
-      fqdns: [ 'contoso.com' ]
+      ipAddresses: ['10.0.1.10']
+      fqdns: ['contoso.com']
     }
     intrusionDetection: {
       mode: 'Deny'
@@ -119,9 +128,9 @@ module firewallPolicy '../main.bicep' = {
           {
             name: 'Application 1'
             description: 'Bypass traffic for Application #1'
-            sourceAddresses: [ '*' ]
-            destinationAddresses: [ '10.0.1.15' ]
-            destinationPorts: [ '443' ]
+            sourceAddresses: ['*']
+            destinationAddresses: ['10.0.1.15']
+            destinationPorts: ['443']
             protocol: 'TCP'
           }
         ]

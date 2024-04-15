@@ -1,3 +1,7 @@
+metadata name = 'Maintenance Configuration module'
+metadata description = 'This module deploys Microsoft.Maintenance maintenanceConfigurations'
+metadata owner = 'Arinco'
+
 @description('Maintenance Configuration Name.')
 param name string
 
@@ -88,9 +92,27 @@ param visibility string = 'Custom'
 ])
 param windowsClassificationsToInclude array = []
 
+@description('Optional. Choose patch KB to exclude from Windows patching.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.maintenance/maintenanceconfigurations?pivots=deployment-language-bicep#inputwindowsparameters'
+  example: {
+    tagKey: [ 'KB5034439' ]
+  }
+})
+param windowsKbNumbersToExclude array = []
+
+@description('Optional. Choose packages to exclude from linux updates.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.maintenance/maintenanceconfigurations?pivots=deployment-language-bicep#inputwindowsparameters'
+  example: {
+    tagKey: [ 'openjdk-*' ]
+  }
+})
+param linuxPackageNameMasksToExclude array = []
+
 var lockName = toLower('${maintenanceConfiguration.name}-${resourceLock}-lck')
 
-resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfigurations@2022-11-01-preview' = {
+resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfigurations@2023-04-01' = {
   name: name
   location: location
   tags: tags
@@ -104,16 +126,18 @@ resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfiguratio
     installPatches: {
       rebootSetting: rebootSetting
       windowsParameters: {
-        classificationsToInclude: windowsClassificationsToInclude
+        classificationsToInclude: !empty(windowsClassificationsToInclude) ? windowsClassificationsToInclude : null
+        kbNumbersToExclude: !empty(windowsKbNumbersToExclude) ? windowsKbNumbersToExclude : null
       }
       linuxParameters: {
-        classificationsToInclude: linuxClassificationsToInclude
+        classificationsToInclude: !empty(linuxClassificationsToInclude) ? linuxClassificationsToInclude : null
+        packageNameMasksToExclude: !empty(linuxPackageNameMasksToExclude) ? linuxPackageNameMasksToExclude : null
       }
     }
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: maintenanceConfiguration
   name: lockName
   properties: {

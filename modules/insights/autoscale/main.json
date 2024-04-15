@@ -1,0 +1,73 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.25.53.49325",
+      "templateHash": "2774991651999008409"
+    },
+    "name": "Autoscale settings module",
+    "description": "This module deploys a Microsoft.Insights/autoscalesettings resource.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "targetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource identifier of the resource that the autoscale setting should be added to."
+      }
+    },
+    "customEmails": {
+      "type": "array",
+      "metadata": {
+        "description": "The custom e-mails list. This value can be null or empty, in which case this attribute will be ignored."
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "metadata": {
+        "description": "The collection of automatic scaling profiles that specify different scaling parameters for different time periods."
+      }
+    }
+  },
+  "variables": {
+    "targetResourceName": "[last(split(parameters('targetResourceId'), '/'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/autoscalesettings",
+      "apiVersion": "2021-05-01-preview",
+      "name": "[format('{0}-auto-scale-setting', variables('targetResourceName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "enabled": true,
+        "targetResourceUri": "[parameters('targetResourceId')]",
+        "notifications": [
+          {
+            "operation": "Scale",
+            "email": {
+              "customEmails": "[parameters('customEmails')]"
+            }
+          }
+        ],
+        "profiles": "[parameters('profiles')]"
+      }
+    }
+  ],
+  "outputs": {
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The ID of the Autoscale Settings resource."
+      },
+      "value": "[resourceId('Microsoft.Insights/autoscalesettings', format('{0}-auto-scale-setting', variables('targetResourceName')))]"
+    }
+  }
+}
