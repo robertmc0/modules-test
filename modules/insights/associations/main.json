@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "12104741981606055789"
+      "templateHash": "6863806756928275219"
     },
     "name": "Data collection rule association module",
     "description": "This module deploys Microsoft.Insights dataCollectionRuleAssociations",
@@ -15,20 +15,20 @@
     "virtualMachineName": {
       "type": "string",
       "metadata": {
-        "description": "Required. The VM name for the DCR to associate with"
+        "description": "Required. The VM name for the DCR to associate with."
       }
     },
     "dataCollectionRuleId": {
       "type": "string",
       "metadata": {
-        "description": "Required. The resource Id of the DCR to associate the VM to"
+        "description": "Required. The resource Id of the DCR to associate the VM to."
       }
     },
     "dataCollectionEndpointId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. A DCR endpoint to associate with the VM and DCR with. Only used if Log analytics sits behind a network firewall"
+        "description": "Optional. A DCR endpoint to associate with the VM and DCR with. Only used if Log analytics sits behind a network firewall."
       }
     }
   },
@@ -47,10 +47,10 @@
     }
   ],
   "outputs": {
-    "associationId": {
+    "resourceId": {
       "type": "string",
       "metadata": {
-        "description": "The resource Id for the DCR association"
+        "description": "The resource Id for the DCR association."
       },
       "value": "[extensionResourceId(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), 'Microsoft.Insights/dataCollectionRuleAssociations', 'dce-association')]"
     }

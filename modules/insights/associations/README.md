@@ -13,17 +13,17 @@ Deploying this module will perform the following:
 
 ## Parameters
 
-| Name                       | Type     | Required | Description                                                                                                               |
-| :------------------------- | :------: | :------: | :------------------------------------------------------------------------------------------------------------------------ |
-| `virtualMachineName`       | `string` | Yes      | Required. The VM name for the DCR to associate with                                                                       |
-| `dataCollectionRuleId`     | `string` | Yes      | Required. The resource Id of the DCR to associate the VM to                                                               |
-| `dataCollectionEndpointId` | `string` | No       | Optional. A DCR endpoint to associate with the VM and DCR with. Only used if Log analytics sits behind a network firewall |
+| Name                       | Type     | Required | Description                                                                                                                |
+| :------------------------- | :------: | :------: | :------------------------------------------------------------------------------------------------------------------------- |
+| `virtualMachineName`       | `string` | Yes      | Required. The VM name for the DCR to associate with.                                                                       |
+| `dataCollectionRuleId`     | `string` | Yes      | Required. The resource Id of the DCR to associate the VM to.                                                               |
+| `dataCollectionEndpointId` | `string` | No       | Optional. A DCR endpoint to associate with the VM and DCR with. Only used if Log analytics sits behind a network firewall. |
 
 ## Outputs
 
-| Name            | Type     | Description                             |
-| :-------------- | :------: | :-------------------------------------- |
-| `associationId` | `string` | The resource Id for the DCR association |
+| Name         | Type     | Description                              |
+| :----------- | :------: | :--------------------------------------- |
+| `resourceId` | `string` | The resource Id for the DCR association. |
 
 ## Examples
 
