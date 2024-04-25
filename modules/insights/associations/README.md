@@ -8,7 +8,7 @@ Deploying this module will perform the following:
 
 - Deploys the Microsoft.Insights dataCollectionRuleAssociations resource
 - This module depends on an existing DCR. Use the `dataCollectionRuleId` param to reference it.
-- More so, this module requires an existing VM to be referenced. specifiy the VM name you wish to associate with the DCR using the `virtualNamineName`. The module will use the `Microsoft.Compute virtualMachines` resource to find the existing VM.
+- More so, this module requires an existing VM to be referenced. specifiy the VM name you wish to associate with the DCR using the `virtualMachineName`. The module will use the `Microsoft.Compute virtualMachines` resource to find the existing VM.
 - Optionally, a data collection endpoint may also be associated with the DCR if specified
 
 ## Parameters
