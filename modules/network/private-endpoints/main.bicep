@@ -34,10 +34,16 @@ param location string
 @description('Resource ID of the subnet that will host the Private Endpoint.')
 param subnetId string
 
-@description('Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set')
+@description('Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set.')
 param privateDnsZoneId string = ''
 
 @description('Optional. Array of Resource IDs of the Private DNS Zones to host the Private Endpoint.')
+@metadata({
+  example: [
+    '/subscriptions/subscription-id/resourceGroups/resource-group-name/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net'
+    '/subscriptions/subscription-id/resourceGroups/resource-group-name/providers/Microsoft.Network/privateDnsZones/privatelink.blob.storage.azure.net'
+  ]
+})
 param privateDnsZoneIds array = []
 
 @description('Optional. Private endpoint DNS Group Name. Defaults to default.')
