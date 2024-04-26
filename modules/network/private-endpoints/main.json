@@ -5,11 +5,12 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "974008131516882300"
+      "templateHash": "15523480929606662445"
     },
-    "name": "TODO: <module name>",
-    "description": "TODO: <module description>",
-    "owner": "TODO: <GitHub username of module owner>"
+    "name": "Private Endpoints Module",
+    "description": "This module deploys Microsoft.Network privateEndpoints.",
+    "details": "This module performs the following\n\n- Creates Microsoft.Network privateEndpoints resource.\n- Associates the private endpoint with the given single Private DNS Zone. **\n- Applies a lock to the private endpoint if the lock is specified.\n\n**NOTE:** ** Registering the resource with multiple private DNS zones should be done by creating multiple private-endpoints per DNS zone to be registered. This will also allow the segregation of traffic via firewall or nsg.",
+    "owner": "Arinco"
   },
   "parameters": {
     "targetResourceName": {
@@ -61,13 +62,17 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set"
+        "description": "Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set."
       }
     },
     "privateDnsZoneIds": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
+        "example": [
+          "/subscriptions/subscription-id/resourceGroups/resource-group-name/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net",
+          "/subscriptions/subscription-id/resourceGroups/resource-group-name/providers/Microsoft.Network/privateDnsZones/privatelink.blob.storage.azure.net"
+        ],
         "description": "Optional. Array of Resource IDs of the Private DNS Zones to host the Private Endpoint."
       }
     },

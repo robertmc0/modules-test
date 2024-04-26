@@ -1,6 +1,14 @@
-metadata name = 'TODO: <module name>'
-metadata description = 'TODO: <module description>'
-metadata owner = 'TODO: <GitHub username of module owner>'
+metadata name = 'Private Endpoints Module'
+metadata description = 'This module deploys Microsoft.Network privateEndpoints.'
+
+metadata details = '''This module performs the following
+
+- Creates Microsoft.Network privateEndpoints resource.
+- Associates the private endpoint with the given single Private DNS Zone. **
+- Applies a lock to the private endpoint if the lock is specified.
+
+**NOTE:** ** Registering the resource with multiple private DNS zones should be done by creating multiple private-endpoints per DNS zone to be registered. This will also allow the segregation of traffic via firewall or nsg.'''
+metadata owner = 'Arinco'
 
 @description('Name of the target resource for which to create the Private Endpoint.')
 param targetResourceName string

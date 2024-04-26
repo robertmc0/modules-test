@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Network privateEndpoints.
 
-## Description
+## Details
 
 This module performs the following
 
@@ -14,17 +14,17 @@ This module performs the following
 
 ## Parameters
 
-| Name                      | Type     | Required | Description                                                                                                                    |
-| :------------------------ | :------: | :------: | :----------------------------------------------------------------------------------------------------------------------------- |
-| `targetResourceName`      | `string` | Yes      | Name of the target resource for which to create the Private Endpoint.                                                          |
-| `targetResourceId`        | `string` | Yes      | Resource Id of the target resource for which to create the Private Endpoint.                                                   |
-| `targetSubResourceType`   | `string` | Yes      | The type of sub-resource for the target resource that the private endpoint will be able to access.                             |
-| `location`                | `string` | Yes      | Location of the resource.                                                                                                      |
-| `subnetId`                | `string` | Yes      | Resource ID of the subnet that will host the Private Endpoint.                                                                 |
-| `privateDnsZoneId`        | `string` | No       | Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set |
-| `privateDnsZoneIds`       | `array`  | No       | Optional. Array of Resource IDs of the Private DNS Zones to host the Private Endpoint.                                         |
-| `privateDNSZoneGroupName` | `string` | No       | Optional. Private endpoint DNS Group Name. Defaults to default.                                                                |
-| `resourcelock`            | `string` | No       | Optional. Specify the type of resource lock.                                                                                   |
+| Name                      | Type     | Required | Description                                                                                                                     |
+| :------------------------ | :------: | :------: | :------------------------------------------------------------------------------------------------------------------------------ |
+| `targetResourceName`      | `string` | Yes      | Name of the target resource for which to create the Private Endpoint.                                                           |
+| `targetResourceId`        | `string` | Yes      | Resource Id of the target resource for which to create the Private Endpoint.                                                    |
+| `targetSubResourceType`   | `string` | Yes      | The type of sub-resource for the target resource that the private endpoint will be able to access.                              |
+| `location`                | `string` | Yes      | Location of the resource.                                                                                                       |
+| `subnetId`                | `string` | Yes      | Resource ID of the subnet that will host the Private Endpoint.                                                                  |
+| `privateDnsZoneId`        | `string` | No       | Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set. |
+| `privateDnsZoneIds`       | `array`  | No       | Optional. Array of Resource IDs of the Private DNS Zones to host the Private Endpoint.                                          |
+| `privateDNSZoneGroupName` | `string` | No       | Optional. Private endpoint DNS Group Name. Defaults to default.                                                                 |
+| `resourcelock`            | `string` | No       | Optional. Specify the type of resource lock.                                                                                    |
 
 ## Outputs
 
