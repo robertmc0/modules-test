@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.18.4.5664",
-      "templateHash": "8893734134469311579"
-    }
+      "version": "0.26.170.59819",
+      "templateHash": "974008131516882300"
+    },
+    "name": "TODO: <module name>",
+    "description": "TODO: <module description>",
+    "owner": "TODO: <GitHub username of module owner>"
   },
   "parameters": {
     "targetResourceName": {
@@ -58,7 +61,14 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. Resource ID of the Private DNS Zone to host the Private Endpoint."
+        "description": "Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set"
+      }
+    },
+    "privateDnsZoneIds": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. Array of Resource IDs of the Private DNS Zones to host the Private Endpoint."
       }
     },
     "privateDNSZoneGroupName": {
@@ -71,34 +81,39 @@
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of resource lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
     }
   },
   "variables": {
     "lockName": "[toLower(format('{0}-{1}-lck', variables('privateEndpointName'), parameters('resourcelock')))]",
     "privateEndpointName": "[toLower(format('{0}-{1}-pe', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
     "privateLinkServiceName": "[toLower(format('{0}-{1}-plink', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
-    "networkInterfaceName": "[format('{0}-nic', variables('privateEndpointName'))]"
+    "networkInterfaceName": "[format('{0}-nic', variables('privateEndpointName'))]",
+    "privateDnsZoneIdsArray": "[if(not(empty(parameters('privateDnsZoneIds'))), parameters('privateDnsZoneIds'), if(not(empty(parameters('privateDnsZoneId'))), createArray(parameters('privateDnsZoneId')), createArray()))]"
   },
   "resources": [
     {
-      "condition": "[not(empty(parameters('privateDnsZoneId')))]",
+      "condition": "[not(empty(variables('privateDnsZoneIdsArray')))]",
       "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
       "apiVersion": "2022-01-01",
       "name": "[format('{0}/{1}', variables('privateEndpointName'), parameters('privateDNSZoneGroupName'))]",
       "properties": {
-        "privateDnsZoneConfigs": [
+        "copy": [
           {
-            "name": "[parameters('privateDNSZoneGroupName')]",
-            "properties": {
-              "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+            "name": "privateDnsZoneConfigs",
+            "count": "[length(variables('privateDnsZoneIdsArray'))]",
+            "input": {
+              "name": "[replace(replace(last(split(variables('privateDnsZoneIdsArray')[copyIndex('privateDnsZoneConfigs')], '/')), '.', '_'), '/', '')]",
+              "properties": {
+                "privateDnsZoneId": "[variables('privateDnsZoneIdsArray')[copyIndex('privateDnsZoneConfigs')]]"
+              }
             }
           }
         ]
@@ -164,8 +179,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.18.4.5664",
-              "templateHash": "5734780064815498787"
+              "version": "0.26.170.59819",
+              "templateHash": "15446794015521757541"
             }
           },
           "parameters": {

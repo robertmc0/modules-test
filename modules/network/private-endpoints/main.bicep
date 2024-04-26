@@ -1,3 +1,7 @@
+metadata name = 'TODO: <module name>'
+metadata description = 'TODO: <module description>'
+metadata owner = 'TODO: <GitHub username of module owner>'
+
 @description('Name of the target resource for which to create the Private Endpoint.')
 param targetResourceName string
 
@@ -30,8 +34,11 @@ param location string
 @description('Resource ID of the subnet that will host the Private Endpoint.')
 param subnetId string
 
-@description('Optional. Resource ID of the Private DNS Zone to host the Private Endpoint.')
+@description('Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set')
 param privateDnsZoneId string = ''
+
+@description('Optional. Array of Resource IDs of the Private DNS Zones to host the Private Endpoint.')
+param privateDnsZoneIds array = []
 
 @description('Optional. Private endpoint DNS Group Name. Defaults to default.')
 param privateDNSZoneGroupName string = 'default'
@@ -51,6 +58,10 @@ var privateEndpointName = toLower('${targetResourceName}-${toLower(targetSubReso
 var privateLinkServiceName = toLower('${targetResourceName}-${toLower(targetSubResourceType)}-plink')
 
 var networkInterfaceName = '${privateEndpointName}-nic'
+
+var privateDnsZoneIdsArray = (!empty(privateDnsZoneIds))
+  ? privateDnsZoneIds
+  : (!empty(privateDnsZoneId)) ? [privateDnsZoneId] : []
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
   name: privateEndpointName
@@ -73,29 +84,33 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
     ]
   }
 
-  resource privateDNSZoneGroup 'privateDnsZoneGroups@2022-01-01' = if (!empty(privateDnsZoneId)) {
-    name: privateDNSZoneGroupName
-    properties: {
-      privateDnsZoneConfigs: [
-        {
-          name: privateDNSZoneGroupName
-          properties: {
-            privateDnsZoneId: privateDnsZoneId
+  resource privateDNSZoneGroup 'privateDnsZoneGroups@2022-01-01' =
+    if (!empty(privateDnsZoneIdsArray)) {
+      name: privateDNSZoneGroupName
+      properties: {
+        privateDnsZoneConfigs: [
+          for privatezone in privateDnsZoneIdsArray: {
+            name: replace(replace(last(split(privatezone, '/')), '.', '_'), '/', '')
+            properties: {
+              privateDnsZoneId: privatezone
+            }
           }
-        }
-      ]
+        ]
+      }
     }
-  }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
-  scope: privateEndpoint
-  name: lockName
-  properties: {
-    level: resourcelock
-    notes: (resourcelock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+resource lock 'Microsoft.Authorization/locks@2017-04-01' =
+  if (resourcelock != 'NotSpecified') {
+    scope: privateEndpoint
+    name: lockName
+    properties: {
+      level: resourcelock
+      notes: (resourcelock == 'CanNotDelete')
+        ? 'Cannot delete resource or child resources.'
+        : 'Cannot modify the resource or child resources.'
+    }
   }
-}
 @description('The name of the private endpoint.')
 output name string = privateEndpoint.name
 
