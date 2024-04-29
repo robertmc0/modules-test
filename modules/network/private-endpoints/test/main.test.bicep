@@ -11,6 +11,12 @@ param shortIdentifier string = 'arn'
 
 var privateDnsZoneDns = 'privatelink.vaultcore.azure.net'
 
+var privateDnsZoneDnsMultiple = [
+  'privatelink.analysis.windows.net'
+  'privatelink.pbidedicated.windows.net'
+  'privatelink.prod.powerquery.microsoft.com'
+]
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -34,8 +40,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   sku: {
     name: 'Standard_LRS'
   }
-  properties: {
-  }
+  properties: {}
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
@@ -61,7 +66,22 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDnsZoneDns
   location: 'global'
+  properties: {}
+}
+
+resource privateDnsZonesMultiple 'Microsoft.Network/privateDnsZones@2020-06-01' = [
+  for privateZone in privateDnsZoneDnsMultiple: {
+    name: privateZone
+    location: 'global'
+    properties: {}
+  }
+]
+
+resource privateLinkServicePowerBi 'Microsoft.PowerBI/privateLinkServicesForPowerBI@2020-06-01' = {
+  name: '${shortIdentifier}-tst-pls-${uniqueString(deployment().name, 'privateLinkService', location)}'
+  location: location
   properties: {
+    tenantId: tenant().tenantId
   }
 }
 
@@ -90,6 +110,23 @@ module privateEndpointWithDns '../main.bicep' = {
     targetSubResourceType: 'vault'
     subnetId: vnet.properties.subnets[0].id
     privateDnsZoneId: privateDnsZone.id
+  }
+}
+
+module privateEndpointWithMultipleDns '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-private-endpoint-multiple-dns'
+  params: {
+    location: location
+    resourcelock: 'CanNotDelete'
+    targetResourceId: privateLinkServicePowerBi.id
+    targetResourceName: privateLinkServicePowerBi.name
+    targetSubResourceType: 'tenant'
+    subnetId: vnet.properties.subnets[0].id
+    privateDnsZoneIds: [
+      privateDnsZonesMultiple[0].id
+      privateDnsZonesMultiple[1].id
+      privateDnsZonesMultiple[2].id
+    ]
   }
 }
 
