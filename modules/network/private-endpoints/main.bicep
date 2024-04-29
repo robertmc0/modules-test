@@ -1,3 +1,7 @@
+metadata name = 'Private Endpoints'
+metadata description = 'This module deploys Microsoft.Network/privateEndpoints and child resources'
+metadata owner = 'Arinco'
+
 @description('Name of the target resource for which to create the Private Endpoint.')
 param targetResourceName string
 

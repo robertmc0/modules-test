@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.18.4.5664",
-      "templateHash": "8893734134469311579"
-    }
+      "version": "0.26.170.59819",
+      "templateHash": "5561908566760837022"
+    },
+    "name": "Private Endpoints",
+    "description": "This module deploys Microsoft.Network/privateEndpoints and child resources",
+    "owner": "Arinco"
   },
   "parameters": {
     "targetResourceName": {
@@ -37,7 +40,8 @@
           "gateway",
           "namespace",
           "managedInstance",
-          "databricks_ui_api"
+          "databricks_ui_api",
+          "MongoCluster"
         ],
         "description": "The type of sub-resource for the target resource that the private endpoint will be able to access."
       }
@@ -71,14 +75,14 @@
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of resource lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
     }
   },
   "variables": {
@@ -164,8 +168,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.18.4.5664",
-              "templateHash": "5734780064815498787"
+              "version": "0.26.170.59819",
+              "templateHash": "15446794015521757541"
             }
           },
           "parameters": {
