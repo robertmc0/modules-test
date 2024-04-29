@@ -20,6 +20,7 @@ param targetResourceId string
     'namespace'
     'managedInstance'
     'databricks_ui_api'
+    'MongoCluster'
   ]
 })
 param targetSubResourceType string
