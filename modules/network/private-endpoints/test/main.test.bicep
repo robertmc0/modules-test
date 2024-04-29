@@ -11,10 +11,22 @@ param shortIdentifier string = 'arn'
 
 var privateDnsZoneDns = 'privatelink.vaultcore.azure.net'
 
-var privateDnsZoneDnsMultiple = [
+var privateDnsZoneDnsMultipleZones = [
   'privatelink.analysis.windows.net'
   'privatelink.pbidedicated.windows.net'
   'privatelink.prod.powerquery.microsoft.com'
+]
+
+var privateDnsZoneDnsMultipleSubResourceTypes = [
+  'privatelink.blob.core.windows.net'
+  'privatelink.queue.core.windows.net'
+  'privatelink.table.core.windows.net'
+]
+
+var targetSubResourceTypes = [
+  'blob'
+  'queue'
+  'table'
 ]
 
 /*======================================================================
@@ -69,8 +81,16 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   properties: {}
 }
 
-resource privateDnsZonesMultiple 'Microsoft.Network/privateDnsZones@2020-06-01' = [
-  for privateZone in privateDnsZoneDnsMultiple: {
+resource privateDnsZonesMultipleZones 'Microsoft.Network/privateDnsZones@2020-06-01' = [
+  for privateZone in privateDnsZoneDnsMultipleZones: {
+    name: privateZone
+    location: 'global'
+    properties: {}
+  }
+]
+
+resource privateDnsZonesMultipleSubResourceTypes 'Microsoft.Network/privateDnsZones@2020-06-01' = [
+  for privateZone in privateDnsZoneDnsMultipleSubResourceTypes: {
     name: privateZone
     location: 'global'
     properties: {}
@@ -123,9 +143,26 @@ module privateEndpointWithMultipleDns '../main.bicep' = {
     targetSubResourceType: 'tenant'
     subnetId: vnet.properties.subnets[0].id
     privateDnsZoneIds: [
-      privateDnsZonesMultiple[0].id
-      privateDnsZonesMultiple[1].id
-      privateDnsZonesMultiple[2].id
+      privateDnsZonesMultipleZones[0].id
+      privateDnsZonesMultipleZones[1].id
+      privateDnsZonesMultipleZones[2].id
+    ]
+  }
+}
+
+module privateEndpointWithMultipleSubResourceTypes '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-private-endpoint-multiple-subresource-types'
+  params: {
+    location: location
+    resourcelock: 'CanNotDelete'
+    targetResourceId: storage.id
+    targetResourceName: storage.name
+    targetSubResourceTypes: targetSubResourceTypes
+    subnetId: vnet.properties.subnets[0].id
+    privateDnsZoneIds: [
+      privateDnsZonesMultipleSubResourceTypes[0].id
+      privateDnsZonesMultipleSubResourceTypes[1].id
+      privateDnsZonesMultipleSubResourceTypes[2].id
     ]
   }
 }

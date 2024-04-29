@@ -16,7 +16,7 @@ param targetResourceName string
 @description('Resource Id of the target resource for which to create the Private Endpoint.')
 param targetResourceId string
 
-@description('The type of sub-resource for the target resource that the private endpoint will be able to access.')
+@description('The type of sub-resource for the target resource that the private endpoint will be able to access.  Overridden if targetSubResourceTypes is set.')
 @metadata({
   examples: [
     'blob'
@@ -34,7 +34,28 @@ param targetResourceId string
     'databricks_ui_api'
   ]
 })
-param targetSubResourceType string
+param targetSubResourceType string = ''
+
+@description('The type of sub-resource for the target resource that the private endpoint will be able to access.  Must be provided if targetSubResourceType is not set.')
+@metadata({
+  examples: [
+    'blob'
+    'table'
+    'queue'
+    'file'
+    'web'
+    'dfs'
+    'vault'
+    'sqlServer'
+    'searchService'
+    'gateway'
+    'namespace'
+    'managedInstance'
+    'databricks_ui_api'
+    'tenant'
+  ]
+})
+param targetSubResourceTypes array = []
 
 @description('Location of the resource.')
 param location string
@@ -77,6 +98,10 @@ var privateDnsZoneIdsArray = (!empty(privateDnsZoneIds))
   ? privateDnsZoneIds
   : (!empty(privateDnsZoneId)) ? [privateDnsZoneId] : []
 
+var targetSubResourceTypesArray = (!empty(targetSubResourceTypes))
+  ? targetSubResourceTypes
+  : (!empty(targetSubResourceType)) ? [targetSubResourceType] : []
+
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
   name: privateEndpointName
   location: location
@@ -90,9 +115,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
         name: privateLinkServiceName
         properties: {
           privateLinkServiceId: targetResourceId
-          groupIds: [
-            targetSubResourceType
-          ]
+          groupIds: targetSubResourceTypesArray
         }
       }
     ]
