@@ -5,10 +5,10 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "10970891048242873441"
+      "templateHash": "14787800576734415035"
     },
     "name": "Naming Conventions Module",
-    "description": "This module is used to create a naming convention for resources in Azure",
+    "description": "This module is used to create a naming convention for resources in Azure.",
     "owner": "Arinco"
   },
   "parameters": {

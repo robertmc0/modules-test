@@ -1,6 +1,6 @@
 # Naming Conventions Module
 
-This module is used to create a naming convention for resources in Azure
+This module is used to create a naming convention for resources in Azure.
 
 ## Details
 
