@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "15523480929606662445"
+      "templateHash": "4600641167949697349"
     },
     "name": "Private Endpoints Module",
     "description": "This module deploys Microsoft.Network privateEndpoints.",
@@ -27,6 +27,7 @@
     },
     "targetSubResourceType": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "examples": [
           "blob",
@@ -43,7 +44,30 @@
           "managedInstance",
           "databricks_ui_api"
         ],
-        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access."
+        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access.  Overridden if targetSubResourceTypes is set."
+      }
+    },
+    "targetSubResourceTypes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "examples": [
+          "blob",
+          "table",
+          "queue",
+          "file",
+          "web",
+          "dfs",
+          "vault",
+          "sqlServer",
+          "searchService",
+          "gateway",
+          "namespace",
+          "managedInstance",
+          "databricks_ui_api",
+          "tenant"
+        ],
+        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access.  Must be provided if targetSubResourceType is not set."
       }
     },
     "location": {
@@ -101,7 +125,8 @@
     "privateEndpointName": "[toLower(format('{0}-{1}-pe', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
     "privateLinkServiceName": "[toLower(format('{0}-{1}-plink', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
     "networkInterfaceName": "[format('{0}-nic', variables('privateEndpointName'))]",
-    "privateDnsZoneIdsArray": "[if(not(empty(parameters('privateDnsZoneIds'))), parameters('privateDnsZoneIds'), if(not(empty(parameters('privateDnsZoneId'))), createArray(parameters('privateDnsZoneId')), createArray()))]"
+    "privateDnsZoneIdsArray": "[if(not(empty(parameters('privateDnsZoneIds'))), parameters('privateDnsZoneIds'), if(not(empty(parameters('privateDnsZoneId'))), createArray(parameters('privateDnsZoneId')), createArray()))]",
+    "targetSubResourceTypesArray": "[if(not(empty(parameters('targetSubResourceTypes'))), parameters('targetSubResourceTypes'), if(not(empty(parameters('targetSubResourceType'))), createArray(parameters('targetSubResourceType')), createArray()))]"
   },
   "resources": [
     {
@@ -142,9 +167,7 @@
             "name": "[variables('privateLinkServiceName')]",
             "properties": {
               "privateLinkServiceId": "[parameters('targetResourceId')]",
-              "groupIds": [
-                "[parameters('targetSubResourceType')]"
-              ]
+              "groupIds": "[variables('targetSubResourceTypesArray')]"
             }
           }
         ]
