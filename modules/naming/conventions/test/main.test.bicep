@@ -28,7 +28,7 @@ module naming '../main.bicep' = {
     companyPrefix: shortIdentifier
     location: location
     environment: 'dev'
-    descriptor: 'demo'
+    descriptor: 'arinco'
   }
 }
 
