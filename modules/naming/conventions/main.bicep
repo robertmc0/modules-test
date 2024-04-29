@@ -2,6 +2,8 @@ metadata name = 'Naming Conventions Module'
 metadata description = 'This module is used to create a naming convention for resources in Azure'
 metadata owner = 'Arinco'
 
+targetScope = 'subscription'
+
 @description('Company prefix.')
 param companyPrefix string
 
