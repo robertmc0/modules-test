@@ -1,4 +1,4 @@
-metadata name = 'Private Endpoints'
+metadata name = 'Private Endpoints Module'
 metadata description = 'This module deploys Microsoft.Network/privateEndpoints and child resources'
 metadata owner = 'Arinco'
 
@@ -24,7 +24,7 @@ param targetResourceId string
     'namespace'
     'managedInstance'
     'databricks_ui_api'
-    'MongoCluster'
+    'mongoCluster'
   ]
 })
 param targetSubResourceType string
