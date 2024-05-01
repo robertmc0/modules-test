@@ -64,9 +64,9 @@ var appGatewayPublicIpName = '${appGatewayName}-${namingConventions.outputs.publ
 
 ### Limitations
 
-There is a known limitation with the current implementation of the naming convention module.
+There is a known limitations with the current implementation of the naming convention module.
 
-You cannot use the naming module where the name of the resource is required at the start of the deployment.
+1. You cannot use the naming module where the name of the resource is required at the start of the deployment.
 
 This typically occurs when directly creating an Azure resource in Bicep or when defining the scope on a module. This module can only be used when creating Azure resources using modules or when a module scope does not require the name of the resource to be calculated at the start of the deployment.
 
@@ -93,6 +93,8 @@ module hub_to_platform_peering 'br/ArincoModules:network/virtual-networks-peerin
 It will result in the error similar to below.
 
 `ERROR: This expression is being used in an assignment to the "name" property of the "Microsoft.Resources/resourceGroups" type, which requires a value that can be calculated at the start of the deployment. Properties of namingConventions which can be calculated at the start include "name".`
+
+2. The slug is required to be used in the resource name and will be appended to the end of the resource name.
 
 ## Parameters
 
