@@ -4,8 +4,14 @@ metadata owner = 'Arinco'
 
 targetScope = 'subscription'
 
-@description('Company prefix.')
-param companyPrefix string
+@description('Prefixes to set (in order) for the resource name.')
+param prefixes array
+
+@description('Suffixes to set (in order) for the resource name.')
+param suffixes array
+
+@description('Optional. Separator to use for the resource name, e.g. \'-\' or \'_\'.')
+param separator string = '-'
 
 @description('Deployment location.')
 param location string
@@ -70,11 +76,11 @@ param geoLocationCodes object = {
   germanynortheast: 'gne'
 }
 
-@description('Optional. The name of the environment.')
-param environment string = ''
-
-@description('Optional. Short description of the application or service name.')
-param descriptor string = '<descriptor>'
+@export()
+type nameType = {
+  name: string
+  slug: string
+}
 
 @description('Optional. The geo-location identifier used for all resources.')
 @minLength(2)
@@ -83,519 +89,343 @@ param locationIdentifier string = contains(geoLocationCodes, location)
   ? '${geoLocationCodes[toLower(location)]}'
   : location
 
-var prefix = '${companyPrefix}-${locationIdentifier}${!empty(environment) ? '-${environment}' : ''}-${descriptor}'
-var acrSuffix = 'cr'
-var aciSuffix = 'ci'
-var alertSuffix = 'alert'
-var apimSuffix = 'apim'
-var actionGroupSuffix = 'ag'
-var appGatewaySuffix = 'agw'
-var appGatewayPolicySuffix = 'waf'
-var appInsightsSuffix = 'appi'
-var appServicePlanSuffix = 'asp'
-var aksSuffix = 'aks'
-var autoAccountSuffix = 'aa'
-var availabilitySetSuffix = 'avail'
-var bastionSuffix = 'bas'
-var budgetSuffix = 'bgt'
-var cosmosDbSuffix = 'cosmos'
-var ddosProtectionPlanSuffix = 'ddos'
-var dnsResolverSuffix = 'dnspr'
-var expressRouteCircuitSuffix = 'erc'
-var externalLoadBalancerSuffix = 'lbe'
-var firewallSuffix = 'afw'
-var firewallPolicySuffix = 'afwp'
-var frontDoorSuffix = 'afd'
-var internalLoadBalancerSuffix = 'lbi'
-var keyVaultSuffix = 'kv'
-var localNetworkGatewaySuffix = 'lgw'
-var logAnalyticsSuffix = 'log'
-var logicAppSuffix = 'logic'
-var mlWorkspaceSuffix = 'mlw'
-var managedIdentitySuffix = 'id'
-var networkInterfaceSuffix = 'nic'
-var nsgSuffix = 'nsg'
-var nsgFlowLogSuffix = 'flow'
-var networkWatcherSuffix = 'nw'
-var publicIpSuffix = 'pip'
-var recoveryServicesVaultSuffix = 'rsv'
-var resourceGroupSuffix = 'rg'
-var routeTableSuffix = 'rt'
-var sqlDbSuffix = 'sqldb'
-var sqlServerSuffix = 'sql'
-var storageAccountSuffix = 'st'
-var trafficManagerSuffix = 'traf'
-var virtualMachineSuffix = 'vm'
-var virtualMachineScaleSetSuffix = 'vmss'
-var vnetSuffix = 'vnet'
-var vnetGatewaySuffix = 'vgw'
-var vwanSuffix = 'vwan'
-var vwanHubSuffix = 'vhub'
-var webAppSuffix = 'app'
+var prefix = join(prefixes, separator)
+var suffix = join(suffixes, separator)
+var baseName = toLower(replace('${prefix}${separator}${suffix}', '**location**', locationIdentifier))
+
+var acrSlug = 'cr'
+var aciSlug = 'ci'
+var alertSlug = 'alert'
+var apimSlug = 'apim'
+var actionGroupSlug = 'ag'
+var appGatewaySlug = 'agw'
+var appGatewayPolicySlug = 'waf'
+var appInsightsSlug = 'appi'
+var appServicePlanSlug = 'asp'
+var aksSlug = 'aks'
+var autoAccountSlug = 'aa'
+var availabilitySetSlug = 'avail'
+var bastionSlug = 'bas'
+var budgetSlug = 'bgt'
+var cosmosDbSlug = 'cosmos'
+var ddosProtectionPlanSlug = 'ddos'
+var dnsResolverSlug = 'dnspr'
+var expressRouteCircuitSlug = 'erc'
+var externalLoadBalancerSlug = 'lbe'
+var firewallSlug = 'afw'
+var firewallPolicySlug = 'afwp'
+var frontDoorSlug = 'afd'
+var internalLoadBalancerSlug = 'lbi'
+var keyVaultSlug = 'kv'
+var localNetworkGatewaySlug = 'lgw'
+var logAnalyticsSlug = 'log'
+var logicAppSlug = 'logic'
+var mlWorkspaceSlug = 'mlw'
+var managedIdentitySlug = 'id'
+var networkInterfaceSlug = 'nic'
+var nsgSlug = 'nsg'
+var nsgFlowLogSlug = 'flow'
+var networkWatcherSlug = 'nw'
+var publicIpSlug = 'pip'
+var recoveryServicesVaultSlug = 'rsv'
+var resourceGroupSlug = 'rg'
+var routeTableSlug = 'rt'
+var sqlDbSlug = 'sqldb'
+var sqlServerSlug = 'sql'
+var storageAccountSlug = 'st'
+var trafficManagerSlug = 'traf'
+var virtualMachineSlug = 'vm'
+var virtualMachineScaleSetSlug = 'vmss'
+var vnetSlug = 'vnet'
+var vnetGatewaySlug = 'vgw'
+var vwanSlug = 'vwan'
+var vwanHubSlug = 'vhub'
+var webAppSlug = 'app'
 
 @description('Azure container registry (ACR) name.')
-output acr object = {
-  name: '${companyPrefix}${locationIdentifier}${!empty(environment) ? '${environment}' : ''}${descriptor}${acrSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: acrSuffix
+output acr nameType = {
+  name: replace('${baseName}${acrSlug}', separator, '')
+  slug: acrSlug
 }
 
 @description('Azure Container Instance (ACI) name.')
-output aci object = {
-  name: '${prefix}-${aciSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: aciSuffix
+output aci nameType = {
+  name: '${baseName}${separator}${aciSlug}'
+  slug: aciSlug
 }
 
-@description('Azure Kubernetes Service (AKS) name.')
-output alert object = {
-  name: '${prefix}-${alertSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: alertSuffix
+@description('Alert name.')
+output alert nameType = {
+  name: '${baseName}${separator}${alertSlug}'
+  slug: alertSlug
 }
 
 @description('API Management (APIM) name.')
-output apim object = {
-  name: '${prefix}-${apimSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: apimSuffix
+output apim nameType = {
+  name: '${baseName}${separator}${apimSlug}'
+  slug: apimSlug
 }
 
 @description('Action group name.')
-output actionGroup object = {
-  name: '${prefix}-${actionGroupSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: actionGroupSuffix
+output actionGroup nameType = {
+  name: '${baseName}${separator}${actionGroupSlug}'
+  slug: actionGroupSlug
 }
 
 @description('Application Gateway name.')
-output appGateway object = {
-  name: '${prefix}-${appGatewaySuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: appGatewaySuffix
+output appGateway nameType = {
+  name: '${baseName}${separator}${appGatewaySlug}'
+  slug: appGatewaySlug
 }
 
 @description('Application Gateway WAF policy name.')
-output appGatewayPolicy object = {
-  name: '${prefix}-${appGatewayPolicySuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: appGatewayPolicySuffix
+output appGatewayPolicy nameType = {
+  name: '${baseName}${separator}${appGatewayPolicySlug}'
+  slug: appGatewayPolicySlug
 }
 
 @description('Application Insights name.')
-output appInsights object = {
-  name: '${prefix}-${appInsightsSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: appInsightsSuffix
+output appInsights nameType = {
+  name: '${baseName}${separator}${appInsightsSlug}'
+  slug: appInsightsSlug
 }
 
 @description('App Service Plan name.')
-output appServicePlan object = {
-  name: '${prefix}-${appServicePlanSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: appServicePlanSuffix
+output appServicePlan nameType = {
+  name: '${baseName}${separator}${appServicePlanSlug}'
+  slug: appServicePlanSlug
 }
 
 @description('Azure Kubernetes Service (AKS) name.')
-output aks object = {
-  name: '${prefix}-${aksSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: aksSuffix
+output aks nameType = {
+  name: '${baseName}${separator}${aksSlug}'
+  slug: aksSlug
 }
 
 @description('Azure Automation Account name.')
-output automationAccount object = {
-  name: '${prefix}-${autoAccountSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: autoAccountSuffix
+output automationAccount nameType = {
+  name: '${baseName}${separator}${autoAccountSlug}'
+  slug: autoAccountSlug
 }
 
 @description('Availability Set name.')
-output availabilitySet object = {
-  name: '${prefix}-${availabilitySetSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: availabilitySetSuffix
+output availabilitySet nameType = {
+  name: '${baseName}${separator}${availabilitySetSlug}'
+  slug: availabilitySetSlug
 }
 
 @description('Azure Bastion name.')
-output bastion object = {
-  name: '${prefix}-${bastionSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: bastionSuffix
+output bastion nameType = {
+  name: '${baseName}${separator}${bastionSlug}'
+  slug: bastionSlug
 }
 
 @description('Budget name.')
-output budget object = {
-  name: '${replace(trim(subscription().displayName), ' ', '')}-${budgetSuffix}'
-  suffix: budgetSuffix
+output budget nameType = {
+  name: '${replace(trim(subscription().displayName), ' ', '')}-${budgetSlug}'
+  slug: budgetSlug
 }
 
 @description('Azure Cosmos DB name.')
-output cosmosDb object = {
-  name: '${prefix}-${cosmosDbSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: cosmosDbSuffix
+output cosmosDb nameType = {
+  name: '${baseName}${separator}${cosmosDbSlug}'
+  slug: cosmosDbSlug
 }
 
 @description('DDoS Protection Plan name.')
-output ddosProtectionPlan object = {
-  name: '${prefix}-${ddosProtectionPlanSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: ddosProtectionPlanSuffix
+output ddosProtectionPlan nameType = {
+  name: '${baseName}${separator}${ddosProtectionPlanSlug}'
+  slug: ddosProtectionPlanSlug
 }
 
 @description('DNS Resolver name.')
-output dnsResolver object = {
-  name: '${prefix}-${dnsResolverSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: dnsResolverSuffix
+output dnsResolver nameType = {
+  name: '${baseName}${separator}${dnsResolverSlug}'
+  slug: dnsResolverSlug
 }
 
 @description('ExpressRoute Circuit name.')
-output expressRouteCircuit object = {
-  name: '${prefix}-${expressRouteCircuitSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: expressRouteCircuitSuffix
+output expressRouteCircuit nameType = {
+  name: '${baseName}${separator}${expressRouteCircuitSlug}'
+  slug: expressRouteCircuitSlug
 }
 
 @description('External Load Balancer name.')
-output externalLoadBalancer object = {
-  name: '${prefix}-${externalLoadBalancerSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: externalLoadBalancerSuffix
+output externalLoadBalancer nameType = {
+  name: '${baseName}${separator}${externalLoadBalancerSlug}'
+  slug: externalLoadBalancerSlug
 }
 
 @description('Firewall name.')
-output firewall object = {
-  name: '${prefix}-${firewallSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: firewallSuffix
+output firewall nameType = {
+  name: '${baseName}${separator}${firewallSlug}'
+  slug: firewallSlug
 }
 
 @description('Firewall Policy name.')
-output firewallPolicy object = {
-  name: '${prefix}-${firewallPolicySuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: firewallPolicySuffix
+output firewallPolicy nameType = {
+  name: '${baseName}${separator}${firewallPolicySlug}'
+  slug: firewallPolicySlug
 }
 
 @description('Front Door name.')
-output frontDoor object = {
-  name: '${prefix}-${frontDoorSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: frontDoorSuffix
+output frontDoor nameType = {
+  name: '${baseName}${separator}${frontDoorSlug}'
+  slug: frontDoorSlug
 }
 
 @description('Function App name.')
-output internalLoadBalancer object = {
-  name: '${prefix}-${internalLoadBalancerSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: internalLoadBalancerSuffix
+output internalLoadBalancer nameType = {
+  name: '${baseName}${separator}${internalLoadBalancerSlug}'
+  slug: internalLoadBalancerSlug
 }
 
 @description('Key Vault name.')
-output keyVault object = {
-  name: '${prefix}-${keyVaultSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: keyVaultSuffix
+output keyVault nameType = {
+  name: '${baseName}${separator}${keyVaultSlug}'
+  slug: keyVaultSlug
 }
 
 @description('Load Balancer name.')
-output localNetworkGateway object = {
-  name: '${prefix}-${localNetworkGatewaySuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: localNetworkGatewaySuffix
+output localNetworkGateway nameType = {
+  name: '${baseName}${separator}${localNetworkGatewaySlug}'
+  slug: localNetworkGatewaySlug
 }
 
 @description('Log Analytics name.')
-output logAnalytics object = {
-  name: '${prefix}-${logAnalyticsSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: logAnalyticsSuffix
+output logAnalytics nameType = {
+  name: '${baseName}${separator}${logAnalyticsSlug}'
+  slug: logAnalyticsSlug
 }
 
 @description('Logic App name.')
-output logicApp object = {
-  name: '${prefix}-${logicAppSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: logicAppSuffix
+output logicApp nameType = {
+  name: '${baseName}${separator}${logicAppSlug}'
+  slug: logicAppSlug
 }
 
 @description('Machine Learning Workspace name.')
-output mlWorkspace object = {
-  name: '${prefix}-${mlWorkspaceSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: mlWorkspaceSuffix
+output mlWorkspace nameType = {
+  name: '${baseName}${separator}${mlWorkspaceSlug}'
+  slug: mlWorkspaceSlug
 }
 
 @description('Managed Identity name.')
-output managedIdentity object = {
-  name: '${prefix}-${managedIdentitySuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: managedIdentitySuffix
+output managedIdentity nameType = {
+  name: '${baseName}${separator}${managedIdentitySlug}'
+  slug: managedIdentitySlug
 }
 
 @description('Network Interface name.')
-output networkInterface object = {
-  name: '${prefix}-${networkInterfaceSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: networkInterfaceSuffix
+output networkInterface nameType = {
+  name: '${baseName}${separator}${networkInterfaceSlug}'
+  slug: networkInterfaceSlug
 }
 
 @description('Network Security Group name.')
-output nsg object = {
-  name: '${prefix}-${nsgSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: nsgSuffix
+output nsg nameType = {
+  name: '${baseName}${separator}${nsgSlug}'
+  slug: nsgSlug
 }
 
 @description('Network Security Group Flow Log name.')
-output nsgFlowLog object = {
-  name: '${prefix}-${nsgFlowLogSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: nsgFlowLogSuffix
+output nsgFlowLog nameType = {
+  name: '${baseName}${separator}${nsgFlowLogSlug}'
+  slug: nsgFlowLogSlug
 }
 
 @description('Network Watcher name.')
-output networkWatcher object = {
-  name: '${companyPrefix}-${locationIdentifier}-${networkWatcherSuffix}'
-  location: locationIdentifier
-  suffix: networkWatcherSuffix
+output networkWatcher nameType = {
+  name: '${baseName}${separator}${networkWatcherSlug}'
+  slug: networkWatcherSlug
 }
 
 @description('Public IP Address name.')
-output publicIp object = {
-  name: '${prefix}-${publicIpSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: publicIpSuffix
+output publicIp nameType = {
+  name: '${baseName}${separator}${publicIpSlug}'
+  slug: publicIpSlug
 }
 
 @description('Recovery Services Vault name.')
-output recoveryServicesVault object = {
-  name: '${prefix}-${recoveryServicesVaultSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: recoveryServicesVaultSuffix
+output recoveryServicesVault nameType = {
+  name: '${baseName}${separator}${recoveryServicesVaultSlug}'
+  slug: recoveryServicesVaultSlug
 }
 
 @description('Resource Group name.')
-output resourceGroup object = {
-  name: '${prefix}-${resourceGroupSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: resourceGroupSuffix
+output resourceGroup nameType = {
+  name: '${baseName}${separator}${resourceGroupSlug}'
+  slug: resourceGroupSlug
 }
 
 @description('Route Table name.')
-output routeTable object = {
-  name: '${prefix}-${routeTableSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: routeTableSuffix
+output routeTable nameType = {
+  name: '${baseName}${separator}${routeTableSlug}'
+  slug: routeTableSlug
 }
 
 @description('SQL Database name.')
-output sqlDb object = {
-  name: '${prefix}-${sqlDbSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: sqlDbSuffix
+output sqlDb nameType = {
+  name: '${baseName}${separator}${sqlDbSlug}'
+  slug: sqlDbSlug
 }
 
 @description('SQL Server name.')
-output sqlServer object = {
-  name: '${prefix}-${sqlServerSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: sqlServerSuffix
+output sqlServer nameType = {
+  name: '${baseName}${separator}${sqlServerSlug}'
+  slug: sqlServerSlug
 }
 
 @description('Storage Account name.')
-output storageAccount object = {
-  name: '${companyPrefix}${locationIdentifier}${!empty(environment) ? '${environment}' : ''}${descriptor}${storageAccountSuffix}'
-  suffix: storageAccountSuffix
+output storageAccount nameType = {
+  name: replace('${baseName}${storageAccountSlug}', separator, '')
+  slug: storageAccountSlug
 }
 
 @description('Traffic Manager name.')
-output trafficManager object = {
-  name: '${prefix}-${trafficManagerSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: trafficManagerSuffix
+output trafficManager nameType = {
+  name: '${baseName}${separator}${trafficManagerSlug}'
+  slug: trafficManagerSlug
 }
 
 @description('Virtual Machine name.')
-output virtualMachine object = {
-  name: '${companyPrefix}${locationIdentifier}${!empty(environment) ? '${environment}' : ''}${descriptor}${virtualMachineSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: virtualMachineSuffix
+output virtualMachine nameType = {
+  name: replace('${baseName}${virtualMachineSlug}', separator, '')
+  slug: virtualMachineSlug
 }
+
 @description('Virtual Machine Scale Set name.')
-output virtualMachineScaleSet object = {
-  name: '${companyPrefix}${locationIdentifier}${!empty(environment) ? '${environment}' : ''}${descriptor}${virtualMachineScaleSetSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: virtualMachineScaleSetSuffix
+output virtualMachineScaleSet nameType = {
+  name: '${baseName}${separator}${virtualMachineScaleSetSlug}'
+  slug: virtualMachineScaleSetSlug
 }
+
 @description('Virtual Network name.')
-output vnet object = {
-  name: '${prefix}-${vnetSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: vnetSuffix
+output vnet nameType = {
+  name: '${baseName}${separator}${vnetSlug}'
+  slug: vnetSlug
 }
 
 @description('Virtual Network Gateway name.')
-output vnetGateway object = {
-  name: '${prefix}-${vnetGatewaySuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: vnetGatewaySuffix
+output vnetGateway nameType = {
+  name: '${baseName}${separator}${vnetGatewaySlug}'
+  slug: vnetGatewaySlug
 }
 
 @description('Virtual WAN name.')
-output vwan object = {
-  name: '${prefix}-${vwanSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: vwanSuffix
+output vwan nameType = {
+  name: '${baseName}${separator}${vwanSlug}'
+  slug: vwanSlug
 }
 
 @description('Virtual WAN Hub name.')
-output vwanHub object = {
-  name: '${prefix}-${vwanHubSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: vwanHubSuffix
+output vwanHub nameType = {
+  name: '${baseName}${separator}${vwanHubSlug}'
+  slug: vwanHubSlug
 }
 
 @description('Web App name.')
-output webApp object = {
-  name: '${prefix}-${webAppSuffix}'
-  prefix: companyPrefix
-  location: locationIdentifier
-  environment: environment
-  descriptor: descriptor
-  suffix: webAppSuffix
+output webApp nameType = {
+  name: '${baseName}${separator}${webAppSlug}'
+  slug: webAppSlug
 }

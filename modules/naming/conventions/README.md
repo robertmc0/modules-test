@@ -5,25 +5,19 @@ This module is used to create a naming convention for resources in Azure.
 ## Details
 
 This module is used to create a naming convention for resources in Azure.
-The naming convention is based on the following format:
 
-- Prefix with company identifier.
-- Geo location code (based on Azure regions, e.g. ase, ae, etc.).
-- Optionally include environment for workload deployment differentiation (e.g app services, SQL servers, etc.).
-- Include a description of the application or service name.
-- Suffix with resource type as per this [article](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations).
+It provides the flexibility to define the naming convention for resources in Azure based on the following inputs:
 
-The naming convention is as follows:
-
-```
-<companyPrefix>-<locationIdentifier>-<environment>-<descriptor>-<resourceType>
-```
+- Prefixes you set in the order of your choosing for the resource name.
+- Suffixes you set in the order of your choosing for the resource name.
+- Separator to use for the resource name, e.g. `-` or `_`. Default is `-`.
+- Location of the resource.
+- Specify `**location**` in the prefixes or suffixes to include the location in the resource name.
+- Slug defined at the end of the resource name with resource type defined as per this [article](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations).
 
 ### Usage
 
 To use this module, you need to reference it in your Bicep file and provide the required parameters to the naming module.
-
-You also need to replace the `<descriptor>` placeholder with the actual description of the resource you are creating.
 
 Example below.
 
@@ -32,48 +26,40 @@ targetScope = 'subscription'
 
 param location string = 'australiaeast'
 
-module namingConventions 'modules/naming-conventions/naming-conventions.bicep' = {
-  name: 'naming_conventions'
+
+module namingConventions '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-naming'
   params: {
-    companyPrefix: 'msft'
     location: location
-    environment: 'dev'
+    prefixes: [
+      'msft'
+      '**location**'
+      'dev'
+
+    ]
+    suffixes: [
+      'myapp'
+    ]
   }
 }
 
-module rgDemo 'modules/resource-group/resource-group.bicep' = {
-  name: 'resource-group-${uniqueString(deployment().name, location)}'
-  params: {
-    name: replace(namingConventions.outputs.resourceGroup.name, '<descriptor>', 'demo')
-    location: location
-    tags: {
-      environment: 'dev'
-    }
-  }
-}
-
-output resourceGroupName string = rgDemo.outputs.name
+output resourceGroupName string = namingConventions.outputs.resourceGroup.name
+output resourceGroupSlug string = namingConventions.outputs.resourceGroup.slug
 ```
 
-The name of the resource group based on this example will be `msft-ae-dev-demo-rg`.
+The name of the resource group based on this example will be `msft-ae-dev-myapp-rg`.
 
 The naming module will output an object with the following properties to provide you flexibility in using the naming convention within your Bicep file:
 
 - `name`: The name of the resource based on the naming convention.
-- `prefix`: The company prefix.
-- `location`: The geo location code.
-- `environment`: The environment (if specified).
-- `descriptor`: The description of the resource.
-- `suffix`: The resource type suffix.
-
-`NOTE:` Most resources have all these properties but some will only have a subset as the naming convention is not applicable to all resources, for example, network watcher, budgets, etc.
+- `slug`: The resource type slug.
 
 This will provide you with flexibility when utilising the naming convention in your Bicep file.
 
 Example below using the outputs to name a resource.
 
 ```bicep
-var appGatewayPublicIpName = '${appGatewayName}-${namingConventions.outputs.publicIp.suffix}'
+var appGatewayPublicIpName = '${appGatewayName}-${namingConventions.outputs.publicIp.slug}'
 ```
 
 ### Limitations
@@ -88,7 +74,7 @@ Examples of what you cannot do:
 
 ```bicep
 resource rgDemo 'Microsoft.Resources/resourceGroups@2023-07-01' = {
-  name:  replace(namingConventions.outputs.resourceGroupName, '<descriptor>', 'demo')
+  name:  namingConventions.outputs.resourceGroup.name
   location: location
   tags: {
     environment: 'dev'
@@ -96,7 +82,7 @@ resource rgDemo 'Microsoft.Resources/resourceGroups@2023-07-01' = {
 }
 
 module hub_to_platform_peering 'br/ArincoModules:network/virtual-networks-peerings:1.0.2' = {
-  scope: resourceGroup(subscriptionId, namingConventions.outputs.resourceGroupName)
+  scope: resourceGroup(subscriptionId, namingConventions.outputs.resourceGroup.name)
   name: 'hub-peer-${uniqueString(deployment().name, location)}'
   params: {
     ...
@@ -110,14 +96,14 @@ It will result in the error similar to below.
 
 ## Parameters
 
-| Name                 | Type     | Required | Description                                                     |
-| :------------------- | :------: | :------: | :-------------------------------------------------------------- |
-| `companyPrefix`      | `string` | Yes      | Company prefix.                                                 |
-| `location`           | `string` | Yes      | Deployment location.                                            |
-| `geoLocationCodes`   | `object` | No       | Optional. Geo-location codes for resources.                     |
-| `environment`        | `string` | No       | Optional. The name of the environment.                          |
-| `descriptor`         | `string` | No       | Optional. Short description of the application or service name. |
-| `locationIdentifier` | `string` | No       | Optional. The geo-location identifier used for all resources.   |
+| Name                 | Type     | Required | Description                                                        |
+| :------------------- | :------: | :------: | :----------------------------------------------------------------- |
+| `prefixes`           | `array`  | Yes      | Prefixes to set (in order) for the resource name.                  |
+| `suffixes`           | `array`  | Yes      | Suffixes to set (in order) for the resource name.                  |
+| `separator`          | `string` | No       | Optional. Separator to use for the resource name, e.g. '-' or '_'. |
+| `location`           | `string` | Yes      | Deployment location.                                               |
+| `geoLocationCodes`   | `object` | No       | Optional. Geo-location codes for resources.                        |
+| `locationIdentifier` | `string` | No       | Optional. The geo-location identifier used for all resources.      |
 
 ## Outputs
 
@@ -125,7 +111,7 @@ It will result in the error similar to below.
 | :----------------------- | :------: | :------------------------------------ |
 | `acr`                    | `object` | Azure container registry (ACR) name.  |
 | `aci`                    | `object` | Azure Container Instance (ACI) name.  |
-| `alert`                  | `object` | Azure Kubernetes Service (AKS) name.  |
+| `alert`                  | `object` | Alert name.                           |
 | `apim`                   | `object` | API Management (APIM) name.           |
 | `actionGroup`            | `object` | Action group name.                    |
 | `appGateway`             | `object` | Application Gateway name.             |

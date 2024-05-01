@@ -1,21 +1,51 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "14787800576734415035"
+      "templateHash": "10792726003773043349"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
     "owner": "Arinco"
   },
-  "parameters": {
-    "companyPrefix": {
-      "type": "string",
+  "definitions": {
+    "nameType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        }
+      },
       "metadata": {
-        "description": "Company prefix."
+        "__bicep_export!": true
+      }
+    }
+  },
+  "parameters": {
+    "prefixes": {
+      "type": "array",
+      "metadata": {
+        "description": "Prefixes to set (in order) for the resource name."
+      }
+    },
+    "suffixes": {
+      "type": "array",
+      "metadata": {
+        "description": "Suffixes to set (in order) for the resource name."
+      }
+    },
+    "separator": {
+      "type": "string",
+      "defaultValue": "-",
+      "metadata": {
+        "description": "Optional. Separator to use for the resource name, e.g. '-' or '_'."
       }
     },
     "location": {
@@ -88,20 +118,6 @@
         "description": "Optional. Geo-location codes for resources."
       }
     },
-    "environment": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. The name of the environment."
-      }
-    },
-    "descriptor": {
-      "type": "string",
-      "defaultValue": "<descriptor>",
-      "metadata": {
-        "description": "Optional. Short description of the application or service name."
-      }
-    },
     "locationIdentifier": {
       "type": "string",
       "defaultValue": "[if(contains(parameters('geoLocationCodes'), parameters('location')), format('{0}', parameters('geoLocationCodes')[toLower(parameters('location'))]), parameters('location'))]",
@@ -113,717 +129,538 @@
     }
   },
   "variables": {
-    "prefix": "[format('{0}-{1}{2}-{3}', parameters('companyPrefix'), parameters('locationIdentifier'), if(not(empty(parameters('environment'))), format('-{0}', parameters('environment')), ''), parameters('descriptor'))]",
-    "acrSuffix": "cr",
-    "aciSuffix": "ci",
-    "alertSuffix": "alert",
-    "apimSuffix": "apim",
-    "actionGroupSuffix": "ag",
-    "appGatewaySuffix": "agw",
-    "appGatewayPolicySuffix": "waf",
-    "appInsightsSuffix": "appi",
-    "appServicePlanSuffix": "asp",
-    "aksSuffix": "aks",
-    "autoAccountSuffix": "aa",
-    "availabilitySetSuffix": "avail",
-    "bastionSuffix": "bas",
-    "budgetSuffix": "bgt",
-    "cosmosDbSuffix": "cosmos",
-    "ddosProtectionPlanSuffix": "ddos",
-    "dnsResolverSuffix": "dnspr",
-    "expressRouteCircuitSuffix": "erc",
-    "externalLoadBalancerSuffix": "lbe",
-    "firewallSuffix": "afw",
-    "firewallPolicySuffix": "afwp",
-    "frontDoorSuffix": "afd",
-    "internalLoadBalancerSuffix": "lbi",
-    "keyVaultSuffix": "kv",
-    "localNetworkGatewaySuffix": "lgw",
-    "logAnalyticsSuffix": "log",
-    "logicAppSuffix": "logic",
-    "mlWorkspaceSuffix": "mlw",
-    "managedIdentitySuffix": "id",
-    "networkInterfaceSuffix": "nic",
-    "nsgSuffix": "nsg",
-    "nsgFlowLogSuffix": "flow",
-    "networkWatcherSuffix": "nw",
-    "publicIpSuffix": "pip",
-    "recoveryServicesVaultSuffix": "rsv",
-    "resourceGroupSuffix": "rg",
-    "routeTableSuffix": "rt",
-    "sqlDbSuffix": "sqldb",
-    "sqlServerSuffix": "sql",
-    "storageAccountSuffix": "st",
-    "trafficManagerSuffix": "traf",
-    "virtualMachineSuffix": "vm",
-    "virtualMachineScaleSetSuffix": "vmss",
-    "vnetSuffix": "vnet",
-    "vnetGatewaySuffix": "vgw",
-    "vwanSuffix": "vwan",
-    "vwanHubSuffix": "vhub",
-    "webAppSuffix": "app"
+    "prefix": "[join(parameters('prefixes'), parameters('separator'))]",
+    "suffix": "[join(parameters('suffixes'), parameters('separator'))]",
+    "baseName": "[toLower(replace(format('{0}{1}{2}', variables('prefix'), parameters('separator'), variables('suffix')), '**location**', parameters('locationIdentifier')))]",
+    "acrSlug": "cr",
+    "aciSlug": "ci",
+    "alertSlug": "alert",
+    "apimSlug": "apim",
+    "actionGroupSlug": "ag",
+    "appGatewaySlug": "agw",
+    "appGatewayPolicySlug": "waf",
+    "appInsightsSlug": "appi",
+    "appServicePlanSlug": "asp",
+    "aksSlug": "aks",
+    "autoAccountSlug": "aa",
+    "availabilitySetSlug": "avail",
+    "bastionSlug": "bas",
+    "budgetSlug": "bgt",
+    "cosmosDbSlug": "cosmos",
+    "ddosProtectionPlanSlug": "ddos",
+    "dnsResolverSlug": "dnspr",
+    "expressRouteCircuitSlug": "erc",
+    "externalLoadBalancerSlug": "lbe",
+    "firewallSlug": "afw",
+    "firewallPolicySlug": "afwp",
+    "frontDoorSlug": "afd",
+    "internalLoadBalancerSlug": "lbi",
+    "keyVaultSlug": "kv",
+    "localNetworkGatewaySlug": "lgw",
+    "logAnalyticsSlug": "log",
+    "logicAppSlug": "logic",
+    "mlWorkspaceSlug": "mlw",
+    "managedIdentitySlug": "id",
+    "networkInterfaceSlug": "nic",
+    "nsgSlug": "nsg",
+    "nsgFlowLogSlug": "flow",
+    "networkWatcherSlug": "nw",
+    "publicIpSlug": "pip",
+    "recoveryServicesVaultSlug": "rsv",
+    "resourceGroupSlug": "rg",
+    "routeTableSlug": "rt",
+    "sqlDbSlug": "sqldb",
+    "sqlServerSlug": "sql",
+    "storageAccountSlug": "st",
+    "trafficManagerSlug": "traf",
+    "virtualMachineSlug": "vm",
+    "virtualMachineScaleSetSlug": "vmss",
+    "vnetSlug": "vnet",
+    "vnetGatewaySlug": "vgw",
+    "vwanSlug": "vwan",
+    "vwanHubSlug": "vhub",
+    "webAppSlug": "app"
   },
-  "resources": [],
+  "resources": {},
   "outputs": {
     "acr": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Azure container registry (ACR) name."
       },
       "value": {
-        "name": "[format('{0}{1}{2}{3}{4}', parameters('companyPrefix'), parameters('locationIdentifier'), if(not(empty(parameters('environment'))), format('{0}', parameters('environment')), ''), parameters('descriptor'), variables('acrSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('acrSuffix')]"
+        "name": "[replace(format('{0}{1}', variables('baseName'), variables('acrSlug')), parameters('separator'), '')]",
+        "slug": "[variables('acrSlug')]"
       }
     },
     "aci": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Azure Container Instance (ACI) name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('aciSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('aciSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('aciSlug'))]",
+        "slug": "[variables('aciSlug')]"
       }
     },
     "alert": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
-        "description": "Azure Kubernetes Service (AKS) name."
+        "description": "Alert name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('alertSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('alertSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('alertSlug'))]",
+        "slug": "[variables('alertSlug')]"
       }
     },
     "apim": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "API Management (APIM) name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('apimSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('apimSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('apimSlug'))]",
+        "slug": "[variables('apimSlug')]"
       }
     },
     "actionGroup": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Action group name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('actionGroupSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('actionGroupSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('actionGroupSlug'))]",
+        "slug": "[variables('actionGroupSlug')]"
       }
     },
     "appGateway": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Application Gateway name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('appGatewaySuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('appGatewaySuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('appGatewaySlug'))]",
+        "slug": "[variables('appGatewaySlug')]"
       }
     },
     "appGatewayPolicy": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Application Gateway WAF policy name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('appGatewayPolicySuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('appGatewayPolicySuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('appGatewayPolicySlug'))]",
+        "slug": "[variables('appGatewayPolicySlug')]"
       }
     },
     "appInsights": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Application Insights name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('appInsightsSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('appInsightsSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('appInsightsSlug'))]",
+        "slug": "[variables('appInsightsSlug')]"
       }
     },
     "appServicePlan": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "App Service Plan name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('appServicePlanSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('appServicePlanSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('appServicePlanSlug'))]",
+        "slug": "[variables('appServicePlanSlug')]"
       }
     },
     "aks": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Azure Kubernetes Service (AKS) name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('aksSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('aksSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('aksSlug'))]",
+        "slug": "[variables('aksSlug')]"
       }
     },
     "automationAccount": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Azure Automation Account name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('autoAccountSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('autoAccountSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('autoAccountSlug'))]",
+        "slug": "[variables('autoAccountSlug')]"
       }
     },
     "availabilitySet": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Availability Set name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('availabilitySetSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('availabilitySetSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('availabilitySetSlug'))]",
+        "slug": "[variables('availabilitySetSlug')]"
       }
     },
     "bastion": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Azure Bastion name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('bastionSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('bastionSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('bastionSlug'))]",
+        "slug": "[variables('bastionSlug')]"
       }
     },
     "budget": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Budget name."
       },
       "value": {
-        "name": "[format('{0}-{1}', replace(trim(subscription().displayName), ' ', ''), variables('budgetSuffix'))]",
-        "suffix": "[variables('budgetSuffix')]"
+        "name": "[format('{0}-{1}', replace(trim(subscription().displayName), ' ', ''), variables('budgetSlug'))]",
+        "slug": "[variables('budgetSlug')]"
       }
     },
     "cosmosDb": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Azure Cosmos DB name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('cosmosDbSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('cosmosDbSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('cosmosDbSlug'))]",
+        "slug": "[variables('cosmosDbSlug')]"
       }
     },
     "ddosProtectionPlan": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "DDoS Protection Plan name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('ddosProtectionPlanSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('ddosProtectionPlanSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('ddosProtectionPlanSlug'))]",
+        "slug": "[variables('ddosProtectionPlanSlug')]"
       }
     },
     "dnsResolver": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "DNS Resolver name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('dnsResolverSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('dnsResolverSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('dnsResolverSlug'))]",
+        "slug": "[variables('dnsResolverSlug')]"
       }
     },
     "expressRouteCircuit": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "ExpressRoute Circuit name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('expressRouteCircuitSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('expressRouteCircuitSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('expressRouteCircuitSlug'))]",
+        "slug": "[variables('expressRouteCircuitSlug')]"
       }
     },
     "externalLoadBalancer": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "External Load Balancer name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('externalLoadBalancerSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('externalLoadBalancerSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('externalLoadBalancerSlug'))]",
+        "slug": "[variables('externalLoadBalancerSlug')]"
       }
     },
     "firewall": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Firewall name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('firewallSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('firewallSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('firewallSlug'))]",
+        "slug": "[variables('firewallSlug')]"
       }
     },
     "firewallPolicy": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Firewall Policy name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('firewallPolicySuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('firewallPolicySuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('firewallPolicySlug'))]",
+        "slug": "[variables('firewallPolicySlug')]"
       }
     },
     "frontDoor": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Front Door name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('frontDoorSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('frontDoorSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('frontDoorSlug'))]",
+        "slug": "[variables('frontDoorSlug')]"
       }
     },
     "internalLoadBalancer": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Function App name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('internalLoadBalancerSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('internalLoadBalancerSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('internalLoadBalancerSlug'))]",
+        "slug": "[variables('internalLoadBalancerSlug')]"
       }
     },
     "keyVault": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Key Vault name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('keyVaultSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('keyVaultSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('keyVaultSlug'))]",
+        "slug": "[variables('keyVaultSlug')]"
       }
     },
     "localNetworkGateway": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Load Balancer name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('localNetworkGatewaySuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('localNetworkGatewaySuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('localNetworkGatewaySlug'))]",
+        "slug": "[variables('localNetworkGatewaySlug')]"
       }
     },
     "logAnalytics": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Log Analytics name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('logAnalyticsSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('logAnalyticsSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('logAnalyticsSlug'))]",
+        "slug": "[variables('logAnalyticsSlug')]"
       }
     },
     "logicApp": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Logic App name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('logicAppSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('logicAppSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('logicAppSlug'))]",
+        "slug": "[variables('logicAppSlug')]"
       }
     },
     "mlWorkspace": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Machine Learning Workspace name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('mlWorkspaceSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('mlWorkspaceSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('mlWorkspaceSlug'))]",
+        "slug": "[variables('mlWorkspaceSlug')]"
       }
     },
     "managedIdentity": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Managed Identity name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('managedIdentitySuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('managedIdentitySuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('managedIdentitySlug'))]",
+        "slug": "[variables('managedIdentitySlug')]"
       }
     },
     "networkInterface": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Network Interface name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('networkInterfaceSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('networkInterfaceSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('networkInterfaceSlug'))]",
+        "slug": "[variables('networkInterfaceSlug')]"
       }
     },
     "nsg": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Network Security Group name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('nsgSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('nsgSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('nsgSlug'))]",
+        "slug": "[variables('nsgSlug')]"
       }
     },
     "nsgFlowLog": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Network Security Group Flow Log name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('nsgFlowLogSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('nsgFlowLogSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('nsgFlowLogSlug'))]",
+        "slug": "[variables('nsgFlowLogSlug')]"
       }
     },
     "networkWatcher": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Network Watcher name."
       },
       "value": {
-        "name": "[format('{0}-{1}-{2}', parameters('companyPrefix'), parameters('locationIdentifier'), variables('networkWatcherSuffix'))]",
-        "location": "[parameters('locationIdentifier')]",
-        "suffix": "[variables('networkWatcherSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('networkWatcherSlug'))]",
+        "slug": "[variables('networkWatcherSlug')]"
       }
     },
     "publicIp": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Public IP Address name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('publicIpSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('publicIpSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('publicIpSlug'))]",
+        "slug": "[variables('publicIpSlug')]"
       }
     },
     "recoveryServicesVault": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Recovery Services Vault name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('recoveryServicesVaultSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('recoveryServicesVaultSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('recoveryServicesVaultSlug'))]",
+        "slug": "[variables('recoveryServicesVaultSlug')]"
       }
     },
     "resourceGroup": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Resource Group name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('resourceGroupSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('resourceGroupSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('resourceGroupSlug'))]",
+        "slug": "[variables('resourceGroupSlug')]"
       }
     },
     "routeTable": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Route Table name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('routeTableSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('routeTableSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('routeTableSlug'))]",
+        "slug": "[variables('routeTableSlug')]"
       }
     },
     "sqlDb": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "SQL Database name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('sqlDbSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('sqlDbSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('sqlDbSlug'))]",
+        "slug": "[variables('sqlDbSlug')]"
       }
     },
     "sqlServer": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "SQL Server name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('sqlServerSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('sqlServerSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('sqlServerSlug'))]",
+        "slug": "[variables('sqlServerSlug')]"
       }
     },
     "storageAccount": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Storage Account name."
       },
       "value": {
-        "name": "[format('{0}{1}{2}{3}{4}', parameters('companyPrefix'), parameters('locationIdentifier'), if(not(empty(parameters('environment'))), format('{0}', parameters('environment')), ''), parameters('descriptor'), variables('storageAccountSuffix'))]",
-        "suffix": "[variables('storageAccountSuffix')]"
+        "name": "[replace(format('{0}{1}', variables('baseName'), variables('storageAccountSlug')), parameters('separator'), '')]",
+        "slug": "[variables('storageAccountSlug')]"
       }
     },
     "trafficManager": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Traffic Manager name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('trafficManagerSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('trafficManagerSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('trafficManagerSlug'))]",
+        "slug": "[variables('trafficManagerSlug')]"
       }
     },
     "virtualMachine": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Virtual Machine name."
       },
       "value": {
-        "name": "[format('{0}{1}{2}{3}{4}', parameters('companyPrefix'), parameters('locationIdentifier'), if(not(empty(parameters('environment'))), format('{0}', parameters('environment')), ''), parameters('descriptor'), variables('virtualMachineSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('virtualMachineSuffix')]"
+        "name": "[replace(format('{0}{1}', variables('baseName'), variables('virtualMachineSlug')), parameters('separator'), '')]",
+        "slug": "[variables('virtualMachineSlug')]"
       }
     },
     "virtualMachineScaleSet": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Virtual Machine Scale Set name."
       },
       "value": {
-        "name": "[format('{0}{1}{2}{3}{4}', parameters('companyPrefix'), parameters('locationIdentifier'), if(not(empty(parameters('environment'))), format('{0}', parameters('environment')), ''), parameters('descriptor'), variables('virtualMachineScaleSetSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('virtualMachineScaleSetSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('virtualMachineScaleSetSlug'))]",
+        "slug": "[variables('virtualMachineScaleSetSlug')]"
       }
     },
     "vnet": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Virtual Network name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('vnetSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('vnetSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('vnetSlug'))]",
+        "slug": "[variables('vnetSlug')]"
       }
     },
     "vnetGateway": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Virtual Network Gateway name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('vnetGatewaySuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('vnetGatewaySuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('vnetGatewaySlug'))]",
+        "slug": "[variables('vnetGatewaySlug')]"
       }
     },
     "vwan": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Virtual WAN name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('vwanSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('vwanSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('vwanSlug'))]",
+        "slug": "[variables('vwanSlug')]"
       }
     },
     "vwanHub": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Virtual WAN Hub name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('vwanHubSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('vwanHubSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('vwanHubSlug'))]",
+        "slug": "[variables('vwanHubSlug')]"
       }
     },
     "webApp": {
-      "type": "object",
+      "$ref": "#/definitions/nameType",
       "metadata": {
         "description": "Web App name."
       },
       "value": {
-        "name": "[format('{0}-{1}', variables('prefix'), variables('webAppSuffix'))]",
-        "prefix": "[parameters('companyPrefix')]",
-        "location": "[parameters('locationIdentifier')]",
-        "environment": "[parameters('environment')]",
-        "descriptor": "[parameters('descriptor')]",
-        "suffix": "[variables('webAppSuffix')]"
+        "name": "[format('{0}{1}{2}', variables('baseName'), parameters('separator'), variables('webAppSlug'))]",
+        "slug": "[variables('webAppSlug')]"
       }
     }
   }

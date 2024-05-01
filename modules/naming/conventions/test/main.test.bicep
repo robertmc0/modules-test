@@ -17,20 +17,35 @@ TEST EXECUTION
 module namingMinimum '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-naming-min'
   params: {
-    companyPrefix: shortIdentifier
     location: location
+    prefixes: [
+      shortIdentifier
+    ]
+    suffixes: [
+      'demomin'
+    ]
   }
 }
 
 module naming '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-naming'
   params: {
-    companyPrefix: shortIdentifier
     location: location
-    environment: 'dev'
-    descriptor: 'arinco'
+    prefixes: [
+      shortIdentifier
+      '**location**'
+    ]
+    suffixes: [
+      'dev'
+      'myapp'
+    ]
   }
 }
 
-@description('The name of the resource group.')
-output resourceGroupName string = naming.outputs.resourceGroup.name
+module resourceGroup 'main.test.rg.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-naming-rg'
+  params: {
+    location: location
+    name: naming.outputs.resourceGroup.name
+  }
+}
