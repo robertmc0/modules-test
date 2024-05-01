@@ -5,9 +5,9 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "5561908566760837022"
+      "templateHash": "11401896963512480699"
     },
-    "name": "Private Endpoints",
+    "name": "Private Endpoints Module",
     "description": "This module deploys Microsoft.Network/privateEndpoints and child resources",
     "owner": "Arinco"
   },
@@ -41,7 +41,7 @@
           "namespace",
           "managedInstance",
           "databricks_ui_api",
-          "MongoCluster"
+          "mongoCluster"
         ],
         "description": "The type of sub-resource for the target resource that the private endpoint will be able to access."
       }
