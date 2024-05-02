@@ -1,8 +1,8 @@
 # Private Endpoints Module
 
-This module deploys Microsoft.Network privateEndpoints.
+This module deploys Microsoft.Network/privateEndpoints and child resources
 
-## Description
+## Details
 
 This module performs the following
 
