@@ -5,10 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "12895161947895096625"
+      "templateHash": "2987959584697042270"
     },
     "name": "Private Endpoints Module",
-    "description": "This module deploys Microsoft.Network privateEndpoints and child resources",
+    "description": "This module deploys Microsoft.Network privateEndpoints.",
+    "details": "This module performs the following\n\n- Creates Microsoft.Network privateEndpoints resource.\n- Associates the private endpoint with the given single Private DNS Zone. **\n- Applies a lock to the private endpoint if the lock is specified.\n\n**NOTE:** ** Registering the resource with multiple private DNS zones should be done by creating multiple private-endpoints per DNS zone to be registered. This will also allow the segregation of traffic via firewall or nsg.",
     "owner": "Arinco"
   },
   "parameters": {
@@ -26,6 +27,7 @@
     },
     "targetSubResourceType": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "examples": [
           "blob",
@@ -41,9 +43,34 @@
           "namespace",
           "managedInstance",
           "databricks_ui_api",
+          "tenant",
           "mongoCluster"
         ],
-        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access."
+        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access.  Overridden if targetSubResourceTypes is set."
+      }
+    },
+    "targetSubResourceTypes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "examples": [
+          "blob",
+          "table",
+          "queue",
+          "file",
+          "web",
+          "dfs",
+          "vault",
+          "sqlServer",
+          "searchService",
+          "gateway",
+          "namespace",
+          "managedInstance",
+          "databricks_ui_api",
+          "tenant",
+          "mongoCluster"
+        ],
+        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access.  Must be provided if targetSubResourceType is not set."
       }
     },
     "location": {
@@ -62,7 +89,18 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. Resource ID of the Private DNS Zone to host the Private Endpoint."
+        "description": "Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set."
+      }
+    },
+    "privateDnsZoneIds": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "example": [
+          "/subscriptions/subscription-id/resourceGroups/resource-group-name/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net",
+          "/subscriptions/subscription-id/resourceGroups/resource-group-name/providers/Microsoft.Network/privateDnsZones/privatelink.blob.storage.azure.net"
+        ],
+        "description": "Optional. Array of Resource IDs of the Private DNS Zones to host the Private Endpoint."
       }
     },
     "privateDNSZoneGroupName": {
@@ -89,20 +127,26 @@
     "lockName": "[toLower(format('{0}-{1}-lck', variables('privateEndpointName'), parameters('resourcelock')))]",
     "privateEndpointName": "[toLower(format('{0}-{1}-pe', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
     "privateLinkServiceName": "[toLower(format('{0}-{1}-plink', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
-    "networkInterfaceName": "[format('{0}-nic', variables('privateEndpointName'))]"
+    "networkInterfaceName": "[format('{0}-nic', variables('privateEndpointName'))]",
+    "privateDnsZoneIdsArray": "[if(not(empty(parameters('privateDnsZoneIds'))), parameters('privateDnsZoneIds'), if(not(empty(parameters('privateDnsZoneId'))), createArray(parameters('privateDnsZoneId')), createArray()))]",
+    "targetSubResourceTypesArray": "[if(not(empty(parameters('targetSubResourceTypes'))), parameters('targetSubResourceTypes'), if(not(empty(parameters('targetSubResourceType'))), createArray(parameters('targetSubResourceType')), createArray()))]"
   },
   "resources": [
     {
-      "condition": "[not(empty(parameters('privateDnsZoneId')))]",
+      "condition": "[not(empty(variables('privateDnsZoneIdsArray')))]",
       "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
       "apiVersion": "2022-01-01",
       "name": "[format('{0}/{1}', variables('privateEndpointName'), parameters('privateDNSZoneGroupName'))]",
       "properties": {
-        "privateDnsZoneConfigs": [
+        "copy": [
           {
-            "name": "[parameters('privateDNSZoneGroupName')]",
-            "properties": {
-              "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+            "name": "privateDnsZoneConfigs",
+            "count": "[length(variables('privateDnsZoneIdsArray'))]",
+            "input": {
+              "name": "[replace(replace(last(split(variables('privateDnsZoneIdsArray')[copyIndex('privateDnsZoneConfigs')], '/')), '.', '_'), '/', '')]",
+              "properties": {
+                "privateDnsZoneId": "[variables('privateDnsZoneIdsArray')[copyIndex('privateDnsZoneConfigs')]]"
+              }
             }
           }
         ]
@@ -126,9 +170,7 @@
             "name": "[variables('privateLinkServiceName')]",
             "properties": {
               "privateLinkServiceId": "[parameters('targetResourceId')]",
-              "groupIds": [
-                "[parameters('targetSubResourceType')]"
-              ]
+              "groupIds": "[variables('targetSubResourceTypesArray')]"
             }
           }
         ]
