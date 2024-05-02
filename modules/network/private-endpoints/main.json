@@ -5,10 +5,10 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "11401896963512480699"
+      "templateHash": "12895161947895096625"
     },
     "name": "Private Endpoints Module",
-    "description": "This module deploys Microsoft.Network/privateEndpoints and child resources",
+    "description": "This module deploys Microsoft.Network privateEndpoints and child resources",
     "owner": "Arinco"
   },
   "parameters": {

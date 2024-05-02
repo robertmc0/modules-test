@@ -1,5 +1,5 @@
 metadata name = 'Private Endpoints Module'
-metadata description = 'This module deploys Microsoft.Network/privateEndpoints and child resources'
+metadata description = 'This module deploys Microsoft.Network privateEndpoints and child resources'
 metadata owner = 'Arinco'
 
 @description('Name of the target resource for which to create the Private Endpoint.')
@@ -78,29 +78,33 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
     ]
   }
 
-  resource privateDNSZoneGroup 'privateDnsZoneGroups@2022-01-01' = if (!empty(privateDnsZoneId)) {
-    name: privateDNSZoneGroupName
-    properties: {
-      privateDnsZoneConfigs: [
-        {
-          name: privateDNSZoneGroupName
-          properties: {
-            privateDnsZoneId: privateDnsZoneId
+  resource privateDNSZoneGroup 'privateDnsZoneGroups@2022-01-01' =
+    if (!empty(privateDnsZoneId)) {
+      name: privateDNSZoneGroupName
+      properties: {
+        privateDnsZoneConfigs: [
+          {
+            name: privateDNSZoneGroupName
+            properties: {
+              privateDnsZoneId: privateDnsZoneId
+            }
           }
-        }
-      ]
+        ]
+      }
     }
-  }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
-  scope: privateEndpoint
-  name: lockName
-  properties: {
-    level: resourcelock
-    notes: (resourcelock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+resource lock 'Microsoft.Authorization/locks@2017-04-01' =
+  if (resourcelock != 'NotSpecified') {
+    scope: privateEndpoint
+    name: lockName
+    properties: {
+      level: resourcelock
+      notes: (resourcelock == 'CanNotDelete')
+        ? 'Cannot delete resource or child resources.'
+        : 'Cannot modify the resource or child resources.'
+    }
   }
-}
 @description('The name of the private endpoint.')
 output name string = privateEndpoint.name
 
