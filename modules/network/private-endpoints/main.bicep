@@ -55,7 +55,6 @@ param targetSubResourceType string = ''
     'managedInstance'
     'databricks_ui_api'
     'tenant'
-    'mongoCluster'
   ]
 })
 param targetSubResourceTypes array = []

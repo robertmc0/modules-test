@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "2987959584697042270"
+      "templateHash": "4600641167949697349"
     },
     "name": "Private Endpoints Module",
     "description": "This module deploys Microsoft.Network privateEndpoints.",
@@ -67,8 +67,7 @@
           "namespace",
           "managedInstance",
           "databricks_ui_api",
-          "tenant",
-          "mongoCluster"
+          "tenant"
         ],
         "description": "The type of sub-resource for the target resource that the private endpoint will be able to access.  Must be provided if targetSubResourceType is not set."
       }
