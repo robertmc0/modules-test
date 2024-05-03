@@ -46,6 +46,6 @@ module resourceGroup 'main.test.rg.bicep' = {
   name: '${uniqueString(deployment().name, location)}-naming-rg'
   params: {
     location: location
-    name: naming.outputs.resourceGroup.name
+    name: naming.outputs.names.resourceGroup.name
   }
 }

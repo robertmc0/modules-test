@@ -93,341 +93,321 @@ var prefix = join(prefixes, separator)
 var suffix = join(suffixes, separator)
 var baseName = toLower(replace('${prefix}${separator}${suffix}', '**location**', locationIdentifier))
 
-var slugs = {
-  acrSlug: 'cr'
-  aciSlug: 'ci'
-  alertSlug: 'alert'
-  apimSlug: 'apim'
-  actionGroupSlug: 'ag'
-  appGatewaySlug: 'agw'
-  appGatewayPolicySlug: 'waf'
-  appInsightsSlug: 'appi'
-  appServicePlanSlug: 'asp'
-  aksSlug: 'aks'
-  autoAccountSlug: 'aa'
-  availabilitySetSlug: 'avail'
-  bastionSlug: 'bas'
-  budgetSlug: 'bgt'
-  cosmosDbSlug: 'cosmos'
-  ddosProtectionPlanSlug: 'ddos'
-  dnsResolverSlug: 'dnspr'
-  expressRouteCircuitSlug: 'erc'
-  externalLoadBalancerSlug: 'lbe'
-  firewallSlug: 'afw'
-  firewallPolicySlug: 'afwp'
-  frontDoorSlug: 'afd'
-  internalLoadBalancerSlug: 'lbi'
-  keyVaultSlug: 'kv'
-  localNetworkGatewaySlug: 'lgw'
-  logAnalyticsSlug: 'log'
-  logicAppSlug: 'logic'
-  mlWorkspaceSlug: 'mlw'
-  managedIdentitySlug: 'id'
-  networkInterfaceSlug: 'nic'
-  nsgSlug: 'nsg'
-  nsgFlowLogSlug: 'flow'
-  networkWatcherSlug: 'nw'
-  publicIpSlug: 'pip'
-  recoveryServicesVaultSlug: 'rsv'
-  resourceGroupSlug: 'rg'
-  routeTableSlug: 'rt'
-  sqlDbSlug: 'sqldb'
-  sqlServerSlug: 'sql'
-  storageAccountSlug: 'st'
-  trafficManagerSlug: 'traf'
-  virtualMachineSlug: 'vm'
-  virtualMachineScaleSetSlug: 'vmss'
-  vnetSlug: 'vnet'
-  vnetGatewaySlug: 'vgw'
-  vwanSlug: 'vwan'
-  vwanHubSlug: 'vhub'
-  webAppSlug: 'app'
+@export()
+type namingOutput = {
+  @description('Azure container registry (ACR) name.')
+  acr: nameType
+  @description('Azure Container Instance (ACI) name.')
+  aci: nameType
+  @description('Alert name.')
+  alert: nameType
+  @description('Azure API Management name.')
+  apim: nameType
+  @description('Action group name.')
+  actionGroup: nameType
+  @description('Application Gateway name.')
+  appGateway: nameType
+  @description('Application Gateway WAF policy name.')
+  appGatewayPolicy: nameType
+  @description('Application Insights name.')
+  appInsights: nameType
+  @description('App Service plan name.')
+  appServicePlan: nameType
+  @description('Azure Kubernetes Service (AKS) name.')
+  aks: nameType
+  @description('Automation account name.')
+  automationAccount: nameType
+  @description('Availability set name.')
+  availabilitySet: nameType
+  @description('Azure Bastion name.')
+  bastion: nameType
+  @description('Budget name.')
+  budget: nameType
+  @description('Azure Cosmos DB name.')
+  cosmosDb: nameType
+  @description('DDoS protection plan name.')
+  ddosProtectionPlan: nameType
+  @description('DNS resolver name.')
+  dnsResolver: nameType
+  @description('ExpressRoute circuit name.')
+  expressRouteCircuit: nameType
+  @description('External load balancer name.')
+  externalLoadBalancer: nameType
+  @description('Firewall name.')
+  firewall: nameType
+  @description('Firewall policy name.')
+  firewallPolicy: nameType
+  @description('Azure Front Door name.')
+  frontDoor: nameType
+  @description('Internal load balancer name.')
+  internalLoadBalancer: nameType
+  @description('Key Vault name.')
+  keyVault: nameType
+  @description('Local network gateway name.')
+  localNetworkGateway: nameType
+  @description('Log Analytics name.')
+  logAnalytics: nameType
+  @description('Logic App name.')
+  logicApp: nameType
+  @description('Machine Learning workspace name.')
+  mlWorkspace: nameType
+  @description('Managed identity name.')
+  managedIdentity: nameType
+  @description('Network interface name.')
+  networkInterface: nameType
+  @description('Network security group name.')
+  nsg: nameType
+  @description('Network security group flow log name.')
+  nsgFlowLog: nameType
+  @description('Network watcher name.')
+  networkWatcher: nameType
+  @description('Public IP address name.')
+  publicIp: nameType
+  @description('Recovery Services vault name.')
+  recoveryServicesVault: nameType
+  @description('Resource group name.')
+  resourceGroup: nameType
+  @description('Route table name.')
+  routeTable: nameType
+  @description('SQL database name.')
+  sqlDb: nameType
+  @description('SQL server name.')
+  sqlServer: nameType
+  @description('Storage account name.')
+  storageAccount: nameType
+  @description('Traffic Manager name.')
+  trafficManager: nameType
+  @description('Virtual machine name.')
+  virtualMachine: nameType
+  @description('Virtual machine scale set name.')
+  virtualMachineScaleSet: nameType
+  @description('Virtual network name.')
+  vnet: nameType
+  @description('Virtual network gateway name.')
+  vnetGateway: nameType
+  @description('Virtual WAN name.')
+  vwan: nameType
+  @description('Virtual WAN hub name.')
+  vwanHub: nameType
+  @description('Web App name.')
+  webApp: nameType
 }
 
-@description('Azure container registry (ACR) name.')
-output acr nameType = {
-  name: replace('${baseName}${slugs.acrSlug}', separator, '')
-  slug: slugs.acrSlug
+var typeMap = {
+  acr: {
+    slug: 'cr'
+    allowSeparator: false
+    maxLength: 24
+  }
+  aci: {
+    slug: 'ci'
+    allowSeparator: true
+  }
+  alert: {
+    slug: 'alert'
+    allowSeparator: true
+  }
+  apim: {
+    slug: 'apim'
+    allowSeparator: true
+  }
+  actionGroup: {
+    slug: 'ag'
+    allowSeparator: true
+  }
+  appGateway: {
+    slug: 'agw'
+    allowSeparator: true
+  }
+  appGatewayPolicy: {
+    slug: 'waf'
+    allowSeparator: true
+  }
+  appInsights: {
+    slug: 'appi'
+    allowSeparator: true
+  }
+  appServicePlan: {
+    slug: 'asp'
+    allowSeparator: true
+  }
+  aks: {
+    slug: 'aks'
+    allowSeparator: true
+  }
+  automationAccount: {
+    slug: 'aa'
+    allowSeparator: true
+  }
+  availabilitySet: {
+    slug: 'avail'
+    allowSeparator: true
+  }
+  bastion: {
+    slug: 'bas'
+    allowSeparator: true
+  }
+  budget: {
+    slug: 'bgt'
+    allowSeparator: true
+  }
+  cosmosDb: {
+    slug: 'cosmos'
+    allowSeparator: true
+  }
+  ddosProtectionPlan: {
+    slug: 'ddos'
+    allowSeparator: true
+  }
+  dnsResolver: {
+    slug: 'dnspr'
+    allowSeparator: true
+  }
+  expressRouteCircuit: {
+    slug: 'erc'
+    allowSeparator: true
+  }
+  externalLoadBalancer: {
+    slug: 'lbe'
+    allowSeparator: true
+  }
+  firewall: {
+    slug: 'afw'
+    allowSeparator: true
+  }
+  firewallPolicy: {
+    slug: 'afwp'
+    allowSeparator: true
+  }
+  frontDoor: {
+    slug: 'afd'
+    allowSeparator: true
+  }
+  internalLoadBalancer: {
+    slug: 'lbi'
+    allowSeparator: true
+  }
+  keyVault: {
+    slug: 'kv'
+    allowSeparator: true
+  }
+  localNetworkGateway: {
+    slug: 'lgw'
+    allowSeparator: true
+  }
+  logAnalytics: {
+    slug: 'log'
+    allowSeparator: true
+  }
+  logicApp: {
+    slug: 'logic'
+    allowSeparator: true
+  }
+  mlWorkspace: {
+    slug: 'mlw'
+    allowSeparator: true
+  }
+  managedIdentity: {
+    slug: 'id'
+    allowSeparator: true
+  }
+  networkInterface: {
+    slug: 'nic'
+    allowSeparator: true
+  }
+  nsg: {
+    slug: 'nsg'
+    allowSeparator: true
+  }
+  nsgFlowLog: {
+    slug: 'flow'
+    allowSeparator: true
+  }
+  networkWatcher: {
+    slug: 'nw'
+    allowSeparator: true
+  }
+  publicIp: {
+    slug: 'pip'
+    allowSeparator: true
+  }
+  recoveryServicesVault: {
+    slug: 'rsv'
+    allowSeparator: true
+  }
+  resourceGroup: {
+    slug: 'rg'
+    allowSeparator: true
+  }
+  routeTable: {
+    slug: 'rt'
+    allowSeparator: true
+  }
+  sqlDb: {
+    slug: 'sqldb'
+    allowSeparator: true
+  }
+  sqlServer: {
+    slug: 'sql'
+    allowSeparator: true
+  }
+  storageAccount: {
+    slug: 'st'
+    allowSeparator: false
+    maxLength: 24
+  }
+  trafficManager: {
+    slug: 'traf'
+    allowSeparator: true
+  }
+  virtualMachine: {
+    slug: 'vm'
+    allowSeparator: false
+  }
+  virtualMachineScaleSet: {
+    slug: 'vmss'
+    allowSeparator: true
+  }
+  vnet: {
+    slug: 'vnet'
+    allowSeparator: true
+  }
+  vnetGateway: {
+    slug: 'vgw'
+    allowSeparator: true
+  }
+  vwan: {
+    slug: 'vwan'
+    allowSeparator: true
+  }
+  vwanHub: {
+    slug: 'vhub'
+    allowSeparator: true
+  }
+  webApp: {
+    slug: 'app'
+    allowSeparator: true
+  }
 }
 
-@description('Azure Container Instance (ACI) name.')
-output aci nameType = {
-  name: '${baseName}${separator}${slugs.aciSlug}'
-  slug: slugs.aciSlug
-}
+@description('Resource names.')
+var namesOutput = reduce(
+  map(
+    items(typeMap),
+    type => {
+      '${type.key}': type.value.allowSeparator
+        ? {
+            name: '${baseName}${separator}${type.value.slug}'
+            slug: type.value.slug
+          }
+        : {
+            name: replace('${baseName}${type.value.slug}', separator, '')
+            slug: type.value.slug
+          }
+    }
+  ),
+  {},
+  (cur, next) => union(cur, next)
+)
 
-@description('Alert name.')
-output alert nameType = {
-  name: '${baseName}${separator}${slugs.alertSlug}'
-  slug: slugs.alertSlug
-}
-
-@description('API Management (APIM) name.')
-output apim nameType = {
-  name: '${baseName}${separator}${slugs.apimSlug}'
-  slug: slugs.apimSlug
-}
-
-@description('Action group name.')
-output actionGroup nameType = {
-  name: '${baseName}${separator}${slugs.actionGroupSlug}'
-  slug: slugs.actionGroupSlug
-}
-
-@description('Application Gateway name.')
-output appGateway nameType = {
-  name: '${baseName}${separator}${slugs.appGatewaySlug}'
-  slug: slugs.appGatewaySlug
-}
-
-@description('Application Gateway WAF policy name.')
-output appGatewayPolicy nameType = {
-  name: '${baseName}${separator}${slugs.appGatewayPolicySlug}'
-  slug: slugs.appGatewayPolicySlug
-}
-
-@description('Application Insights name.')
-output appInsights nameType = {
-  name: '${baseName}${separator}${slugs.appInsightsSlug}'
-  slug: slugs.appInsightsSlug
-}
-
-@description('App Service Plan name.')
-output appServicePlan nameType = {
-  name: '${baseName}${separator}${slugs.appServicePlanSlug}'
-  slug: slugs.appServicePlanSlug
-}
-
-@description('Azure Kubernetes Service (AKS) name.')
-output aks nameType = {
-  name: '${baseName}${separator}${slugs.aksSlug}'
-  slug: slugs.aksSlug
-}
-
-@description('Azure Automation Account name.')
-output automationAccount nameType = {
-  name: '${baseName}${separator}${slugs.autoAccountSlug}'
-  slug: slugs.autoAccountSlug
-}
-
-@description('Availability Set name.')
-output availabilitySet nameType = {
-  name: '${baseName}${separator}${slugs.availabilitySetSlug}'
-  slug: slugs.availabilitySetSlug
-}
-
-@description('Azure Bastion name.')
-output bastion nameType = {
-  name: '${baseName}${separator}${slugs.bastionSlug}'
-  slug: slugs.bastionSlug
-}
-
-@description('Budget name.')
-output budget nameType = {
-  name: '${baseName}${separator}${slugs.budgetSlug}'
-  slug: slugs.budgetSlug
-}
-
-@description('Azure Cosmos DB name.')
-output cosmosDb nameType = {
-  name: '${baseName}${separator}${slugs.cosmosDbSlug}'
-  slug: slugs.cosmosDbSlug
-}
-
-@description('DDoS Protection Plan name.')
-output ddosProtectionPlan nameType = {
-  name: '${baseName}${separator}${slugs.ddosProtectionPlanSlug}'
-  slug: slugs.ddosProtectionPlanSlug
-}
-
-@description('DNS Resolver name.')
-output dnsResolver nameType = {
-  name: '${baseName}${separator}${slugs.dnsResolverSlug}'
-  slug: slugs.dnsResolverSlug
-}
-
-@description('ExpressRoute Circuit name.')
-output expressRouteCircuit nameType = {
-  name: '${baseName}${separator}${slugs.expressRouteCircuitSlug}'
-  slug: slugs.expressRouteCircuitSlug
-}
-
-@description('External Load Balancer name.')
-output externalLoadBalancer nameType = {
-  name: '${baseName}${separator}${slugs.externalLoadBalancerSlug}'
-  slug: slugs.externalLoadBalancerSlug
-}
-
-@description('Firewall name.')
-output firewall nameType = {
-  name: '${baseName}${separator}${slugs.firewallSlug}'
-  slug: slugs.firewallSlug
-}
-
-@description('Firewall Policy name.')
-output firewallPolicy nameType = {
-  name: '${baseName}${separator}${slugs.firewallPolicySlug}'
-  slug: slugs.firewallPolicySlug
-}
-
-@description('Front Door name.')
-output frontDoor nameType = {
-  name: '${baseName}${separator}${slugs.frontDoorSlug}'
-  slug: slugs.frontDoorSlug
-}
-
-@description('Function App name.')
-output internalLoadBalancer nameType = {
-  name: '${baseName}${separator}${slugs.internalLoadBalancerSlug}'
-  slug: slugs.internalLoadBalancerSlug
-}
-
-@description('Key Vault name.')
-output keyVault nameType = {
-  name: '${baseName}${separator}${slugs.keyVaultSlug}'
-  slug: slugs.keyVaultSlug
-}
-
-@description('Load Balancer name.')
-output localNetworkGateway nameType = {
-  name: '${baseName}${separator}${slugs.localNetworkGatewaySlug}'
-  slug: slugs.localNetworkGatewaySlug
-}
-
-@description('Log Analytics name.')
-output logAnalytics nameType = {
-  name: '${baseName}${separator}${slugs.logAnalyticsSlug}'
-  slug: slugs.logAnalyticsSlug
-}
-
-@description('Logic App name.')
-output logicApp nameType = {
-  name: '${baseName}${separator}${slugs.logicAppSlug}'
-  slug: slugs.logicAppSlug
-}
-
-@description('Machine Learning Workspace name.')
-output mlWorkspace nameType = {
-  name: '${baseName}${separator}${slugs.mlWorkspaceSlug}'
-  slug: slugs.mlWorkspaceSlug
-}
-
-@description('Managed Identity name.')
-output managedIdentity nameType = {
-  name: '${baseName}${separator}${slugs.managedIdentitySlug}'
-  slug: slugs.managedIdentitySlug
-}
-
-@description('Network Interface name.')
-output networkInterface nameType = {
-  name: '${baseName}${separator}${slugs.networkInterfaceSlug}'
-  slug: slugs.networkInterfaceSlug
-}
-
-@description('Network Security Group name.')
-output nsg nameType = {
-  name: '${baseName}${separator}${slugs.nsgSlug}'
-  slug: slugs.nsgSlug
-}
-
-@description('Network Security Group Flow Log name.')
-output nsgFlowLog nameType = {
-  name: '${baseName}${separator}${slugs.nsgFlowLogSlug}'
-  slug: slugs.nsgFlowLogSlug
-}
-
-@description('Network Watcher name.')
-output networkWatcher nameType = {
-  name: '${baseName}${separator}${slugs.networkWatcherSlug}'
-  slug: slugs.networkWatcherSlug
-}
-
-@description('Public IP Address name.')
-output publicIp nameType = {
-  name: '${baseName}${separator}${slugs.publicIpSlug}'
-  slug: slugs.publicIpSlug
-}
-
-@description('Recovery Services Vault name.')
-output recoveryServicesVault nameType = {
-  name: '${baseName}${separator}${slugs.recoveryServicesVaultSlug}'
-  slug: slugs.recoveryServicesVaultSlug
-}
-
-@description('Resource Group name.')
-output resourceGroup nameType = {
-  name: '${baseName}${separator}${slugs.resourceGroupSlug}'
-  slug: slugs.resourceGroupSlug
-}
-
-@description('Route Table name.')
-output routeTable nameType = {
-  name: '${baseName}${separator}${slugs.routeTableSlug}'
-  slug: slugs.routeTableSlug
-}
-
-@description('SQL Database name.')
-output sqlDb nameType = {
-  name: '${baseName}${separator}${slugs.sqlDbSlug}'
-  slug: slugs.sqlDbSlug
-}
-
-@description('SQL Server name.')
-output sqlServer nameType = {
-  name: '${baseName}${separator}${slugs.sqlServerSlug}'
-  slug: slugs.sqlServerSlug
-}
-
-@description('Storage Account name.')
-output storageAccount nameType = {
-  name: replace('${baseName}${slugs.storageAccountSlug}', separator, '')
-  slug: slugs.storageAccountSlug
-}
-
-@description('Traffic Manager name.')
-output trafficManager nameType = {
-  name: '${baseName}${separator}${slugs.trafficManagerSlug}'
-  slug: slugs.trafficManagerSlug
-}
-
-@description('Virtual Machine name.')
-output virtualMachine nameType = {
-  name: replace('${baseName}${slugs.virtualMachineSlug}', separator, '')
-  slug: slugs.virtualMachineSlug
-}
-
-@description('Virtual Machine Scale Set name.')
-output virtualMachineScaleSet nameType = {
-  name: '${baseName}${separator}${slugs.virtualMachineScaleSetSlug}'
-  slug: slugs.virtualMachineScaleSetSlug
-}
-
-@description('Virtual Network name.')
-output vnet nameType = {
-  name: '${baseName}${separator}${slugs.vnetSlug}'
-  slug: slugs.vnetSlug
-}
-
-@description('Virtual Network Gateway name.')
-output vnetGateway nameType = {
-  name: '${baseName}${separator}${slugs.vnetGatewaySlug}'
-  slug: slugs.vnetGatewaySlug
-}
-
-@description('Virtual WAN name.')
-output vwan nameType = {
-  name: '${baseName}${separator}${slugs.vwanSlug}'
-  slug: slugs.vwanSlug
-}
-
-@description('Virtual WAN Hub name.')
-output vwanHub nameType = {
-  name: '${baseName}${separator}${slugs.vwanHubSlug}'
-  slug: slugs.vwanHubSlug
-}
-
-@description('Web App name.')
-output webApp nameType = {
-  name: '${baseName}${separator}${slugs.webAppSlug}'
-  slug: slugs.webAppSlug
-}
+output names namingOutput = namesOutput

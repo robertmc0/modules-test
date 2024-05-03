@@ -109,56 +109,9 @@ It will result in the error similar to below.
 
 ## Outputs
 
-| Name                     | Type     | Description                           |
-| :----------------------- | :------: | :------------------------------------ |
-| `acr`                    | `object` | Azure container registry (ACR) name.  |
-| `aci`                    | `object` | Azure Container Instance (ACI) name.  |
-| `alert`                  | `object` | Alert name.                           |
-| `apim`                   | `object` | API Management (APIM) name.           |
-| `actionGroup`            | `object` | Action group name.                    |
-| `appGateway`             | `object` | Application Gateway name.             |
-| `appGatewayPolicy`       | `object` | Application Gateway WAF policy name.  |
-| `appInsights`            | `object` | Application Insights name.            |
-| `appServicePlan`         | `object` | App Service Plan name.                |
-| `aks`                    | `object` | Azure Kubernetes Service (AKS) name.  |
-| `automationAccount`      | `object` | Azure Automation Account name.        |
-| `availabilitySet`        | `object` | Availability Set name.                |
-| `bastion`                | `object` | Azure Bastion name.                   |
-| `budget`                 | `object` | Budget name.                          |
-| `cosmosDb`               | `object` | Azure Cosmos DB name.                 |
-| `ddosProtectionPlan`     | `object` | DDoS Protection Plan name.            |
-| `dnsResolver`            | `object` | DNS Resolver name.                    |
-| `expressRouteCircuit`    | `object` | ExpressRoute Circuit name.            |
-| `externalLoadBalancer`   | `object` | External Load Balancer name.          |
-| `firewall`               | `object` | Firewall name.                        |
-| `firewallPolicy`         | `object` | Firewall Policy name.                 |
-| `frontDoor`              | `object` | Front Door name.                      |
-| `internalLoadBalancer`   | `object` | Function App name.                    |
-| `keyVault`               | `object` | Key Vault name.                       |
-| `localNetworkGateway`    | `object` | Load Balancer name.                   |
-| `logAnalytics`           | `object` | Log Analytics name.                   |
-| `logicApp`               | `object` | Logic App name.                       |
-| `mlWorkspace`            | `object` | Machine Learning Workspace name.      |
-| `managedIdentity`        | `object` | Managed Identity name.                |
-| `networkInterface`       | `object` | Network Interface name.               |
-| `nsg`                    | `object` | Network Security Group name.          |
-| `nsgFlowLog`             | `object` | Network Security Group Flow Log name. |
-| `networkWatcher`         | `object` | Network Watcher name.                 |
-| `publicIp`               | `object` | Public IP Address name.               |
-| `recoveryServicesVault`  | `object` | Recovery Services Vault name.         |
-| `resourceGroup`          | `object` | Resource Group name.                  |
-| `routeTable`             | `object` | Route Table name.                     |
-| `sqlDb`                  | `object` | SQL Database name.                    |
-| `sqlServer`              | `object` | SQL Server name.                      |
-| `storageAccount`         | `object` | Storage Account name.                 |
-| `trafficManager`         | `object` | Traffic Manager name.                 |
-| `virtualMachine`         | `object` | Virtual Machine name.                 |
-| `virtualMachineScaleSet` | `object` | Virtual Machine Scale Set name.       |
-| `vnet`                   | `object` | Virtual Network name.                 |
-| `vnetGateway`            | `object` | Virtual Network Gateway name.         |
-| `vwan`                   | `object` | Virtual WAN name.                     |
-| `vwanHub`                | `object` | Virtual WAN Hub name.                 |
-| `webApp`                 | `object` | Web App name.                         |
+| Name    | Type     | Description |
+| :------ | :------: | :---------- |
+| `names` | `object` |             |
 
 ## Examples
 
