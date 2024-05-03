@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "4158719221946857480"
+      "templateHash": "746390509450448317"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -630,6 +630,9 @@
   "outputs": {
     "names": {
       "$ref": "#/definitions/namingOutput",
+      "metadata": {
+        "description": "Resource names."
+      },
       "value": "[variables('namesOutput')]"
     }
   }

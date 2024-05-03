@@ -410,4 +410,5 @@ var namesOutput = reduce(
   (cur, next) => union(cur, next)
 )
 
+@description('Resource names.')
 output names namingOutput = namesOutput

@@ -109,9 +109,9 @@ It will result in the error similar to below.
 
 ## Outputs
 
-| Name    | Type     | Description |
-| :------ | :------: | :---------- |
-| `names` | `object` |             |
+| Name    | Type     | Description     |
+| :------ | :------: | :-------------- |
+| `names` | `object` | Resource names. |
 
 ## Examples
 
