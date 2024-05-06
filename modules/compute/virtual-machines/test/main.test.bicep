@@ -65,6 +65,14 @@ module vmMinimum '../main.bicep' = {
     adminUsername: 'azureuser'
     adminPassword: vmPassword
     subnetResourceId: '${vnet.id}/subnets/default'
+    dataDisks: [
+      {
+        storageAccountType: 'StandardSSD_LRS'
+        diskSizeGB: 1024
+        caching: 'None'
+        createOption: 'Empty'
+      }
+    ]
   }
 }
 
