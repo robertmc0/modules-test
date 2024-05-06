@@ -358,8 +358,8 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [
             caching: disk.caching
             createOption: disk.createOption
             managedDisk: {
-              storageAccountType: disk.storageAccountType
               id: (disk.createOption == 'Attach') ? disk.id : null
+              storageAccountType: !(disk.createOption == 'Attach') ? disk.storageAccountType : null
             }
           }
         ]

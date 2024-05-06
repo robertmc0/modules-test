@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "11409087194310400126"
+      "templateHash": "3884926873629899761"
     },
     "name": "Virtual Machines Module",
     "description": "This module deploys Microsoft.Compute virtualMachines",
@@ -449,8 +449,8 @@
                 "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
                 "createOption": "[parameters('dataDisks')[copyIndex('dataDisks')].createOption]",
                 "managedDisk": {
-                  "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].storageAccountType]",
-                  "id": "[if(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Attach'), parameters('dataDisks')[copyIndex('dataDisks')].id, null())]"
+                  "id": "[if(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Attach'), parameters('dataDisks')[copyIndex('dataDisks')].id, null())]",
+                  "storageAccountType": "[if(not(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Attach')), parameters('dataDisks')[copyIndex('dataDisks')].storageAccountType, null())]"
                 }
               }
             }
