@@ -100,6 +100,7 @@ module vm '../main.bicep' = {
         storageAccountType: 'StandardSSD_LRS'
         diskSizeGB: 1024
         caching: 'None'
+        createOption: 'Empty'
       }
     ]
     antiMalwareConfiguration: {

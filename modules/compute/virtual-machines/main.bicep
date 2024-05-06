@@ -142,6 +142,8 @@ param osStorageAccountType string
   storageAccountType: 'Specifies the storage account type for the managed disk.'
   diskSizeGB: 'Specifies the size of an empty data disk in gigabytes.'
   caching: 'Specifies the caching requirements. Accepted values are "None", "ReadOnly" or "ReadWrite".'
+  createOption: 'Specifies how the virtual machine should be created. Accepted values are "Attach", "Empty" or "FromImage".'
+  id: 'Optional, only needed when "createOption" are "Attach" then need to define the existing data disk by resource id.'
 })
 param dataDisks array = []
 
@@ -357,6 +359,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [
             createOption: disk.createOption
             managedDisk: {
               storageAccountType: disk.storageAccountType
+              id: (disk.createOption == 'Attach') ? disk.id : null
             }
           }
         ]
@@ -401,7 +404,7 @@ resource extension_monitoring 'Microsoft.Compute/virtualMachines/extensions@2022
   }
 ]
 
-resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = [
   for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
     parent: virtualMachine[i]
     dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
@@ -417,7 +420,7 @@ resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2022-0
     properties: {
       publisher: 'Microsoft.Azure.Monitoring.DependencyAgent'
       type: 'DependencyAgentWindows'
-      typeHandlerVersion: '9.5'
+      typeHandlerVersion: '9.10'
       autoUpgradeMinorVersion: true
     }
   }

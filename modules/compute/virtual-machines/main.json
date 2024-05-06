@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "7770621417666249107"
+      "templateHash": "11409087194310400126"
     },
     "name": "Virtual Machines Module",
     "description": "This module deploys Microsoft.Compute virtualMachines",
@@ -200,6 +200,8 @@
         "storageAccountType": "Specifies the storage account type for the managed disk.",
         "diskSizeGB": "Specifies the size of an empty data disk in gigabytes.",
         "caching": "Specifies the caching requirements. Accepted values are \"None\", \"ReadOnly\" or \"ReadWrite\".",
+        "createOption": "Specifies how the virtual machine should be created. Accepted values are \"Attach\", \"Empty\" or \"FromImage\".",
+        "id": "Optional, only needed when \"createOption\" are \"Attach\" then need to define the existing data disk by resource id.",
         "description": "Optional. Specifies the parameters that are used to add a data disk to a virtual machine."
       }
     },
@@ -447,7 +449,8 @@
                 "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
                 "createOption": "[parameters('dataDisks')[copyIndex('dataDisks')].createOption]",
                 "managedDisk": {
-                  "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].storageAccountType]"
+                  "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].storageAccountType]",
+                  "id": "[if(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Attach'), parameters('dataDisks')[copyIndex('dataDisks')].id, null())]"
                 }
               }
             }
@@ -504,13 +507,13 @@
       },
       "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2022-08-01",
+      "apiVersion": "2023-09-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'DependencyAgentWindows')]",
       "location": "[parameters('location')]",
       "properties": {
         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
         "type": "DependencyAgentWindows",
-        "typeHandlerVersion": "9.5",
+        "typeHandlerVersion": "9.10",
         "autoUpgradeMinorVersion": true
       },
       "dependsOn": [
