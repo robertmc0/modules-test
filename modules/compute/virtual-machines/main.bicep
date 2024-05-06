@@ -354,7 +354,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [
             diskSizeGB: disk.diskSizeGB
             lun: index
             caching: disk.caching
-            createOption: 'Empty'
+            createOption: disk.createOption
             managedDisk: {
               storageAccountType: disk.storageAccountType
             }
