@@ -1,3 +1,7 @@
+metadata name = 'Key Vaults Secrets Module'
+metadata description = 'This module deploys Microsoft.KeyVault/vaults/secrets'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -14,6 +18,7 @@ param tags object = {}
 param keyVaultName string
 
 @description('The value of the secret.')
+@secure()
 param value string
 
 @description('Optional. The attributes of the secret.')
@@ -28,7 +33,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
 }
 
-resource secret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+resource secret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   parent: keyVault
   name: name
   tags: tags

@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Network firewallPolicies
 
-## Description
+## Details
 
 This module performs the following
 
@@ -25,7 +25,7 @@ This module performs the following
 | `name`                   | `string` | Yes      | The resource name.                                                                   |
 | `location`               | `string` | Yes      | The geo-location where the resource lives.                                           |
 | `tags`                   | `object` | No       | Optional. Resource tags.                                                             |
-| `tier`                   | `string` | Yes      | Tier of an Azure Firewall.                                                           |
+| `tier`                   | `string` | Yes      | Tier of the Azure Firewall Policy.                                                   |
 | `threatIntelMode`        | `string` | No       | Optional. The operation mode for Threat Intelligence.                                |
 | `threatIntelAllowlist`   | `object` | No       | Optional. Threat Intelligence Allowlist.                                             |
 | `systemAssignedIdentity` | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                  |
