@@ -38,7 +38,7 @@ resource diagnosticsEventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01'
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
-module keyVaultMinimum '../main.bicep' = {
+module servicebusMin '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-min-sbn'
   params: {
     name: '${shortIdentifier}-sbn-min-${uniqueString(deployment().name, 'servicebus', location)}'
@@ -56,7 +56,9 @@ module automationAccount '../main.bicep' = {
     diagnosticStorageAccountId: diagnosticsStorageAccount.id
     diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
     resourcelock: 'CanNotDelete'
-    userAssignedIdentities: userIdentity
+    userAssignedIdentities: {
+      '${userIdentity.id}': {}
+    }
     systemAssignedIdentity: false
   }
 }
