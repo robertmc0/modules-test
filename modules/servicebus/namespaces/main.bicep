@@ -65,7 +65,7 @@ param diagnosticMetricsToEnable array = [
 ]
 
 @description('Optional. The number of partitions of a Service Bus namespace. Attribute applicable for premium servicebus.')
-param premiumMessagingPartitions int = 1
+param premiumMessagingPartitions int = 0
 
 @description('Optional. Diabled SAS Authentication.')
 param disableLocalAuthentication bool = false
