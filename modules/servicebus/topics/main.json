@@ -1,0 +1,142 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.27.1.19265",
+      "templateHash": "9673689817586760909"
+    },
+    "name": "Servicebus Topic Module",
+    "description": "This module deploys Microsoft.ServiceBus namespaces/topics",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "servicebusNamespaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "The servicebus namespace name."
+      }
+    },
+    "autoDeleteOnIdle": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes."
+      }
+    },
+    "defaultMessageTimeToLive": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. ISO 8601 Default message timespan to live value. "
+      }
+    },
+    "enableBatchedOperations": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether server-side batched operations are enabled."
+      }
+    },
+    "enableExpress": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether Express Entities are enabled"
+      }
+    },
+    "enablePartitioning": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether the topic to be partitioned across multiple message brokers is enabled."
+      }
+    },
+    "maxMessageSizeInKilobytes": {
+      "type": "int",
+      "defaultValue": 1024,
+      "metadata": {
+        "description": "Optonal. Maximum size (in KB) of the message payload that can be accepted by the topic. This property is only used in Premium today and default is 1024."
+      }
+    },
+    "maxSizeInMegabytes": {
+      "type": "int",
+      "defaultValue": 1024,
+      "metadata": {
+        "description": "Optional. Maximum size of the topic in megabytes, which is the size of the memory allocated for the topic. Default is 1024."
+      }
+    },
+    "requiresDuplicateDetection": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value indicating if this topic requires duplicate detection."
+      }
+    },
+    "status": {
+      "type": "string",
+      "defaultValue": "Active",
+      "allowedValues": [
+        "Active",
+        "Creating",
+        "Deleting",
+        "Disabled",
+        "ReceiveDisabled",
+        "Renaming",
+        "Restoring",
+        "SendDisabled",
+        "Unknown"
+      ],
+      "metadata": {
+        "description": "Optional. Enumerates the possible values for the status of a messaging entity."
+      }
+    },
+    "supportOrdering": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether the topic supports ordering."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ServiceBus/namespaces/topics",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[format('{0}/{1}', parameters('servicebusNamespaceName'), parameters('name'))]",
+      "properties": {
+        "autoDeleteOnIdle": "[parameters('autoDeleteOnIdle')]",
+        "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+        "enableBatchedOperations": "[parameters('enableBatchedOperations')]",
+        "enableExpress": "[parameters('enableExpress')]",
+        "enablePartitioning": "[parameters('enablePartitioning')]",
+        "maxMessageSizeInKilobytes": "[if(equals(reference(resourceId('Microsoft.ServiceBus/namespaces', parameters('servicebusNamespaceName')), '2022-10-01-preview', 'full').sku, 'Premium'), parameters('maxMessageSizeInKilobytes'), null())]",
+        "maxSizeInMegabytes": "[parameters('maxSizeInMegabytes')]",
+        "requiresDuplicateDetection": "[parameters('requiresDuplicateDetection')]",
+        "status": "[parameters('status')]",
+        "supportOrdering": "[parameters('supportOrdering')]"
+      }
+    }
+  ],
+  "outputs": {
+    "servicebusName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Servicebus Namespace"
+      },
+      "value": "[parameters('servicebusNamespaceName')]"
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Topic"
+      },
+      "value": "[parameters('name')]"
+    }
+  }
+}
