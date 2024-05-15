@@ -1,0 +1,164 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.27.1.19265",
+      "templateHash": "9389118522249113966"
+    },
+    "name": "Servicebus Topic Module",
+    "description": "This module deploys Microsoft.ServiceBus namespaces/topics",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "servicebusNamespaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "The servicebus namespace name."
+      }
+    },
+    "servicebusTopicName": {
+      "type": "string",
+      "metadata": {
+        "description": "The servicebus topic name."
+      }
+    },
+    "autoDeleteOnIdle": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes."
+      }
+    },
+    "deadLetteringOnFilterEvaluationExceptions": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether a subscription has dead letter support on filter evaluation exceptions."
+      }
+    },
+    "deadLetteringOnMessageExpiration": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether a subscription has dead letter support when a message expires."
+      }
+    },
+    "defaultMessageTimeToLive": {
+      "type": "string",
+      "defaultValue": "P10675199DT2H48M5.4775807S",
+      "metadata": {
+        "description": "Optional. ISO 8061 Default message timespan to live value. "
+      }
+    },
+    "duplicateDetectionHistoryTimeWindow": {
+      "type": "string",
+      "defaultValue": "PT10M",
+      "metadata": {
+        "description": "Optional. ISO 8601 timeSpan structure that defines the duration of the duplicate detection history. The default value is 10 minutes."
+      }
+    },
+    "enableBatchedOperations": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optonal. Value that indicates whether server-side batched operations are enabled."
+      }
+    },
+    "forwardDeadLetteredMessagesTo": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Queue/Topic name to forward the Dead Letter message"
+      }
+    },
+    "forwardTo": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Queue/Topic name to forward the messages."
+      }
+    },
+    "status": {
+      "type": "string",
+      "defaultValue": "Active",
+      "allowedValues": [
+        "Active",
+        "Creating",
+        "Deleting",
+        "Disabled",
+        "ReceiveDisabled",
+        "Renaming",
+        "Restoring",
+        "SendDisabled",
+        "Unknown"
+      ],
+      "metadata": {
+        "description": "Optional. Enumerates the possible values for the status of a messaging entity."
+      }
+    },
+    "lockDuration": {
+      "type": "string",
+      "defaultValue": "PT1M",
+      "metadata": {
+        "description": "Optional. ISO 8061 lock duration timespan for the subscription. The default value is 1 minute."
+      }
+    },
+    "maxDeliveryCount": {
+      "type": "int",
+      "metadata": {
+        "description": "The maximum delivery count. A message is automatically deadlettered after this number of deliveries."
+      }
+    },
+    "requiresSession": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether the subscription supports the concept of session."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ServiceBus/namespaces/topics/subscriptions",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[format('{0}/{1}/{2}', split(format('{0}/{1}', parameters('servicebusNamespaceName'), parameters('servicebusTopicName')), '/')[0], split(format('{0}/{1}', parameters('servicebusNamespaceName'), parameters('servicebusTopicName')), '/')[1], parameters('name'))]",
+      "properties": {
+        "autoDeleteOnIdle": "[parameters('autoDeleteOnIdle')]",
+        "deadLetteringOnFilterEvaluationExceptions": "[parameters('deadLetteringOnFilterEvaluationExceptions')]",
+        "deadLetteringOnMessageExpiration": "[parameters('deadLetteringOnMessageExpiration')]",
+        "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+        "duplicateDetectionHistoryTimeWindow": "[parameters('duplicateDetectionHistoryTimeWindow')]",
+        "enableBatchedOperations": "[parameters('enableBatchedOperations')]",
+        "forwardDeadLetteredMessagesTo": "[if(empty(parameters('forwardDeadLetteredMessagesTo')), null(), parameters('forwardDeadLetteredMessagesTo'))]",
+        "forwardTo": "[if(empty(parameters('forwardTo')), null(), parameters('forwardTo'))]",
+        "lockDuration": "[parameters('lockDuration')]",
+        "maxDeliveryCount": "[parameters('maxDeliveryCount')]",
+        "requiresSession": "[parameters('requiresSession')]",
+        "status": "[parameters('status')]"
+      }
+    }
+  ],
+  "outputs": {
+    "servicebusName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the topic subscription"
+      },
+      "value": "[parameters('name')]"
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Topic"
+      },
+      "value": "[format('{0}/{1}', parameters('servicebusNamespaceName'), parameters('servicebusTopicName'))]"
+    }
+  }
+}
