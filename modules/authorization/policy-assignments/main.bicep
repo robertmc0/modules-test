@@ -97,7 +97,7 @@ resource policyAssignment 'Microsoft.Authorization/policyAssignments@2021-06-01'
   }
 }
 
-resource policyRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(identity)) {
+resource policyRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (identityType == 'SystemAssigned') {
   name: guid(policyAssignment.name, policyAssignment.type, policyAssignment.id)
   properties: {
     principalId: policyAssignment.identity.principalId
