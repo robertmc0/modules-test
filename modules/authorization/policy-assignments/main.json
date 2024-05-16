@@ -5,11 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "11922791265750986558"
+      "templateHash": "4313547496924199619"
     },
-    "name": "TODO: <module name>",
-    "description": "TODO: <module description>",
-    "owner": "TODO: <GitHub username of module owner>"
+    "name": "Policy Assignment Module",
+    "description": "This module deploys Microsoft.Authorization policyAssignments at the management group level.",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -120,7 +120,7 @@
     }
   },
   "variables": {
-    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
   "resources": [

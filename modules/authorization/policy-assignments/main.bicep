@@ -1,6 +1,6 @@
-metadata name = 'TODO: <module name>'
-metadata description = 'TODO: <module description>'
-metadata owner = 'TODO: <GitHub username of module owner>'
+metadata name = 'Policy Assignment Module'
+metadata description = 'This module deploys Microsoft.Authorization policyAssignments at the management group level.'
+metadata owner = 'Arinco'
 
 targetScope = 'managementGroup'
 
@@ -71,7 +71,7 @@ param parameters object = {}
 @sys.description('The ID of the policy definition or policy set definition being assigned.')
 param policyDefinitionId string
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
 var identity = identityType != 'None' ? {
   type: identityType

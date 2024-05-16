@@ -1,6 +1,6 @@
-# TODO: <module name>
+# Policy Assignment Module
 
-TODO: <module description>
+This module deploys Microsoft.Authorization policyAssignments at the management group level.
 
 ## Details
 
