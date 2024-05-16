@@ -1,0 +1,54 @@
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    persistCredentials: true
+    fetchDepth: 0
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "16.x"
+    displayName: Install Node.js
+
+  - script: |
+      npm install -g semver-compare-cli
+    displayName: Install semver-compare-cli
+
+  - task: AzurePowerShell@5
+    displayName: Get Changed Modules
+    inputs:
+      azureSubscription: REPLACE-ME-WITH-SVCP
+      ScriptType: FilePath
+      ScriptPath: ./scripts/azure-devops/get-changed-modules.ps1
+      ScriptArguments: -NewRevision $(Build.SourceVersion)
+      azurePowerShellVersion: LatestVersion
+
+  - task: AzurePowerShell@5
+    displayName: Create Tag
+    inputs:
+      azureSubscription: REPLACE-ME-WITH-SVCP
+      ScriptType: FilePath
+      ScriptPath: ./scripts/azure-devops/create-tag.ps1
+      ScriptArguments: -NewRevision $(Build.SourceVersion)
+      azurePowerShellVersion: LatestVersion
+
+  - task: AzurePowerShell@5
+    displayName: Publish Module
+    inputs:
+      azureSubscription: REPLACE-ME-WITH-SVCP
+      ScriptType: FilePath
+      ScriptPath: ./scripts/azure-devops/publish-module.ps1
+      ScriptArguments: -RegistryServer <insert-acr-uri>.azurecr.io # Update with your acr name
+      azurePowerShellVersion: LatestVersion
+
+  - task: AzurePowerShell@5
+    displayName: Refresh Module Table
+    inputs:
+      azureSubscription: REPLACE-ME-WITH-SVCP
+      ScriptType: FilePath
+      ScriptPath: ./scripts/azure-devops/refresh-module-table.ps1
+      azurePowerShellVersion: LatestVersion
