@@ -4,7 +4,13 @@ This module deploys Microsoft.Authorization policyAssignments at the management 
 
 ## Details
 
-{{Add detailed information about the module}}
+This module performs the following
+
+- Creates Microsoft.Authorization policyAssignments resource.
+
+| Resource Type | API Version |
+| :-- | :-- |
+| `Microsoft.Authorization/policyAssignments` | [2021-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policyassignments?pivots=deployment-language-bicep) |
 
 ## Parameters
 
