@@ -1,16 +1,10 @@
-# Policy Assignment Module
+# TODO: <module name>
 
-This module deploys Microsoft.Authorization policyAssignments at the management group level.
+TODO: <module description>
 
-## Description
+## Details
 
-This module performs the following
-
-- Creates Microsoft.Authorization policyAssignments resource.
-
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/policyAssignments` | [2021-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.authorization/2021-06-01/policyassignments?pivots=deployment-language-bicep) |
+{{Add detailed information about the module}}
 
 ## Parameters
 
@@ -30,11 +24,11 @@ This module performs the following
 
 ## Outputs
 
-| Name                      | Type   | Description                                       |
-| :------------------------ | :----: | :------------------------------------------------ |
-| name                      | string | The name of the policy assignment.                |
-| resourceId                | string | The resource ID of the policy assignment.         |
-| systemAssignedPrincipalId | string | The principal ID of the system assigned identity. |
+| Name                        | Type     | Description                                       |
+| :-------------------------- | :------: | :------------------------------------------------ |
+| `name`                      | `string` | The name of the policy assignment.                |
+| `resourceId`                | `string` | The resource ID of the policy assignment.         |
+| `systemAssignedPrincipalId` | `string` | The principal ID of the system assigned identity. |
 
 ## Examples
 

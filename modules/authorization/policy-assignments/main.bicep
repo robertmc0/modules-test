@@ -1,3 +1,7 @@
+metadata name = 'TODO: <module name>'
+metadata description = 'TODO: <module description>'
+metadata owner = 'TODO: <GitHub username of module owner>'
+
 targetScope = 'managementGroup'
 
 @sys.description('Specifies the name of the policy assignment. Maximum length is 24 characters for management group scope.')
@@ -93,7 +97,7 @@ resource policyAssignment 'Microsoft.Authorization/policyAssignments@2021-06-01'
   }
 }
 
-resource policyRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(identity)) {
+resource policyRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (identityType == 'SystemAssigned') {
   name: guid(policyAssignment.name, policyAssignment.type, policyAssignment.id)
   properties: {
     principalId: policyAssignment.identity.principalId
