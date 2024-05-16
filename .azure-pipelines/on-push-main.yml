@@ -21,7 +21,7 @@ steps:
   - task: AzurePowerShell@5
     displayName: Get Changed Modules
     inputs:
-      azureSubscription: <INSERT SVP. Eg: aad-app-adr-pf-svcp>
+      azureSubscription: REPLACE-ME-WITH-SVCP
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/get-changed-modules.ps1
       ScriptArguments: -NewRevision $(Build.SourceVersion)
@@ -30,7 +30,7 @@ steps:
   - task: AzurePowerShell@5
     displayName: Create Tag
     inputs:
-      azureSubscription: <INSERT SVP. Eg: aad-app-adr-pf-svcp>
+      azureSubscription: REPLACE-ME-WITH-SVCP
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/create-tag.ps1
       ScriptArguments: -NewRevision $(Build.SourceVersion)
@@ -39,7 +39,7 @@ steps:
   - task: AzurePowerShell@5
     displayName: Publish Module
     inputs:
-      azureSubscription: <INSERT SVP. Eg: aad-app-adr-pf-svcp>
+      azureSubscription: REPLACE-ME-WITH-SVCP
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/publish-module.ps1
       ScriptArguments: -RegistryServer <insert-acr-uri>.azurecr.io # Update with your acr name
@@ -48,7 +48,7 @@ steps:
   - task: AzurePowerShell@5
     displayName: Refresh Module Table
     inputs:
-      azureSubscription: <INSERT SVP. Eg: aad-app-adr-pf-svcp>
+      azureSubscription: REPLACE-ME-WITH-SVCP
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/refresh-module-table.ps1
       azurePowerShellVersion: LatestVersion
