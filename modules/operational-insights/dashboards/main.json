@@ -6,8 +6,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "5534726632222856595"
-    }
+      "templateHash": "7078936142918063405"
+    },
+    "name": "Operational Insights Dashboard Module.",
+    "description": "This module deploys a Microsoft.Portal/dashboards resource.",
+    "owner": "Arinco"
   },
   "definitions": {
     "_2.AppInsightsTimeRange": {
@@ -525,6 +528,17 @@
     }
   ],
   "parameters": {
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -606,6 +620,7 @@
       "type": "Microsoft.Portal/dashboards",
       "apiVersion": "2020-09-01-preview",
       "name": "[parameters('name')]",
+      "tags": "[parameters('tags')]",
       "location": "[parameters('location')]",
       "properties": {
         "lenses": [
@@ -652,6 +667,9 @@
   "outputs": {
     "resourceId": {
       "type": "string",
+      "metadata": {
+        "description": "The resource ID of the dashboard."
+      },
       "value": "[resourceId('Microsoft.Portal/dashboards', parameters('name'))]"
     }
   }
