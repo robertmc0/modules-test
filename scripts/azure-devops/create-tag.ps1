@@ -53,10 +53,10 @@ semver-compare $newVersion $oldVersion
 if ($Tag -or $LASTEXITCODE -eq 1) {
   $Tag = if ($Tag) { $Tag } else { "$moduleName/$newVersion" }
   git tag $Tag
-  git push origin $Tag
-  if (!$?) {
-    throw "Failed to push tag $tag."
-  }
+  # git push origin $Tag
+  # if (!$?) {
+  #   throw "Failed to push tag $tag."
+  # }
   $tag | Out-File "$rootPath/.module-tag"
   Write-Host "Created tag $tag"
 }
