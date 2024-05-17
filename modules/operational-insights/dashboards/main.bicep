@@ -1,6 +1,19 @@
 import * as Types from './types.bicep'
 import * as Functions from './functions.bicep'
 
+metadata name = 'Operational Insights Dashboard Module.'
+metadata description = 'This module deploys a Microsoft.Portal/dashboards resource.'
+metadata owner = 'Arinco'
+
+@description('Optional. Resource tags.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
+param tags object = {}
+
 @description('Optional. The location for the dashboard.')
 param location string = resourceGroup().location
 
@@ -48,6 +61,7 @@ var parts = [
 
 resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
   name: name
+  tags: tags
   location: location
   properties: {
     lenses: [
