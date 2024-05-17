@@ -105,4 +105,5 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
   }
 }
 
+@description('The resource ID of the dashboard.')
 output resourceId string = dashboard.id
