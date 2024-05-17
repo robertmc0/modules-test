@@ -1,0 +1,658 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.27.1.19265",
+      "templateHash": "5534726632222856595"
+    }
+  },
+  "definitions": {
+    "_2.AppInsightsTimeRange": {
+      "type": "string",
+      "allowedValues": [
+        "P1D",
+        "P3D",
+        "P7D"
+      ],
+      "metadata": {
+        "description": "The time range for an Application Insights query.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.ChartType": {
+      "type": "string",
+      "allowedValues": [
+        "area",
+        "bar",
+        "line",
+        "scatter",
+        "table"
+      ],
+      "metadata": {
+        "description": "How a chart should be visually displayed.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.Filter": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "metadata": {
+            "description": "The key or property to filter on."
+          }
+        },
+        "operator": {
+          "$ref": "#/definitions/_2.PositiveInt",
+          "metadata": {
+            "description": "The operator to use for the filter. Often 0 for equals or 1 for not equals."
+          }
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "metadata": {
+            "description": "The values to apply the operator against for the given key or property."
+          }
+        }
+      },
+      "metadata": {
+        "description": "Describes how a given metric should be filtered.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.Filters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/_2.Filter"
+      },
+      "metadata": {
+        "description": "A collection of filters.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.Metric": {
+      "type": "object",
+      "properties": {
+        "resourceMetadata": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "name": {
+          "type": "string",
+          "metadata": {
+            "description": "The name of the metric within the namespace. See what is available within the associated namespace for more: https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/metrics-index"
+          }
+        },
+        "aggregationType": {
+          "$ref": "#/definitions/_2.PositiveInt",
+          "metadata": {
+            "description": "How the metric should be aggregated, such as sum or average. See what is available within the associated namespace for more: https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/metrics-index"
+          }
+        },
+        "namespace": {
+          "type": "string",
+          "metadata": {
+            "description": "The namespace associated to the metric. See: https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/metrics-index"
+          }
+        },
+        "metricVisualization": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name to display."
+              }
+            },
+            "resourceDisplayName": {
+              "type": "string",
+              "metadata": {
+                "description": "The Resource Group to display."
+              }
+            }
+          },
+          "metadata": {
+            "description": "How the metric should be displayed."
+          }
+        }
+      },
+      "metadata": {
+        "description": "Describes a given metric within Azure Monitor.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.MetricGrouping": {
+      "type": "object",
+      "properties": {
+        "dimension": {
+          "type": "string",
+          "metadata": {
+            "description": "The dimension to split on. Often a property of the data like a cloud role name or status code."
+          }
+        },
+        "sort": {
+          "$ref": "#/definitions/_2.PositiveInt",
+          "metadata": {
+            "description": "The sorting order of the split data. Often 1 for ascending or 2 for descending."
+          }
+        },
+        "top": {
+          "$ref": "#/definitions/_2.PositiveInt",
+          "metadata": {
+            "description": "The maximum number of split entities to graph."
+          }
+        }
+      },
+      "metadata": {
+        "description": "Describes how a given metric should be split or grouped by.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.Metrics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/_2.Metric"
+      },
+      "metadata": {
+        "description": "A collection of metrics.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.Position": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/definitions/_2.PositiveInt"
+        },
+        "y": {
+          "$ref": "#/definitions/_2.PositiveInt"
+        },
+        "rowSpan": {
+          "$ref": "#/definitions/_2.PositiveInt"
+        },
+        "colSpan": {
+          "$ref": "#/definitions/_2.PositiveInt"
+        }
+      },
+      "metadata": {
+        "description": "The position for a tile within the dashboard.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.Positions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/_2.Position"
+      },
+      "metadata": {
+        "description": "A collection of positions.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.PositiveInt": {
+      "type": "int",
+      "minValue": 0,
+      "metadata": {
+        "description": "A positive integer.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.Tile": {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "type": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "object"
+        }
+      },
+      "metadata": {
+        "description": "An individual tile (also known as a part) within the dashboard.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    },
+    "_2.Tiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/_2.Tile"
+      },
+      "metadata": {
+        "description": "A collection of tiles.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "namespace": "_1",
+      "members": {
+        "ChartTypeToInt": {
+          "parameters": [
+            {
+              "$ref": "#/definitions/_2.ChartType",
+              "name": "type"
+            }
+          ],
+          "output": {
+            "type": "int",
+            "value": "[if(equals(parameters('type'), 'line'), 0, if(equals(parameters('type'), 'bar'), 1, if(equals(parameters('type'), 'table'), 5, if(equals(parameters('type'), 'area'), 3, if(equals(parameters('type'), 'scatter'), 4, 0)))))]"
+          },
+          "metadata": {
+            "description": "Converts a ChartType to the format expected by Azure Monitor.",
+            "__bicep_imported_from!": {
+              "sourceTemplate": "functions.bicep"
+            }
+          }
+        },
+        "createApplicationInsightsTile": {
+          "parameters": [
+            {
+              "$ref": "#/definitions/_2.AppInsightsTimeRange",
+              "name": "timeRange"
+            },
+            {
+              "type": "string",
+              "name": "query"
+            },
+            {
+              "type": "string",
+              "name": "title"
+            },
+            {
+              "type": "string",
+              "name": "subTitle"
+            },
+            {
+              "type": "string",
+              "name": "scope"
+            }
+          ],
+          "output": {
+            "$ref": "#/definitions/_2.Tile",
+            "value": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "[format('{0}', parameters('scope'))]"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "[guid(parameters('query'))]",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": 2,
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "[parameters('timeRange')]",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "[parameters('query')]",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "[parameters('subTitle')]",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "GridColumnsWidth": {},
+                  "Query": "[parameters('query')]",
+                  "PartTitle": "[parameters('title')]"
+                }
+              }
+            }
+          },
+          "metadata": {
+            "description": "Creates a new Application Insights tile. This tile will display the results of the provided query.",
+            "__bicep_imported_from!": {
+              "sourceTemplate": "functions.bicep"
+            }
+          }
+        },
+        "createAzureMonitorTile": {
+          "parameters": [
+            {
+              "type": "string",
+              "name": "title"
+            },
+            {
+              "$ref": "#/definitions/_2.ChartType",
+              "name": "chartType"
+            },
+            {
+              "$ref": "#/definitions/_2.Metrics",
+              "name": "metrics"
+            },
+            {
+              "$ref": "#/definitions/_2.Filters",
+              "name": "filters"
+            },
+            {
+              "$ref": "#/definitions/_2.MetricGrouping",
+              "nullable": true,
+              "name": "grouping"
+            }
+          ],
+          "output": {
+            "$ref": "#/definitions/_2.Tile",
+            "value": {
+              "inputs": [
+                {
+                  "name": "options",
+                  "isOptional": true
+                },
+                {
+                  "name": "sharedTimeRange",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+              "settings": {
+                "content": {
+                  "options": {
+                    "chart": {
+                      "metrics": "[parameters('metrics')]",
+                      "title": "[parameters('title')]",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": "[_1.ChartTypeToInt(parameters('chartType'))]",
+                        "legendVisualization": {
+                          "isVisible": true,
+                          "position": 2,
+                          "hideHoverCard": false,
+                          "hideLabelNames": false
+                        },
+                        "axisVisualization": {
+                          "x": {
+                            "isVisible": true,
+                            "axisType": 2
+                          },
+                          "y": {
+                            "isVisible": true,
+                            "axisType": 1
+                          }
+                        },
+                        "disablePinning": true
+                      },
+                      "grouping": "[coalesce(parameters('grouping'), createObject())]",
+                      "filterCollection": {
+                        "filters": "[parameters('filters')]"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "metadata": {
+            "description": "Creates a new Azure Monitor metrics tile. This tile is used to visualize metrics data for most Azure resources.",
+            "__bicep_imported_from!": {
+              "sourceTemplate": "functions.bicep"
+            }
+          }
+        },
+        "createMiscellaneousTile": {
+          "parameters": [
+            {
+              "type": "string",
+              "name": "type"
+            },
+            {
+              "type": "array",
+              "prefixItems": [],
+              "items": false,
+              "name": "inputs"
+            },
+            {
+              "type": "object",
+              "name": "settings"
+            }
+          ],
+          "output": {
+            "$ref": "#/definitions/_2.Tile",
+            "value": {
+              "inputs": "[parameters('inputs')]",
+              "type": "[parameters('type')]",
+              "settings": "[parameters('settings')]"
+            }
+          },
+          "metadata": {
+            "description": "Creates a miscellaneous tile. This is an escape hatch for when the built-in tiles are not enough and more customization is needed.",
+            "__bicep_imported_from!": {
+              "sourceTemplate": "functions.bicep"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Optional. The location for the dashboard."
+      }
+    },
+    "tilePositions": {
+      "$ref": "#/definitions/_2.Positions",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. A given set of tile positions that overrides the default layout."
+      }
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name for the dashboard."
+      }
+    },
+    "tiles": {
+      "$ref": "#/definitions/_2.Tiles",
+      "metadata": {
+        "description": "The array of tiles that make up the Dashboard visually."
+      }
+    },
+    "rowCount": {
+      "$ref": "#/definitions/_2.PositiveInt",
+      "defaultValue": 3,
+      "metadata": {
+        "description": "The maximum number of tiles per row in the dashboard."
+      }
+    },
+    "columnCount": {
+      "$ref": "#/definitions/_2.PositiveInt",
+      "defaultValue": 3,
+      "metadata": {
+        "description": "The maximum number of tiles per column in the dashboard."
+      }
+    },
+    "tileWidth": {
+      "$ref": "#/definitions/_2.PositiveInt",
+      "defaultValue": 6,
+      "metadata": {
+        "description": "The width of each tile."
+      }
+    },
+    "tileHeight": {
+      "$ref": "#/definitions/_2.PositiveInt",
+      "defaultValue": 4,
+      "metadata": {
+        "description": "The height of each tile."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "cells",
+        "count": "[length(range(0, mul(parameters('rowCount'), parameters('columnCount'))))]",
+        "input": {
+          "row": "[div(range(0, mul(parameters('rowCount'), parameters('columnCount')))[copyIndex('cells')], parameters('columnCount'))]",
+          "col": "[mod(range(0, mul(parameters('rowCount'), parameters('columnCount')))[copyIndex('cells')], parameters('columnCount'))]",
+          "index": "[range(0, mul(parameters('rowCount'), parameters('columnCount')))[copyIndex('cells')]]"
+        }
+      },
+      {
+        "name": "parts",
+        "count": "[length(parameters('tiles'))]",
+        "input": {
+          "position": "[coalesce(tryGet(parameters('tilePositions'), copyIndex('parts')), createObject('x', mul(variables('cells')[copyIndex('parts')].col, parameters('tileWidth')), 'y', mul(variables('cells')[copyIndex('parts')].row, parameters('tileHeight')), 'rowSpan', parameters('tileHeight'), 'colSpan', parameters('tileWidth')))]",
+          "metadata": "[parameters('tiles')[copyIndex('parts')]]"
+        }
+      }
+    ]
+  },
+  "resources": {
+    "dashboard": {
+      "type": "Microsoft.Portal/dashboards",
+      "apiVersion": "2020-09-01-preview",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "lenses": [
+          {
+            "order": 0,
+            "parts": "[variables('parts')]"
+          }
+        ],
+        "metadata": {
+          "model": {
+            "timeRange": {
+              "value": {
+                "relative": {
+                  "duration": 24,
+                  "timeUnit": 1
+                }
+              },
+              "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+            },
+            "filterLocale": {
+              "value": "en-us"
+            },
+            "filters": {
+              "value": {
+                "MsPortalFx_TimeRange": {
+                  "model": {
+                    "format": "utc",
+                    "granularity": "auto",
+                    "relative": "24h"
+                  },
+                  "displayCache": {
+                    "name": "UTC Time",
+                    "value": "Past 24 hours"
+                  },
+                  "filteredPartIds": []
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "outputs": {
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Portal/dashboards', parameters('name'))]"
+    }
+  }
+}
