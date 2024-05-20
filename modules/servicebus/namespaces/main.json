@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "18131832213906164752"
+      "templateHash": "11358134486380943947"
     },
     "name": "Servicebus Module",
     "description": "This module deploys Servicebus Namespace resource.",
@@ -110,7 +110,7 @@
     },
     "premiumMessagingPartitions": {
       "type": "int",
-      "defaultValue": 1,
+      "defaultValue": 0,
       "metadata": {
         "description": "Optional. The number of partitions of a Service Bus namespace. Attribute applicable for premium servicebus."
       }
