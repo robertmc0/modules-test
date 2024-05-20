@@ -29,3 +29,7 @@ This module deploys a topic to an existing Azure servicebus namespace. The topic
 | :----------- | :------: | :--------------------------- |
 | `name`       | `string` | The name of the Topic        |
 | `resourceId` | `string` | The resource ID of the Topic |
+
+## Examples
+
+Please see the [Bicep Tests](test/main.test.bicep) file for examples.

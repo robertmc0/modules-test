@@ -32,3 +32,7 @@ This module deploys a subscription to an existing Azure Servicebus namespace top
 | :----------- | :------: | :---------------------------------------- |
 | `name`       | `string` | The name of the Topic subscription        |
 | `resourceId` | `string` | The resource ID of the Topic subscription |
+
+## Examples
+
+Please see the [Bicep Tests](test/main.test.bicep) file for examples.

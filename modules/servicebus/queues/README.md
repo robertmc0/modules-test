@@ -35,3 +35,7 @@ This modules deploys queue to an existing Azure servicebus namespace.
 | :----------- | :------: | :--------------------------- |
 | `name`       | `string` | The name of the Queue        |
 | `resourceId` | `string` | The resource ID of the Queue |
+
+## Examples
+
+Please see the [Bicep Tests](test/main.test.bicep) file for examples.

@@ -36,4 +36,8 @@ The namespace is created without any topic or queues.
 | Name         | Type     | Description                                 |
 | :----------- | :------: | :------------------------------------------ |
 | `name`       | `string` | The name of the Servicebus Namespace        |
-| `resourceId` | `string` | The resource ID of the Servicebus Namespace 
+| `resourceId` | `string` | The resource ID of the Servicebus Namespace |
+
+## Examples
+
+Please see the [Bicep Tests](test/main.test.bicep) file for examples.

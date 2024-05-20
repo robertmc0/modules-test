@@ -23,7 +23,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
 }
 
 resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
-  name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsStorageAccount', location)}'
+  name: '${shortIdentifier}tstdia${uniqueString(deployment().name, 'diagnosticsStorageAccount', location)}'
   location: location
   kind: 'StorageV2'
   sku: {
