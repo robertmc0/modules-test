@@ -1,0 +1,189 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.27.1.19265",
+      "templateHash": "9426639489056920903"
+    },
+    "name": "Servicebus Topic Module",
+    "description": "This module deploys Microsoft.ServiceBus namespaces/queues",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "servicebusNamespaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "The servicebus namespace name."
+      }
+    },
+    "autoDeleteOnIdle": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes."
+      }
+    },
+    "deadLetteringOnMessageExpiration": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether a queue has dead letter support when a message expires."
+      }
+    },
+    "defaultMessageTimeToLive": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional. ISO 8601 Default message timespan to live value. "
+      }
+    },
+    "enableBatchedOperations": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether server-side batched operations are enabled."
+      }
+    },
+    "enableExpress": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether Express Entities are enabled"
+      }
+    },
+    "duplicateDetectionHistoryTimeWindow": {
+      "type": "string",
+      "defaultValue": "PT10M",
+      "metadata": {
+        "description": "Optional. ISO 8601 timeSpan structure that defines the duration of the duplicate detection history. The default value is 10 minutes."
+      }
+    },
+    "enablePartitioning": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether the topic to be partitioned across multiple message brokers is enabled."
+      }
+    },
+    "maxMessageSizeInKilobytes": {
+      "type": "int",
+      "defaultValue": 1024,
+      "metadata": {
+        "description": "Optonal. Maximum size (in KB) of the message payload that can be accepted by the topic. This property is only used in Premium today and default is 1024."
+      }
+    },
+    "forwardDeadLetteredMessagesTo": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Queue/Topic name to forward the Dead Letter message"
+      }
+    },
+    "forwardTo": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Queue/Topic name to forward the messages."
+      }
+    },
+    "maxSizeInMegabytes": {
+      "type": "int",
+      "defaultValue": 1024,
+      "metadata": {
+        "description": "Optional. Maximum size of the topic in megabytes, which is the size of the memory allocated for the topic. Default is 1024."
+      }
+    },
+    "requiresDuplicateDetection": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value indicating if this topic requires duplicate detection."
+      }
+    },
+    "status": {
+      "type": "string",
+      "defaultValue": "Active",
+      "allowedValues": [
+        "Active",
+        "Creating",
+        "Deleting",
+        "Disabled",
+        "ReceiveDisabled",
+        "Renaming",
+        "Restoring",
+        "SendDisabled",
+        "Unknown"
+      ],
+      "metadata": {
+        "description": "Optional. Enumerates the possible values for the status of a messaging entity."
+      }
+    },
+    "lockDuration": {
+      "type": "string",
+      "defaultValue": "PT1M",
+      "metadata": {
+        "description": "Optional. ISO 8061 lock duration timespan for the subscription. The default value is 1 minute."
+      }
+    },
+    "maxDeliveryCount": {
+      "type": "int",
+      "metadata": {
+        "description": "The maximum delivery count. A message is automatically deadlettered after this number of deliveries."
+      }
+    },
+    "requiresSession": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Value that indicates whether the queue supports the concept of session."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ServiceBus/namespaces/queues",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[format('{0}/{1}', parameters('servicebusNamespaceName'), parameters('name'))]",
+      "properties": {
+        "autoDeleteOnIdle": "[parameters('autoDeleteOnIdle')]",
+        "deadLetteringOnMessageExpiration": "[parameters('deadLetteringOnMessageExpiration')]",
+        "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+        "duplicateDetectionHistoryTimeWindow": "[parameters('duplicateDetectionHistoryTimeWindow')]",
+        "enableBatchedOperations": "[parameters('enableBatchedOperations')]",
+        "enableExpress": "[parameters('enableExpress')]",
+        "enablePartitioning": "[parameters('enablePartitioning')]",
+        "forwardDeadLetteredMessagesTo": "[if(empty(parameters('forwardDeadLetteredMessagesTo')), null(), parameters('forwardDeadLetteredMessagesTo'))]",
+        "forwardTo": "[if(empty(parameters('forwardTo')), null(), parameters('forwardTo'))]",
+        "lockDuration": "[parameters('lockDuration')]",
+        "maxDeliveryCount": "[parameters('maxDeliveryCount')]",
+        "maxMessageSizeInKilobytes": "[if(equals(reference(resourceId('Microsoft.ServiceBus/namespaces', parameters('servicebusNamespaceName')), '2022-10-01-preview', 'full').sku, 'Premium'), parameters('maxMessageSizeInKilobytes'), null())]",
+        "maxSizeInMegabytes": "[parameters('maxSizeInMegabytes')]",
+        "requiresDuplicateDetection": "[parameters('requiresDuplicateDetection')]",
+        "requiresSession": "[parameters('requiresSession')]",
+        "status": "[parameters('status')]"
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Queue"
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the Queue"
+      },
+      "value": "[resourceId('Microsoft.ServiceBus/namespaces/queues', parameters('servicebusNamespaceName'), parameters('name'))]"
+    }
+  }
+}

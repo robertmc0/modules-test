@@ -62,7 +62,7 @@ resource servicebusTopic 'Microsoft.ServiceBus/namespaces/topics@2022-10-01-prev
     enableBatchedOperations: enableBatchedOperations
     enableExpress: enableExpress
     enablePartitioning: enablePartitioning
-    maxMessageSizeInKilobytes: servicebusNamespace.sku=='Premium'? maxMessageSizeInKilobytes:null
+    maxMessageSizeInKilobytes: servicebusNamespace.sku == 'Premium' ? maxMessageSizeInKilobytes : null
     maxSizeInMegabytes: maxSizeInMegabytes
     requiresDuplicateDetection: requiresDuplicateDetection
     status: status
@@ -70,8 +70,8 @@ resource servicebusTopic 'Microsoft.ServiceBus/namespaces/topics@2022-10-01-prev
   }
 }
 
-@description('The name of the Servicebus Namespace')
-output servicebusName string = servicebusNamespace.name
-
 @description('The name of the Topic')
 output name string = servicebusTopic.name
+
+@description('The resource ID of the Topic')
+output resourceId string = servicebusTopic.id

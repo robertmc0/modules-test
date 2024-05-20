@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "9673689817586760909"
+      "templateHash": "4029809249872283036"
     },
     "name": "Servicebus Topic Module",
     "description": "This module deploys Microsoft.ServiceBus namespaces/topics",
@@ -124,19 +124,19 @@
     }
   ],
   "outputs": {
-    "servicebusName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the Servicebus Namespace"
-      },
-      "value": "[parameters('servicebusNamespaceName')]"
-    },
     "name": {
       "type": "string",
       "metadata": {
         "description": "The name of the Topic"
       },
       "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the Topic"
+      },
+      "value": "[resourceId('Microsoft.ServiceBus/namespaces/topics', parameters('servicebusNamespaceName'), parameters('name'))]"
     }
   }
 }

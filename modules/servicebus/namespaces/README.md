@@ -33,8 +33,7 @@ The namespace is created without any topic or queues.
 
 ## Outputs
 
-| Name                | Type     | Description                                                   |
-| :------------------ | :------: | :------------------------------------------------------------ |
-| `name`              | `string` | The name of the Servicebus Namespace                          |
-| `resourceId`        | `string` | The resource ID of the Servicebus Namespace                   |
-| `resourceGroupName` | `string` | The resource group the Servicebus Namespace was deployed into |
+| Name         | Type     | Description                                 |
+| :----------- | :------: | :------------------------------------------ |
+| `name`       | `string` | The name of the Servicebus Namespace        |
+| `resourceId` | `string` | The resource ID of the Servicebus Namespace 

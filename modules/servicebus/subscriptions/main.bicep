@@ -81,8 +81,8 @@ resource topicSubscription 'Microsoft.ServiceBus/namespaces/topics/subscriptions
   }
 }
 
-@description('The name of the topic subscription')
-output servicebusName string = topicSubscription.name
+@description('The name of the Topic subscription')
+output name string = topicSubscription.name
 
-@description('The name of the Topic')
-output name string = servicebusTopic.name
+@description('The resource ID of the Topic subscription')
+output resourceId string = topicSubscription.id

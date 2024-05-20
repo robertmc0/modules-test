@@ -28,7 +28,7 @@ This module deploys a subscription to an existing Azure Servicebus namespace top
 
 ## Outputs
 
-| Name             | Type     | Description                        |
-| :--------------- | :------: | :--------------------------------- |
-| `servicebusName` | `string` | The name of the topic subscription |
-| `name`           | `string` | The name of the Topic              |
+| Name         | Type     | Description                               |
+| :----------- | :------: | :---------------------------------------- |
+| `name`       | `string` | The name of the Topic subscription        |
+| `resourceId` | `string` | The resource ID of the Topic subscription |

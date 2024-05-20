@@ -4,7 +4,7 @@ This module deploys Microsoft.ServiceBus namespaces/topics
 
 ## Details
 
-This module deploys a topic to an existing servicebus namespace. The topic is deployed with no subscriptions.
+This module deploys a topic to an existing Azure servicebus namespace. The topic is deployed with no subscriptions.
 
 ## Parameters
 
@@ -25,7 +25,7 @@ This module deploys a topic to an existing servicebus namespace. The topic is de
 
 ## Outputs
 
-| Name             | Type     | Description                          |
-| :--------------- | :------: | :----------------------------------- |
-| `servicebusName` | `string` | The name of the Servicebus Namespace |
-| `name`           | `string` | The name of the Topic                |
+| Name         | Type     | Description                  |
+| :----------- | :------: | :--------------------------- |
+| `name`       | `string` | The name of the Topic        |
+| `resourceId` | `string` | The resource ID of the Topic |

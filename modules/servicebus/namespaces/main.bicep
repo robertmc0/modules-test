@@ -166,6 +166,3 @@ output name string = servicebusNamespace.name
 
 @description('The resource ID of the Servicebus Namespace')
 output resourceId string = servicebusNamespace.id
-
-@description('The resource group the Servicebus Namespace was deployed into')
-output resourceGroupName string = resourceGroup().name

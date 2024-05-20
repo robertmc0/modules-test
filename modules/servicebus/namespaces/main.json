@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "11358134486380943947"
+      "templateHash": "3971733718954673901"
     },
     "name": "Servicebus Module",
     "description": "This module deploys Servicebus Namespace resource.",
@@ -256,13 +256,6 @@
         "description": "The resource ID of the Servicebus Namespace"
       },
       "value": "[resourceId('Microsoft.ServiceBus/namespaces', parameters('name'))]"
-    },
-    "resourceGroupName": {
-      "type": "string",
-      "metadata": {
-        "description": "The resource group the Servicebus Namespace was deployed into"
-      },
-      "value": "[resourceGroup().name]"
     }
   }
 }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "1806053010923446882"
+      "templateHash": "11991370983530483510"
     },
     "name": "Servicebus Topic Module",
     "description": "This module deploys Microsoft.ServiceBus namespaces/topics/subscription",
@@ -146,19 +146,19 @@
     }
   ],
   "outputs": {
-    "servicebusName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the topic subscription"
-      },
-      "value": "[parameters('name')]"
-    },
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of the Topic"
+        "description": "The name of the Topic subscription"
       },
-      "value": "[format('{0}/{1}', parameters('servicebusNamespaceName'), parameters('servicebusTopicName'))]"
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the Topic subscription"
+      },
+      "value": "[resourceId('Microsoft.ServiceBus/namespaces/topics/subscriptions', split(format('{0}/{1}', parameters('servicebusNamespaceName'), parameters('servicebusTopicName')), '/')[0], split(format('{0}/{1}', parameters('servicebusNamespaceName'), parameters('servicebusTopicName')), '/')[1], parameters('name'))]"
     }
   }
 }
