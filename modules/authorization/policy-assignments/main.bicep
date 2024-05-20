@@ -1,3 +1,7 @@
+metadata name = 'Policy Assignment Module'
+metadata description = 'This module deploys Microsoft.Authorization policyAssignments at the management group level.'
+metadata owner = 'Arinco'
+
 targetScope = 'managementGroup'
 
 @sys.description('Specifies the name of the policy assignment. Maximum length is 24 characters for management group scope.')
@@ -67,7 +71,7 @@ param parameters object = {}
 @sys.description('The ID of the policy definition or policy set definition being assigned.')
 param policyDefinitionId string
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
 var identity = identityType != 'None' ? {
   type: identityType
@@ -93,7 +97,7 @@ resource policyAssignment 'Microsoft.Authorization/policyAssignments@2021-06-01'
   }
 }
 
-resource policyRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(identity)) {
+resource policyRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (identityType == 'SystemAssigned') {
   name: guid(policyAssignment.name, policyAssignment.type, policyAssignment.id)
   properties: {
     principalId: policyAssignment.identity.principalId

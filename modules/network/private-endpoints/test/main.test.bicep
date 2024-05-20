@@ -11,6 +11,24 @@ param shortIdentifier string = 'arn'
 
 var privateDnsZoneDns = 'privatelink.vaultcore.azure.net'
 
+var privateDnsZoneDnsMultipleZones = [
+  'privatelink.analysis.windows.net'
+  'privatelink.pbidedicated.windows.net'
+  'privatelink.prod.powerquery.microsoft.com'
+]
+
+var privateDnsZoneDnsMultipleSubResourceTypes = [
+  'privatelink.blob.core.windows.net'
+  'privatelink.queue.core.windows.net'
+  'privatelink.table.core.windows.net'
+]
+
+var targetSubResourceTypes = [
+  'blob'
+  'queue'
+  'table'
+]
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -34,8 +52,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   sku: {
     name: 'Standard_LRS'
   }
-  properties: {
-  }
+  properties: {}
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
@@ -61,7 +78,30 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDnsZoneDns
   location: 'global'
+  properties: {}
+}
+
+resource privateDnsZonesMultipleZones 'Microsoft.Network/privateDnsZones@2020-06-01' = [
+  for privateZone in privateDnsZoneDnsMultipleZones: {
+    name: privateZone
+    location: 'global'
+    properties: {}
+  }
+]
+
+resource privateDnsZonesMultipleSubResourceTypes 'Microsoft.Network/privateDnsZones@2020-06-01' = [
+  for privateZone in privateDnsZoneDnsMultipleSubResourceTypes: {
+    name: privateZone
+    location: 'global'
+    properties: {}
+  }
+]
+
+resource privateLinkServicePowerBi 'Microsoft.PowerBI/privateLinkServicesForPowerBI@2020-06-01' = {
+  name: '${shortIdentifier}-tst-pls-${uniqueString(deployment().name, 'privateLinkService', location)}'
+  location: location
   properties: {
+    tenantId: tenant().tenantId
   }
 }
 
@@ -90,6 +130,40 @@ module privateEndpointWithDns '../main.bicep' = {
     targetSubResourceType: 'vault'
     subnetId: vnet.properties.subnets[0].id
     privateDnsZoneId: privateDnsZone.id
+  }
+}
+
+module privateEndpointWithMultipleDns '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-private-endpoint-multiple-dns'
+  params: {
+    location: location
+    resourcelock: 'CanNotDelete'
+    targetResourceId: privateLinkServicePowerBi.id
+    targetResourceName: privateLinkServicePowerBi.name
+    targetSubResourceType: 'tenant'
+    subnetId: vnet.properties.subnets[0].id
+    privateDnsZoneIds: [
+      privateDnsZonesMultipleZones[0].id
+      privateDnsZonesMultipleZones[1].id
+      privateDnsZonesMultipleZones[2].id
+    ]
+  }
+}
+
+module privateEndpointWithMultipleSubResourceTypes '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-private-endpoint-multiple-subresource-types'
+  params: {
+    location: location
+    resourcelock: 'CanNotDelete'
+    targetResourceId: storage.id
+    targetResourceName: storage.name
+    targetSubResourceTypes: targetSubResourceTypes
+    subnetId: vnet.properties.subnets[0].id
+    privateDnsZoneIds: [
+      privateDnsZonesMultipleSubResourceTypes[0].id
+      privateDnsZonesMultipleSubResourceTypes[1].id
+      privateDnsZonesMultipleSubResourceTypes[2].id
+    ]
   }
 }
 
