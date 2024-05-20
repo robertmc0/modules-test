@@ -1,5 +1,5 @@
 metadata name = 'Servicebus Topic Module'
-metadata description = 'This module deploys Microsoft.ServiceBus namespaces/topics'
+metadata description = 'This module deploys Microsoft.ServiceBus namespaces/topics/subscription'
 metadata owner = 'Arinco'
 
 @description('The resource name.')

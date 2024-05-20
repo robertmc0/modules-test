@@ -5,10 +5,10 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "9389118522249113966"
+      "templateHash": "1806053010923446882"
     },
     "name": "Servicebus Topic Module",
-    "description": "This module deploys Microsoft.ServiceBus namespaces/topics",
+    "description": "This module deploys Microsoft.ServiceBus namespaces/topics/subscription",
     "owner": "Arinco"
   },
   "parameters": {
