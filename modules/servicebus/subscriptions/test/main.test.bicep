@@ -12,28 +12,8 @@ param shortIdentifier string = 'arn'
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-var serviceBusNamespaceName = '${shortIdentifier}-sbn-${uniqueString(deployment().name, 'servicebus', location)}'
-
-module servicebusMin '../../namespaces/main.bicep' = {
-  name: '${uniqueString(deployment().name, location)}-min-sbn'
-  params: {
-    name: serviceBusNamespaceName
-    location: location
-  }
-}
-
-module topic '../../topics/main.bicep' = {
-  name: '${uniqueString(deployment().name, location)}-topic'
-  params: {
-    name: '${uniqueString(deployment().name, location)}-topic'
-    autoDeleteOnIdle: 'PT5M'
-    defaultMessageTimeToLive: 'PT5M'
-    servicebusNamespaceName: serviceBusNamespaceName
-  }
-  dependsOn: [
-    servicebusMin
-  ]
-}
+var serviceBusNamespaceName = '${shortIdentifier}-sbn-servicebustest-aue'
+var serviceBusNamespaceTopicName = '${shortIdentifier}-servicebus-topic'
 
 /*======================================================================
 TEST EXECUTION
@@ -46,9 +26,6 @@ module subscription '../main.bicep' = {
     autoDeleteOnIdle: 'PT5M'
     servicebusNamespaceName: serviceBusNamespaceName
     maxDeliveryCount: 1
-    servicebusTopicName: '${uniqueString(deployment().name, location)}-topic'
+    servicebusTopicName: serviceBusNamespaceTopicName
   }
-  dependsOn: [
-    topic
-  ]
 }
