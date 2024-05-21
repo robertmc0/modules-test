@@ -12,15 +12,7 @@ param shortIdentifier string = 'arn'
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-var serviceBusNamespaceName = '${shortIdentifier}-sbn-${uniqueString(deployment().name, 'servicebus', location)}'
-
-module servicebusMin '../../namespaces/main.bicep' = {
-  name: '${uniqueString(deployment().name, location)}-min-sbn'
-  params: {
-    name: serviceBusNamespaceName
-    location: location
-  }
-}
+var serviceBusNamespaceName = '${shortIdentifier}-sb-servicebustest-aue'
 
 /*======================================================================
 TEST EXECUTION
@@ -34,7 +26,4 @@ module topic '../main.bicep' = {
     defaultMessageTimeToLive: 'PT5M'
     servicebusNamespaceName: serviceBusNamespaceName
   }
-  dependsOn: [
-    servicebusMin
-  ]
 }
