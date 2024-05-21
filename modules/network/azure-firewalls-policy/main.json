@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.18.4.5664",
-      "templateHash": "8872694488292429200"
-    }
+      "version": "0.26.54.24096",
+      "templateHash": "10976342885680919338"
+    },
+    "name": "Azure Firewall Policy Module",
+    "description": "This module deploys Microsoft.Network firewallPolicies",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -40,7 +43,7 @@
         "Premium"
       ],
       "metadata": {
-        "description": "Tier of an Azure Firewall."
+        "description": "Tier of the Azure Firewall Policy."
       }
     },
     "threatIntelMode": {
@@ -168,6 +171,7 @@
     }
   },
   "variables": {
+    "dnsProperties": "[if(equals(parameters('tier'), 'Basic'), null(), createObject('enableProxy', parameters('enableDnsProxy'), 'servers', parameters('customDnsServers')))]",
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
@@ -181,10 +185,7 @@
       "tags": "[parameters('tags')]",
       "identity": "[variables('identity')]",
       "properties": {
-        "dnsSettings": {
-          "enableProxy": "[parameters('enableDnsProxy')]",
-          "servers": "[parameters('customDnsServers')]"
-        },
+        "dnsSettings": "[variables('dnsProperties')]",
         "sku": {
           "tier": "[parameters('tier')]"
         },

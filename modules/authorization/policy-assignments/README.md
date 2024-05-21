@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Authorization policyAssignments at the management group level.
 
-## Description
+## Details
 
 This module performs the following
 
@@ -30,11 +30,11 @@ This module performs the following
 
 ## Outputs
 
-| Name                      | Type   | Description                                       |
-| :------------------------ | :----: | :------------------------------------------------ |
-| name                      | string | The name of the policy assignment.                |
-| resourceId                | string | The resource ID of the policy assignment.         |
-| systemAssignedPrincipalId | string | The principal ID of the system assigned identity. |
+| Name                        | Type     | Description                                       |
+| :-------------------------- | :------: | :------------------------------------------------ |
+| `name`                      | `string` | The name of the policy assignment.                |
+| `resourceId`                | `string` | The resource ID of the policy assignment.         |
+| `systemAssignedPrincipalId` | `string` | The principal ID of the system assigned identity. |
 
 ## Examples
 
