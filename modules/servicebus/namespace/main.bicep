@@ -67,11 +67,22 @@ param diagnosticMetricsToEnable array = [
 @description('Optional. The number of partitions of a Service Bus namespace. Attribute applicable for premium servicebus.')
 param premiumMessagingPartitions int = 0
 
+@description('Optional. The minimum TLS version for the cluster to support, e.g. 1.2')
+@allowed([
+  '1.0'
+  '1.1'
+  '1.2'
+])
+param minimumTlsVersion string = '1.2'
+
 @description('Optional. Diabled SAS Authentication.')
 param disableLocalAuthentication bool = false
 
 @description('Optional. Enable zone redundancy .')
 param enableZoneRedundancy bool = false
+
+@description('Optional. This determines if traffic is allowed over public network. By default it is false.')
+param publicNetworkAccess bool = false
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -129,6 +140,8 @@ resource servicebusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   identity: identity
   properties: {
     disableLocalAuth: disableLocalAuthentication
+    publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'
+    minimumTlsVersion: minimumTlsVersion
     premiumMessagingPartitions: premiumMessagingPartitions
     zoneRedundant: enableZoneRedundancy
   }

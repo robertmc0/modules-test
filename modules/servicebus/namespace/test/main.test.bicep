@@ -46,7 +46,7 @@ module servicebusMin '../main.bicep' = {
   }
 }
 
-module automationAccount '../main.bicep' = {
+module servicebusWithAdditionalSettings '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-sbn'
   params: {
     name: '${shortIdentifier}-sbn-${uniqueString(deployment().name, 'servicebus', location)}'
