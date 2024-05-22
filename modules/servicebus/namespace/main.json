@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "9428586158595862034"
+      "templateHash": "14072649709250050979"
     },
     "name": "Servicebus Module",
     "description": "This module deploys Servicebus Namespace resource.",
@@ -144,6 +144,10 @@
     "publicNetworkAccess": {
       "type": "string",
       "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
       "metadata": {
         "description": "Optional. This determines if traffic is allowed over public network. By default it is enabled."
       }

@@ -82,6 +82,10 @@ param disableLocalAuthentication bool = false
 param enableZoneRedundancy bool = false
 
 @description('Optional. This determines if traffic is allowed over public network. By default it is enabled.')
+@allowed([
+  'Enabled'
+  'Disabled'
+])
 param publicNetworkAccess string = 'Enabled'
 
 @description('Optional. Enable diagnostic logging.')
