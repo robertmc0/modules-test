@@ -75,7 +75,7 @@ param premiumMessagingPartitions int = 0
 ])
 param minimumTlsVersion string = '1.2'
 
-@description('Optional. Diabled SAS Authentication.')
+@description('Optional. Disabled SAS Authentication.')
 param disableLocalAuthentication bool = false
 
 @description('Optional. Enable zone redundancy .')
