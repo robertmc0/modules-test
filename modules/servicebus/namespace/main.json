@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "12162529804165568374"
+      "templateHash": "7543964956827067938"
     },
     "name": "Servicebus Module",
     "description": "This module deploys Servicebus Namespace resource.",
@@ -142,10 +142,10 @@
       }
     },
     "publicNetworkAccess": {
-      "type": "bool",
-      "defaultValue": false,
+      "type": "string",
+      "defaultValue": "Enabled",
       "metadata": {
-        "description": "Optional. This determines if traffic is allowed over public network. By default it is false."
+        "description": "Optional. This determines if traffic is allowed over public network. By default it is enabled."
       }
     },
     "enableDiagnostics": {
@@ -223,7 +223,7 @@
       "identity": "[variables('identity')]",
       "properties": {
         "disableLocalAuth": "[parameters('disableLocalAuthentication')]",
-        "publicNetworkAccess": "[if(parameters('publicNetworkAccess'), 'Enabled', 'Disabled')]",
+        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
         "minimumTlsVersion": "[parameters('minimumTlsVersion')]",
         "premiumMessagingPartitions": "[parameters('premiumMessagingPartitions')]",
         "zoneRedundant": "[parameters('enableZoneRedundancy')]"

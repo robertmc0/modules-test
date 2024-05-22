@@ -81,8 +81,8 @@ param disableLocalAuthentication bool = false
 @description('Optional. Enable zone redundancy .')
 param enableZoneRedundancy bool = false
 
-@description('Optional. This determines if traffic is allowed over public network. By default it is false.')
-param publicNetworkAccess bool = false
+@description('Optional. This determines if traffic is allowed over public network. By default it is enabled.')
+param publicNetworkAccess string = 'Enabled'
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -140,7 +140,7 @@ resource servicebusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   identity: identity
   properties: {
     disableLocalAuth: disableLocalAuthentication
-    publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'
+    publicNetworkAccess: publicNetworkAccess
     minimumTlsVersion: minimumTlsVersion
     premiumMessagingPartitions: premiumMessagingPartitions
     zoneRedundant: enableZoneRedundancy
