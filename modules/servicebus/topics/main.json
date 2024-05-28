@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "4029809249872283036"
+      "templateHash": "15477464340151869030"
     },
     "name": "Servicebus Topic Module",
     "description": "This module deploys Microsoft.ServiceBus namespaces/topics",
@@ -27,13 +27,13 @@
     "autoDeleteOnIdle": {
       "type": "string",
       "metadata": {
-        "description": "Optional. ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes."
+        "description": "ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes."
       }
     },
     "defaultMessageTimeToLive": {
       "type": "string",
       "metadata": {
-        "description": "Optional. ISO 8601 Default message timespan to live value. "
+        "description": "ISO 8601 Default message timespan to live value."
       }
     },
     "enableBatchedOperations": {
@@ -83,14 +83,8 @@
       "defaultValue": "Active",
       "allowedValues": [
         "Active",
-        "Creating",
-        "Deleting",
         "Disabled",
-        "ReceiveDisabled",
-        "Renaming",
-        "Restoring",
-        "SendDisabled",
-        "Unknown"
+        "ReceiveDisabled"
       ],
       "metadata": {
         "description": "Optional. Enumerates the possible values for the status of a messaging entity."

@@ -8,10 +8,10 @@ param name string
 @description('The servicebus namespace name.')
 param servicebusNamespaceName string
 
-@description('Optional. ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes.')
+@description('ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes.')
 param autoDeleteOnIdle string
 
-@description('Optional. ISO 8601 Default message timespan to live value. ')
+@description('ISO 8601 Default message timespan to live value.')
 param defaultMessageTimeToLive string
 
 @description('Optional. Value that indicates whether server-side batched operations are enabled.')
@@ -35,14 +35,8 @@ param requiresDuplicateDetection bool = false
 @description('Optional. Enumerates the possible values for the status of a messaging entity.')
 @allowed([
   'Active'
-  'Creating'
-  'Deleting'
   'Disabled'
   'ReceiveDisabled'
-  'Renaming'
-  'Restoring'
-  'SendDisabled'
-  'Unknown'
 ])
 param status string = 'Active'
 
