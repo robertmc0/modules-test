@@ -12,7 +12,7 @@ This modules deploys queue to an existing Azure servicebus namespace.
 | :------------------------------------ | :------: | :------: | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`                                | `string` | Yes      | The resource name.                                                                                                                                       |
 | `servicebusNamespaceName`             | `string` | Yes      | The servicebus namespace name.                                                                                                                           |
-| `autoDeleteOnIdle`                    | `string` | Yes      | Optional. ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes.                             |
+| `autoDeleteOnIdle`                    | `string` | Yes      | ISO 8601 timespan idle interval after which the topic is automatically deleted. The minimum duration is 5 minutes.                                       |
 | `deadLetteringOnMessageExpiration`    | `bool`   | No       | Optional. Value that indicates whether a queue has dead letter support when a message expires.                                                           |
 | `defaultMessageTimeToLive`            | `string` | Yes      | Optional. ISO 8601 Default message timespan to live value.                                                                                               |
 | `enableBatchedOperations`             | `bool`   | No       | Optional. Value that indicates whether server-side batched operations are enabled.                                                                       |
@@ -26,7 +26,7 @@ This modules deploys queue to an existing Azure servicebus namespace.
 | `requiresDuplicateDetection`          | `bool`   | No       | Optional. Value indicating if this topic requires duplicate detection.                                                                                   |
 | `status`                              | `string` | No       | Optional. Enumerates the possible values for the status of a messaging entity.                                                                           |
 | `lockDuration`                        | `string` | No       | Optional. ISO 8061 lock duration timespan for the subscription. The default value is 1 minute.                                                           |
-| `maxDeliveryCount`                    | `int`    | Yes      | The maximum delivery count. A message is automatically deadlettered after this number of deliveries.                                                     |
+| `maxDeliveryCount`                    | `int`    | No       | Optional. The maximum delivery count. A message is automatically deadlettered after this number of deliveries. Default value is 10.                      |
 | `requiresSession`                     | `bool`   | No       | Optional. Value that indicates whether the queue supports the concept of session.                                                                        |
 
 ## Outputs
