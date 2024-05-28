@@ -53,7 +53,7 @@ module topicfull '../main.bicep' = {
     maxSizeInMegabytes: 1024
     requiresDuplicateDetection: false
     maxMessageSizeInKilobytes: 1024
-    status: 'Active'
+    status: 'SendDisabled'
     supportOrdering: true
   }
   dependsOn: [

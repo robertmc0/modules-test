@@ -36,7 +36,7 @@ param requiresDuplicateDetection bool = false
 @allowed([
   'Active'
   'Disabled'
-  'ReceiveDisabled'
+  'SendDisabled'
 ])
 param status string = 'Active'
 
