@@ -40,7 +40,6 @@ param forwardTo string = ''
   'Active'
   'Disabled'
   'ReceiveDisabled'
-  'SendDisabled'
 ])
 param status string = 'Active'
 

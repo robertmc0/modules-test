@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "288763406353436761"
+      "templateHash": "2517411973740103491"
     },
     "name": "Servicebus Topic Module",
     "description": "This module deploys Microsoft.ServiceBus namespaces/topics/subscription",
@@ -91,8 +91,7 @@
       "allowedValues": [
         "Active",
         "Disabled",
-        "ReceiveDisabled",
-        "SendDisabled"
+        "ReceiveDisabled"
       ],
       "metadata": {
         "description": "Optional. Enumerates the possible values for the status of a messaging entity."

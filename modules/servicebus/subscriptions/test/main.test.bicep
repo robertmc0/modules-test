@@ -78,7 +78,7 @@ module subscriptionfull '../main.bicep' = {
     requiresSession: false
     duplicateDetectionHistoryTimeWindow: 'PT10M'
     forwardTo: serviceBusNamespaceDeadletterTopicName
-    status: 'Active'
+    status: 'ReceiveDisabled'
     servicebusNamespaceName: serviceBusNamespaceName
     servicebusTopicName: serviceBusNamespaceTopicName
   }
