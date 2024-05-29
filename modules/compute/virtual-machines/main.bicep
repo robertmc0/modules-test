@@ -289,21 +289,20 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2022-07-01' = [
   }
 ]
 
-resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-08-01' =
-  if (!empty(availabilitySetConfiguration)) {
-    name: !empty(availabilitySetConfiguration) ? availabilitySetConfiguration.name : 'placeholder'
-    location: location
-    tags: tags
-    sku: {
-      name: 'Aligned'
-    }
-    properties: {
-      platformFaultDomainCount: availabilitySetConfiguration.platformFaultDomainCount
-      platformUpdateDomainCount: availabilitySetConfiguration.platformUpdateDomainCount
-    }
+resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-08-01' = if (!empty(availabilitySetConfiguration)) {
+  name: !empty(availabilitySetConfiguration) ? availabilitySetConfiguration.name : 'placeholder'
+  location: location
+  tags: tags
+  sku: {
+    name: 'Aligned'
   }
+  properties: {
+    platformFaultDomainCount: availabilitySetConfiguration.platformFaultDomainCount
+    platformUpdateDomainCount: availabilitySetConfiguration.platformUpdateDomainCount
+  }
+}
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [
   for i in range(0, instanceCount): {
     dependsOn: [
       networkInterface
@@ -352,10 +351,12 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [
         }
         dataDisks: [
           for (disk, index) in dataDisks: {
-            name: '${name}${format('{0:D2}', i + 1)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
-            diskSizeGB: disk.diskSizeGB
+            name: (disk.createOption == 'Empty')
+              ? '${name}${format('{0:D2}', i + 1)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
+              : null
+            diskSizeGB: (disk.createOption == 'Empty') ? disk.diskSizeGB : null
             lun: index
-            caching: disk.caching
+            caching: (disk.createOption == 'Empty') ? disk.caching : null
             createOption: disk.createOption
             managedDisk: {
               id: (disk.createOption == 'Attach') ? disk.id : null
