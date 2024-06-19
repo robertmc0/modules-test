@@ -105,7 +105,7 @@ func createApplicationInsightsTile(timeRange Types.AppInsightsTimeRange, query s
 
 @export()
 @description('Creates a new Azure Monitor metrics tile. This tile is used to visualize metrics data for most Azure resources.')
-func createAzureMonitorTile(title string, chartType Types.ChartType, metrics Types.Metrics, filters Types.Filters, grouping Types.MetricGrouping?) Types.Tile => {
+func createAzureMonitorTile(title string, chartType Types.ChartType, metrics Types.Metrics, filters Types.Filters?, grouping Types.MetricGrouping?) Types.Tile => {
   inputs: [
     {
       name: 'options'
@@ -146,7 +146,7 @@ func createAzureMonitorTile(title string, chartType Types.ChartType, metrics Typ
           }
           grouping: grouping ?? {}
           filterCollection: {
-            filters: filters
+            filters: filters ?? []
           }
         }
       }

@@ -26,16 +26,16 @@ param name string
 @description('The array of tiles that make up the Dashboard visually.')
 param tiles Types.Tiles
 
-@description('The maximum number of tiles per row in the dashboard.')
+@description('Optional. The maximum number of tiles per row in the dashboard.')
 param rowCount Types.PositiveInt = 3
 
-@description('The maximum number of tiles per column in the dashboard.')
+@description('Optional. The maximum number of tiles per column in the dashboard.')
 param columnCount Types.PositiveInt = 3
 
-@description('The width of each tile.')
+@description('Optional. The width of each tile.')
 param tileWidth Types.PositiveInt = 6
 
-@description('The height of each tile.')
+@description('Optional. The height of each tile.')
 param tileHeight Types.PositiveInt = 4
 
 var cells = [

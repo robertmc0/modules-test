@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.27.1.19265",
-      "templateHash": "7078936142918063405"
+      "templateHash": "16473408287067347803"
     },
     "name": "Operational Insights Dashboard Module.",
     "description": "This module deploys a Microsoft.Portal/dashboards resource.",
@@ -426,6 +426,7 @@
             },
             {
               "$ref": "#/definitions/_2.Filters",
+              "nullable": true,
               "name": "filters"
             },
             {
@@ -477,7 +478,7 @@
                       },
                       "grouping": "[coalesce(parameters('grouping'), createObject())]",
                       "filterCollection": {
-                        "filters": "[parameters('filters')]"
+                        "filters": "[coalesce(parameters('filters'), createArray())]"
                       }
                     }
                   }
@@ -569,28 +570,28 @@
       "$ref": "#/definitions/_2.PositiveInt",
       "defaultValue": 3,
       "metadata": {
-        "description": "The maximum number of tiles per row in the dashboard."
+        "description": "Optional. The maximum number of tiles per row in the dashboard."
       }
     },
     "columnCount": {
       "$ref": "#/definitions/_2.PositiveInt",
       "defaultValue": 3,
       "metadata": {
-        "description": "The maximum number of tiles per column in the dashboard."
+        "description": "Optional. The maximum number of tiles per column in the dashboard."
       }
     },
     "tileWidth": {
       "$ref": "#/definitions/_2.PositiveInt",
       "defaultValue": 6,
       "metadata": {
-        "description": "The width of each tile."
+        "description": "Optional. The width of each tile."
       }
     },
     "tileHeight": {
       "$ref": "#/definitions/_2.PositiveInt",
       "defaultValue": 4,
       "metadata": {
-        "description": "The height of each tile."
+        "description": "Optional. The height of each tile."
       }
     }
   },

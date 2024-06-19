@@ -82,6 +82,7 @@ module dashboard '../main.bicep' = {
     tiles: [
       createApplicationInsightsTile('P1D', errorQuery, 'API Errors', 'Exceptions and error logs', appInsights.id)
       createAzureMonitorTile('Dead Lettered Messages', 'area', serviceBusMetrics, [], serviceBusMetricsGrouping)
+      createAzureMonitorTile('Dead Lettered Messages Without Filters or Groups', 'area', serviceBusMetrics, null, null)
     ]
   }
 }
