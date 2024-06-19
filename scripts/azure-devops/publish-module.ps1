@@ -8,9 +8,10 @@ param (
   $RegistryServer
 )
 
-Set-AzContext -Subscription "23716a32-0fec-43ef-ae01-e07cf2a764bc"
+Set-AzContext -Subscription "fb707578-8b68-48d4-9ffa-adff9699d0fb"
 
 $currentRef = git symbolic-ref --short HEAD
+Write-Host "Current reference: $currentRef"
 $rootPath = Get-Location
 
 if (!$RegistryServer) {
