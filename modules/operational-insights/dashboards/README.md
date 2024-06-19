@@ -4,9 +4,7 @@ This module deploys a Microsoft.Portal/dashboards resource.
 
 ## Details
 
-This module performs the following:
-
-- Creates a Microsoft.Portal/dashboards resource.
+{{Add detailed information about the module}}
 
 ## Parameters
 
@@ -32,4 +30,10 @@ This module performs the following:
 
 ### Example 1
 
-See [Tests File](test/main.test.bicep)
+```bicep
+```
+
+### Example 2
+
+```bicep
+```
