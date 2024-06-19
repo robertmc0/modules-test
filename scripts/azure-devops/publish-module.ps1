@@ -8,7 +8,8 @@ param (
   $RegistryServer
 )
 
-Set-AzContext -Subscription "fb707578-8b68-48d4-9ffa-adff9699d0fb"
+#Subsribtion ID of the Azure Container Registry
+Set-AzContext -Subscription "<replace with customer subscription id>"
 
 $currentRef = git symbolic-ref --short HEAD
 Write-Host "Current reference: $currentRef"
