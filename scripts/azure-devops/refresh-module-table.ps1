@@ -22,8 +22,8 @@ function ConvertTo-MarkdownTable {
   return $markdownTable
 }
 
-## Replace with your Customer's Azure DevOps URL1
-$devopsUrl = "https://dev.azure.com/mohammedshafayat/bicep-modules/_git/bicep-modules"
+## Replace with your Customer's Azure DevOps URL for modules folder. e.g. https://dev.azure.com/mohammedshafayat/_git/bicep-templates?path=/modules
+$devopsUrl = "https://dev.azure.com/contoso/Contoso/_git/Contoso-Modules?path=/modules"
 
 # Set the git configuration on devops agent. no need to replace with your own email and name
 git config --local user.email "you@example.com"
@@ -32,8 +32,7 @@ git config --local user.name "Your Name"
 git checkout main
 git checkout -b refreshmoduletable
 
-# $rootPath = Get-Location
-# Set-Location $rootPath
+
 
 # Get all subdirectories in the modules directory
 $moduleGroups = Get-ChildItem -Path "modules" -Directory
@@ -78,8 +77,7 @@ foreach ($moduleGroup in $moduleGroups) {
 # Convert the table data to a markdown table
 $newTable = ConvertTo-MarkdownTable -Data $tableData
 
-# Write the new table to the readmeupdate.md file
-# Set-Content -Path "readmeupdate.md" -Value $newTable
+# Update the README.md file with the new table
 Set-Content -Path "README.md" -Value $newTable
 
 Write-Host "Updated README.md"
@@ -104,10 +102,3 @@ Write-Host "Logged in to Azure DevOps $organizationUrl"
 az repos pr create --description "Refresh module table" --source-branch refreshmoduletable --target-branch main --title "Refresh module table" --auto-complete $true --merge-commit-message "refreshmoduletable branch merged to main" --delete-source-branch $true
 
 az devops logout
-
-
-# Write-Host "Creating pull request to refresh module table"
-
-# Get-AzResourceGroup
-
-# Write-Host "Successfully created pull request to refresh module table"

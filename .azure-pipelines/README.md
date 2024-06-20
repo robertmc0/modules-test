@@ -29,7 +29,8 @@ The pipeline will fail to run if either of these steps are missed are skipped/mi
     git merge arincoBicepModules/main
     ```
 
-5. Confirm that you can now see all the Arinco Modules on the local branch.
+5.  Confirm that you can now see all the Arinco Modules on the local branch. On line 25 of the refresh-module-table.ps1 table, add the customer's Devops Repo Url (e.g https://dev.azure.com/contoso/Contoso/_git/Contoso-Modules?path=/modules )
+
 
 6. Push the local branch to the customer's Devops Repo:
     ```
