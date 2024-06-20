@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.27.1.19265",
-      "templateHash": "16473408287067347803"
+      "version": "0.28.1.47646",
+      "templateHash": "3784311833603357151"
     },
     "name": "Operational Insights Dashboard Module.",
     "description": "This module deploys a Microsoft.Portal/dashboards resource.",
