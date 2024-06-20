@@ -142,6 +142,8 @@ param osStorageAccountType string
   storageAccountType: 'Specifies the storage account type for the managed disk.'
   diskSizeGB: 'Specifies the size of an empty data disk in gigabytes.'
   caching: 'Specifies the caching requirements. Accepted values are "None", "ReadOnly" or "ReadWrite".'
+  createOption: 'Specifies how the virtual machine should be created. Accepted values are "Attach", "Empty" or "FromImage".'
+  id: 'Optional, only needed when "createOption" are "Attach" then need to define the existing data disk by resource id.'
 })
 param dataDisks array = []
 
@@ -287,21 +289,20 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2022-07-01' = [
   }
 ]
 
-resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-08-01' =
-  if (!empty(availabilitySetConfiguration)) {
-    name: !empty(availabilitySetConfiguration) ? availabilitySetConfiguration.name : 'placeholder'
-    location: location
-    tags: tags
-    sku: {
-      name: 'Aligned'
-    }
-    properties: {
-      platformFaultDomainCount: availabilitySetConfiguration.platformFaultDomainCount
-      platformUpdateDomainCount: availabilitySetConfiguration.platformUpdateDomainCount
-    }
+resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-08-01' = if (!empty(availabilitySetConfiguration)) {
+  name: !empty(availabilitySetConfiguration) ? availabilitySetConfiguration.name : 'placeholder'
+  location: location
+  tags: tags
+  sku: {
+    name: 'Aligned'
   }
+  properties: {
+    platformFaultDomainCount: availabilitySetConfiguration.platformFaultDomainCount
+    platformUpdateDomainCount: availabilitySetConfiguration.platformUpdateDomainCount
+  }
+}
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [
   for i in range(0, instanceCount): {
     dependsOn: [
       networkInterface
@@ -350,13 +351,16 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = [
         }
         dataDisks: [
           for (disk, index) in dataDisks: {
-            name: '${name}${format('{0:D2}', i + 1)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
-            diskSizeGB: disk.diskSizeGB
+            name: (disk.createOption == 'Empty')
+              ? '${name}${format('{0:D2}', i + 1)}${dataDiskSuffix}${format('{0:D3}', index + 1)}'
+              : null
+            diskSizeGB: (disk.createOption == 'Empty') ? disk.diskSizeGB : null
             lun: index
-            caching: disk.caching
-            createOption: 'Empty'
+            caching: (disk.createOption == 'Empty') ? disk.caching : null
+            createOption: disk.createOption
             managedDisk: {
-              storageAccountType: disk.storageAccountType
+              id: (disk.createOption == 'Attach') ? disk.id : null
+              storageAccountType: !(disk.createOption == 'Attach') ? disk.storageAccountType : null
             }
           }
         ]
@@ -401,7 +405,7 @@ resource extension_monitoring 'Microsoft.Compute/virtualMachines/extensions@2022
   }
 ]
 
-resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = [
   for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
     parent: virtualMachine[i]
     dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
@@ -417,7 +421,7 @@ resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2022-0
     properties: {
       publisher: 'Microsoft.Azure.Monitoring.DependencyAgent'
       type: 'DependencyAgentWindows'
-      typeHandlerVersion: '9.5'
+      typeHandlerVersion: '9.10'
       autoUpgradeMinorVersion: true
     }
   }

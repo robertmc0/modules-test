@@ -27,11 +27,16 @@ Optional Parameters:
 - Tags. Needs to be a JSON formatted string. i.e "{'Owner':'Contoso','Cost Center':'2345-324'}"
 - ParallelisationFactor (A number, i.e. 15 - defaults to 30 if not set)
 
+## Pre-requisites
+Powershell 7 installed. Install from [here]([url](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4))
+
 ## Steps
 
-1. Open command prompt to the directory containing this README.
+1. Search for and open Powershell 7
+   
+1. Cd into the directory containing this README.
 
-2. If the command prompt does not have adminstration privelges, run the following script to ensure powershell can execute unsigned scripts.
+2. If the command prompt does not have adminstration privileges, run the following script to ensure powershell can execute unsigned scripts.
 
 ```powershell
 Set-ExecutionPolicy Unrestricted -Scope CurrentUser
