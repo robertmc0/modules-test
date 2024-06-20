@@ -30,12 +30,4 @@ This module deploys a Microsoft.Portal/dashboards resource.
 
 ### Example 1
 
-```bicep
-
-```
-
-### Example 2
-
-```bicep
-
-```
+See [Tests File](test/main.test.bicep)
