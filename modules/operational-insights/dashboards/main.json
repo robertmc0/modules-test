@@ -15,11 +15,7 @@
   "definitions": {
     "_2.AppInsightsTimeRange": {
       "type": "string",
-      "allowedValues": [
-        "P1D",
-        "P3D",
-        "P7D"
-      ],
+      "allowedValues": ["P1D", "P3D", "P7D"],
       "metadata": {
         "description": "The time range for an Application Insights query.",
         "__bicep_imported_from!": {
@@ -29,13 +25,7 @@
     },
     "_2.ChartType": {
       "type": "string",
-      "allowedValues": [
-        "area",
-        "bar",
-        "line",
-        "scatter",
-        "table"
-      ],
+      "allowedValues": ["area", "bar", "line", "scatter", "table"],
       "metadata": {
         "description": "How a chart should be visually displayed.",
         "__bicep_imported_from!": {
@@ -326,9 +316,7 @@
                 {
                   "name": "Scope",
                   "value": {
-                    "resourceIds": [
-                      "[format('{0}', parameters('scope'))]"
-                    ]
+                    "resourceIds": ["[format('{0}', parameters('scope'))]"]
                   },
                   "isOptional": true
                 },
