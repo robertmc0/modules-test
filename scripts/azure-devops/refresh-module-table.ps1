@@ -22,6 +22,9 @@ function ConvertTo-MarkdownTable {
   return $markdownTable
 }
 
+## Replace with your Customer's Azure DevOps URL1
+$devopsUrl = "https://dev.azure.com/mohammedshafayat/bicep-modules/_git/bicep-modules"
+
 # Set the git configuration on devops agent. no need to replace with your own email and name
 git config --local user.email "you@example.com"
 git config --local user.name "Your Name"
@@ -61,8 +64,7 @@ foreach ($moduleGroup in $moduleGroups) {
     $version = $tag -split '/' | Select-Object -Last 1
 
     # Create the module root URL
-    ## Replace with your Customer's Azure DevOps URL up the modules folder in the repository
-    $moduleRootUrl = "https://dev.azure.com/mohammedshafayat/bicep-modules/_git/bicep-modules?path=/modules/$modulePath"
+    $moduleRootUrl = "$devopsUrl/$modulePath"
 
     # Create the code and readme links
     $codeLink = "[🦾 Code]($moduleRootUrl/main.bicep)"
@@ -82,10 +84,10 @@ Set-Content -Path "README.md" -Value $newTable
 
 Write-Host "Updated README.md"
 
-git add .
+git add README.md
 
 # 4. Commit the changes
-git commit -a -m "Updated README.md"
+git commit -m "Updated README.md"
 
 git push origin refreshmoduletable
 
