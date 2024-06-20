@@ -61,6 +61,7 @@ foreach ($moduleGroup in $moduleGroups) {
     $version = $tag -split '/' | Select-Object -Last 1
 
     # Create the module root URL
+    ## Replace with your Customer's Azure DevOps URL up the modules folder in the repository
     $moduleRootUrl = "https://dev.azure.com/mohammedshafayat/bicep-modules/_git/bicep-modules?path=/modules/$modulePath"
 
     # Create the code and readme links
