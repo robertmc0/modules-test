@@ -13,9 +13,6 @@ param shortIdentifier string = 'arn'
 @description('Computed. Do not set.')
 param deploymentStartTime string = utcNow()
 
-@description('The resource ID for the target virtual network subnet.')
-param virtualNetworkSubnetId string = ''
-
 @description('Required. The LinuxFxVersion to use for the web app.')
 param isLinux bool = true
 
@@ -82,6 +79,33 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
+  name: 'myVNet'
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '10.0.0.0/16'
+      ]
+    }
+    subnets: [
+      {
+        name: 'defaultSubnet'
+        properties: {
+          addressPrefix: '10.0.1.0/24'
+          delegations: [
+            {
+              name: 'appServiceDelegation'
+              properties: {
+                serviceName: 'Microsoft.Web/serverFarms'
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
 
 // Test for Linux
 
@@ -99,6 +123,8 @@ module appServicePlanLinux '../../server-farms/main.bicep' = {
 }
 
 var webSitesNameMinimum = '${shortIdentifier}-tst-webSitesLinux-${uniqueString(deployment().name, 'webSitesMinimum', location)}'
+
+var virtualNetworkSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, 'defaultSubnet')
 
 module webSitesMinimum '../main.bicep' = {
   name: webSitesNameMinimum
