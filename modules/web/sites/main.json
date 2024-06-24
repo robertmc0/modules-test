@@ -5,11 +5,295 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "11927398319243123014"
+      "templateHash": "6611008701474963042"
     },
     "name": "TODO: <module name>",
     "description": "TODO: <module description>",
     "owner": "TODO: <GitHub username of module owner>"
   },
-  "resources": []
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of App Service Plan"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "serverFarmId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the App Service Plan"
+      }
+    },
+    "virtualNetworkSubnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID for the target virtual network subnet."
+      }
+    },
+    "apiManagementConfig": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Azure API management settings linked to the app."
+      }
+    },
+    "appInsightsInstrumentationKey": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Instrumentation key for Application Insights."
+      }
+    },
+    "appInsightsConnectionString": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Connection string for Application Insights."
+      }
+    },
+    "isLinux": {
+      "type": "bool",
+      "metadata": {
+        "description": "Required. Set to true when using Linux such as for Node runtimes, or false for Windows."
+      }
+    },
+    "linuxFxVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Required when isLinux is true. The version of the runtime stack to use i.e NODE|20-lts."
+      }
+    },
+    "dotnetVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Required when isLinux is false. The .NET version to use i.e 8.0."
+      }
+    },
+    "allowedOrigins": {
+      "type": "array",
+      "metadata": {
+        "description": "Gets or sets the list of origins that should be allowed to make cross-origin calls (for example: http://example.com:12345)."
+      }
+    },
+    "supportCredentials": {
+      "type": "bool",
+      "metadata": {
+        "description": "Gets or sets whether CORS requests with credentials are allowed. See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Requests_with_credentials for more details."
+      }
+    },
+    "appSettings": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+          "value": "[parameters('appInsightsInstrumentationKey')]"
+        },
+        {
+          "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+          "value": "[parameters('appInsightsConnectionString')]"
+        },
+        {
+          "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+          "value": "~2"
+        }
+      ],
+      "metadata": {
+        "description": "Optional. Application Insights configuration for the app service sites."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Audit"
+      ],
+      "allowedValues": [
+        "Audit",
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2020-06-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "serverFarmId": "[parameters('serverFarmId')]",
+        "virtualNetworkSubnetId": "[parameters('virtualNetworkSubnetId')]",
+        "siteConfig": {
+          "copy": [
+            {
+              "name": "appSettings",
+              "count": "[length(coalesce(parameters('appSettings'), createArray()))]",
+              "input": {
+                "name": "[coalesce(parameters('appSettings'), createArray())[copyIndex('appSettings')].name]",
+                "value": "[coalesce(parameters('appSettings'), createArray())[copyIndex('appSettings')].value]"
+              }
+            }
+          ],
+          "linuxFxVersion": "[if(and(parameters('isLinux'), not(empty(parameters('linuxFxVersion')))), parameters('linuxFxVersion'), null())]",
+          "windowsFxVersion": "[if(and(not(parameters('isLinux')), not(empty(parameters('dotnetVersion')))), format('DOTNET|{0}', parameters('dotnetVersion')), null())]",
+          "apiManagementConfig": "[if(not(equals(parameters('apiManagementConfig'), '')), createObject('id', parameters('apiManagementConfig')), null())]",
+          "cors": {
+            "allowedOrigins": "[parameters('allowedOrigins')]",
+            "supportCredentials": "[parameters('supportCredentials')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Web/sites/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Web/sites/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the web sites resource."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed web sites resource."
+      },
+      "value": "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+    }
+  }
 }

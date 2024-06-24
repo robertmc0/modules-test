@@ -1,3 +1,7 @@
+metadata name = 'App Service Web Sites'
+metadata description = 'This module deploys Microsoft.web/sites AKA App Service Web Sites'
+metadata owner = 'Arinco'
+
 @description('Name of App Service Plan')
 param name string
 
