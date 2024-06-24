@@ -1,6 +1,6 @@
-# TODO: App Service Web Sites
+# App Service Web Sites
 
-TODO: This module deploys Microsoft.web/sites AKA App Service Web Sites
+This module deploys Microsoft.web/sites AKA App Service Web Sites
 
 ## Details
 

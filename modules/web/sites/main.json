@@ -5,11 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "6611008701474963042"
+      "templateHash": "7153385084253343324"
     },
-    "name": "TODO: <module name>",
-    "description": "TODO: <module description>",
-    "owner": "TODO: <GitHub username of module owner>"
+    "name": "App Service Web Sites",
+    "description": "This module deploys Microsoft.web/sites AKA App Service Web Sites",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {

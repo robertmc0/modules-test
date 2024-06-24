@@ -14,7 +14,7 @@ param shortIdentifier string = 'arn'
 param deploymentStartTime string = utcNow()
 
 @description('The resource ID for the target virtual network subnet.')
-param virtualNetworkSubnetId string
+param virtualNetworkSubnetId string = ''
 
 @description('Required. The LinuxFxVersion to use for the web app.')
 param isLinux bool = true
