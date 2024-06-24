@@ -48,7 +48,6 @@ param allowedOrigins array = [
 @description('Gets or sets whether CORS requests with credentials are allowed. See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Requests_with_credentials for more details.')
 param supportCredentials bool = true
 
-var appInsightsInstrumentationKey = appInsights.properties.InstrumentationKey
 
 /*
 ** Prerequisites
