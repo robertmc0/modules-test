@@ -4,6 +4,15 @@ param name string
 @description('The geo-location where the resource lives.')
 param location string
 
+@description('Optional. Resource tags.')
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
+param tags object = {}
+
 @description('Optional. Specify the type of resource lock.')
 @allowed([
   'CanNotDelete'
@@ -63,6 +72,7 @@ param appSettings array = [
 resource webSites 'Microsoft.Web/sites@2020-06-01' = {
   name: name
   location: location
+  tags: tags
   properties: {
     serverFarmId: serverFarmId
     virtualNetworkSubnetId: virtualNetworkSubnetId
@@ -93,4 +103,8 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != '
   }
 }
 
-output appServiceId string = webSites.id
+@description('The name of the web sites resource.')
+output name string = webSites.name
+
+@description('The resource ID of the deployed web sites resource.')
+output resourceId string = webSites.id
