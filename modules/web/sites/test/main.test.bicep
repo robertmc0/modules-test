@@ -61,9 +61,6 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10
 var applicationInsightsName = '${shortIdentifier}tstlaw${uniqueString(deployment().name, 'applicationInsights', location)}'
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  dependsOn: [
-    logAnalyticsWorkspace
-  ]
   name: applicationInsightsName
   location: location
   kind: 'web'
