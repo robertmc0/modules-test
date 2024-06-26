@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "7153385084253343324"
+      "templateHash": "3784550314846827314"
     },
     "name": "App Service Web Sites",
     "description": "This module deploys Microsoft.web/sites AKA App Service Web Sites",
@@ -219,7 +219,7 @@
   "resources": [
     {
       "type": "Microsoft.Web/sites",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2022-09-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
