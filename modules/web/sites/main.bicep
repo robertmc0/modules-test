@@ -118,7 +118,7 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   enabled: true
 }]
 
-resource webSites 'Microsoft.Web/sites@2020-06-01' = {
+resource webSites 'Microsoft.Web/sites@2022-09-01' = {
   name: name
   location: location
   tags: tags

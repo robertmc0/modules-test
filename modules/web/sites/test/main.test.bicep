@@ -10,9 +10,6 @@ param location string = resourceGroup().location
 @maxLength(4)
 param shortIdentifier string = 'arn'
 
-@description('Computed. Do not set.')
-param deploymentStartTime string = utcNow()
-
 @description('Required. The LinuxFxVersion to use for the web app.')
 param isLinux bool = true
 
@@ -52,7 +49,7 @@ param supportCredentials bool = true
 var logAnalyticsWorkspaceName = '${shortIdentifier}tstlaw${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
-  name: '${logAnalyticsWorkspaceName}${deploymentStartTime}'
+  name: '${logAnalyticsWorkspaceName}-test'
   location: location
 }
 
