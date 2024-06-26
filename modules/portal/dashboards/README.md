@@ -31,5 +31,3 @@ This module deploys a Microsoft.Portal/dashboards resource.
 ### Example 1
 
 See [Tests File](test/main.test.bicep)
-
-This is a test
