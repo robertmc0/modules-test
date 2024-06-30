@@ -261,14 +261,12 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
 func buildUrl(https bool, hostname string, path string) string => '${https ? 'https' : 'http'}://${hostname}${empty(path) ? '' : '/${path}'}'
 ```
 
-
 ```bicep
 // xyz.bicep
 import * as Functions from './functions.bicep'
 
 Functions.buildUrl(true, 'arinco.com.au', 'blog')
 ```
-
 
 #### User-Defined Types
 
