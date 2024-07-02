@@ -25,7 +25,9 @@ function ConvertTo-MarkdownTable {
 ## Replace with your Customer's Azure DevOps URL for modules folder. e.g. https://dev.azure.com/mohammedshafayat/_git/bicep-templates?path=/modules
 $devopsUrl = "https://dev.azure.com/contoso/Contoso/_git/Contoso-Modules?path=/modules"
 
-# Set the git configuration on devops agent. no need to replace with your own email and name
+# Set the git configuration on the DevOps agent.
+# Note: There is no need to replace the email and name with your own.
+# The DevOps agent just needs a placeholder email address for the local git profile.
 git config --local user.email "you@example.com"
 git config --local user.name "Your Name"
 

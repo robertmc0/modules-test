@@ -4,16 +4,10 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  - group: infra
-
 steps:
   - checkout: self
     persistCredentials: true
     fetchDepth: 0
-
-  - bash: az --version
-    displayName: 'Show Azure CLI version'
 
   - bash: az devops configure --defaults organization=$(System.TeamFoundationCollectionUri) project=$(System.TeamProject) --use-git-aliases true
     displayName: 'Set default Azure DevOps organization and project'
