@@ -4,13 +4,7 @@ This module deploys Microsoft.Network/virtualNetworkGateways
 
 ## Details
 
-This module performs the following
-
-- Creates Microsoft.Network virtualNetworkGateways resource.
-- Enables availability zones on public IP address if specified. This is required in some configuration scenarios.
-- Optionally enables active-active mode and/or BGP.
-- Applies diagnostic settings to all resources.
-- Applies a lock to the virtual network gateway if the lock is specified.
+{{Add detailed information about the module}}
 
 ## Parameters
 
@@ -27,7 +21,13 @@ This module performs the following
 | `subnetResourceId`                      | `string` | Yes      | Resource ID of the virtual network gateway subnet.                                                                                  |
 | `activeActive`                          | `bool`   | No       | Optional. Enable active-active mode.                                                                                                |
 | `secondaryPublicIpAddressName`          | `string` | No       | Optional. Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true.          |
-| `enableBgp`                             | `bool`   | No       | Optional. Enable BGP.                                                                                                               |
+| `enableBgp`                             | `bool`   | No       | Optional. Enable or disable BGP on the virtual network gateway.                                                                     |
+| `customRoutePrefixes`                   | `array`  | No       | Optional. The additional routes to advertise to VPN clients connecting to the gateway.                                              |
+| `vpnClientAddressPoolPrefixes`          | `array`  | No       | Optional. The address prefixes for VPN clients connecting to the gateway.                                                           |
+| `vpnAuthenticationTypes`                | `array`  | No       | Optional. The VPN Authentication type(s) to be used.                                                                                |
+| `vpnClientProtocols`                    | `array`  | No       | Optional. The VPN protocol(s) to be used.                                                                                           |
+| `vpnClientRootCertificates`             | `array`  | No       | Optional. The VPN Client root certificates.                                                                                         |
+| `vpnClientRevokedCertificates`          | `array`  | No       | Optional. VPN revoked certificates.                                                                                                 |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                                |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                    |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                                |
