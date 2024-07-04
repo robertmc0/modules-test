@@ -4,7 +4,19 @@ This module deploys Microsoft.Network/virtualNetworkGateways
 
 ## Details
 
-{{Add detailed information about the module}}
+This module performs the following
+
+- Creates Microsoft.Network virtualNetworkGateways resource.
+- Enables availability zones on public IP address if specified. This is required in some configuration scenarios.
+- Optionally enables active-active mode and/or BGP.
+- Optionally configure advertising custom routes.
+- Optionally configure VPN client address pool prefixes.
+- Optionally configure VPN authentication types.
+- Optionally configure VPN client protocols.
+- Optionally configure root certificates for authentication.
+- Optionally configure revoked certificates.
+- Applies diagnostic settings to all resources.
+- Applies a lock to the virtual network gateway if the lock is specified.
 
 ## Parameters
 
