@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "3968206599600257717"
+      "version": "0.27.1.19265",
+      "templateHash": "4401760109094575872"
     },
     "name": "Virtual Machines Module",
     "description": "This module deploys Microsoft.Compute virtualMachines",
@@ -200,6 +200,8 @@
         "storageAccountType": "Specifies the storage account type for the managed disk.",
         "diskSizeGB": "Specifies the size of an empty data disk in gigabytes.",
         "caching": "Specifies the caching requirements. Accepted values are \"None\", \"ReadOnly\" or \"ReadWrite\".",
+        "createOption": "Specifies how the virtual machine should be created. Accepted values are \"Attach\", \"Empty\" or \"FromImage\".",
+        "id": "Optional, only needed when \"createOption\" are \"Attach\" then need to define the existing data disk by resource id.",
         "description": "Optional. Specifies the parameters that are used to add a data disk to a virtual machine."
       }
     },
@@ -409,7 +411,7 @@
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
       "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2022-08-01",
+      "apiVersion": "2023-09-01",
       "name": "[format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -441,13 +443,14 @@
               "name": "dataDisks",
               "count": "[length(parameters('dataDisks'))]",
               "input": {
-                "name": "[format('{0}{1}{2}{3}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('dataDiskSuffix'), format('{0:D3}', add(copyIndex('dataDisks'), 1)))]",
-                "diskSizeGB": "[parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB]",
+                "name": "[if(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Empty'), format('{0}{1}{2}{3}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[copyIndex()], 1)), variables('dataDiskSuffix'), format('{0:D3}', add(copyIndex('dataDisks'), 1))), null())]",
+                "diskSizeGB": "[if(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Empty'), parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB, null())]",
                 "lun": "[copyIndex('dataDisks')]",
-                "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
-                "createOption": "Empty",
+                "caching": "[if(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Empty'), parameters('dataDisks')[copyIndex('dataDisks')].caching, null())]",
+                "createOption": "[parameters('dataDisks')[copyIndex('dataDisks')].createOption]",
                 "managedDisk": {
-                  "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].storageAccountType]"
+                  "id": "[if(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Attach'), parameters('dataDisks')[copyIndex('dataDisks')].id, null())]",
+                  "storageAccountType": "[if(not(equals(parameters('dataDisks')[copyIndex('dataDisks')].createOption, 'Attach')), parameters('dataDisks')[copyIndex('dataDisks')].storageAccountType, null())]"
                 }
               }
             }
@@ -504,13 +507,13 @@
       },
       "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2022-08-01",
+      "apiVersion": "2023-09-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'DependencyAgentWindows')]",
       "location": "[parameters('location')]",
       "properties": {
         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
         "type": "DependencyAgentWindows",
-        "typeHandlerVersion": "9.5",
+        "typeHandlerVersion": "9.10",
         "autoUpgradeMinorVersion": true
       },
       "dependsOn": [

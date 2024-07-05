@@ -1,9 +1,6 @@
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  - group: infra
-
 steps:
   - checkout: self
     persistCredentials: true
@@ -25,7 +22,7 @@ steps:
   - task: AzurePowerShell@5
     displayName: Get Changed Modules
     inputs:
-      azureSubscription: aad-app-adr-pf-svcp
+      azureSubscription: <INSERT SVP eg:aad-app-adr-pf-svcp>
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/get-changed-modules.ps1
       ScriptArguments: -NewRevision $(Build.SourceVersion)
