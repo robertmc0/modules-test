@@ -1,5 +1,11 @@
 trigger:
-  - main
+  branches:
+    include:
+      - main
+
+  paths:
+    exclude:
+      - README.md
 
 pool:
   vmImage: ubuntu-latest
@@ -8,6 +14,9 @@ steps:
   - checkout: self
     persistCredentials: true
     fetchDepth: 0
+
+  - bash: az devops configure --defaults organization=$(System.TeamFoundationCollectionUri) project=$(System.TeamProject) --use-git-aliases true
+    displayName: "Set default Azure DevOps organization and project"
 
   - task: NodeTool@0
     inputs:
@@ -21,7 +30,7 @@ steps:
   - task: AzurePowerShell@5
     displayName: Get Changed Modules
     inputs:
-      azureSubscription: REPLACE-ME-WITH-SVCP
+      azureSubscription: aad-app-adr-pf-svcp # Update with your SPN name
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/get-changed-modules.ps1
       ScriptArguments: -NewRevision $(Build.SourceVersion)
@@ -30,7 +39,7 @@ steps:
   - task: AzurePowerShell@5
     displayName: Create Tag
     inputs:
-      azureSubscription: REPLACE-ME-WITH-SVCP
+      azureSubscription: aad-app-adr-pf-svcp # Update with your SPN name
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/create-tag.ps1
       ScriptArguments: -NewRevision $(Build.SourceVersion)
@@ -39,7 +48,7 @@ steps:
   - task: AzurePowerShell@5
     displayName: Publish Module
     inputs:
-      azureSubscription: REPLACE-ME-WITH-SVCP
+      azureSubscription: aad-app-adr-pf-svcp # Update with your SPN name
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/publish-module.ps1
       ScriptArguments: -RegistryServer <insert-acr-uri>.azurecr.io # Update with your acr name
@@ -48,7 +57,11 @@ steps:
   - task: AzurePowerShell@5
     displayName: Refresh Module Table
     inputs:
-      azureSubscription: REPLACE-ME-WITH-SVCP
+      azureSubscription: aad-app-adr-pf-svcp # Update with your SPN name
       ScriptType: FilePath
       ScriptPath: ./scripts/azure-devops/refresh-module-table.ps1
+      ScriptArguments: -ExecutionPolicy Unrestricted
       azurePowerShellVersion: LatestVersion
+    env:
+      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      SYSTEM_TEAMFOUNDATIONCOLLECTIONURI: $(System.TeamFoundationCollectionUri)
