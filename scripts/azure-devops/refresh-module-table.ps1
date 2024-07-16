@@ -28,8 +28,8 @@ $devopsUrl = "https://dev.azure.com/contoso/Contoso/_git/Contoso-Modules?path=/m
 # Set the git configuration on the DevOps agent.
 # Note: There is no need to replace the email and name with your own.
 # The DevOps agent just needs a placeholder email address for the local git profile.
-git config --local user.email "you@example.com"
-git config --local user.name "Your Name"
+git config --local user.email "bicep@module.update"
+git config --local user.name "Bicep Modules"
 
 git checkout main
 git checkout -b refreshmoduletable
