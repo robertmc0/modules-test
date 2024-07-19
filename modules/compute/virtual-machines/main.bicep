@@ -376,57 +376,6 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [
   }
 ]
 
-resource extension_monitoring 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
-  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
-    parent: virtualMachine[i]
-    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
-      ? [
-          extension_joinDomain
-        ]
-      : []
-    name: 'Microsoft.EnterpriseCloud.Monitoring'
-    location: location
-    properties: {
-      publisher: 'Microsoft.EnterpriseCloud.Monitoring'
-      type: 'MicrosoftMonitoringAgent'
-      typeHandlerVersion: '1.0'
-      autoUpgradeMinorVersion: true
-      settings: !empty(diagnosticLogAnalyticsWorkspaceId)
-        ? {
-            workspaceId: reference(diagnosticLogAnalyticsWorkspaceId, '2015-03-20').customerId
-          }
-        : null
-      protectedSettings: !empty(diagnosticLogAnalyticsWorkspaceId)
-        ? {
-            workspaceKey: listKeys(diagnosticLogAnalyticsWorkspaceId, '2015-03-20').primarySharedKey
-          }
-        : null
-    }
-  }
-]
-
-resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = [
-  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
-    parent: virtualMachine[i]
-    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
-      ? [
-          extension_joinDomain
-          extension_monitoring
-        ]
-      : [
-          extension_monitoring
-        ]
-    name: 'DependencyAgentWindows'
-    location: location
-    properties: {
-      publisher: 'Microsoft.Azure.Monitoring.DependencyAgent'
-      type: 'DependencyAgentWindows'
-      typeHandlerVersion: '9.10'
-      autoUpgradeMinorVersion: true
-    }
-  }
-]
-
 resource extension_guestHealth 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
   for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
     parent: virtualMachine[i]
@@ -449,7 +398,7 @@ resource extension_guestHealth 'Microsoft.Compute/virtualMachines/extensions@202
   }
 ]
 
-resource extension_azureMonitorWindowsAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+resource extension_azureMonitorAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
   for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
     parent: virtualMachine[i]
     dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
@@ -460,12 +409,53 @@ resource extension_azureMonitorWindowsAgent 'Microsoft.Compute/virtualMachines/e
       : [
           extension_guestHealth
         ]
-    name: 'AzureMonitorWindowsAgent'
+    name: !empty(windowsConfiguration) ? 'AzureMonitorWindowsAgent' : 'AzureMonitorLinuxAgent'
     location: location
     properties: {
       publisher: 'Microsoft.Azure.Monitor'
-      type: 'AzureMonitorWindowsAgent'
+      type: !empty(windowsConfiguration) ? 'AzureMonitorWindowsAgent' : 'AzureMonitorLinuxAgent'
       typeHandlerVersion: '1.0'
+      autoUpgradeMinorVersion: true
+    }
+  }
+]
+
+// resource extension_azureMonitorWindowsAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
+//   for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+//     parent: virtualMachine[i]
+//     dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
+//       ? [
+//           extension_joinDomain
+//           extension_guestHealth
+//         ]
+//       : [
+//           extension_guestHealth
+//         ]
+//     name: 'AzureMonitorWindowsAgent'
+//     location: location
+//     properties: {
+//       publisher: 'Microsoft.Azure.Monitor'
+//       type: 'AzureMonitorWindowsAgent'
+//       typeHandlerVersion: '1.0'
+//       autoUpgradeMinorVersion: true
+//     }
+//   }
+// ]
+
+resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = [
+  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+    parent: virtualMachine[i]
+    dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
+      ? [
+          extension_joinDomain
+        ]
+      : []
+    name: 'DependencyAgentWindows'
+    location: location
+    properties: {
+      publisher: 'Microsoft.Azure.Monitoring.DependencyAgent'
+      type: 'DependencyAgentWindows'
+      typeHandlerVersion: '9.10'
       autoUpgradeMinorVersion: true
     }
   }
@@ -532,7 +522,7 @@ resource extension_aadLogin 'Microsoft.Compute/virtualMachines/extensions@2022-0
 resource extension_aadLoginWithIntune 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
   for i in range(0, instanceCount): if (enableAadLoginWithIntune) {
     parent: virtualMachine[i]
-    dependsOn: [extension_monitoring[i], extension_guestHealth[i], extension_depAgent[i]]
+    dependsOn: [extension_azureMonitorAgent[i], extension_guestHealth[i], extension_depAgent[i]]
     name: 'AADLoginForWindowsWithIntune'
     location: location
     properties: {
