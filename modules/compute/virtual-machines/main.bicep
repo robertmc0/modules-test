@@ -153,8 +153,8 @@ param subnetResourceId string
 @description('Optional. Specifies that the image or disk that is being used was licensed on-premises. Accepted values "Windows_Client", "Windows_Server", "RHEL_BYOS" or "SLES_BYOS".')
 param licenseType string = ''
 
-@description('Optional. Log analytics workspace resource id. Only required to enable VM Diagnostics.')
-param diagnosticLogAnalyticsWorkspaceId string = ''
+@description('Optional. DCR id to associate VM for AMA agent. Only required to enable VM Diagnostics.')
+param dataCollectionRuleId string = ''
 
 @description('Optional. Microsoft antimalware configuration. Will not be installed if left blank.')
 @metadata({
@@ -376,8 +376,19 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [
   }
 ]
 
+resource association 'Microsoft.Insights/dataCollectionRuleAssociations@2021-09-01-preview' = [
+  for i in range(0, instanceCount): if (!empty(dataCollectionRuleId)) {
+    name: 'dcr-association'
+    scope: virtualMachine[i]
+    properties: {
+      description: 'Association of data collection rule. Deleting this association will break the data collection for this virtual machine.'
+      dataCollectionRuleId: dataCollectionRuleId
+    }
+  }
+]
+
 resource extension_guestHealth 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
-  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+  for i in range(0, instanceCount): if (!empty(dataCollectionRuleId)) {
     parent: virtualMachine[i]
     dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
       ? [
@@ -399,51 +410,35 @@ resource extension_guestHealth 'Microsoft.Compute/virtualMachines/extensions@202
 ]
 
 resource extension_azureMonitorAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
-  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+  for i in range(0, instanceCount): if (!empty(dataCollectionRuleId)) {
     parent: virtualMachine[i]
     dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
       ? [
           extension_joinDomain
           extension_guestHealth
+          association
         ]
       : [
           extension_guestHealth
+          association
         ]
-    name: !empty(windowsConfiguration) ? 'AzureMonitorWindowsAgent' : 'AzureMonitorLinuxAgent'
+    name: !empty(windowsConfiguration) || (empty(windowsConfiguration) && empty(linuxConfiguration))
+      ? 'AzureMonitorWindowsAgent'
+      : 'AzureMonitorLinuxAgent' // If both config are null, assume Windows
     location: location
     properties: {
       publisher: 'Microsoft.Azure.Monitor'
-      type: !empty(windowsConfiguration) ? 'AzureMonitorWindowsAgent' : 'AzureMonitorLinuxAgent'
+      type: !empty(windowsConfiguration) || (empty(windowsConfiguration) && empty(linuxConfiguration))
+        ? 'AzureMonitorWindowsAgent'
+        : 'AzureMonitorLinuxAgent' // If both config are null, assume Windows
       typeHandlerVersion: '1.0'
       autoUpgradeMinorVersion: true
     }
   }
 ]
 
-// resource extension_azureMonitorWindowsAgent 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' = [
-//   for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
-//     parent: virtualMachine[i]
-//     dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
-//       ? [
-//           extension_joinDomain
-//           extension_guestHealth
-//         ]
-//       : [
-//           extension_guestHealth
-//         ]
-//     name: 'AzureMonitorWindowsAgent'
-//     location: location
-//     properties: {
-//       publisher: 'Microsoft.Azure.Monitor'
-//       type: 'AzureMonitorWindowsAgent'
-//       typeHandlerVersion: '1.0'
-//       autoUpgradeMinorVersion: true
-//     }
-//   }
-// ]
-
 resource extension_depAgent 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = [
-  for i in range(0, instanceCount): if (!empty(diagnosticLogAnalyticsWorkspaceId)) {
+  for i in range(0, instanceCount): if (!empty(dataCollectionRuleId)) {
     parent: virtualMachine[i]
     dependsOn: !empty(domainJoinSettings) && !empty(domainJoinPassword)
       ? [

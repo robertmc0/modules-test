@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.29.45.22436",
-      "templateHash": "3459476505848858606"
+      "version": "0.29.47.4906",
+      "templateHash": "8980666029336003621"
     },
     "name": "Virtual Machines Module",
     "description": "This module deploys Microsoft.Compute virtualMachines",
@@ -218,11 +218,11 @@
         "description": "Optional. Specifies that the image or disk that is being used was licensed on-premises. Accepted values \"Windows_Client\", \"Windows_Server\", \"RHEL_BYOS\" or \"SLES_BYOS\"."
       }
     },
-    "diagnosticLogAnalyticsWorkspaceId": {
+    "dataCollectionRuleId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. Log analytics workspace resource id. Only required to enable VM Diagnostics."
+        "description": "Optional. DCR id to associate VM for AMA agent. Only required to enable VM Diagnostics."
       }
     },
     "antiMalwareConfiguration": {
@@ -479,10 +479,28 @@
     },
     {
       "copy": {
+        "name": "association",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
+      "type": "Microsoft.Insights/dataCollectionRuleAssociations",
+      "apiVersion": "2021-09-01-preview",
+      "scope": "[format('Microsoft.Compute/virtualMachines/{0}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]",
+      "name": "dcr-association",
+      "properties": {
+        "description": "Association of data collection rule. Deleting this association will break the data collection for this virtual machine.",
+        "dataCollectionRuleId": "[parameters('dataCollectionRuleId')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
         "name": "extension_guestHealth",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'GuestHealthWindowsAgent')]",
@@ -504,18 +522,19 @@
         "name": "extension_azureMonitorAgent",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
-      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), if(not(empty(parameters('windowsConfiguration'))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent'))]",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), if(or(not(empty(parameters('windowsConfiguration'))), and(empty(parameters('windowsConfiguration')), empty(parameters('linuxConfiguration')))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent'))]",
       "location": "[parameters('location')]",
       "properties": {
         "publisher": "Microsoft.Azure.Monitor",
-        "type": "[if(not(empty(parameters('windowsConfiguration'))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
+        "type": "[if(or(not(empty(parameters('windowsConfiguration'))), and(empty(parameters('windowsConfiguration')), empty(parameters('linuxConfiguration')))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true
       },
       "dependsOn": [
+        "association",
         "extension_guestHealth",
         "extension_joinDomain",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
@@ -526,7 +545,7 @@
         "name": "extension_depAgent",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2023-09-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'DependencyAgentWindows')]",
@@ -634,7 +653,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), if(not(empty(parameters('windowsConfiguration'))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent'))]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), if(or(not(empty(parameters('windowsConfiguration'))), and(empty(parameters('windowsConfiguration')), empty(parameters('linuxConfiguration')))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent'))]",
         "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), 'DependencyAgentWindows')]",
         "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), 'GuestHealthWindowsAgent')]",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"

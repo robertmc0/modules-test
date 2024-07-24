@@ -46,6 +46,42 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
   location: location
 }
 
+resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
+  name: '${shortIdentifier}-tst-dcr-${uniqueString(deployment().name, 'dataCollectionRule', location)}'
+  location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    dataSources: {
+      performanceCounters: [
+        '\\System\\Processes'
+      ]
+    }
+    dataFlows: [
+      {
+        destinations: [
+          'myloganalyticsworkspace'
+        ]
+        streams: [
+          'Microsoft-Event'
+          'Microsoft-InsightsMetrics'
+          'Microsoft-Perf'
+          'Microsoft-Syslog'
+        ]
+      }
+    ]
+    destinations: {
+      logAnalytics: [
+        {
+          workspaceResourceId: string(logAnalyticsWorkspace.id)
+          name: 'myloganalyticsworkspace'
+        }
+      ]
+    }
+  }
+}
+
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
@@ -126,6 +162,6 @@ module vm '../main.bicep' = {
     securityType: 'TrustedLaunch'
     secureBootEnabled: true
     vTpmEnabled: true
-    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    dataCollectionRuleId: string(dcr.id)
   }
 }
