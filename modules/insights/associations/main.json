@@ -49,6 +49,7 @@
       "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
       "type": "Microsoft.Insights/dataCollectionRuleAssociations",
       "apiVersion": "2021-09-01-preview",
+      "location": "[parameters('location')]",
       "scope": "[format('Microsoft.Compute/virtualMachines/{0}', parameters('virtualMachineName'))]",
       "name": "dcr-association",
       "properties": {
