@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "6454111096194827555"
+      "version": "0.29.47.4906",
+      "templateHash": "8577368331460462211"
     },
     "name": "Data collection rule association module",
     "description": "This module deploys Microsoft.Insights dataCollectionRuleAssociations",
@@ -49,7 +49,6 @@
       "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
       "type": "Microsoft.Insights/dataCollectionRuleAssociations",
       "apiVersion": "2021-09-01-preview",
-      "location": "[parameters('location')]",
       "scope": "[format('Microsoft.Compute/virtualMachines/{0}', parameters('virtualMachineName'))]",
       "name": "dcr-association",
       "properties": {
