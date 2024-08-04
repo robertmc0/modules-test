@@ -42,6 +42,20 @@ param loadBalancerType string = 'BreadthFirst'
 @description('Optional. The max session limit of HostPool.')
 param maxSessionLimit int = 5
 
+@description('Optional. Custom RDP Property.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.desktopvirtualization/hostpools?pivots=deployment-language-bicep#customrdpproperties'
+  example: {
+    properties: {
+      string: 'string'
+    }
+  }
+})
+param customRdpProperty string = ''
+
+@description('Optional. Flag the host pool as a validation environment.')
+param validationEnvironment bool = false
+
 @description('Optional. The type of preferred application group type, default to Desktop Application Group.')
 @allowed([
   'Desktop'
@@ -99,12 +113,14 @@ var lockName = toLower('${hostPool.name}-${resourceLock}-lck')
 
 var diagnosticsName = toLower('${hostPool.name}-dgs')
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
-  enabled: true
-}]
+var diagnosticsLogs = [
+  for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+    categoryGroup: categoryGroup
+    enabled: true
+  }
+]
 
-resource hostPool 'Microsoft.DesktopVirtualization/hostPools@2022-04-01-preview' = {
+resource hostPool 'Microsoft.DesktopVirtualization/hostPools@2023-11-01-preview' = {
   name: name
   location: location
   tags: tags
@@ -117,6 +133,8 @@ resource hostPool 'Microsoft.DesktopVirtualization/hostPools@2022-04-01-preview'
     registrationInfo: registrationInfo
     maxSessionLimit: maxSessionLimit
     startVMOnConnect: startVMOnConnect
+    customRdpProperty: empty(customRdpProperty) ? null : customRdpProperty
+    validationEnvironment: validationEnvironment
   }
 }
 
@@ -125,7 +143,9 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -135,7 +155,9 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
   }
