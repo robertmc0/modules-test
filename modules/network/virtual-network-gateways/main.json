@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "1916213938824117073"
+      "version": "0.29.47.4906",
+      "templateHash": "12457268774215217124"
     },
     "name": "Virtual Network Gateway Module",
     "description": "This module deploys Microsoft.Network/virtualNetworkGateways",
