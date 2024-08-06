@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "7151927188460352411"
+      "version": "0.28.1.47646",
+      "templateHash": "5849370425209683723"
     },
     "name": "Insights data collection rule Module.",
     "description": "This module deploys Microsoft.Insights dataCollectionRules.",
