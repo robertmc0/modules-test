@@ -150,7 +150,7 @@ var securityProfileSettings = {
   }
 }
 
-resource virtualMachineScaleSet 'Microsoft.Compute/virtualMachineScaleSets@2022-03-01' = {
+resource virtualMachineScaleSet 'Microsoft.Compute/virtualMachineScaleSets@2024-03-01' = {
   name: name
   location: location
   tags: tags
@@ -215,7 +215,7 @@ resource virtualMachineScaleSet 'Microsoft.Compute/virtualMachineScaleSets@2022-
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: virtualMachineScaleSet
   name: lockName
   properties: {

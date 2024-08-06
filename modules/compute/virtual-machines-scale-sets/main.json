@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "2192278472182669840"
+      "templateHash": "17493196273028894480"
     },
     "name": "Virtual Machine Scale Sets Module",
     "description": "This module deploys Microsoft.Compute virtualMachineScaleSets",
@@ -244,7 +244,7 @@
   "resources": [
     {
       "type": "Microsoft.Compute/virtualMachineScaleSets",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2024-03-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -311,7 +311,7 @@
     {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.Compute/virtualMachineScaleSets/{0}', parameters('name'))]",
       "name": "[variables('lockName')]",
       "properties": {
