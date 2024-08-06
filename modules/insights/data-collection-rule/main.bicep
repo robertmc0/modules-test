@@ -179,62 +179,60 @@ var linuxSyslogs = [
   }
 ]
 
-resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' =
-  if (kind != 'All') {
-    name: name
-    location: location
-    tags: tags
-    kind: kind
-    identity: {
-      type: 'SystemAssigned'
+resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = if (kind != 'All') {
+  name: name
+  location: location
+  tags: tags
+  kind: kind
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
+    dataSources: {
+      performanceCounters: performanceCounters
+      syslog: (kind == 'Linux') ? linuxSyslogs : []
+      windowsEventLogs: (kind == 'Windows') ? windowsEventLogs : []
+      extensions: dcrExtensions
     }
-    properties: {
-      dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
-      dataSources: {
-        performanceCounters: performanceCounters
-        syslog: (kind == 'Linux') ? linuxSyslogs : []
-        windowsEventLogs: (kind == 'Windows') ? windowsEventLogs : []
-        extensions: dcrExtensions
-      }
-      dataFlows: dataFlows
-      destinations: {
-        logAnalytics: [
-          {
-            workspaceResourceId: workspaceId
-            name: destinationFriendlyName
-          }
-        ]
-      }
+    dataFlows: dataFlows
+    destinations: {
+      logAnalytics: [
+        {
+          workspaceResourceId: workspaceId
+          name: destinationFriendlyName
+        }
+      ]
     }
   }
+}
 
-resource dcrMultiOs 'Microsoft.Insights/dataCollectionRules@2022-06-01' =
-  if (kind == 'All') {
-    name: name
-    location: location
-    tags: tags
-    identity: {
-      type: 'SystemAssigned'
+resource dcrMultiOs 'Microsoft.Insights/dataCollectionRules@2022-06-01' = if (kind == 'All') {
+  name: name
+  location: location
+  tags: tags
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
+    dataSources: {
+      performanceCounters: performanceCounters
+      syslog: linuxSyslogs
+      windowsEventLogs: windowsEventLogs
+      extensions: dcrExtensions
     }
-    properties: {
-      dataCollectionEndpointId: !empty(dataCollectionEndpointId) ? dataCollectionEndpointId : null
-      dataSources: {
-        performanceCounters: performanceCounters
-        syslog: linuxSyslogs
-        windowsEventLogs: windowsEventLogs
-        extensions: dcrExtensions
-      }
-      dataFlows: dataFlows
-      destinations: {
-        logAnalytics: [
-          {
-            workspaceResourceId: workspaceId
-            name: destinationFriendlyName
-          }
-        ]
-      }
+    dataFlows: dataFlows
+    destinations: {
+      logAnalytics: [
+        {
+          workspaceResourceId: workspaceId
+          name: destinationFriendlyName
+        }
+      ]
     }
   }
+}
 
 @description('The resource id of the data collection rule (DCR).')
 output resourceId string = dcr.id

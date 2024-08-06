@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "8884054517834512633"
+      "version": "0.29.47.4906",
+      "templateHash": "12457268774215217124"
     },
     "name": "Virtual Network Gateway Module",
     "description": "This module deploys Microsoft.Network/virtualNetworkGateways",
@@ -124,7 +124,133 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Optional. Enable BGP."
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#enablebgp",
+        "examples": [
+          true,
+          false
+        ],
+        "description": "Optional. Enable or disable BGP on the virtual network gateway."
+      }
+    },
+    "customRoutePrefixes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#customroutes",
+        "examples": [
+          [
+            "10.20.30.0/24"
+          ],
+          [
+            "10.20.30.0/24",
+            "172.16.0.0/16"
+          ]
+        ],
+        "description": "Optional. The additional routes to advertise to VPN clients connecting to the gateway."
+      }
+    },
+    "vpnClientAddressPoolPrefixes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientaddresspool",
+        "examples": [
+          [
+            "10.10.201.0/24"
+          ],
+          [
+            "10.10.201.0/24",
+            "10.10.202.0/24"
+          ]
+        ],
+        "description": "Optional. The address prefixes for VPN clients connecting to the gateway."
+      }
+    },
+    "vpnAuthenticationTypes": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "AAD",
+        "Certificate",
+        "Radius"
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnauthenticationtypes",
+        "examples": [
+          [
+            "AAD"
+          ],
+          [
+            "Certificate"
+          ],
+          [
+            "Radius"
+          ],
+          [
+            "AAD",
+            "Certificate"
+          ]
+        ],
+        "description": "Optional. The VPN Authentication type(s) to be used."
+      }
+    },
+    "vpnClientProtocols": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "IKEv2",
+        "SSTP",
+        "OpenVPN"
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientprotocol",
+        "examples": [
+          [
+            "IKEv2"
+          ],
+          [
+            "OpenVPN"
+          ],
+          [
+            "IKEv2",
+            "OpenVPN"
+          ]
+        ],
+        "description": "Optional. The VPN protocol(s) to be used."
+      }
+    },
+    "vpnClientRootCertificates": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientrootcertificatepropertiesformat",
+        "examples": [
+          {
+            "id": "rootCert1Id",
+            "name": "Root Certificate 1",
+            "properties": {
+              "publicCertData": "base64EncodedCertData1"
+            }
+          }
+        ],
+        "description": "Optional. The VPN Client root certificates."
+      }
+    },
+    "vpnClientRevokedCertificates": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientrevokedcertificatepropertiesformat",
+        "examples": [
+          {
+            "id": "revokedCert1Id",
+            "name": "Revoked Certificate 1",
+            "properties": {
+              "thumbprint": "revokedCert1Thumbprint"
+            }
+          }
+        ],
+        "description": "Optional. VPN revoked certificates."
       }
     },
     "enableDiagnostics": {
@@ -305,7 +431,9 @@
         "gatewayType": "[parameters('gatewayType')]",
         "vpnType": "[parameters('vpnType')]",
         "activeActive": "[parameters('activeActive')]",
-        "enableBgp": "[parameters('enableBgp')]"
+        "enableBgp": "[parameters('enableBgp')]",
+        "customRoutes": "[if(not(empty(parameters('customRoutePrefixes'))), createObject('addressPrefixes', parameters('customRoutePrefixes')), null())]",
+        "vpnClientConfiguration": "[if(and(and(not(empty(parameters('vpnClientAddressPoolPrefixes'))), not(empty(parameters('vpnAuthenticationTypes')))), not(empty(parameters('vpnClientProtocols')))), createObject('vpnClientAddressPool', createObject('addressPrefixes', parameters('vpnClientAddressPoolPrefixes')), 'vpnAuthenticationTypes', parameters('vpnAuthenticationTypes'), 'vpnClientProtocols', parameters('vpnClientProtocols'), 'vpnClientRevokedCertificates', if(not(empty(parameters('vpnClientRevokedCertificates'))), parameters('vpnClientRevokedCertificates'), null()), 'vpnClientRootCertificates', if(not(empty(parameters('vpnClientRootCertificates'))), parameters('vpnClientRootCertificates'), null())), null())]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName'))]",
