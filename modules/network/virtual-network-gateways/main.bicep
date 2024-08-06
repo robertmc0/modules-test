@@ -74,8 +74,112 @@ param activeActive bool = false
 @description('Optional. Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true.')
 param secondaryPublicIpAddressName string = ''
 
-@description('Optional. Enable BGP.')
+@description('Optional. Enable or disable BGP on the virtual network gateway.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#enablebgp'
+  examples: [
+    true // Enable BGP
+    false // Disable BGP (default)
+  ]
+})
 param enableBgp bool = false
+
+@description('Optional. The additional routes to advertise to VPN clients connecting to the gateway.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#customroutes'
+  examples: [
+    [
+      // Single address prefix example
+      '10.20.30.0/24'
+    ]
+    [
+      // Multiple address prefixes example
+      '10.20.30.0/24'
+      '172.16.0.0/16'
+    ]
+  ]
+})
+param customRoutePrefixes array = []
+
+@description('Optional. The address prefixes for VPN clients connecting to the gateway.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientaddresspool'
+  examples: [
+    [
+      // Single address prefix example
+      '10.10.201.0/24'
+    ]
+    [
+      // Multiple address prefixes example
+      '10.10.201.0/24'
+      '10.10.202.0/24'
+    ]
+  ]
+})
+param vpnClientAddressPoolPrefixes array = []
+
+@description('Optional. The VPN Authentication type(s) to be used.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnauthenticationtypes'
+  examples: [
+    ['AAD'] // Only AAD authentication
+    ['Certificate'] // Only certificate authentication
+    ['Radius'] // Only RADIUS authentication
+    ['AAD', 'Certificate'] // Both AAD and certificate authentication
+  ]
+})
+@allowed([
+  'AAD'
+  'Certificate'
+  'Radius'
+])
+param vpnAuthenticationTypes array = []
+
+@description('Optional. The VPN protocol(s) to be used.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientprotocol'
+  examples: [
+    ['IKEv2'] // Only IKEv2
+    ['OpenVPN'] // Only OpenVPN
+    ['IKEv2', 'OpenVPN'] // Both IKEv2 and OpenVPN
+  ]
+})
+@allowed([
+  'IKEv2'
+  'SSTP'
+  'OpenVPN'
+])
+param vpnClientProtocols array = []
+
+@description('Optional. The VPN Client root certificates.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientrootcertificatepropertiesformat' // Updated tab to bicep
+  examples: [
+    {
+      id: 'rootCert1Id'
+      name: 'Root Certificate 1'
+      properties: {
+        publicCertData: 'base64EncodedCertData1'
+      }
+    }
+  ]
+})
+param vpnClientRootCertificates array = []
+
+@description('Optional. VPN revoked certificates.')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientrevokedcertificatepropertiesformat'
+  examples: [
+    {
+      id: 'revokedCert1Id'
+      name: 'Revoked Certificate 1'
+      properties: {
+        thumbprint: 'revokedCert1Thumbprint'
+      }
+    }
+  ]
+})
+param vpnClientRevokedCertificates array = []
 
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
@@ -125,59 +229,62 @@ var primaryPublicIpDiagnosticsName = toLower('${primaryPublicIp.name}-dgs')
 
 var secondaryPublicIpDiagnosticsName = activeActive ? toLower('${secondaryPublicIp.name}-dgs') : 'placeholder'
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
-  enabled: true
-}]
-
-var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-}]
-
-var ipConfigurations = activeActive ? [
-  {
-    name: 'default'
-    properties: {
-      privateIPAllocationMethod: 'Dynamic'
-      subnet: {
-        id: subnetResourceId
-      }
-      publicIPAddress: {
-        id: primaryPublicIp.id
-
-      }
-    }
-  }
-  {
-    name: 'activeActive'
-    properties: {
-      privateIPAllocationMethod: 'Dynamic'
-      subnet: {
-        id: subnetResourceId
-      }
-      publicIPAddress: {
-        id: secondaryPublicIp.id
-
-      }
-    }
-  }
-] : [
-  {
-    name: 'default'
-    properties: {
-      privateIPAllocationMethod: 'Dynamic'
-      subnet: {
-        id: subnetResourceId
-      }
-      publicIPAddress: {
-        id: primaryPublicIp.id
-
-      }
-    }
+var diagnosticsLogs = [
+  for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+    categoryGroup: categoryGroup
+    enabled: true
   }
 ]
+
+var diagnosticsMetrics = [
+  for metric in diagnosticMetricsToEnable: {
+    category: metric
+    timeGrain: null
+    enabled: true
+  }
+]
+
+var ipConfigurations = activeActive
+  ? [
+      {
+        name: 'default'
+        properties: {
+          privateIPAllocationMethod: 'Dynamic'
+          subnet: {
+            id: subnetResourceId
+          }
+          publicIPAddress: {
+            id: primaryPublicIp.id
+          }
+        }
+      }
+      {
+        name: 'activeActive'
+        properties: {
+          privateIPAllocationMethod: 'Dynamic'
+          subnet: {
+            id: subnetResourceId
+          }
+          publicIPAddress: {
+            id: secondaryPublicIp.id
+          }
+        }
+      }
+    ]
+  : [
+      {
+        name: 'default'
+        properties: {
+          privateIPAllocationMethod: 'Dynamic'
+          subnet: {
+            id: subnetResourceId
+          }
+          publicIPAddress: {
+            id: primaryPublicIp.id
+          }
+        }
+      }
+    ]
 
 resource primaryPublicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
   name: primaryPublicIpAddressName
@@ -197,7 +304,9 @@ resource diagnosticsPrimaryPublicIp 'Microsoft.Insights/diagnosticSettings@2021-
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -222,7 +331,9 @@ resource diagnosticsSecondaryPublicIp 'Microsoft.Insights/diagnosticSettings@202
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -243,6 +354,22 @@ resource virtualNetworkGateway 'Microsoft.Network/virtualNetworkGateways@2022-11
     vpnType: vpnType
     activeActive: activeActive
     enableBgp: enableBgp
+    customRoutes: (!empty(customRoutePrefixes))
+      ? {
+          addressPrefixes: customRoutePrefixes
+        }
+      : null
+    vpnClientConfiguration: (!empty(vpnClientAddressPoolPrefixes) && !empty(vpnAuthenticationTypes) && !empty(vpnClientProtocols))
+      ? {
+          vpnClientAddressPool: {
+            addressPrefixes: vpnClientAddressPoolPrefixes
+          }
+          vpnAuthenticationTypes: vpnAuthenticationTypes
+          vpnClientProtocols: vpnClientProtocols
+          vpnClientRevokedCertificates: !empty(vpnClientRevokedCertificates) ? vpnClientRevokedCertificates : null
+          vpnClientRootCertificates: !empty(vpnClientRootCertificates) ? vpnClientRootCertificates : null
+        }
+      : null
   }
 }
 
@@ -251,7 +378,9 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -261,7 +390,9 @@ resource diagnosticsVnetGateway 'Microsoft.Insights/diagnosticSettings@2021-05-0
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -290,4 +421,6 @@ output secondaryPublicIpName string = activeActive ? secondaryPublicIp.name : ''
 output secondaryPublicIpAddress string = activeActive ? secondaryPublicIp.properties.ipAddress : ''
 
 @description('The resource ID of the deployed virtual network gateway secondary public IP address.')
-output secondaryPublicIpId string = activeActive ? virtualNetworkGateway.properties.ipConfigurations[1].properties.publicIPAddress.id : ''
+output secondaryPublicIpId string = activeActive
+  ? virtualNetworkGateway.properties.ipConfigurations[1].properties.publicIPAddress.id
+  : ''
