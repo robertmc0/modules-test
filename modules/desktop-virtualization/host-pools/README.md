@@ -20,6 +20,8 @@ This module deploys Microsoft.DesktopVirtualization hostPools
 | `hostPoolType`                          | `string` | Yes      | HostPool type for desktop.                                                                                              |
 | `loadBalancerType`                      | `string` | No       | Optional. The type of the load balancer.                                                                                |
 | `maxSessionLimit`                       | `int`    | No       | Optional. The max session limit of HostPool.                                                                            |
+| `customRdpProperty`                     | `string` | No       | Optional. Custom RDP Property.                                                                                          |
+| `validationEnvironment`                 | `bool`   | No       | Optional. Flag the host pool as a validation environment.                                                               |
 | `preferredAppGroupType`                 | `string` | No       | Optional. The type of preferred application group type, default to Desktop Application Group.                           |
 | `registrationInfo`                      | `object` | Yes      | The registration info of HostPool.                                                                                      |
 | `startVMOnConnect`                      | `bool`   | No       | Optional. The flag to turn on/off StartVMOnConnect feature.                                                             |
