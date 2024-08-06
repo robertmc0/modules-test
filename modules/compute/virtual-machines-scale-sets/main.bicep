@@ -22,13 +22,11 @@ param size string
 
 @description('Specifies the storage account type for the os managed disk.')
 @allowed([
-  'PremiumV2_LRS'
   'Premium_LRS'
   'Premium_ZRS'
   'StandardSSD_LRS'
   'StandardSSD_ZRS'
   'Standard_LRS'
-  'UltraSSD_LRS'
 ])
 param osDiskType string
 
@@ -222,7 +220,9 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
