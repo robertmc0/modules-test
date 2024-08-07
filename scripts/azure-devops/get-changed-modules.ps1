@@ -9,9 +9,10 @@ param (
 )
 
 $currentRef = git symbolic-ref --short HEAD
+Write-Host "Current reference: $currentRef"
 $rootPath = Get-Location
 
-git checkout $ModuleTag
+# git checkout $ModuleTag
 
 if (!$NewRevision) {
   $NewRevision = $currentRef

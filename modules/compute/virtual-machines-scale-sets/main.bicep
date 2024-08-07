@@ -22,13 +22,11 @@ param size string
 
 @description('Specifies the storage account type for the os managed disk.')
 @allowed([
-  'PremiumV2_LRS'
   'Premium_LRS'
   'Premium_ZRS'
   'StandardSSD_LRS'
   'StandardSSD_ZRS'
   'Standard_LRS'
-  'UltraSSD_LRS'
 ])
 param osDiskType string
 
@@ -152,7 +150,7 @@ var securityProfileSettings = {
   }
 }
 
-resource virtualMachineScaleSet 'Microsoft.Compute/virtualMachineScaleSets@2022-03-01' = {
+resource virtualMachineScaleSet 'Microsoft.Compute/virtualMachineScaleSets@2024-03-01' = {
   name: name
   location: location
   tags: tags
@@ -217,12 +215,14 @@ resource virtualMachineScaleSet 'Microsoft.Compute/virtualMachineScaleSets@2022-
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
   scope: virtualMachineScaleSet
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 

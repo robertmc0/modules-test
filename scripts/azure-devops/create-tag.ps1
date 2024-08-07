@@ -55,10 +55,10 @@ if ($Tag -or $LASTEXITCODE -eq 1) {
   git tag $Tag
   git push origin $Tag
   if (!$?) {
-    throw "Failed to push tag $tag."
+    throw "Failed to push tag $Tag."
   }
-  $tag | Out-File "$rootPath/.module-tag"
-  Write-Host "Created tag $tag"
+  $Tag | Out-File "$rootPath/.module-tag"
+  Write-Host "Created tag $Tag"
 }
 else {
   Write-Host "No version update present. Creation of release $newVersion skipped."
