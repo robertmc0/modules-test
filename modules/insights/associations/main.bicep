@@ -15,6 +15,11 @@ param dataCollectionRuleId string
 param dataCollectionEndpointId string = ''
 
 @description('OS Type of the VM, either Windows, Linux or All')
+@allowed([
+  'Windows'
+  'Linux'
+  'All'
+])
 param kind string
 
 resource vmRef 'Microsoft.Compute/virtualMachines@2023-09-01' existing = {
