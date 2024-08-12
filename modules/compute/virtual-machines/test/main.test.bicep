@@ -55,7 +55,24 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
   properties: {
     dataSources: {
       performanceCounters: [
-        '\\System\\Processes'
+        {
+          name: 'insightsMetricsCounterSpecifiers'
+          streams: [
+            'Microsoft-InsightsMetrics'
+          ]
+          samplingFrequencyInSeconds: 60
+          counterSpecifiers: [
+            '\\VmInsights\\DetailedMetrics'
+          ]
+        }
+        {
+          name: 'perfCounterDataSource60'
+          streams: [
+            'Microsoft-Perf'
+          ]
+          samplingFrequencyInSeconds: 60
+          counterSpecifiers: ['\\System\\Processes'] // Cannot be empty
+        }
       ]
     }
     dataFlows: [
