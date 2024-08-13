@@ -17,7 +17,7 @@
   Optional. The name of the source container registry to copy images from. Defaults to Arinco Container Registry name.
 
   .PARAMETER SourceTenantId
-  Optional. The tenant id where the source container registry is located. Defaults to Arinco Production TenantId.
+  Mandatory. The tenant id where the source container registry is located.
 
   .PARAMETER TargetRegistryName
   Mandatory. The name of the target container registry to copy images to.
@@ -35,7 +35,7 @@
   Optional. The number of parallel threads to use when scanning & importing images. Defaults to 30.
 
   .EXAMPLE
-    Build-Registry -AzureRegion australiaeast -TargetRegistryName msaebicepregistryacr -TargetTenantId 5be09980-4733-4c85-bebb-8c68f87d8ec0 -TargetSubscriptionName ms-platform-sub -TargetRegistryResourceGroupName ms-aue-bicep-registry-rg
+    Build-Registry -AzureRegion australiaeast -SourceTenantId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx -TargetRegistryName msaebicepregistryacr -TargetTenantId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx -TargetSubscriptionName ms-platform-sub -TargetRegistryResourceGroupName ms-aue-bicep-registry-rg
 
 
   .NOTES
@@ -56,6 +56,7 @@
       [17/05/2023 - 1.1 - Scott Wilkinson]: Added enhancements to supporting uplifting a registry with new module versions
       [10/08/2023 - 1.2 - AJ Bajada]: Added check for existing Azure container registry
       [01/04/2024 - 1.3 - Ben Ranford]: Added support for parallel scanning/importing
+      [13/08/2024 - 1.4 - Scott Wilkinson]: Removed tenant ids.
 
 #>
 function Build-Registry {
@@ -66,7 +67,7 @@ function Build-Registry {
     [Parameter(Mandatory = $false)]
     [string] $SourceRegistryName = "prdarincobicepmodulesacr",
     [Parameter(Mandatory = $false)]
-    [string] $SourceTenantId = "e27c8f55-2c8d-4851-8059-1199a3dab677",
+    [string] $SourceTenantId,
     [Parameter(Mandatory = $true)]
     [string] $TargetRegistryName,
     [Parameter(Mandatory = $true)]
