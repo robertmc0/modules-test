@@ -17,7 +17,7 @@
   Optional. The name of the source container registry to copy images from. Defaults to Arinco Container Registry name.
 
   .PARAMETER SourceTenantId
-  Mandatory. The tenant id where the source container registry is located.
+  Mandatory. The tenant id where the source container registry is located. This is usually the Arinco Tenant Id.
 
   .PARAMETER TargetRegistryName
   Mandatory. The name of the target container registry to copy images to.
