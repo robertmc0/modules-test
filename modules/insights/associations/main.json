@@ -4,14 +4,20 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.170.59819",
-      "templateHash": "6863806756928275219"
+      "version": "0.29.47.4906",
+      "templateHash": "5429993983261092980"
     },
     "name": "Data collection rule association module",
     "description": "This module deploys Microsoft.Insights dataCollectionRuleAssociations",
     "owner": "Arinco"
   },
   "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
     "virtualMachineName": {
       "type": "string",
       "metadata": {
@@ -30,6 +36,17 @@
       "metadata": {
         "description": "Optional. A DCR endpoint to associate with the VM and DCR with. Only used if Log analytics sits behind a network firewall."
       }
+    },
+    "kind": {
+      "type": "string",
+      "allowedValues": [
+        "Windows",
+        "Linux",
+        "All"
+      ],
+      "metadata": {
+        "description": "OS Type of the VM, either Windows, Linux or All"
+      }
     }
   },
   "resources": [
@@ -38,11 +55,37 @@
       "type": "Microsoft.Insights/dataCollectionRuleAssociations",
       "apiVersion": "2021-09-01-preview",
       "scope": "[format('Microsoft.Compute/virtualMachines/{0}', parameters('virtualMachineName'))]",
-      "name": "dce-association",
+      "name": "dcr-association",
       "properties": {
         "description": "Association of data collection rule. Deleting this association will break the data collection for this virtual machine.",
         "dataCollectionRuleId": "[parameters('dataCollectionRuleId')]",
         "dataCollectionEndpointId": "[if(not(empty(parameters('dataCollectionEndpointId'))), parameters('dataCollectionEndpointId'), null())]"
+      }
+    },
+    {
+      "condition": "[equals(parameters('kind'), 'Windows')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'AzureMonitorWindowsAgent')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitor",
+        "type": "AzureMonitorWindowsAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true
+      }
+    },
+    {
+      "condition": "[equals(parameters('kind'), 'Linux')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'AzureMonitorLinuxAgent')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitor",
+        "type": "AzureMonitorLinuxAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true
       }
     }
   ],
@@ -52,7 +95,7 @@
       "metadata": {
         "description": "The resource Id for the DCR association."
       },
-      "value": "[extensionResourceId(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), 'Microsoft.Insights/dataCollectionRuleAssociations', 'dce-association')]"
+      "value": "[extensionResourceId(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), 'Microsoft.Insights/dataCollectionRuleAssociations', 'dcr-association')]"
     }
   }
 }

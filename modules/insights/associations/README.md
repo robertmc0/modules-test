@@ -15,9 +15,11 @@ Deploying this module will perform the following:
 
 | Name                       | Type     | Required | Description                                                                                                                |
 | :------------------------- | :------: | :------: | :------------------------------------------------------------------------------------------------------------------------- |
+| `location`                 | `string` | Yes      | The geo-location where the resource lives.                                                                                 |
 | `virtualMachineName`       | `string` | Yes      | Required. The VM name for the DCR to associate with.                                                                       |
 | `dataCollectionRuleId`     | `string` | Yes      | Required. The resource Id of the DCR to associate the VM to.                                                               |
 | `dataCollectionEndpointId` | `string` | No       | Optional. A DCR endpoint to associate with the VM and DCR with. Only used if Log analytics sits behind a network firewall. |
+| `kind`                     | `string` | Yes      | OS Type of the VM, either Windows, Linux or All                                                                            |
 
 ## Outputs
 
