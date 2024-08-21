@@ -18,6 +18,9 @@ param vmNameMin string = substring(newGuid(), 0, 15)
 @maxLength(15)
 param vmName string = substring(newGuid(), 0, 13)
 
+@maxLength(15)
+param vmAzName string = substring(newGuid(), 0, 13)
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -103,6 +106,62 @@ module vm '../main.bicep' = {
       platformFaultDomainCount: 2
       platformUpdateDomainCount: 5
     }
+    dataDisks: [
+      {
+        storageAccountType: 'StandardSSD_LRS'
+        diskSizeGB: 1024
+        caching: 'None'
+        createOption: 'Empty'
+      }
+    ]
+    antiMalwareConfiguration: {
+      AntimalwareEnabled: true
+      RealtimeProtectionEnabled: true
+      ScheduledScanSettings: {
+        isEnabled: true
+        scanType: 'Quick'
+        day: '7'
+        time: '120'
+      }
+    }
+    enableSecurityProfile: true
+    encryptionAtHost: true
+    securityType: 'TrustedLaunch'
+    secureBootEnabled: true
+    vTpmEnabled: true
+    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+  }
+}
+
+module vmAz '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-vm-az'
+  params: {
+    name: vmAzName
+    location: location
+    size: 'Standard_B1s'
+    instanceCount: 2
+    osStorageAccountType: 'StandardSSD_LRS'
+    imageReference: {
+      publisher: 'MicrosoftWindowsServer'
+      offer: 'WindowsServer'
+      sku: '2022-datacenter-azure-edition'
+      version: 'latest'
+    }
+    windowsConfiguration: {
+      enableAutomaticUpdates: true
+      patchSettings: {
+        assessmentMode: 'AutomaticByPlatform'
+        patchMode: 'AutomaticByPlatform'
+        automaticByPlatformSettings: {
+          rebootSetting: 'IfRequired'
+          bypassPlatformSafetyChecksOnUserSchedule: true
+        }
+      }
+    }
+    adminUsername: 'azureuser'
+    adminPassword: vmPassword
+    subnetResourceId: '${vnet.id}/subnets/default'
+    autoAssignAvailabilityZones: true
     dataDisks: [
       {
         storageAccountType: 'StandardSSD_LRS'

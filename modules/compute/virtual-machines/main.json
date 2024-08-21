@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "6655302973390088058"
+      "templateHash": "11329424424176080471"
     },
     "name": "Virtual Machines Module",
     "description": "This module deploys Microsoft.Compute virtualMachines",
@@ -67,6 +67,13 @@
       ],
       "metadata": {
         "description": "Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed."
+      }
+    },
+    "autoAssignAvailabilityZones": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Set to true to automatically assign an AZ based on instance index."
       }
     },
     "availabilitySetConfiguration": {
@@ -414,7 +421,7 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "identity": "[variables('identity')]",
-      "zones": "[parameters('availabilityZones')]",
+      "zones": "[if(parameters('autoAssignAvailabilityZones'), createArray(string(add(mod(range(0, parameters('instanceCount'))[copyIndex()], 3), 1))), parameters('availabilityZones'))]",
       "properties": {
         "availabilitySet": "[if(not(empty(parameters('availabilitySetConfiguration'))), createObject('id', resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))), null())]",
         "networkProfile": {
