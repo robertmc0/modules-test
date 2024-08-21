@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "13341796103920204535"
+      "version": "0.29.47.4906",
+      "templateHash": "818001383650241349"
     },
     "name": "Desktop Virtualization hostPools Module",
     "description": "This module deploys Microsoft.DesktopVirtualization hostPools",
@@ -77,6 +77,26 @@
       "defaultValue": 5,
       "metadata": {
         "description": "Optional. The max session limit of HostPool."
+      }
+    },
+    "customRdpProperty": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.desktopvirtualization/hostpools?pivots=deployment-language-bicep#customrdpproperties",
+        "example": {
+          "properties": {
+            "string": "string"
+          }
+        },
+        "description": "Optional. Custom RDP Property."
+      }
+    },
+    "validationEnvironment": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Flag the host pool as a validation environment."
       }
     },
     "preferredAppGroupType": {
@@ -187,7 +207,7 @@
   "resources": [
     {
       "type": "Microsoft.DesktopVirtualization/hostPools",
-      "apiVersion": "2022-04-01-preview",
+      "apiVersion": "2023-11-01-preview",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -199,7 +219,9 @@
         "preferredAppGroupType": "[parameters('preferredAppGroupType')]",
         "registrationInfo": "[parameters('registrationInfo')]",
         "maxSessionLimit": "[parameters('maxSessionLimit')]",
-        "startVMOnConnect": "[parameters('startVMOnConnect')]"
+        "startVMOnConnect": "[parameters('startVMOnConnect')]",
+        "customRdpProperty": "[if(empty(parameters('customRdpProperty')), null(), parameters('customRdpProperty'))]",
+        "validationEnvironment": "[parameters('validationEnvironment')]"
       }
     },
     {

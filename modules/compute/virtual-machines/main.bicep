@@ -127,13 +127,11 @@ param userAssignedIdentities object = {}
 
 @description('Specifies the storage account type for the os managed disk.')
 @allowed([
-  'PremiumV2_LRS'
   'Premium_LRS'
   'Premium_ZRS'
   'StandardSSD_LRS'
   'StandardSSD_ZRS'
   'Standard_LRS'
-  'UltraSSD_LRS'
 ])
 param osStorageAccountType string
 
