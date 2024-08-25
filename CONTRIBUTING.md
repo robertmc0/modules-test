@@ -248,6 +248,52 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
 
 ```
 
+#### User-Defined Functions
+
+- If any user-defined functions are required for the module, create and store them within a `functions.bicep` file within the root directory of the respective module. They must be decorated with `@export()` in-order for them to be usable outside of the file.
+
+- The preferred approach to creating, referencing and consuming user-defined functions is shown within an example below:
+
+```bicep
+// functions.bicep
+@export()
+@description('Constructs a valid URL from a combination of a hostname and path, and whether or not HTTPS should be used.')
+func buildUrl(https bool, hostname string, path string) string => '${https ? 'https' : 'http'}://${hostname}${empty(path) ? '' : '/${path}'}'
+```
+
+```bicep
+// xyz.bicep
+import * as Functions from './functions.bicep'
+
+Functions.buildUrl(true, 'arinco.com.au', 'blog')
+```
+
+- Note, version 0.26.X or higher of the Bicep CLI is required to use this feature.
+
+#### User-Defined Types
+
+- If any user-defined types are required for the module, create and store them within a `types.bicep` file within the root directory of the respective module. They must be decorated with `@export()` in-order for them to be usable outside of the file.
+
+- User-defined types provide compile time safety on-top of the existing `object` and `array` types, and as such are preferable alternatives where they may usually be required.
+
+- The preferred approach to creating, referencing and consuming user-defined types is shown within an example below:
+
+```bicep
+// types.bicep
+@export()
+@description('The time range for an Application Insights query.')
+type appInsightsTimeRange = 'P1D' | 'P3D' | 'P7D'
+```
+
+```bicep
+// xyz.bicep
+import * as Types from './types.bicep'
+
+param timeRange Types.appInsightsTimeRange = 'P1D'
+```
+
+- Note, version 0.12.X or higher of the Bicep CLI is required to use this feature.
+
 ### Usage of nested or extension resources
 
 When authoring a module, you may need to reference nested resources (Microsoft.storageAccounts/blob-services) or extension resources (Microsoft.insights/diagnosticsettings). The preferred approach is to include these resources as part of the module rather than generate a separate nested child module. An example is shown below.
