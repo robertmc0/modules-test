@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "5810293132739494742"
+      "templateHash": "14892874192830845411"
     },
     "name": "Storage Accounts",
     "description": "This module deploys Microsoft.StorageAccounts and child resources",
@@ -380,21 +380,21 @@
         "None"
       ],
       "metadata": {
-        "description": "Indicates the directory service used."
+        "description": "Optional. Indicates the directory service used."
       }
     },
     "domainName": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB."
+        "description": "Optional. Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB."
       }
     },
     "domainGUID": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Domain GUID for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB."
+        "description": "Optional. Domain GUID for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB."
       }
     }
   },
