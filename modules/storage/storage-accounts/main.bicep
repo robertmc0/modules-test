@@ -242,10 +242,17 @@ param enablerestorePolicy bool = false
 param directoryServiceOptions string = 'None'
 
 @description('Optional. Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.')
-param domainName string = ''
-
-@description('Optional. Domain GUID for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.')
-param domainGUID string = ''
+@metadata({
+  domainName: 'Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.'
+  domainGUID: 'Domain GUID for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.'
+  domainSid: 'Specifies the security identifier (SID).'
+  forestName: '	Specifies the Active Directory forest to get.'
+  netBiosDomainName: 'Specifies the NetBIOS domain name.'
+  samAccountName: 'Specifies the Active Directory SAMAccountName for Azure Storage.'
+  accountType: 'Specifies the Active Directory account type for Azure Storage.'
+  azureStorageSid: 'Specifies the security identifier (SID) for Azure Storage.'
+})
+param activeDirectoryProperties object = {}
 
 var supportsBlobService = kind == 'BlockBlobStorage' || kind == 'BlobStorage' || kind == 'StorageV2' || kind == 'Storage'
 
@@ -308,10 +315,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     allowBlobPublicAccess: allowBlobPublicAccess
     defaultToOAuthAuthentication: defaultToOAuthAuthentication
     azureFilesIdentityBasedAuthentication: {
-      activeDirectoryProperties: {
-        domainGuid: domainName
-        domainName: domainGUID
-      }
+      activeDirectoryProperties: activeDirectoryProperties
       directoryServiceOptions: directoryServiceOptions
     }
   }

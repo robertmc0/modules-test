@@ -55,8 +55,7 @@ Applies a lock to the storage account if the lock is specified.
 | `containerDeleteRetentionPolicy`        | `int`    | No       | Optional. Amount of days the deleted container is available for recovery.                                                                                                                                 |
 | `enablerestorePolicy`                   | `bool`   | No       | Optional.  If true, enable point-in-time restore for containers policy.                                                                                                                                   |
 | `directoryServiceOptions`               | `string` | No       | Optional. Indicates the directory service used.                                                                                                                                                           |
-| `domainName`                            | `string` | No       | Optional. Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.                                                                                  |
-| `domainGUID`                            | `string` | No       | Optional. Domain GUID for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.                                                                                  |
+| `activeDirectoryProperties`             | `object` | No       | Optional. Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.                                                                                  |
 
 ## Outputs
 
