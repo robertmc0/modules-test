@@ -238,6 +238,6 @@ module vmAz '../main.bicep' = {
     securityType: 'TrustedLaunch'
     secureBootEnabled: true
     vTpmEnabled: true
-    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    dataCollectionRuleId: string(dcr.id)
   }
 }
