@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.25.53.49325",
-      "templateHash": "2235626791934362357"
+      "version": "0.29.47.4906",
+      "templateHash": "8039996675292951376"
     },
     "name": "Storage Accounts",
     "description": "This module deploys Microsoft.StorageAccounts and child resources",
@@ -369,6 +369,34 @@
       "metadata": {
         "description": "Optional.  If true, enable point-in-time restore for containers policy."
       }
+    },
+    "directoryServiceOptions": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "AADDS",
+        "AADKERB",
+        "AD",
+        "None"
+      ],
+      "metadata": {
+        "description": "Optional. Indicates the directory service used."
+      }
+    },
+    "activeDirectoryProperties": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "domainName": "Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.",
+        "domainGUID": "Domain GUID for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.",
+        "domainSid": "Specifies the security identifier (SID).",
+        "forestName": "\tSpecifies the Active Directory forest to get.",
+        "netBiosDomainName": "Specifies the NetBIOS domain name.",
+        "samAccountName": "Specifies the Active Directory SAMAccountName for Azure Storage.",
+        "accountType": "Specifies the Active Directory account type for Azure Storage.",
+        "azureStorageSid": "Specifies the security identifier (SID) for Azure Storage.",
+        "description": "Optional. Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB."
+      }
     }
   },
   "variables": {
@@ -429,7 +457,11 @@
         "largeFileSharesState": "[parameters('largeFileSharesState')]",
         "allowSharedKeyAccess": "[parameters('allowSharedKeyAccess')]",
         "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
-        "defaultToOAuthAuthentication": "[parameters('defaultToOAuthAuthentication')]"
+        "defaultToOAuthAuthentication": "[parameters('defaultToOAuthAuthentication')]",
+        "azureFilesIdentityBasedAuthentication": {
+          "activeDirectoryProperties": "[parameters('activeDirectoryProperties')]",
+          "directoryServiceOptions": "[parameters('directoryServiceOptions')]"
+        }
       }
     },
     {

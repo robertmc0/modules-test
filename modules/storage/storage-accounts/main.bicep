@@ -232,6 +232,28 @@ param containerDeleteRetentionPolicy int = 7
 @description('Optional.  If true, enable point-in-time restore for containers policy.')
 param enablerestorePolicy bool = false
 
+@description('Optional. Indicates the directory service used.')
+@allowed([
+'AADDS'
+'AADKERB'
+'AD'
+'None'
+])
+param directoryServiceOptions string = 'None'
+
+@description('Optional. Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.')
+@metadata({
+  domainName: 'Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.'
+  domainGUID: 'Domain GUID for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.'
+  domainSid: 'Specifies the security identifier (SID).'
+  forestName: '	Specifies the Active Directory forest to get.'
+  netBiosDomainName: 'Specifies the NetBIOS domain name.'
+  samAccountName: 'Specifies the Active Directory SAMAccountName for Azure Storage.'
+  accountType: 'Specifies the Active Directory account type for Azure Storage.'
+  azureStorageSid: 'Specifies the security identifier (SID) for Azure Storage.'
+})
+param activeDirectoryProperties object = {}
+
 var supportsBlobService = kind == 'BlockBlobStorage' || kind == 'BlobStorage' || kind == 'StorageV2' || kind == 'Storage'
 
 var supportsFileService = kind == 'FileStorage' || kind == 'StorageV2' || kind == 'Storage'
@@ -292,6 +314,10 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     allowSharedKeyAccess: allowSharedKeyAccess
     allowBlobPublicAccess: allowBlobPublicAccess
     defaultToOAuthAuthentication: defaultToOAuthAuthentication
+    azureFilesIdentityBasedAuthentication: {
+      activeDirectoryProperties: activeDirectoryProperties
+      directoryServiceOptions: directoryServiceOptions
+    }
   }
 }
 
