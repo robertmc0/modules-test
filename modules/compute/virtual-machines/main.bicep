@@ -42,6 +42,9 @@ param imageReference object
 ])
 param availabilityZones array = []
 
+@description('Optional. Set to true to automatically assign an AZ based on instance index.')
+param autoAssignAvailabilityZones bool = false
+
 @description('Optional. The availability set configuration for the virtual machine. Not required if availabilityZones is set.')
 @metadata({
   name: 'Availability set name.'
@@ -309,7 +312,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [
     location: location
     tags: tags
     identity: identity
-    zones: availabilityZones
+    zones: autoAssignAvailabilityZones ? [ string((i % 3) + 1) ] : availabilityZones
     properties: {
       availabilitySet: !empty(availabilitySetConfiguration)
         ? {
