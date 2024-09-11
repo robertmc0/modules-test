@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "4959045401261497916"
+      "version": "0.29.47.4906",
+      "templateHash": "9402628122927010720"
     },
     "name": "API Management Module",
     "description": "This module deploys API Management resource.",
@@ -186,7 +186,9 @@
         "Consumption",
         "Developer",
         "Basic",
+        "Basicv2",
         "Standard",
+        "Standardv2",
         "Premium"
       ],
       "metadata": {
@@ -425,7 +427,7 @@
   "resources": [
     {
       "type": "Microsoft.ApiManagement/service",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -594,7 +596,7 @@
       "metadata": {
         "description": "The principal ID of the system assigned identity."
       },
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-03-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-03-01-preview', 'full').identity.principalId, '')]"
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-09-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-09-01-preview', 'full').identity.principalId, '')]"
     }
   }
 }
