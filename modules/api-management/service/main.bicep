@@ -128,7 +128,9 @@ param restore bool = false
   'Consumption'
   'Developer'
   'Basic'
+  'Basicv2'
   'Standard'
+  'Standardv2'
   'Premium'
 ])
 param sku string = 'Developer'
@@ -284,7 +286,7 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
-resource apiManagementService 'Microsoft.ApiManagement/service@2023-03-01-preview' = {
+resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: name
   location: location
   tags: tags
