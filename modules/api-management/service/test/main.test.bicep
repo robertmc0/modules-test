@@ -33,6 +33,18 @@ param apimSubnetServiceEndpoints array = [
   }
 ]
 
+@description('Optional. The pricing tier of this API Management service.')
+@allowed([
+  'Consumption'
+  'Developer'
+  'Basic'
+  'Basicv2'
+  'Standard'
+  'Standardv2'
+  'Premium'
+])
+param sku string = 'Developer'
+
 @description('Resource Tags')
 param tags object = {}
 
@@ -490,7 +502,7 @@ module apimMin '../main.bicep' = {
   params: {
     name: '${shortIdentifier}-tst-apim-min-${uniqueString(deployment().name, 'apim', location)}'
     location: location
-    sku: 'Developer'
+    sku: sku
     skuCount: 1
     publisherEmail: 'support@arinco.com.au'
     publisherName: 'ARINCO'
