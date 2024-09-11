@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.27.1.19265",
-      "templateHash": "4401760109094575872"
+      "version": "0.29.47.4906",
+      "templateHash": "6842463461487910815"
     },
     "name": "Virtual Machines Module",
     "description": "This module deploys Microsoft.Compute virtualMachines",
@@ -67,6 +67,13 @@
       ],
       "metadata": {
         "description": "Optional. A list of availability zones denoting the zone in which the virtual machine should be deployed."
+      }
+    },
+    "autoAssignAvailabilityZones": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Set to true to automatically assign an AZ based on instance index."
       }
     },
     "availabilitySetConfiguration": {
@@ -181,13 +188,11 @@
     "osStorageAccountType": {
       "type": "string",
       "allowedValues": [
-        "PremiumV2_LRS",
         "Premium_LRS",
         "Premium_ZRS",
         "StandardSSD_LRS",
         "StandardSSD_ZRS",
-        "Standard_LRS",
-        "UltraSSD_LRS"
+        "Standard_LRS"
       ],
       "metadata": {
         "description": "Specifies the storage account type for the os managed disk."
@@ -218,11 +223,11 @@
         "description": "Optional. Specifies that the image or disk that is being used was licensed on-premises. Accepted values \"Windows_Client\", \"Windows_Server\", \"RHEL_BYOS\" or \"SLES_BYOS\"."
       }
     },
-    "diagnosticLogAnalyticsWorkspaceId": {
+    "dataCollectionRuleId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. Log analytics workspace resource id. Only required to enable VM Diagnostics."
+        "description": "Optional. DCR id to associate VM for AMA agent. Only required to enable VM Diagnostics."
       }
     },
     "antiMalwareConfiguration": {
@@ -416,7 +421,7 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "identity": "[variables('identity')]",
-      "zones": "[parameters('availabilityZones')]",
+      "zones": "[if(parameters('autoAssignAvailabilityZones'), createArray(string(add(mod(range(0, parameters('instanceCount'))[copyIndex()], 3), 1))), parameters('availabilityZones'))]",
       "properties": {
         "availabilitySet": "[if(not(empty(parameters('availabilitySetConfiguration'))), createObject('id', resourceId('Microsoft.Compute/availabilitySets', if(not(empty(parameters('availabilitySetConfiguration'))), parameters('availabilitySetConfiguration').name, 'placeholder'))), null())]",
         "networkProfile": {
@@ -479,46 +484,19 @@
     },
     {
       "copy": {
-        "name": "extension_monitoring",
+        "name": "association",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2022-08-01",
-      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'Microsoft.EnterpriseCloud.Monitoring')]",
-      "location": "[parameters('location')]",
+      "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
+      "type": "Microsoft.Insights/dataCollectionRuleAssociations",
+      "apiVersion": "2021-09-01-preview",
+      "scope": "[format('Microsoft.Compute/virtualMachines/{0}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]",
+      "name": "dcr-association",
       "properties": {
-        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-        "type": "MicrosoftMonitoringAgent",
-        "typeHandlerVersion": "1.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), createObject('workspaceId', reference(parameters('diagnosticLogAnalyticsWorkspaceId'), '2015-03-20').customerId), null())]",
-        "protectedSettings": "[if(not(empty(parameters('diagnosticLogAnalyticsWorkspaceId'))), createObject('workspaceKey', listKeys(parameters('diagnosticLogAnalyticsWorkspaceId'), '2015-03-20').primarySharedKey), null())]"
+        "description": "Association of data collection rule. Deleting this association will break the data collection for this virtual machine.",
+        "dataCollectionRuleId": "[parameters('dataCollectionRuleId')]"
       },
       "dependsOn": [
-        "extension_joinDomain",
-        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
-      ]
-    },
-    {
-      "copy": {
-        "name": "extension_depAgent",
-        "count": "[length(range(0, parameters('instanceCount')))]"
-      },
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2023-09-01",
-      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'DependencyAgentWindows')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
-        "type": "DependencyAgentWindows",
-        "typeHandlerVersion": "9.10",
-        "autoUpgradeMinorVersion": true
-      },
-      "dependsOn": [
-        "extension_joinDomain",
-        "extension_monitoring",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
       ]
     },
@@ -527,7 +505,7 @@
         "name": "extension_guestHealth",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
       "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'GuestHealthWindowsAgent')]",
@@ -546,22 +524,44 @@
     },
     {
       "copy": {
-        "name": "extension_azureMonitorWindowsAgent",
+        "name": "extension_azureMonitorAgent",
         "count": "[length(range(0, parameters('instanceCount')))]"
       },
-      "condition": "[not(empty(parameters('diagnosticLogAnalyticsWorkspaceId')))]",
+      "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-08-01",
-      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'AzureMonitorWindowsAgent')]",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), if(or(not(empty(parameters('windowsConfiguration'))), and(empty(parameters('windowsConfiguration')), empty(parameters('linuxConfiguration')))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent'))]",
       "location": "[parameters('location')]",
       "properties": {
         "publisher": "Microsoft.Azure.Monitor",
-        "type": "AzureMonitorWindowsAgent",
+        "type": "[if(or(not(empty(parameters('windowsConfiguration'))), and(empty(parameters('windowsConfiguration')), empty(parameters('linuxConfiguration')))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent')]",
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true
       },
       "dependsOn": [
+        "association",
         "extension_guestHealth",
+        "extension_joinDomain",
+        "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "extension_depAgent",
+        "count": "[length(range(0, parameters('instanceCount')))]"
+      },
+      "condition": "[not(empty(parameters('dataCollectionRuleId')))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2023-09-01",
+      "name": "[format('{0}/{1}', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))), 'DependencyAgentWindows')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+        "type": "DependencyAgentWindows",
+        "typeHandlerVersion": "9.10",
+        "autoUpgradeMinorVersion": true
+      },
+      "dependsOn": [
         "extension_joinDomain",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
       ]
@@ -658,9 +658,9 @@
         }
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), if(or(not(empty(parameters('windowsConfiguration'))), and(empty(parameters('windowsConfiguration')), empty(parameters('linuxConfiguration')))), 'AzureMonitorWindowsAgent', 'AzureMonitorLinuxAgent'))]",
         "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), 'DependencyAgentWindows')]",
         "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), 'GuestHealthWindowsAgent')]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]]], 1))), 'Microsoft.EnterpriseCloud.Monitoring')]",
         "[resourceId('Microsoft.Compute/virtualMachines', format('{0}{1}', parameters('name'), format('{0:D2}', add(range(0, parameters('instanceCount'))[range(0, parameters('instanceCount'))[copyIndex()]], 1))))]"
       ]
     },

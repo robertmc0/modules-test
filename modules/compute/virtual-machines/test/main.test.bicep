@@ -18,6 +18,9 @@ param vmNameMin string = substring(newGuid(), 0, 15)
 @maxLength(15)
 param vmName string = substring(newGuid(), 0, 13)
 
+@maxLength(15)
+param vmAzName string = substring(newGuid(), 0, 13)
+
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
@@ -44,6 +47,59 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
   location: location
+}
+
+resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
+  name: '${shortIdentifier}-tst-dcr-${uniqueString(deployment().name, 'dataCollectionRule', location)}'
+  location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    dataSources: {
+      performanceCounters: [
+        {
+          name: 'insightsMetricsCounterSpecifiers'
+          streams: [
+            'Microsoft-InsightsMetrics'
+          ]
+          samplingFrequencyInSeconds: 60
+          counterSpecifiers: [
+            '\\VmInsights\\DetailedMetrics'
+          ]
+        }
+        {
+          name: 'perfCounterDataSource60'
+          streams: [
+            'Microsoft-Perf'
+          ]
+          samplingFrequencyInSeconds: 60
+          counterSpecifiers: ['\\System\\Processes'] // Cannot be empty
+        }
+      ]
+    }
+    dataFlows: [
+      {
+        destinations: [
+          'myloganalyticsworkspace'
+        ]
+        streams: [
+          'Microsoft-Event'
+          'Microsoft-InsightsMetrics'
+          'Microsoft-Perf'
+          'Microsoft-Syslog'
+        ]
+      }
+    ]
+    destinations: {
+      logAnalytics: [
+        {
+          workspaceResourceId: string(logAnalyticsWorkspace.id)
+          name: 'myloganalyticsworkspace'
+        }
+      ]
+    }
+  }
 }
 
 /*======================================================================
@@ -126,6 +182,62 @@ module vm '../main.bicep' = {
     securityType: 'TrustedLaunch'
     secureBootEnabled: true
     vTpmEnabled: true
-    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
+    dataCollectionRuleId: string(dcr.id)
+  }
+}
+
+module vmAz '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-vm-az'
+  params: {
+    name: vmAzName
+    location: location
+    size: 'Standard_B1s'
+    instanceCount: 2
+    osStorageAccountType: 'StandardSSD_LRS'
+    imageReference: {
+      publisher: 'MicrosoftWindowsServer'
+      offer: 'WindowsServer'
+      sku: '2022-datacenter-azure-edition'
+      version: 'latest'
+    }
+    windowsConfiguration: {
+      enableAutomaticUpdates: true
+      patchSettings: {
+        assessmentMode: 'AutomaticByPlatform'
+        patchMode: 'AutomaticByPlatform'
+        automaticByPlatformSettings: {
+          rebootSetting: 'IfRequired'
+          bypassPlatformSafetyChecksOnUserSchedule: true
+        }
+      }
+    }
+    adminUsername: 'azureuser'
+    adminPassword: vmPassword
+    subnetResourceId: '${vnet.id}/subnets/default'
+    autoAssignAvailabilityZones: true
+    dataDisks: [
+      {
+        storageAccountType: 'StandardSSD_LRS'
+        diskSizeGB: 1024
+        caching: 'None'
+        createOption: 'Empty'
+      }
+    ]
+    antiMalwareConfiguration: {
+      AntimalwareEnabled: true
+      RealtimeProtectionEnabled: true
+      ScheduledScanSettings: {
+        isEnabled: true
+        scanType: 'Quick'
+        day: '7'
+        time: '120'
+      }
+    }
+    enableSecurityProfile: true
+    encryptionAtHost: true
+    securityType: 'TrustedLaunch'
+    secureBootEnabled: true
+    vTpmEnabled: true
+    dataCollectionRuleId: string(dcr.id)
   }
 }
