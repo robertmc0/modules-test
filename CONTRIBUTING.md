@@ -12,6 +12,18 @@ Alternatively follow the steps below to install the required software on your ma
   - `winget install Microsoft.DotNet.SDK.8` for Windows
   - `brew install --cask dotnet-sdk` for MacOs which installs the latest version of .NET SDK or
   - Install Manually from [Offical .NET Download Page](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- For `MacOs`,  if `.NET Tools directory` is not on the `PATH` environment variable, follow the steps below for `zsh`:
+  - Add `.NET Tools directory` to your profile by running the following command
+
+  ```bash
+  cat << \EOF >> ~/.zprofile
+  # Add .NET Core SDK tools
+  export PATH="$PATH:/Users/mehdikhaleghian/.dotnet/tools"
+  EOF
+  ```
+
+  - run `zsh -l` to make it available for current session
+
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
 - Install the following VSCode extensions as they are used for code formatting:
