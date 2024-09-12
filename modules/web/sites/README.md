@@ -6,10 +6,12 @@ This module deploys Microsoft.web/sites AKA App Service Web Sites
 
 This module completes the following tasks:
 
-- Creates a Microsoft.web/sites resource
-- Connects Application Insights if specified
-- Enables CORS if specified
-- Provides options to deploy Windows or Linux
+- Creates a Microsoft.web/sites resource.
+- Connects Application Insights if specified.
+- Enables CORS if specified.
+- Enables IP Restrictions if specified.
+- Provides options to deploy Windows or Linux.
+- Configures diagnostic settings if enabled.
 - Applies a lock to the component if specified.
 
 ## Parameters
