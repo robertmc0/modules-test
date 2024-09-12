@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "737264803674843663"
+      "version": "0.29.47.4906",
+      "templateHash": "11977777307392184676"
     },
     "name": "App Service Web Sites",
     "description": "This module deploys Microsoft.web/sites AKA App Service Web Sites",
