@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "11977777307392184676"
+      "templateHash": "5814992340478171720"
     },
     "name": "App Service Web Sites",
     "description": "This module deploys Microsoft.web/sites AKA App Service Web Sites",
@@ -301,7 +301,7 @@
       "metadata": {
         "key1": "value1",
         "key2": "value2",
-        "description": "Optional. Custom App Settings to be added if they don't exist."
+        "description": "Optional. Application settings to be applied to web site."
       }
     },
     "connectionStrings": {

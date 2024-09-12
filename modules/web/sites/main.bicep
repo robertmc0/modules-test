@@ -214,7 +214,7 @@ param alwaysOn bool = false
 @description('Optional. Enable sending session affinity cookies, which route client requests in the same session to the same instance.')
 param clientAffinityEnabled bool = false
 
-@description('Optional. Custom App Settings to be added if they don\'t exist.')
+@description('Optional. Application settings to be applied to web site.')
 @metadata({
   key1: 'value1'
   key2: 'value2'
