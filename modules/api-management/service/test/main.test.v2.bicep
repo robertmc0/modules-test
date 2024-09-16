@@ -472,9 +472,7 @@ resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04
 }]
 
 var environmentHostingDomain = 'deploy.arinco.local'
-var apiHostname = 'api-${environment}.${environmentHostingDomain}'
 var portalHostname = 'portal-api-${environment}.${environmentHostingDomain}'
-var managementHostname = 'management-api-${environment}.${environmentHostingDomain}'
 
 module kvCert 'br/public:deployment-scripts/create-kv-certificate:1.1.1' = {
   name: 'akvCertSingle'
@@ -485,7 +483,6 @@ module kvCert 'br/public:deployment-scripts/create-kv-certificate:1.1.1' = {
     certificateCommonName: '*.${environmentHostingDomain}'
   }
 }
-var sslCertSecretId = kvCert.outputs.certificateSecretIdUnversioned
 
 var nameValues = [
   {
@@ -539,62 +536,16 @@ module apim '../main.bicep' = {
     hostnameConfigurations: [
       {
         type: 'Proxy'
-        hostName: apiHostname
-        keyVaultId: sslCertSecretId
-        negotiateClientCertificate: false
-        identityClientId: userIdentity.properties.clientId
-      }
-      {
-        type: 'DeveloperPortal'
-        hostName: portalHostname
-        keyVaultId: sslCertSecretId
-        negotiateClientCertificate: false
-        identityClientId: userIdentity.properties.clientId
-      }
-      {
-        type: 'Management'
-        hostName: managementHostname
-        keyVaultId: sslCertSecretId
         negotiateClientCertificate: false
         identityClientId: userIdentity.properties.clientId
       }
     ]
     namedValues: nameValues
-    loggerSamplingRate: 50
-    loggerHttpCorrelationProtocol: 'W3C'
-    loggerVerbosity: 'verbose'
-    loggerBackendSettings: {
-      request: {
-        headers: [
-          'X-Forwarded-For'
-          'my-header'
-        ]
-        body: {
-          bytes: 8192
-        }
-      }
-      response: {
-        body: {
-          bytes: 8192
-        }
-      }
-    }
-    loggerFrontendSettings: {
-      request: {
-        headers: [
-          'X-Forwarded-For'
-          'my-header'
-        ]
-        body: {
-          bytes: 8192
-        }
-      }
-      response: {
-        body: {
-          bytes: 8192
-        }
-      }
-    }
+    loggerSamplingRate: 0
+    loggerHttpCorrelationProtocol: null
+    loggerVerbosity: null
+    loggerBackendSettings: {}
+    loggerFrontendSettings: {}
   }
   dependsOn: [
     keyVaultRoleAssignment

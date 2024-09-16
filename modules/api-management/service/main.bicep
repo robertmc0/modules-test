@@ -290,10 +290,6 @@ var identity = identityType != 'None' ? {
 // Determines if the selected SKU is one of the V2 SKUs (BasicV2 or StandardV2)
 var isV2Sku = sku == 'BasicV2' || sku == 'StandardV2'
 
-// Check if a custom domain is configured for the Developer Portal
-var developerPortalHostnames = [for hc in hostnameConfigurations: hc.type == 'DeveloperPortal' ? hc : null]
-var hasDeveloperPortalHostname = length(developerPortalHostnames) > 0
-
 
 resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: name
@@ -320,7 +316,6 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-previe
     publicIpAddressId: !empty(publicIpAddressId) ? publicIpAddressId : null
     apiVersionConstraint: !empty(minApiVersion) ? json('{"minApiVersion": "${minApiVersion}"}') : null
     restore: restore
-    developerPortalStatus: hasDeveloperPortalHostname ? 'Enabled' : 'Disabled'
   }
 }
 

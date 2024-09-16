@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "15231339880431477044"
+      "templateHash": "13998276869715137388"
     },
     "name": "API Management Module",
     "description": "This module deploys API Management resource.",
@@ -418,19 +418,13 @@
           "timeGrain": null,
           "enabled": true
         }
-      },
-      {
-        "name": "developerPortalHostnames",
-        "count": "[length(parameters('hostnameConfigurations'))]",
-        "input": "[if(equals(parameters('hostnameConfigurations')[copyIndex('developerPortalHostnames')].type, 'DeveloperPortal'), parameters('hostnameConfigurations')[copyIndex('developerPortalHostnames')], null())]"
       }
     ],
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
-    "isV2Sku": "[or(equals(parameters('sku'), 'BasicV2'), equals(parameters('sku'), 'StandardV2'))]",
-    "hasDeveloperPortalHostname": "[greater(length(variables('developerPortalHostnames')), 0)]"
+    "isV2Sku": "[or(equals(parameters('sku'), 'BasicV2'), equals(parameters('sku'), 'StandardV2'))]"
   },
   "resources": [
     {
@@ -459,8 +453,7 @@
         "virtualNetworkConfiguration": "[if(not(empty(parameters('subnetResourceId'))), json(format('{{\"subnetResourceId\": \"{0}\"}}', parameters('subnetResourceId'))), null())]",
         "publicIpAddressId": "[if(not(empty(parameters('publicIpAddressId'))), parameters('publicIpAddressId'), null())]",
         "apiVersionConstraint": "[if(not(empty(parameters('minApiVersion'))), json(format('{{\"minApiVersion\": \"{0}\"}}', parameters('minApiVersion'))), null())]",
-        "restore": "[parameters('restore')]",
-        "developerPortalStatus": "[if(variables('hasDeveloperPortalHostname'), 'Enabled', 'Disabled')]"
+        "restore": "[parameters('restore')]"
       }
     },
     {
