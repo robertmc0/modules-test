@@ -15,7 +15,7 @@ steps:
     persistCredentials: true
     fetchDepth: 0
 
-  - bash: az devops configure --defaults organization='$(System.TeamFoundationCollectionUri)' project='$(System.TeamProject)' --use-git-aliases true
+  - bash: az devops configure --defaults organization="$(System.TeamFoundationCollectionUri)" project="$(System.TeamProject)" --use-git-aliases true
     displayName: "Set default Azure DevOps organization and project"
 
   - task: NodeTool@0
