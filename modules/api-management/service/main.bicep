@@ -290,6 +290,11 @@ var identity = identityType != 'None' ? {
 // Determines if the selected SKU is one of the V2 SKUs (BasicV2 or StandardV2)
 var isV2Sku = sku == 'BasicV2' || sku == 'StandardV2'
 
+// Check if a custom domain is configured for the Developer Portal
+var developerPortalHostnames = [for hc in hostnameConfigurations: hc.type == 'DeveloperPortal' ? hc : null]
+var hasDeveloperPortalHostname = length(developerPortalHostnames) > 0
+
+
 resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: name
   location: location
@@ -315,6 +320,7 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-previe
     publicIpAddressId: !empty(publicIpAddressId) ? publicIpAddressId : null
     apiVersionConstraint: !empty(minApiVersion) ? json('{"minApiVersion": "${minApiVersion}"}') : null
     restore: restore
+    developerPortalStatus: hasDeveloperPortalHostname ? 'Enabled' : 'Disabled'
   }
 }
 
@@ -340,17 +346,18 @@ resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01
   }
 }
 
-// Configures portal settings only if the SKU is not V2 (since V2 SKUs may have different portal capabilities)
+// Enable the Developer Portal if a custom domain is configured
 resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-01-preview' = if(!isV2Sku) {
   parent: apiManagementService
   name: 'signin'
   properties: {
-    enabled: true // Redirect Anonymous users to the Sign-In page.
+    enabled: true
   }
 }
 
+
 // Deploys the Application Insights logger only if the SKU is not V2
-resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = if(!isV2Sku) {
+resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = if(!isV2Sku && !empty(applicationInsightsId)) {
   parent: apiManagementService
   name: 'applicationInsights'
   properties: {
@@ -367,7 +374,7 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = i
 }
 
 // Configures diagnostics settings for the logger only if the SKU is not V2
-resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = if(!isV2Sku) {
+resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = if (!isV2Sku && !empty(applicationInsightsId)) {
   parent: apiManagementService
   name: 'applicationinsights'
   properties: {
