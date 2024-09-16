@@ -335,7 +335,8 @@ resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01
   }
 }
 
-resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-01-preview' = {
+// This resource only works with v1
+resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-01-preview' = if (sku != 'BasicV2' && sku != 'StandardV2') {
   parent: apiManagementService
   name: 'signin'
   properties: {

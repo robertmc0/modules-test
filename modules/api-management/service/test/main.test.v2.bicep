@@ -43,7 +43,7 @@ param apimSubnetServiceEndpoints array = [
   'Standardv2'
   'Premium'
 ])
-param sku string = 'Developer'
+param sku string = 'Standardv2'
 
 @description('Resource Tags')
 param tags object = {}
