@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "9402628122927010720"
+      "templateHash": "4715982728224804497"
     },
     "name": "API Management Module",
     "description": "This module deploys API Management resource.",
@@ -486,6 +486,7 @@
       ]
     },
     {
+      "condition": "[and(not(equals(parameters('sku'), 'BasicV2')), not(equals(parameters('sku'), 'StandardV2')))]",
       "type": "Microsoft.ApiManagement/service/portalsettings",
       "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'signin')]",
