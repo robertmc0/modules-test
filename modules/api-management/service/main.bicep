@@ -200,7 +200,7 @@ param diagnosticMetricsToEnable array = [
 ]
 
 @description('Resource ID of the application insights resource.')
-param applicationInsightsId string
+param applicationInsightsId string = ''
 
 @description('Optional. The sample rate for the application insights logger. Defaults to 10%.')
 param loggerSamplingRate int = 10
@@ -277,7 +277,8 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   enabled: true
 }]
 
-var applicationInsights = reference(applicationInsightsId, '2020-02-02', 'Full')
+// References the Application Insights resource only if 'applicationInsightsId' is provided and the SKU is not V2
+var applicationInsights = !empty(applicationInsightsId) && !isV2Sku ? reference(applicationInsightsId, '2020-02-02', 'Full') : null
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
@@ -286,8 +287,7 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
-// Conditional deployment for non-v2 SKUs
-// The StandardV2 SKU does not support certain features, specifically the Application Insights logger and diagnostic settings.
+// Determines if the selected SKU is one of the V2 SKUs (BasicV2 or StandardV2)
 var isV2Sku = sku == 'BasicV2' || sku == 'StandardV2'
 
 resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
@@ -329,17 +329,18 @@ resource nameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-previ
   }
 }]
 
-resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = if(!isV2Sku) {
+// Deploys the named value for the logger credentials only if the SKU is not V2 and 'applicationInsightsId' is provided
+resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = if(!isV2Sku && !empty(applicationInsightsId)) {
   parent: apiManagementService
   name: 'Logger-Credentials'
   properties: {
     displayName: 'Logger-Credentials'
     secret: true
-    value: applicationInsights.properties.InstrumentationKey
+    value: applicationInsights.?properties.InstrumentationKey
   }
 }
 
-// This resource only works with v1
+// Configures portal settings only if the SKU is not V2 (since V2 SKUs may have different portal capabilities)
 resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-01-preview' = if(!isV2Sku) {
   parent: apiManagementService
   name: 'signin'
@@ -348,6 +349,7 @@ resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-0
   }
 }
 
+// Deploys the Application Insights logger only if the SKU is not V2
 resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = if(!isV2Sku) {
   parent: apiManagementService
   name: 'applicationInsights'
@@ -364,6 +366,7 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = i
   ]
 }
 
+// Configures diagnostics settings for the logger only if the SKU is not V2
 resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = if(!isV2Sku) {
   parent: apiManagementService
   name: 'applicationinsights'
