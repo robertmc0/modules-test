@@ -404,6 +404,14 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = if (virtualNetwor
             id: nsg.id
           }
           serviceEndpoints: apimSubnetServiceEndpoints
+          delegations: [
+            {
+              name: 'apimDelegation'
+              properties: {
+                serviceName: 'Microsoft.Web/serverFarms'
+              }
+            }
+          ]
         }
       }
     ]

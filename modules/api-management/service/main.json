@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "4715982728224804497"
+      "templateHash": "1928445938951040550"
     },
     "name": "API Management Module",
     "description": "This module deploys API Management resource.",
@@ -422,7 +422,8 @@
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
-    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "isV2Sku": "[or(equals(parameters('sku'), 'BasicV2'), equals(parameters('sku'), 'StandardV2'))]"
   },
   "resources": [
     {
@@ -473,6 +474,7 @@
       ]
     },
     {
+      "condition": "[not(variables('isV2Sku'))]",
       "type": "Microsoft.ApiManagement/service/namedValues",
       "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'Logger-Credentials')]",
@@ -486,7 +488,7 @@
       ]
     },
     {
-      "condition": "[and(not(equals(parameters('sku'), 'BasicV2')), not(equals(parameters('sku'), 'StandardV2')))]",
+      "condition": "[not(variables('isV2Sku'))]",
       "type": "Microsoft.ApiManagement/service/portalsettings",
       "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'signin')]",
@@ -498,6 +500,7 @@
       ]
     },
     {
+      "condition": "[not(variables('isV2Sku'))]",
       "type": "Microsoft.ApiManagement/service/loggers",
       "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'applicationInsights')]",
@@ -515,6 +518,7 @@
       ]
     },
     {
+      "condition": "[not(variables('isV2Sku'))]",
       "type": "Microsoft.ApiManagement/service/diagnostics",
       "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'applicationinsights')]",

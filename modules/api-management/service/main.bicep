@@ -286,6 +286,9 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
+// Conditional deployment for non-v2 SKUs
+var isV2Sku = sku == 'BasicV2' || sku == 'StandardV2'
+
 resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: name
   location: location
@@ -325,7 +328,7 @@ resource nameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-previ
   }
 }]
 
-resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = if(!isV2Sku) {
   parent: apiManagementService
   name: 'Logger-Credentials'
   properties: {
@@ -336,7 +339,7 @@ resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01
 }
 
 // This resource only works with v1
-resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-01-preview' = if (sku != 'BasicV2' && sku != 'StandardV2') {
+resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-01-preview' = if(!isV2Sku) {
   parent: apiManagementService
   name: 'signin'
   properties: {
@@ -344,7 +347,7 @@ resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-0
   }
 }
 
-resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = {
+resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = if(!isV2Sku) {
   parent: apiManagementService
   name: 'applicationInsights'
   properties: {
@@ -360,7 +363,7 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = {
   ]
 }
 
-resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = {
+resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = if(!isV2Sku) {
   parent: apiManagementService
   name: 'applicationinsights'
   properties: {
