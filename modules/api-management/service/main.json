@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "1928445938951040550"
+      "templateHash": "15911962179867311343"
     },
     "name": "API Management Module",
     "description": "This module deploys API Management resource.",
@@ -298,6 +298,7 @@
     },
     "applicationInsightsId": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "Resource ID of the application insights resource."
       }
@@ -474,14 +475,14 @@
       ]
     },
     {
-      "condition": "[not(variables('isV2Sku'))]",
+      "condition": "[and(not(variables('isV2Sku')), not(empty(parameters('applicationInsightsId'))))]",
       "type": "Microsoft.ApiManagement/service/namedValues",
       "apiVersion": "2023-03-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'Logger-Credentials')]",
       "properties": {
         "displayName": "Logger-Credentials",
         "secret": true,
-        "value": "[reference(parameters('applicationInsightsId'), '2020-02-02', 'Full').properties.InstrumentationKey]"
+        "value": "[tryGet(if(and(not(empty(parameters('applicationInsightsId'))), not(variables('isV2Sku'))), reference(parameters('applicationInsightsId'), '2020-02-02', 'Full'), null()), 'properties', 'InstrumentationKey')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
