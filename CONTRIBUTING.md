@@ -405,6 +405,7 @@ brm validate
 
 The `brm validate` command mentioned in the above step does not deploy the `test/main.test.bicep` file. Its envisaged that in a future revision, it will be deployed to a temporary resource group as part of the pull request merge validation CI pipeline once you submit a pull request. For now, you must run test deployments locally using Azure CLI or Azure PowerShell before submitting a pull request.
 
+For Windows
 ```
 az group create --name bicep-validation-rg --location australiaeast
 az deployment group create --resource-group bicep-validation-rg --template-file .\test\main.test.bicep
@@ -414,6 +415,15 @@ az deployment group create --resource-group bicep-validation-rg --template-file 
 New-AzResourceGroup -Name "bicep-validation-rg" -Location "australiaeast"
 New-AzResourceGroupDeployment -ResourceGroupName 'bicep-validation-rg' -TemplateFile '.\test\main.test.bicep'
 ```
+
+For MacOs
+
+```bash
+az group create --name bicep-validation-rg --location australiaeast
+az deployment group create --resource-group bicep-validation-rg --template-file ./test/main.test.bicep
+```
+
+In order to use Powershell, type `pwsh`
 
 ## Publishing a module
 
