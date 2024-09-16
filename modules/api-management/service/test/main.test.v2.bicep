@@ -18,7 +18,7 @@ param shortIdentifier string = 'arn'
   'External'
   'Internal'
 ])
-param virtualNetworkType string = 'External'
+param virtualNetworkType string = 'Internal'
 
 @description('Service endpoints enabled on the API Management subnet')
 param apimSubnetServiceEndpoints array = [
@@ -511,6 +511,9 @@ module apimMin '../main.bicep' = {
     skuCount: 1
     publisherEmail: 'support@arinco.com.au'
     publisherName: 'ARINCO'
+    virtualNetworkType: virtualNetworkType
+    publicIpAddressId: publicIpAddress.id
+    subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''
   }
 }
 module apim '../main.bicep' = {
@@ -533,13 +536,7 @@ module apim '../main.bicep' = {
     userAssignedIdentities: {
       '${userIdentity.id}': {}
     }
-    hostnameConfigurations: [
-      {
-        type: 'Proxy'
-        negotiateClientCertificate: false
-        identityClientId: userIdentity.properties.clientId
-      }
-    ]
+    hostnameConfigurations: []
     namedValues: nameValues
     loggerSamplingRate: 0
     loggerHttpCorrelationProtocol: null
