@@ -514,7 +514,6 @@ module apimMin '../main.bicep' = {
     skuCount: 1
     publisherEmail: 'support@arinco.com.au'
     publisherName: 'ARINCO'
-    applicationInsightsId: applicationInsights.id
   }
 }
 module apim '../main.bicep' = {
@@ -561,7 +560,6 @@ module apim '../main.bicep' = {
       }
     ]
     namedValues: nameValues
-    applicationInsightsId: applicationInsights.id
     loggerSamplingRate: 50
     loggerHttpCorrelationProtocol: 'W3C'
     loggerVerbosity: 'verbose'

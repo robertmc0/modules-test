@@ -287,6 +287,7 @@ var identity = identityType != 'None' ? {
 } : null
 
 // Conditional deployment for non-v2 SKUs
+// The StandardV2 SKU does not support certain features, specifically the Application Insights logger and diagnostic settings.
 var isV2Sku = sku == 'BasicV2' || sku == 'StandardV2'
 
 resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
