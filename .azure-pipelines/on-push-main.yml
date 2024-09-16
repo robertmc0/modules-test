@@ -64,4 +64,3 @@ steps:
       azurePowerShellVersion: LatestVersion
     env:
       AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
-      SYSTEM_TEAMFOUNDATIONCOLLECTIONURI: $(System.TeamFoundationCollectionUri)
