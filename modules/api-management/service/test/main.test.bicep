@@ -38,9 +38,7 @@ param apimSubnetServiceEndpoints array = [
   'Consumption'
   'Developer'
   'Basic'
-  'Basicv2'
   'Standard'
-  'Standardv2'
   'Premium'
 ])
 param sku string = 'Developer'
@@ -453,15 +451,17 @@ var roleDefinitionIds = [
   'a4417e6f-fecd-4de8-b567-7b0420556985' // Key Vault Certificate Officer
 ]
 
-resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [for roleDefintionId in roleDefinitionIds: {
-  name: guid(roleDefintionId, userIdentity.id, keyVault.id)
-  scope: keyVault
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefintionId)
-    principalId: userIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
+resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [
+  for roleDefintionId in roleDefinitionIds: {
+    name: guid(roleDefintionId, userIdentity.id, keyVault.id)
+    scope: keyVault
+    properties: {
+      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefintionId)
+      principalId: userIdentity.properties.principalId
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
 var environmentHostingDomain = 'deploy.arinco.local'
 var apiHostname = 'api-${environment}.${environmentHostingDomain}'
