@@ -414,6 +414,24 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = if (virtualNetwor
           ]
         }
       }
+      {
+        name: 'apim-subnet2'
+        properties: {
+          addressPrefix: '10.0.0.32/27'
+          networkSecurityGroup: {
+            id: nsg.id
+          }
+          serviceEndpoints: apimSubnetServiceEndpoints
+          delegations: [
+            {
+              name: 'apimDelegation'
+              properties: {
+                serviceName: 'Microsoft.Web/serverFarms'
+              }
+            }
+          ]
+        }
+      }
     ]
   }
 }
@@ -516,8 +534,10 @@ module apimMin '../main.bicep' = {
     virtualNetworkType: virtualNetworkType
     publicIpAddressId: publicIpAddress.id
     subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''
+    applicationInsightsId: applicationInsights.id
   }
 }
+
 module apim '../main.bicep' = {
   name: 'deployApim'
   params: {
@@ -534,17 +554,72 @@ module apim '../main.bicep' = {
     diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
     virtualNetworkType: virtualNetworkType
     publicIpAddressId: publicIpAddress.id
-    subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''
+    subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[1].id : ''
+    applicationInsightsId: applicationInsights.id
     userAssignedIdentities: {
       '${userIdentity.id}': {}
     }
-    hostnameConfigurations: []
+    // note: host name configurations are commented out because this requires domain ownership verification and a fully configured DNS server
+    hostnameConfigurations: [
+      // {
+      //   type: 'Proxy'
+      //   hostName: apiHostname
+      //   keyVaultId: sslCertSecretId
+      //   negotiateClientCertificate: false
+      //   identityClientId: userIdentity.properties.clientId
+      // }
+      // {
+      //   type: 'DeveloperPortal'
+      //   hostName: portalHostname
+      //   keyVaultId: sslCertSecretId
+      //   negotiateClientCertificate: false
+      //   identityClientId: userIdentity.properties.clientId
+      // }
+      // {
+      //   type: 'Management'
+      //   hostName: managementHostname
+      //   keyVaultId: sslCertSecretId
+      //   negotiateClientCertificate: false
+      //   identityClientId: userIdentity.properties.clientId
+      // }
+    ]
+    enableDeveloperPortal: true
     namedValues: nameValues
-    loggerSamplingRate: 0
-    loggerHttpCorrelationProtocol: null
-    loggerVerbosity: null
-    loggerBackendSettings: {}
-    loggerFrontendSettings: {}
+    loggerSamplingRate: 50
+    loggerHttpCorrelationProtocol: 'W3C'
+    loggerVerbosity: 'verbose'
+    loggerBackendSettings: {
+      request: {
+        headers: [
+          'X-Forwarded-For'
+          'my-header'
+        ]
+        body: {
+          bytes: 8192
+        }
+      }
+      response: {
+        body: {
+          bytes: 8192
+        }
+      }
+    }
+    loggerFrontendSettings: {
+      request: {
+        headers: [
+          'X-Forwarded-For'
+          'my-header'
+        ]
+        body: {
+          bytes: 8192
+        }
+      }
+      response: {
+        body: {
+          bytes: 8192
+        }
+      }
+    }
   }
   dependsOn: [
     keyVaultRoleAssignment

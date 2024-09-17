@@ -178,9 +178,12 @@ param publicIpAddressId string = ''
 
 @description('Optional. A list of availability zones denoting where the resource needs to come from.')
 @metadata({
-  zones: [ '1', '2' ]
+  zones: ['1', '2']
 })
 param zones array = []
+
+@description('Optional. Enable Developer Portal.')
+param enableDeveloperPortal bool = false
 
 @description('Optional. The name of log category groups that will be streamed.')
 @allowed([
@@ -200,35 +203,31 @@ param diagnosticMetricsToEnable array = [
 ]
 
 @description('Resource ID of the application insights resource.')
-param applicationInsightsId string = ''
+param applicationInsightsId string
 
 @description('Optional. The sample rate for the application insights logger. Defaults to 10%.')
 param loggerSamplingRate int = 10
 
 @description('Optional. Diagnostic settings for incoming/outgoing HTTP messages to backend.')
-@metadata(
-  {
-    doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/diagnostics?pivots=deployment-language-arm-template#pipelinediagnosticsettings-1'
-    example: {
-      request: {
-        headers: [ 'X-Forwarded-For' ]
-      }
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/diagnostics?pivots=deployment-language-arm-template#pipelinediagnosticsettings-1'
+  example: {
+    request: {
+      headers: ['X-Forwarded-For']
     }
   }
-)
+})
 param loggerBackendSettings object = {}
 
 @description('Optional. Diagnostic settings for incoming/outgoing HTTP messages to frontend.')
-@metadata(
-  {
-    doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/diagnostics?pivots=deployment-language-arm-template#pipelinediagnosticsettings-1'
-    example: {
-      request: {
-        headers: [ 'X-Forwarded-For' ]
-      }
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/diagnostics?pivots=deployment-language-arm-template#pipelinediagnosticsettings-1'
+  example: {
+    request: {
+      headers: ['X-Forwarded-For']
     }
   }
-)
+})
 param loggerFrontendSettings object = {}
 
 @description('Optional. Correlation protocol to use for application insights diagnostics. Legacy is the default.')
@@ -266,30 +265,36 @@ var lockName = toLower('${apiManagementService.name}-${resourcelock}-lck')
 
 var diagnosticsName = toLower('${apiManagementService.name}-dgs')
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
-  enabled: true
-}]
+var diagnosticsLogs = [
+  for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+    categoryGroup: categoryGroup
+    enabled: true
+  }
+]
 
-var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-}]
+var diagnosticsMetrics = [
+  for metric in diagnosticMetricsToEnable: {
+    category: metric
+    timeGrain: null
+    enabled: true
+  }
+]
 
-// References the Application Insights resource only if 'applicationInsightsId' is provided and the SKU is not V2
-var applicationInsights = !empty(applicationInsightsId) && !isV2Sku ? reference(applicationInsightsId, '2020-02-02', 'Full') : null
+var applicationInsights = reference(applicationInsightsId, '2020-02-02', 'Full')
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = systemAssignedIdentity
+  ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned')
+  : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
-var identity = identityType != 'None' ? {
-  type: identityType
-  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
-} : null
+var identity = identityType != 'None'
+  ? {
+      type: identityType
+      userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+    }
+  : null
 
-// Determines if the selected SKU is one of the V2 SKUs (BasicV2 or StandardV2)
-var isV2Sku = sku == 'BasicV2' || sku == 'StandardV2'
-
+// Determines if the selected SKU is one of the V2 SKUs (Basicv2 or Standardv2)
+var isV2Sku = sku == 'Basicv2' || sku == 'Standardv2'
 
 resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: name
@@ -316,33 +321,34 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2023-09-01-previe
     publicIpAddressId: !empty(publicIpAddressId) ? publicIpAddressId : null
     apiVersionConstraint: !empty(minApiVersion) ? json('{"minApiVersion": "${minApiVersion}"}') : null
     restore: restore
+    developerPortalStatus: enableDeveloperPortal ? 'Enabled' : 'Disabled'
   }
 }
 
-resource nameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = [for namedValue in namedValues: {
-  parent: apiManagementService
-  name: '${namedValue.displayName}'
-  properties: {
-    displayName: namedValue.displayName
-    keyVault: contains(namedValue, 'keyVault') ? namedValue.keyVault : null
-    secret: contains(namedValue, 'secret') ? namedValue.secret : false
-    value: contains(namedValue, 'value') ? namedValue.value : null
+resource nameValue 'Microsoft.ApiManagement/service/namedValues@2023-09-01-preview' = [
+  for namedValue in namedValues: {
+    parent: apiManagementService
+    name: '${namedValue.displayName}'
+    properties: {
+      displayName: namedValue.displayName
+      keyVault: namedValue.?keyVault ?? null
+      secret: namedValue.?secret ?? false
+      value: namedValue.?value ?? null
+    }
   }
-}]
+]
 
-// Deploys the named value for the logger credentials only if the SKU is not V2 and 'applicationInsightsId' is provided
-resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = if(!isV2Sku && !empty(applicationInsightsId)) {
+resource loggerNameValue 'Microsoft.ApiManagement/service/namedValues@2023-09-01-preview' = {
   parent: apiManagementService
   name: 'Logger-Credentials'
   properties: {
     displayName: 'Logger-Credentials'
     secret: true
-    value: applicationInsights.?properties.InstrumentationKey
+    value: applicationInsights.properties.InstrumentationKey
   }
 }
 
-// Enable the Developer Portal if a custom domain is configured
-resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-01-preview' = if(!isV2Sku) {
+resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-09-01-preview' = if (!isV2Sku) {
   parent: apiManagementService
   name: 'signin'
   properties: {
@@ -350,9 +356,7 @@ resource portalSetting 'Microsoft.ApiManagement/service/portalsettings@2023-03-0
   }
 }
 
-
-// Deploys the Application Insights logger only if the SKU is not V2
-resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = if(!isV2Sku && !empty(applicationInsightsId)) {
+resource logger 'Microsoft.ApiManagement/service/loggers@2023-09-01-preview' = {
   parent: apiManagementService
   name: 'applicationInsights'
   properties: {
@@ -368,8 +372,7 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = i
   ]
 }
 
-// Configures diagnostics settings for the logger only if the SKU is not V2
-resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = if (!isV2Sku && !empty(applicationInsightsId)) {
+resource loggerSettings 'Microsoft.ApiManagement/service/diagnostics@2023-09-01-preview' = {
   parent: apiManagementService
   name: 'applicationinsights'
   properties: {
@@ -392,7 +395,9 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != '
   name: lockName
   properties: {
     level: resourcelock
-    notes: resourcelock == 'CanNotDelete' ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: resourcelock == 'CanNotDelete'
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -402,7 +407,9 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   properties: {
     storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
     workspaceId: !empty(diagnosticLogAnalyticsWorkspaceId) ? diagnosticLogAnalyticsWorkspaceId : null
-    eventHubAuthorizationRuleId: !empty(diagnosticEventHubAuthorizationRuleId) ? diagnosticEventHubAuthorizationRuleId : null
+    eventHubAuthorizationRuleId: !empty(diagnosticEventHubAuthorizationRuleId)
+      ? diagnosticEventHubAuthorizationRuleId
+      : null
     eventHubName: !empty(diagnosticEventHubName) ? diagnosticEventHubName : null
     metrics: diagnosticsMetrics
     logs: diagnosticsLogs
@@ -420,4 +427,9 @@ output resourceId string = apiManagementService.id
 output resourceGroupName string = resourceGroup().name
 
 @description('The principal ID of the system assigned identity.')
-output systemAssignedPrincipalId string = systemAssignedIdentity && contains(apiManagementService.identity, 'principalId') ? apiManagementService.identity.principalId : ''
+output systemAssignedPrincipalId string = systemAssignedIdentity && contains(
+    apiManagementService.identity,
+    'principalId'
+  )
+  ? apiManagementService.identity.principalId
+  : ''

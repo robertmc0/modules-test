@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "13998276869715137388"
+      "templateHash": "3755028441042098218"
     },
     "name": "API Management Module",
     "description": "This module deploys API Management resource.",
@@ -271,6 +271,13 @@
         "description": "Optional. A list of availability zones denoting where the resource needs to come from."
       }
     },
+    "enableDeveloperPortal": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Developer Portal."
+      }
+    },
     "diagnosticLogCategoryGroupsToEnable": {
       "type": "array",
       "defaultValue": [
@@ -298,7 +305,6 @@
     },
     "applicationInsightsId": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
         "description": "Resource ID of the application insights resource."
       }
@@ -424,7 +430,7 @@
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
-    "isV2Sku": "[or(equals(parameters('sku'), 'BasicV2'), equals(parameters('sku'), 'StandardV2'))]"
+    "isV2Sku": "[or(equals(parameters('sku'), 'Basicv2'), equals(parameters('sku'), 'Standardv2'))]"
   },
   "resources": [
     {
@@ -453,7 +459,8 @@
         "virtualNetworkConfiguration": "[if(not(empty(parameters('subnetResourceId'))), json(format('{{\"subnetResourceId\": \"{0}\"}}', parameters('subnetResourceId'))), null())]",
         "publicIpAddressId": "[if(not(empty(parameters('publicIpAddressId'))), parameters('publicIpAddressId'), null())]",
         "apiVersionConstraint": "[if(not(empty(parameters('minApiVersion'))), json(format('{{\"minApiVersion\": \"{0}\"}}', parameters('minApiVersion'))), null())]",
-        "restore": "[parameters('restore')]"
+        "restore": "[parameters('restore')]",
+        "developerPortalStatus": "[if(parameters('enableDeveloperPortal'), 'Enabled', 'Disabled')]"
       }
     },
     {
@@ -462,27 +469,26 @@
         "count": "[length(parameters('namedValues'))]"
       },
       "type": "Microsoft.ApiManagement/service/namedValues",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), format('{0}', parameters('namedValues')[copyIndex()].displayName))]",
       "properties": {
         "displayName": "[parameters('namedValues')[copyIndex()].displayName]",
-        "keyVault": "[if(contains(parameters('namedValues')[copyIndex()], 'keyVault'), parameters('namedValues')[copyIndex()].keyVault, null())]",
-        "secret": "[if(contains(parameters('namedValues')[copyIndex()], 'secret'), parameters('namedValues')[copyIndex()].secret, false())]",
-        "value": "[if(contains(parameters('namedValues')[copyIndex()], 'value'), parameters('namedValues')[copyIndex()].value, null())]"
+        "keyVault": "[coalesce(tryGet(parameters('namedValues')[copyIndex()], 'keyVault'), null())]",
+        "secret": "[coalesce(tryGet(parameters('namedValues')[copyIndex()], 'secret'), false())]",
+        "value": "[coalesce(tryGet(parameters('namedValues')[copyIndex()], 'value'), null())]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
       ]
     },
     {
-      "condition": "[and(not(variables('isV2Sku')), not(empty(parameters('applicationInsightsId'))))]",
       "type": "Microsoft.ApiManagement/service/namedValues",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'Logger-Credentials')]",
       "properties": {
         "displayName": "Logger-Credentials",
         "secret": true,
-        "value": "[tryGet(if(and(not(empty(parameters('applicationInsightsId'))), not(variables('isV2Sku'))), reference(parameters('applicationInsightsId'), '2020-02-02', 'Full'), null()), 'properties', 'InstrumentationKey')]"
+        "value": "[reference(parameters('applicationInsightsId'), '2020-02-02', 'Full').properties.InstrumentationKey]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
@@ -491,7 +497,7 @@
     {
       "condition": "[not(variables('isV2Sku'))]",
       "type": "Microsoft.ApiManagement/service/portalsettings",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'signin')]",
       "properties": {
         "enabled": true
@@ -501,9 +507,8 @@
       ]
     },
     {
-      "condition": "[and(not(variables('isV2Sku')), not(empty(parameters('applicationInsightsId'))))]",
       "type": "Microsoft.ApiManagement/service/loggers",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'applicationInsights')]",
       "properties": {
         "loggerType": "applicationInsights",
@@ -519,9 +524,8 @@
       ]
     },
     {
-      "condition": "[and(not(variables('isV2Sku')), not(empty(parameters('applicationInsightsId'))))]",
       "type": "Microsoft.ApiManagement/service/diagnostics",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'applicationinsights')]",
       "properties": {
         "alwaysLog": "allErrors",
