@@ -1,0 +1,566 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.29.47.4906",
+      "templateHash": "5814992340478171720"
+    },
+    "name": "App Service Web Sites",
+    "description": "This module deploys Microsoft.web/sites AKA App Service Web Sites",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of App Service Plan"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "kind": {
+      "type": "string",
+      "allowedValues": [
+        "api",
+        "api,linux",
+        "app",
+        "app,linux",
+        "functionapp",
+        "functionapp,linux"
+      ],
+      "metadata": {
+        "description": "Kind of web site."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "serverFarmId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the App Service Plan"
+      }
+    },
+    "redundancyMode": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "ActiveActive",
+        "Failover",
+        "GeoRedundant",
+        "Manual",
+        "None"
+      ],
+      "metadata": {
+        "description": "Optional. Site redundancy mode."
+      }
+    },
+    "virtualNetworkSubnetId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The resource ID for the target virtual network subnet."
+      }
+    },
+    "vnetRouteAllEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Virtual Network Route All enabled. This causes all outbound traffic to have Virtual Network Security Groups and User Defined Routes applied."
+      }
+    },
+    "publicNetworkAccess": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Allow or block all public traffic."
+      }
+    },
+    "keyVaultReferenceIdentity": {
+      "type": "string",
+      "defaultValue": "[if(empty(parameters('userAssignedIdentities')), 'SystemAssigned', 'UserAssigned')]",
+      "allowedValues": [
+        "SystemAssigned",
+        "UserAssigned"
+      ],
+      "metadata": {
+        "description": "Optional. Identity to use for Key Vault Reference authentication."
+      }
+    },
+    "apiManagementConfig": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Azure API management settings linked to the app."
+      }
+    },
+    "applicationInsightsId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the application insights resource."
+      }
+    },
+    "runtime": {
+      "type": "string",
+      "defaultValue": "[if(and(contains(parameters('kind'), 'linux'), not(contains(parameters('kind'), 'function'))), 'DOTNETCORE|8.0', 'DOTNET|8.0')]",
+      "metadata": {
+        "runtime": [
+          "DOCKER|<image reference e.g. mcr.microsoft.com/azure-app-service/windows/parkingpage:latest>",
+          "DOTNET|6.0",
+          "DOTNET|7.0",
+          "DOTNETCORE|6.0",
+          "DOTNETCORE|7.0",
+          "DOTNETCORE|8.0",
+          "DOTNET-ISOLATED|4.8",
+          "DOTNET-ISOLATED|6.0",
+          "DOTNET-ISOLATED|7.0",
+          "DOTNET-ISOLATED|8.0",
+          "GO|1.19",
+          "JAVA|8",
+          "JAVA|11",
+          "JAVA|17",
+          "NODE|14",
+          "NODE|16",
+          "NODE|18",
+          "NODE|18-lts",
+          "NODE|20",
+          "NODE|20-lts",
+          "PHP|8.0",
+          "PHP|8.1",
+          "PHP|8.2",
+          "POWERSHELL|7.2",
+          "PYTHON|3.7",
+          "PYTHON|3.8",
+          "PYTHON|3.9",
+          "PYTHON|3.10",
+          "PYTHON|3.11"
+        ],
+        "description": "Optional. Runtime type and version in the format TYPE|VERSION. Defaults to DOTNET|8.0"
+      }
+    },
+    "allowedOrigins": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. Gets or sets the list of origins that should be allowed to make cross-origin calls (for example: http://example.com:12345)."
+      }
+    },
+    "ipSecurityRestrictions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "sampleInput": [
+          {
+            "action": "Allow or Deny access for this IP range.",
+            "description": "IP restriction rule description.",
+            "headers": {
+              "X-Forwarded-Host": [],
+              "X-Forwarded-For": [],
+              "X-Azure-FDID": [],
+              "X-FD-HealthProbe": []
+            },
+            "ipAddress": "CIDR or Azure Service Tag",
+            "name": "IP restriction rule name.",
+            "priority": 999,
+            "tag": "Default or ServiceTag or XffProxy",
+            "vnetSubnetResourceId": "Virtual network resource id."
+          },
+          {
+            "action": "Allow",
+            "description": "Allow traffic from our specific Front Door instance.",
+            "headers": {
+              "X-Azure-FDID": [
+                "12345678-1234-1234-1234-123456789012"
+              ]
+            },
+            "ipAddress": "AzureFrontDoor.Backend",
+            "name": "Allow Front Door",
+            "priority": 100,
+            "tag": "ServiceTag"
+          }
+        ],
+        "description": "Optional. IP security restrictions for main."
+      }
+    },
+    "ipSecurityRestrictionsDefaultAction": {
+      "type": "string",
+      "defaultValue": "Allow",
+      "allowedValues": [
+        "Allow",
+        "Deny"
+      ],
+      "metadata": {
+        "description": "Optional. Default action for main access restriction if no rules are matched."
+      }
+    },
+    "scmIpSecurityRestrictions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "sampleInput": [
+          {
+            "action": "Allow or Deny access for this IP range.",
+            "description": "IP restriction rule description.",
+            "headers": {
+              "X-Forwarded-Host": [],
+              "X-Forwarded-For": [],
+              "X-Azure-FDID": [],
+              "X-FD-HealthProbe": []
+            },
+            "ipAddress": "CIDR or Azure Service Tag",
+            "name": "IP restriction rule name.",
+            "priority": 999,
+            "tag": "Default or ServiceTag or XffProxy",
+            "vnetSubnetResourceId": "Virtual network resource id."
+          },
+          {
+            "action": "Allow",
+            "description": "Allow traffic from our specific Front Door instance.",
+            "headers": {
+              "X-Azure-FDID": [
+                "12345678-1234-1234-1234-123456789012"
+              ]
+            },
+            "ipAddress": "AzureFrontDoor.Backend",
+            "name": "Allow Front Door",
+            "priority": 100,
+            "tag": "ServiceTag"
+          }
+        ],
+        "description": "Optional. IP security restrictions for scm."
+      }
+    },
+    "scmIpSecurityRestrictionsDefaultAction": {
+      "type": "string",
+      "defaultValue": "Allow",
+      "allowedValues": [
+        "Allow",
+        "Deny"
+      ],
+      "metadata": {
+        "description": "Optional. Default action for scm access restriction if no rules are matched."
+      }
+    },
+    "scmIpSecurityRestrictionsUseMain": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. IP security restrictions for scm to use main."
+      }
+    },
+    "supportCredentials": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Gets or sets whether CORS requests with credentials are allowed. See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Requests_with_credentials for more details."
+      }
+    },
+    "alwaysOn": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Determines if instances of thhe site are always running, even when idle."
+      }
+    },
+    "clientAffinityEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable sending session affinity cookies, which route client requests in the same session to the same instance."
+      }
+    },
+    "appSettings": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "key1": "value1",
+        "key2": "value2",
+        "description": "Optional. Application settings to be applied to web site."
+      }
+    },
+    "connectionStrings": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "sampleInput": [
+          {
+            "name": "connectionstring",
+            "connectionString": "Data Source=tcp:{sqlFQDN},1433;Initial Catalog={sqlDBName};User Id={sqlLogin};Password='{sqlLoginPassword}';",
+            "type": "SQLAzure"
+          }
+        ],
+        "description": "Optional. Array of Connection Strings."
+      }
+    },
+    "functionsExtensionVersion": {
+      "type": "string",
+      "defaultValue": "~4",
+      "metadata": {
+        "description": "Optional. The version of the Functions runtime that hosts your function app."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Audit"
+      ],
+      "allowedValues": [
+        "Audit",
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "isLinux": "[contains(parameters('kind'), 'linux')]",
+    "isFunctionApp": "[contains(parameters('kind'), 'functionapp')]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned, UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "runtimeLanguage": "[toLower(first(split(parameters('runtime'), '|')))]",
+    "runtimeVersion": "[last(split(parameters('runtime'), '|'))]",
+    "netFrameworkVersion": "[if(startsWith(variables('runtimeLanguage'), 'dotnet'), format('v{0}', variables('runtimeVersion')), 'v8.0')]",
+    "nodeVersion": "[if(equals(variables('runtimeLanguage'), 'node'), format('~{0}', first(split(variables('runtimeVersion'), '-'))), '')]",
+    "appSettingsAppInsightsDotnet": "[if(startsWith(variables('runtimeLanguage'), 'dotnet'), createObject('XDT_MicrosoftApplicationInsights_PreemptSdk', '1'), createObject())]",
+    "appSettingsFunctions": "[if(variables('isFunctionApp'), createObject('FUNCTIONS_EXTENSION_VERSION', parameters('functionsExtensionVersion'), 'FUNCTIONS_WORKER_RUNTIME', variables('runtimeLanguage')), createObject())]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+      "apiVersion": "2023-12-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'ftp')]",
+      "properties": {
+        "allow": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+      "apiVersion": "2023-12-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'scm')]",
+      "properties": {
+        "allow": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2023-12-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'appsettings')]",
+      "properties": "[union(parameters('appSettings'), variables('appSettingsAppInsightsDotnet'), if(not(empty(parameters('applicationInsightsId'))), createObject('APPLICATIONINSIGHTS_CONNECTION_STRING', reference(parameters('applicationInsightsId'), '2020-02-02').ConnectionString, 'ApplicationInsightsAgent_EXTENSION_VERSION', if(variables('isLinux'), '~3', '~2'), 'InstrumentationEngine_EXTENSION_VERSION', '~1', 'XDT_MicrosoftApplicationInsights_BaseExtensions', '~1', 'XDT_MicrosoftApplicationInsights_Mode', 'recommended'), createObject()), variables('appSettingsFunctions'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2023-12-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'web')]",
+      "properties": {
+        "minTlsVersion": "1.2",
+        "scmMinTlsVersion": "1.2",
+        "ftpsState": "Disabled",
+        "alwaysOn": "[parameters('alwaysOn')]",
+        "connectionStrings": "[if(not(empty(parameters('connectionStrings'))), parameters('connectionStrings'), null())]",
+        "keyVaultReferenceIdentity": "[parameters('keyVaultReferenceIdentity')]",
+        "linuxFxVersion": "[if(variables('isLinux'), parameters('runtime'), '')]",
+        "windowsFxVersion": "[if(and(equals(variables('runtimeLanguage'), 'docker'), not(variables('isLinux'))), parameters('runtime'), '')]",
+        "netFrameworkVersion": "[if(or(variables('isLinux'), empty(variables('netFrameworkVersion'))), null(), variables('netFrameworkVersion'))]",
+        "nodeVersion": "[if(or(variables('isLinux'), empty(variables('nodeVersion'))), null(), variables('nodeVersion'))]",
+        "ipSecurityRestrictions": "[parameters('ipSecurityRestrictions')]",
+        "ipSecurityRestrictionsDefaultAction": "[parameters('ipSecurityRestrictionsDefaultAction')]",
+        "scmIpSecurityRestrictions": "[parameters('scmIpSecurityRestrictions')]",
+        "scmIpSecurityRestrictionsDefaultAction": "[parameters('scmIpSecurityRestrictionsDefaultAction')]",
+        "scmIpSecurityRestrictionsUseMain": "[parameters('scmIpSecurityRestrictionsUseMain')]",
+        "apiManagementConfig": "[if(not(empty(parameters('apiManagementConfig'))), createObject('id', parameters('apiManagementConfig')), null())]",
+        "cors": {
+          "allowedOrigins": "[parameters('allowedOrigins')]",
+          "supportCredentials": "[parameters('supportCredentials')]"
+        },
+        "vnetRouteAllEnabled": "[parameters('vnetRouteAllEnabled')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2023-12-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "kind": "[parameters('kind')]",
+      "identity": "[variables('identity')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "serverFarmId": "[parameters('serverFarmId')]",
+        "httpsOnly": true,
+        "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
+        "redundancyMode": "[parameters('redundancyMode')]",
+        "virtualNetworkSubnetId": "[if(not(empty(parameters('virtualNetworkSubnetId'))), parameters('virtualNetworkSubnetId'), null())]",
+        "reserved": "[variables('isLinux')]",
+        "publicNetworkAccess": "[if(parameters('publicNetworkAccess'), 'Enabled', 'Disabled')]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Web/sites/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Web/sites/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the web sites resource."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed web sites resource."
+      },
+      "value": "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+    }
+  }
+}
