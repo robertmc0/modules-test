@@ -1,3 +1,4 @@
+.azure-pipelines/
 .vscode/
 modules/
 package-lock.json

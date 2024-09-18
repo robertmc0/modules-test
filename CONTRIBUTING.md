@@ -25,6 +25,8 @@ Alternatively follow the steps below to install the required software on your ma
 
   - run `zsh -l` to make it available for current session
 
+  - `winget install Microsoft.DotNet.SDK.8`
+
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
 - Install the following VSCode extensions as they are used for code formatting:
@@ -417,15 +419,6 @@ az deployment group create --resource-group bicep-validation-rg --template-file 
 New-AzResourceGroup -Name "bicep-validation-rg" -Location "australiaeast"
 New-AzResourceGroupDeployment -ResourceGroupName 'bicep-validation-rg' -TemplateFile '.\test\main.test.bicep'
 ```
-
-For MacOs
-
-```bash
-az group create --name bicep-validation-rg --location australiaeast
-az deployment group create --resource-group bicep-validation-rg --template-file ./test/main.test.bicep
-```
-
-In order to use Powershell, type `pwsh`
 
 ## Publishing a module
 
