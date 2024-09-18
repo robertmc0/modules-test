@@ -12,7 +12,8 @@ Alternatively follow the steps below to install the required software on your ma
   - `winget install Microsoft.DotNet.SDK.8` for Windows
   - `brew install --cask dotnet-sdk` for MacOs which installs the latest version of .NET SDK or
   - Install Manually from [Offical .NET Download Page](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- For `MacOs`,  if `.NET Tools directory` is not on the `PATH` environment variable, follow the steps below for `zsh`:
+- For `MacOs`, if `.NET Tools directory` is not on the `PATH` environment variable, follow the steps below for `zsh`:
+
   - Add `.NET Tools directory` to your profile by running the following command
 
   ```bash
@@ -406,6 +407,7 @@ brm validate
 The `brm validate` command mentioned in the above step does not deploy the `test/main.test.bicep` file. Its envisaged that in a future revision, it will be deployed to a temporary resource group as part of the pull request merge validation CI pipeline once you submit a pull request. For now, you must run test deployments locally using Azure CLI or Azure PowerShell before submitting a pull request.
 
 For Windows
+
 ```
 az group create --name bicep-validation-rg --location australiaeast
 az deployment group create --resource-group bicep-validation-rg --template-file .\test\main.test.bicep
