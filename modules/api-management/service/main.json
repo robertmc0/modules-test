@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "4959045401261497916"
+      "version": "0.30.3.12046",
+      "templateHash": "15470359576367762041"
     },
     "name": "API Management Module",
     "description": "This module deploys API Management resource.",
@@ -186,7 +186,9 @@
         "Consumption",
         "Developer",
         "Basic",
+        "Basicv2",
         "Standard",
+        "Standardv2",
         "Premium"
       ],
       "metadata": {
@@ -267,6 +269,13 @@
           "2"
         ],
         "description": "Optional. A list of availability zones denoting where the resource needs to come from."
+      }
+    },
+    "enableDeveloperPortal": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Developer Portal."
       }
     },
     "diagnosticLogCategoryGroupsToEnable": {
@@ -420,12 +429,13 @@
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
     "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
     "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
-    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "isV2Sku": "[or(equals(parameters('sku'), 'Basicv2'), equals(parameters('sku'), 'Standardv2'))]"
   },
   "resources": [
     {
       "type": "Microsoft.ApiManagement/service",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -449,7 +459,8 @@
         "virtualNetworkConfiguration": "[if(not(empty(parameters('subnetResourceId'))), json(format('{{\"subnetResourceId\": \"{0}\"}}', parameters('subnetResourceId'))), null())]",
         "publicIpAddressId": "[if(not(empty(parameters('publicIpAddressId'))), parameters('publicIpAddressId'), null())]",
         "apiVersionConstraint": "[if(not(empty(parameters('minApiVersion'))), json(format('{{\"minApiVersion\": \"{0}\"}}', parameters('minApiVersion'))), null())]",
-        "restore": "[parameters('restore')]"
+        "restore": "[parameters('restore')]",
+        "developerPortalStatus": "[if(parameters('enableDeveloperPortal'), 'Enabled', 'Disabled')]"
       }
     },
     {
@@ -458,13 +469,13 @@
         "count": "[length(parameters('namedValues'))]"
       },
       "type": "Microsoft.ApiManagement/service/namedValues",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), format('{0}', parameters('namedValues')[copyIndex()].displayName))]",
       "properties": {
         "displayName": "[parameters('namedValues')[copyIndex()].displayName]",
-        "keyVault": "[if(contains(parameters('namedValues')[copyIndex()], 'keyVault'), parameters('namedValues')[copyIndex()].keyVault, null())]",
-        "secret": "[if(contains(parameters('namedValues')[copyIndex()], 'secret'), parameters('namedValues')[copyIndex()].secret, false())]",
-        "value": "[if(contains(parameters('namedValues')[copyIndex()], 'value'), parameters('namedValues')[copyIndex()].value, null())]"
+        "keyVault": "[coalesce(tryGet(parameters('namedValues')[copyIndex()], 'keyVault'), null())]",
+        "secret": "[coalesce(tryGet(parameters('namedValues')[copyIndex()], 'secret'), false())]",
+        "value": "[coalesce(tryGet(parameters('namedValues')[copyIndex()], 'value'), null())]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
@@ -472,7 +483,7 @@
     },
     {
       "type": "Microsoft.ApiManagement/service/namedValues",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'Logger-Credentials')]",
       "properties": {
         "displayName": "Logger-Credentials",
@@ -484,8 +495,9 @@
       ]
     },
     {
+      "condition": "[not(variables('isV2Sku'))]",
       "type": "Microsoft.ApiManagement/service/portalsettings",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'signin')]",
       "properties": {
         "enabled": true
@@ -496,7 +508,7 @@
     },
     {
       "type": "Microsoft.ApiManagement/service/loggers",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'applicationInsights')]",
       "properties": {
         "loggerType": "applicationInsights",
@@ -513,7 +525,7 @@
     },
     {
       "type": "Microsoft.ApiManagement/service/diagnostics",
-      "apiVersion": "2023-03-01-preview",
+      "apiVersion": "2023-09-01-preview",
       "name": "[format('{0}/{1}', parameters('name'), 'applicationinsights')]",
       "properties": {
         "alwaysLog": "allErrors",
@@ -594,7 +606,7 @@
       "metadata": {
         "description": "The principal ID of the system assigned identity."
       },
-      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-03-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-03-01-preview', 'full').identity.principalId, '')]"
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-09-01-preview', 'full').identity, 'principalId')), reference(resourceId('Microsoft.ApiManagement/service', parameters('name')), '2023-09-01-preview', 'full').identity.principalId, '')]"
     }
   }
 }
