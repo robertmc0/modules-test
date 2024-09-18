@@ -18,7 +18,7 @@ param shortIdentifier string = 'arn'
   'External'
   'Internal'
 ])
-param virtualNetworkType string = 'External'
+param virtualNetworkType string = (sku == 'Premium') ? 'Internal' : 'External'
 
 @description('Service endpoints enabled on the API Management subnet')
 param apimSubnetServiceEndpoints array = [
@@ -38,10 +38,12 @@ param apimSubnetServiceEndpoints array = [
   'Consumption'
   'Developer'
   'Basic'
+  'Basicv2'
   'Standard'
+  'Standardv2'
   'Premium'
 ])
-param sku string = 'Developer'
+param sku string = 'Standardv2'
 
 @description('Resource Tags')
 param tags object = {}
@@ -402,6 +404,32 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = if (virtualNetwor
             id: nsg.id
           }
           serviceEndpoints: apimSubnetServiceEndpoints
+          delegations: [
+            {
+              name: 'apimDelegation'
+              properties: {
+                serviceName: 'Microsoft.Web/serverFarms'
+              }
+            }
+          ]
+        }
+      }
+      {
+        name: 'apim-subnet2'
+        properties: {
+          addressPrefix: '10.0.0.32/27'
+          networkSecurityGroup: {
+            id: nsg.id
+          }
+          serviceEndpoints: apimSubnetServiceEndpoints
+          delegations: [
+            {
+              name: 'apimDelegation'
+              properties: {
+                serviceName: 'Microsoft.Web/serverFarms'
+              }
+            }
+          ]
         }
       }
     ]
@@ -464,9 +492,7 @@ resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04
 ]
 
 var environmentHostingDomain = 'deploy.arinco.local'
-var apiHostname = 'api-${environment}.${environmentHostingDomain}'
 var portalHostname = 'portal-api-${environment}.${environmentHostingDomain}'
-var managementHostname = 'management-api-${environment}.${environmentHostingDomain}'
 
 module kvCert 'br/public:deployment-scripts/create-kv-certificate:1.1.1' = {
   name: 'akvCertSingle'
@@ -477,7 +503,6 @@ module kvCert 'br/public:deployment-scripts/create-kv-certificate:1.1.1' = {
     certificateCommonName: '*.${environmentHostingDomain}'
   }
 }
-var sslCertSecretId = kvCert.outputs.certificateSecretIdUnversioned
 
 var nameValues = [
   {
@@ -506,9 +531,13 @@ module apimMin '../main.bicep' = {
     skuCount: 1
     publisherEmail: 'support@arinco.com.au'
     publisherName: 'ARINCO'
+    virtualNetworkType: virtualNetworkType
+    publicIpAddressId: publicIpAddress.id
+    subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''
     applicationInsightsId: applicationInsights.id
   }
 }
+
 module apim '../main.bicep' = {
   name: 'deployApim'
   params: {
@@ -525,35 +554,37 @@ module apim '../main.bicep' = {
     diagnosticEventHubAuthorizationRuleId: '${diagnosticsEventHubNamespace.id}/authorizationrules/RootManageSharedAccessKey'
     virtualNetworkType: virtualNetworkType
     publicIpAddressId: publicIpAddress.id
-    subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[0].id : ''
+    subnetResourceId: virtualNetworkType != 'None' ? vnet.properties.subnets[1].id : ''
+    applicationInsightsId: applicationInsights.id
     userAssignedIdentities: {
       '${userIdentity.id}': {}
     }
+    // note: host name configurations are commented out because this requires domain ownership verification and a fully configured DNS server
     hostnameConfigurations: [
-      {
-        type: 'Proxy'
-        hostName: apiHostname
-        keyVaultId: sslCertSecretId
-        negotiateClientCertificate: false
-        identityClientId: userIdentity.properties.clientId
-      }
-      {
-        type: 'DeveloperPortal'
-        hostName: portalHostname
-        keyVaultId: sslCertSecretId
-        negotiateClientCertificate: false
-        identityClientId: userIdentity.properties.clientId
-      }
-      {
-        type: 'Management'
-        hostName: managementHostname
-        keyVaultId: sslCertSecretId
-        negotiateClientCertificate: false
-        identityClientId: userIdentity.properties.clientId
-      }
+      // {
+      //   type: 'Proxy'
+      //   hostName: apiHostname
+      //   keyVaultId: sslCertSecretId
+      //   negotiateClientCertificate: false
+      //   identityClientId: userIdentity.properties.clientId
+      // }
+      // {
+      //   type: 'DeveloperPortal'
+      //   hostName: portalHostname
+      //   keyVaultId: sslCertSecretId
+      //   negotiateClientCertificate: false
+      //   identityClientId: userIdentity.properties.clientId
+      // }
+      // {
+      //   type: 'Management'
+      //   hostName: managementHostname
+      //   keyVaultId: sslCertSecretId
+      //   negotiateClientCertificate: false
+      //   identityClientId: userIdentity.properties.clientId
+      // }
     ]
+    enableDeveloperPortal: true
     namedValues: nameValues
-    applicationInsightsId: applicationInsights.id
     loggerSamplingRate: 50
     loggerHttpCorrelationProtocol: 'W3C'
     loggerVerbosity: 'verbose'
