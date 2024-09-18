@@ -9,24 +9,7 @@ You can use [codespaces](https://github.com/arincoau/arinco-bicep-modules/wiki/C
 Alternatively follow the steps below to install the required software on your machine.
 
 - Install `.NET 8.0 SDK` by running:
-  - `winget install Microsoft.DotNet.SDK.8` for Windows
-  - `brew install --cask dotnet-sdk` for MacOs which installs the latest version of .NET SDK or
-  - Install Manually from [Offical .NET Download Page](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- For `MacOs`, if `.NET Tools directory` is not on the `PATH` environment variable, follow the steps below for `zsh`:
-
-  - Add `.NET Tools directory` to your profile by running the following command
-
-  ```bash
-  cat << \EOF >> ~/.zprofile
-  # Add .NET Core SDK tools
-  export PATH="$PATH:/Users/mehdikhaleghian/.dotnet/tools"
-  EOF
-  ```
-
-  - run `zsh -l` to make it available for current session
-
   - `winget install Microsoft.DotNet.SDK.8`
-
 - Install the [Bicep registry module](https://www.nuget.org/packages/Azure.Bicep.RegistryModuleTool/) tool by running:
   - `dotnet tool install --global Azure.Bicep.RegistryModuleTool`
 - Install the following VSCode extensions as they are used for code formatting:
@@ -407,8 +390,6 @@ brm validate
 ## Running deployment tests
 
 The `brm validate` command mentioned in the above step does not deploy the `test/main.test.bicep` file. Its envisaged that in a future revision, it will be deployed to a temporary resource group as part of the pull request merge validation CI pipeline once you submit a pull request. For now, you must run test deployments locally using Azure CLI or Azure PowerShell before submitting a pull request.
-
-For Windows
 
 ```
 az group create --name bicep-validation-rg --location australiaeast
