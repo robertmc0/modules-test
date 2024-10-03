@@ -145,6 +145,12 @@ type namingOutput = {
   keyVault: nameType
   @description('Local network gateway name.')
   localNetworkGateway: nameType
+  @description('Dev centre name.')
+  devCentre: nameType
+  @description('Dev centre project name.')
+  devCentreProject: nameType
+  @description('Managed devops pool name.')
+  managedDevOpsPool: nameType
   @description('Log Analytics name.')
   logAnalytics: nameType
   @description('Logic App name.')
@@ -293,6 +299,18 @@ var typeMap = {
   }
   localNetworkGateway: {
     slug: 'lgw'
+    allowSeparator: true
+  }
+  devCentre: {
+    slug: 'dc'
+    allowSeparator: true
+  }
+  devCentreProject: {
+    slug: 'dcp'
+    allowSeparator: true
+  }
+  managedDevOpsPool: {
+    slug: 'mdp'
     allowSeparator: true
   }
   logAnalytics: {
