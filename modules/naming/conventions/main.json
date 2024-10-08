@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.170.59819",
-      "templateHash": "746390509450448317"
+      "version": "0.30.23.60470",
+      "templateHash": "2083799695178021891"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -178,6 +178,24 @@
           "$ref": "#/definitions/nameType",
           "metadata": {
             "description": "Local network gateway name."
+          }
+        },
+        "devCentre": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Dev centre name."
+          }
+        },
+        "devCentreProject": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Dev centre project name."
+          }
+        },
+        "managedDevOpsPool": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Managed devops pool name."
           }
         },
         "logAnalytics": {
@@ -528,6 +546,18 @@
       },
       "localNetworkGateway": {
         "slug": "lgw",
+        "allowSeparator": true
+      },
+      "devCentre": {
+        "slug": "dc",
+        "allowSeparator": true
+      },
+      "devCentreProject": {
+        "slug": "dcp",
+        "allowSeparator": true
+      },
+      "managedDevOpsPool": {
+        "slug": "mdp",
         "allowSeparator": true
       },
       "logAnalytics": {
