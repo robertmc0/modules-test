@@ -1,6 +1,6 @@
-metadata name = 'TODO: <module name>'
-metadata description = 'TODO: <module description>'
-metadata owner = 'TODO: <GitHub username of module owner>'
+metadata name = 'Flow Logs Module'
+metadata description = 'This module deploys Microsoft.Network/networkWatchers flowLogs.'
+metadata owner = 'Arinco'
 
 @description('The resource name.')
 param name string

@@ -1,10 +1,12 @@
-# TODO: <module name>
+# Flow Logs Module
 
-TODO: <module description>
+This module deploys Microsoft.Network/networkWatchers flowLogs.
 
-## Details
+## Description
 
-{{Add detailed information about the module}}
+This module performs the following
+
+- Creates Microsoft.Network/networkWatchers flowLogs resource.
 
 ## Parameters
 
