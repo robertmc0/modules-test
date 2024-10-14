@@ -12,18 +12,18 @@ param shortIdentifier string = 'arn'
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-resource networkWatcher 'Microsoft.Network/networkWatchers@2022-01-01' = {
+resource networkWatcher 'Microsoft.Network/networkWatchers@2024-01-01' = {
   name: '${shortIdentifier}-tst-nw-${uniqueString(deployment().name, 'networkWatcher', location)}'
   location: location
   properties: {}
 }
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
   location: location
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2024-01-01' = {
   name: '${shortIdentifier}-tst-vnet1-${uniqueString(deployment().name, 'virtualNetworks', location)}'
   location: location
   properties: {
@@ -43,7 +43,8 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  #disable-next-line BCP335
   name: '${shortIdentifier}tststor${uniqueString(deployment().name, 'storageAccount', location)}'
   location: location
   kind: 'StorageV2'
