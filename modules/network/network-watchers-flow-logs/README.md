@@ -2,7 +2,7 @@
 
 This module deploys Microsoft.Network/networkWatchers flowLogs.
 
-## Description
+## Details
 
 This module performs the following
 

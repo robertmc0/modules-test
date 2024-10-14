@@ -5,11 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "4725796923840883967"
+      "templateHash": "3908234631093545866"
     },
-    "name": "TODO: <module name>",
-    "description": "TODO: <module description>",
-    "owner": "TODO: <GitHub username of module owner>"
+    "name": "Flow Logs Module",
+    "description": "This module deploys Microsoft.Network/networkWatchers flowLogs.",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
