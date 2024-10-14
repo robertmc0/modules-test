@@ -32,7 +32,7 @@ param enableTrafficAnalytics bool = false
 ])
 param trafficAnalyticsInterval int = 60
 
-@description('Resource ID of the of the virtual network to which flow log will be applied.')
+@description('Resource ID of the virtual network to which flow log will be applied.')
 param targetResourceId string
 
 @description('Resource ID of the storage account which is used to store the flow log.')
