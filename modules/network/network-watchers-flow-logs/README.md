@@ -20,7 +20,7 @@ This module performs the following
 | `enableFlowLogs`           |  `bool`  |    No    | Optional. Flag to enable/disable flow logging.                                                           |
 | `enableTrafficAnalytics`   |  `bool`  |    No    | Optional. Flag to enable/disable traffic analytics.                                                      |
 | `trafficAnalyticsInterval` |  `int`   |    No    | Optional. The interval in minutes which would decide how frequently TA service should do flow analytics. |
-| `targetResourceId`         | `string` |   Yes    | Resource ID of the network security group to which flow log will be applied.                             |
+| `targetResourceId`         | `string` |   Yes    | Resource ID of the virtual network to which flow log will be applied.                                    |
 | `storageAccountId`         | `string` |   Yes    | Resource ID of the storage account which is used to store the flow log.                                  |
 | `logAnalyticsWorkspaceId`  | `string` |    No    | Optional. Resource ID of the log analytics workspace which is used to store the flow log.                |
 
