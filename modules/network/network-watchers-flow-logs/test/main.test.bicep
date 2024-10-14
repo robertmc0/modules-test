@@ -23,9 +23,24 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
   location: location
 }
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
-  name: '${shortIdentifier}-tst-nsg-${uniqueString(deployment().name, 'networkSecurityGroup', location)}'
+resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+  name: '${shortIdentifier}-tst-vnet1-${uniqueString(deployment().name, 'virtualNetworks', location)}'
   location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '10.0.0.0/16'
+      ]
+    }
+    subnets: [
+      {
+        name: 'default'
+        properties: {
+          addressPrefix: '10.0.0.0/24'
+        }
+      }
+    ]
+  }
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
@@ -45,7 +60,7 @@ module flowLog '../main.bicep' = {
   params: {
     name: '${uniqueString(deployment().name, location)}flowlog'
     location: location
-    networkSecurityGroupId: nsg.id
+    targetResourceId: vnet.id
     networkWatcherName: networkWatcher.name
     storageAccountId: storageAccount.id
     enableTrafficAnalytics: true

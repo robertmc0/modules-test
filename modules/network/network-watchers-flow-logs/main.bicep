@@ -32,8 +32,8 @@ param enableTrafficAnalytics bool = false
 ])
 param trafficAnalyticsInterval int = 60
 
-@description('Resource ID of the network security group to which flow log will be applied.')
-param networkSecurityGroupId string
+@description('Resource ID of the of the virtual network to which flow log will be applied.')
+param targetResourceId string
 
 @description('Resource ID of the storage account which is used to store the flow log.')
 param storageAccountId string
@@ -41,19 +41,21 @@ param storageAccountId string
 @description('Optional. Resource ID of the log analytics workspace which is used to store the flow log.')
 param logAnalyticsWorkspaceId string = ''
 
-var flowAnalyticsConfiguration = enableTrafficAnalytics ? {
-  networkWatcherFlowAnalyticsConfiguration: {
-    enabled: true
-    trafficAnalyticsInterval: trafficAnalyticsInterval
-    workspaceResourceId: logAnalyticsWorkspaceId
-  }
-} : {
-  networkWatcherFlowAnalyticsConfiguration: {
-    enabled: false
-  }
-}
+var flowAnalyticsConfiguration = enableTrafficAnalytics
+  ? {
+      networkWatcherFlowAnalyticsConfiguration: {
+        enabled: true
+        trafficAnalyticsInterval: trafficAnalyticsInterval
+        workspaceResourceId: logAnalyticsWorkspaceId
+      }
+    }
+  : {
+      networkWatcherFlowAnalyticsConfiguration: {
+        enabled: false
+      }
+    }
 
-resource flowLog 'Microsoft.Network/networkWatchers/flowLogs@2021-02-01' = {
+resource flowLog 'Microsoft.Network/networkWatchers/flowLogs@2024-01-01' = {
   name: '${networkWatcherName}/${name}'
   location: location
   tags: tags
@@ -69,7 +71,7 @@ resource flowLog 'Microsoft.Network/networkWatchers/flowLogs@2021-02-01' = {
       enabled: true
     }
     storageId: storageAccountId
-    targetResourceId: networkSecurityGroupId
+    targetResourceId: targetResourceId
   }
 }
 
