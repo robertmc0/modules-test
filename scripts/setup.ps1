@@ -31,6 +31,7 @@
 
     Version History:  [02/08/2022 - 1.0 - Sunny Liu]: Initial script development
                       [31/08/2023 - 1.1 - Suhail Nepal]: Update .Net and node version and apply fixes
+                      [17/10/2024 - 1.2 - Ben Ranford]: Update brm install script as wait-process cannot bind to dotnet install
 
 #>
 
@@ -89,8 +90,8 @@ function install_brm() {
   }
   catch {
     Write-Output "brm not found, installing"
-    dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org | Wait-Process
-    dotnet tool install --global Azure.Bicep.RegistryModuleTool
+    Start-Process -FilePath "dotnet" -ArgumentList "nuget add source https://api.nuget.org/v3/index.json -n nuget.org" -NoNewWindow -Wait
+    Start-Process -FilePath "dotnet" -ArgumentList "tool install --global Azure.Bicep.RegistryModuleTool" -NoNewWindow -Wait
   }
 }
 
