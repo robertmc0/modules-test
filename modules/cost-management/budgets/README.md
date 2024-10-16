@@ -1,14 +1,10 @@
-# Budgets Module
+# Azure Budget
 
-This module deploys Microsoft.CostManagement budgets at the subscription level
+Deploys budget.
 
-## Description
+## Details
 
-This module performs the following
-
-- Creates Microsoft.CostManagement budgets resource at the subscription level.
-- Tracks cost or usage.
-- Applies budget at different time grains.
+{{Add detailed information about the module}}
 
 ## Parameters
 
@@ -24,10 +20,10 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                             |
-| :--------- | :----: | :-------------------------------------- |
-| name       | string | The name of the deployed budget.        |
-| resourceId | string | The resource ID of the deployed budget. |
+| Name         | Type     | Description                             |
+| :----------- | :------: | :-------------------------------------- |
+| `name`       | `string` | The name of the deployed budget.        |
+| `resourceId` | `string` | The resource ID of the deployed budget. |
 
 ## Examples
 
