@@ -1,3 +1,7 @@
+metadata name = 'Budget'
+metadata description = 'Deploys budget.'
+metadata owner = 'Arinco'
+
 targetScope = 'subscription' // required for subscription level budgets
 
 @description('The resource name.')
