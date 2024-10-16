@@ -5,9 +5,9 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "15075351719294295193"
+      "templateHash": "13893024915527529515"
     },
-    "name": "Budget",
+    "name": "Azure Budget",
     "description": "Deploys budget.",
     "owner": "Arinco"
   },

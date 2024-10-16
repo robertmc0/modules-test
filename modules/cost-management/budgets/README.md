@@ -1,4 +1,4 @@
-# Budget
+# Azure Budget
 
 Deploys budget.
 
