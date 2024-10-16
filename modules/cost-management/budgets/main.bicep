@@ -34,7 +34,7 @@ param filter object = {}
     enabled: true
     operator: 'GreaterThan'
     threshold: 50
-    contactEmails: [ 'contactEmails' ]
+    contactEmails: ['contactEmails']
   }
 })
 param notifications object
@@ -54,7 +54,7 @@ param timeGrain string = 'Monthly'
 })
 param timePeriod object
 
-resource budget 'Microsoft.CostManagement/budgets@2019-04-01-preview' = {
+resource budget 'Microsoft.CostManagement/budgets@2023-11-01' = {
   name: name
   properties: {
     amount: amount
