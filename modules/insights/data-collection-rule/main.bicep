@@ -25,6 +25,16 @@ param shortenedUniqueString string = substring(uniqueString(utcNow()), 0, 4)
 })
 param tags object = {}
 
+@description('Optional. Specify the type of resource lock.')
+@allowed([
+  'NotSpecified'
+  'ReadOnly'
+  'CanNotDelete'
+])
+param resourceLock string = 'NotSpecified'
+
+var lockName = toLower('${dcr.name}-${resourceLock}-lck')
+
 // Data collection settings parameters //
 
 @description('Required. The operating system kind in which DCR will be configured to.')
@@ -231,6 +241,17 @@ resource dcrMultiOs 'Microsoft.Insights/dataCollectionRules@2022-06-01' = if (ki
         }
       ]
     }
+  }
+}
+
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+  scope: dcr
+  name: lockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
