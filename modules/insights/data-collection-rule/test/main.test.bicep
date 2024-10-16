@@ -26,6 +26,7 @@ module dcrTestWindowsMinimalMetrics '../main.bicep' = {
     location: location
     kind: 'Windows'
     workspaceId: logAnalyticsWorkspace.id
+    resourceLock: 'ReadOnly'
   }
 }
 
@@ -36,6 +37,7 @@ module dcrTestLinuxMinimalMetrics '../main.bicep' = {
     location: location
     kind: 'Linux'
     workspaceId: logAnalyticsWorkspace.id
+    resourceLock: 'ReadOnly'
   }
 }
 
@@ -46,6 +48,7 @@ module dcrTestMultiOsMinimalMetrics '../main.bicep' = {
     location: location
     kind: 'All'
     workspaceId: logAnalyticsWorkspace.id
+    resourceLock: 'ReadOnly'
   }
 }
 
@@ -56,6 +59,7 @@ module dcrTestWindowsFull '../main.bicep' = {
     location: location
     kind: 'Windows'
     workspaceId: logAnalyticsWorkspace.id
+    resourceLock: 'ReadOnly'
     dataFlows: [
       {
         destinations: [
@@ -134,6 +138,7 @@ module dcrTestLinux '../main.bicep' = {
     location: location
     kind: 'Linux'
     workspaceId: logAnalyticsWorkspace.id
+    resourceLock: 'ReadOnly'
     dataFlows: [
       {
         destinations: [

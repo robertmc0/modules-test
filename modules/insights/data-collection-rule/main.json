@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "5849370425209683723"
+      "version": "0.30.23.60470",
+      "templateHash": "13972441137807519190"
     },
     "name": "Insights data collection rule Module.",
     "description": "This module deploys Microsoft.Insights dataCollectionRules.",
@@ -46,6 +46,18 @@
           "tagKey": "string"
         },
         "description": "Optional. Resource tags."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
       }
     },
     "kind": {
@@ -165,6 +177,7 @@
     }
   },
   "variables": {
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "performanceCounters": [
       {
         "name": "insightsMetricsCounterSpecifiers",
@@ -273,6 +286,20 @@
           ]
         }
       }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Insights/dataCollectionRules/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/dataCollectionRules', parameters('name'))]"
+      ]
     }
   ],
   "outputs": {
