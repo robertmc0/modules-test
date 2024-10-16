@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.24.24.22086",
-      "templateHash": "519543250664605660"
+      "version": "0.30.23.60470",
+      "templateHash": "1198962611388233806"
     },
     "name": "Defender for Cloud Module",
     "description": "This module deploys Microsoft Defender for Cloud plans, contacts and configuration settings.",
@@ -150,7 +150,8 @@
           },
           {
             "name": "Api",
-            "pricingTier": "The pricing tier of the Defender Api plan. Allowed values \"Standard\" or \"Free\"."
+            "pricingTier": "The pricing tier of the Defender Api plan. Allowed values \"Standard\" or \"Free\".",
+            "subPlan": "The subPlan of the Defender StorageAccounts plan. Allowed values P1,P2,P3,P4,P5."
           }
         ],
         "description": "Optional. The plans Microsoft Defender for Cloud."
@@ -167,17 +168,6 @@
       "defaultValue": "[subscription().subscriptionId]",
       "metadata": {
         "description": "Optional. All the VMs in this scope will send their security data to the mentioned workspace unless overridden by a setting with more specific scope."
-      }
-    },
-    "autoProvision": {
-      "type": "string",
-      "defaultValue": "On",
-      "allowedValues": [
-        "On",
-        "Off"
-      ],
-      "metadata": {
-        "description": "Optional. Automatically enable new resources into the log analytics workspace."
       }
     }
   },
@@ -211,7 +201,7 @@
       "name": "[parameters('defenderPlans')[copyIndex()].name]",
       "properties": {
         "pricingTier": "[if(not(empty(parameters('defenderPlans')[copyIndex()].pricingTier)), parameters('defenderPlans')[copyIndex()].pricingTier, variables('defaultPricingTier'))]",
-        "subPlan": "[if(contains(parameters('defenderPlans')[copyIndex()], 'subPlan'), parameters('defenderPlans')[copyIndex()].subPlan, '')]"
+        "subPlan": "[coalesce(tryGet(parameters('defenderPlans')[copyIndex()], 'subPlan'), '')]"
       }
     },
     {
@@ -221,14 +211,6 @@
       "properties": {
         "scope": "[format('/subscriptions/{0}', parameters('workspaceScope'))]",
         "workspaceId": "[parameters('workspaceId')]"
-      }
-    },
-    {
-      "type": "Microsoft.Security/autoProvisioningSettings",
-      "apiVersion": "2017-08-01-preview",
-      "name": "default",
-      "properties": {
-        "autoProvision": "[parameters('autoProvision')]"
       }
     }
   ]

@@ -78,6 +78,7 @@ param notificationsByRole array = []
     {
       name: 'Api'
       pricingTier: 'The pricing tier of the Defender Api plan. Allowed values "Standard" or "Free".'
+      subPlan: 'The subPlan of the Defender StorageAccounts plan. Allowed values P1,P2,P3,P4,P5.'
     }
   ]
 })
@@ -138,13 +139,6 @@ param workspaceId string
 @description('Optional. All the VMs in this scope will send their security data to the mentioned workspace unless overridden by a setting with more specific scope.')
 param workspaceScope string = subscription().subscriptionId
 
-@description('Optional. Automatically enable new resources into the log analytics workspace.')
-@allowed([
-  'On'
-  'Off'
-])
-param autoProvision string = 'On'
-
 var defaultPricingTier = 'Free'
 
 resource securityContacts 'Microsoft.Security/securityContacts@2020-01-01-preview' = {
@@ -168,7 +162,7 @@ resource defenderPlan 'Microsoft.Security/pricings@2023-01-01' = [for plan in de
   name: plan.name
   properties: {
     pricingTier: !empty(plan.pricingTier) ? plan.pricingTier : defaultPricingTier
-    subPlan: contains(plan, 'subPlan') ? plan.subPlan : ''
+    subPlan: plan.?subPlan ?? ''
   }
 }]
 
@@ -177,12 +171,5 @@ resource workspace 'Microsoft.Security/workspaceSettings@2017-08-01-preview' = {
   properties: {
     scope: '/subscriptions/${workspaceScope}'
     workspaceId: workspaceId
-  }
-}
-
-resource autoProvisioningSettings 'Microsoft.Security/autoProvisioningSettings@2017-08-01-preview' = {
-  name: 'default'
-  properties: {
-    autoProvision: autoProvision
   }
 }

@@ -104,7 +104,7 @@ module defender '../main.bicep' = {
     workspaceId: logAnalyticsWorkspace.outputs.resourceId
     emailAddress: 'john.smith@contoso.com.au'
     alertNotificationSeverity: 'High'
-    autoProvision: 'On'
+    workspaceScope: subscription().subscriptionId
     notificationsByRole: [
       'Owner'
       'ServiceAdmin'

@@ -17,7 +17,6 @@ This module deploys Microsoft Defender for Cloud plans, contacts and configurati
 | `defenderPlans`             | `array`  | No       | Optional. The plans Microsoft Defender for Cloud.                                                                                                     |
 | `workspaceId`               | `string` | Yes      | Resource ID of the Log Analytics workspace.                                                                                                           |
 | `workspaceScope`            | `string` | No       | Optional. All the VMs in this scope will send their security data to the mentioned workspace unless overridden by a setting with more specific scope. |
-| `autoProvision`             | `string` | No       | Optional. Automatically enable new resources into the log analytics workspace.                                                                        |
 
 ## Outputs
 
