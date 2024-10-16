@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "6572002225584562965"
+      "version": "0.30.23.60470",
+      "templateHash": "11972220115715716584"
     }
   },
   "parameters": {
@@ -87,7 +87,7 @@
   "resources": [
     {
       "type": "Microsoft.CostManagement/budgets",
-      "apiVersion": "2019-04-01-preview",
+      "apiVersion": "2023-11-01",
       "name": "[parameters('name')]",
       "properties": {
         "amount": "[parameters('amount')]",
@@ -102,17 +102,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed budget."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[subscriptionResourceId('Microsoft.CostManagement/budgets', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed budget."
-      }
+      },
+      "value": "[subscriptionResourceId('Microsoft.CostManagement/budgets', parameters('name'))]"
     }
   }
 }

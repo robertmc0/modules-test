@@ -24,10 +24,10 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                             |
-| :--------- | :----: | :-------------------------------------- |
-| name       | string | The name of the deployed budget.        |
-| resourceId | string | The resource ID of the deployed budget. |
+| Name         | Type     | Description                             |
+| :----------- | :------: | :-------------------------------------- |
+| `name`       | `string` | The name of the deployed budget.        |
+| `resourceId` | `string` | The resource ID of the deployed budget. |
 
 ## Examples
 
