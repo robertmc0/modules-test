@@ -12,23 +12,39 @@ param shortIdentifier string = 'arn'
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-resource networkWatcher 'Microsoft.Network/networkWatchers@2022-01-01' = {
+resource networkWatcher 'Microsoft.Network/networkWatchers@2024-01-01' = {
   name: '${shortIdentifier}-tst-nw-${uniqueString(deployment().name, 'networkWatcher', location)}'
   location: location
   properties: {}
 }
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
   location: location
 }
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
-  name: '${shortIdentifier}-tst-nsg-${uniqueString(deployment().name, 'networkSecurityGroup', location)}'
+resource vnet 'Microsoft.Network/virtualNetworks@2024-01-01' = {
+  name: '${shortIdentifier}-tst-vnet1-${uniqueString(deployment().name, 'virtualNetworks', location)}'
   location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '10.0.0.0/16'
+      ]
+    }
+    subnets: [
+      {
+        name: 'default'
+        properties: {
+          addressPrefix: '10.0.0.0/24'
+        }
+      }
+    ]
+  }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  #disable-next-line BCP335
   name: '${shortIdentifier}tststor${uniqueString(deployment().name, 'storageAccount', location)}'
   location: location
   kind: 'StorageV2'
@@ -45,7 +61,7 @@ module flowLog '../main.bicep' = {
   params: {
     name: '${uniqueString(deployment().name, location)}flowlog'
     location: location
-    networkSecurityGroupId: nsg.id
+    targetResourceId: vnet.id
     networkWatcherName: networkWatcher.name
     storageAccountId: storageAccount.id
     enableTrafficAnalytics: true

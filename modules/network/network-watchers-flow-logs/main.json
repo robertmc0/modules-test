@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.8.9.13224",
-      "templateHash": "15150273862968962723"
-    }
+      "version": "0.30.23.60470",
+      "templateHash": "3908234631093545866"
+    },
+    "name": "Flow Logs Module",
+    "description": "This module deploys Microsoft.Network/networkWatchers flowLogs.",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -70,10 +73,10 @@
         "description": "Optional. The interval in minutes which would decide how frequently TA service should do flow analytics."
       }
     },
-    "networkSecurityGroupId": {
+    "targetResourceId": {
       "type": "string",
       "metadata": {
-        "description": "Resource ID of the network security group to which flow log will be applied."
+        "description": "Resource ID of the virtual network to which flow log will be applied."
       }
     },
     "storageAccountId": {
@@ -96,7 +99,7 @@
   "resources": [
     {
       "type": "Microsoft.Network/networkWatchers/flowLogs",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2024-01-01",
       "name": "[format('{0}/{1}', parameters('networkWatcherName'), parameters('name'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -112,24 +115,24 @@
           "enabled": true
         },
         "storageId": "[parameters('storageAccountId')]",
-        "targetResourceId": "[parameters('networkSecurityGroupId')]"
+        "targetResourceId": "[parameters('targetResourceId')]"
       }
     }
   ],
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[format('{0}/{1}', parameters('networkWatcherName'), parameters('name'))]",
       "metadata": {
         "description": "The name of the deployed flow log."
-      }
+      },
+      "value": "[format('{0}/{1}', parameters('networkWatcherName'), parameters('name'))]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/networkWatchers/flowLogs', split(format('{0}/{1}', parameters('networkWatcherName'), parameters('name')), '/')[0], split(format('{0}/{1}', parameters('networkWatcherName'), parameters('name')), '/')[1])]",
       "metadata": {
         "description": "The resource ID of the deployed flow log."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/networkWatchers/flowLogs', split(format('{0}/{1}', parameters('networkWatcherName'), parameters('name')), '/')[0], split(format('{0}/{1}', parameters('networkWatcherName'), parameters('name')), '/')[1])]"
     }
   }
 }
