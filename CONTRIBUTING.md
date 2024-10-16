@@ -52,7 +52,7 @@ If you run into any issues during installation, please refer to [Troubleshooting
 
 To contribute create a branch off `main`, following the conventions below.
 
-- Branch names are to be all lower case.
+- Branch names are to be camelCase or lowercase.
 - Multiple words are to be separated by `-`, eg. `sql-db`.
 - Branch names should be short and descriptive.
 - Branches should be categorised and separated by directory as per below.
