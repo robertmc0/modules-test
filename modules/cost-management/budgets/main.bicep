@@ -1,4 +1,4 @@
-metadata name = 'Budget'
+metadata name = 'Azure Budget'
 metadata description = 'Deploys budget.'
 metadata owner = 'Arinco'
 
