@@ -13,7 +13,7 @@ steps:
       targetType: inline
       script: |
         $OldRevisionName = "$(System.PullRequest.SourceBranch)" -replace 'refs/heads/', ''
-        $valid = "^(feature|bugfix)\/[a-z0-9-]+$"
+        $valid = "^(feature|bugfix)\/[a-zA-Z0-9-]+$"
         Write-Host "Branch: $OldRevisionName"
         if ($OldRevisionName -notmatch $valid -and $OldRevisionName -ne 'dev') {
           throw "Branch name '$OldRevisionName' is invalid. Must match pattern '$valid'"
