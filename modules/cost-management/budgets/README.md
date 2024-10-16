@@ -1,14 +1,10 @@
-# Budgets Module
+# Budget
 
-This module deploys Microsoft.CostManagement budgets at the subscription level
+Deploys budget.
 
-## Description
+## Details
 
-This module performs the following
-
-- Creates Microsoft.CostManagement budgets resource at the subscription level.
-- Tracks cost or usage.
-- Applies budget at different time grains.
+{{Add detailed information about the module}}
 
 ## Parameters
 
