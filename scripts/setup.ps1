@@ -15,7 +15,7 @@
 
   .NOTES
     Version: 2.1
-    Author: Sunny Liu, Suhail Nepal, Ben Ranford, [Your Name]
+    Author: Sunny Liu, Suhail Nepal, Ben Ranford
 
     Creation Date: 17/10/2024
     Purpose/Change: Cross-platform support for Windows and macOS, added support for VS Code Insiders
