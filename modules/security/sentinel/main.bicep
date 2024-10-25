@@ -1,3 +1,7 @@
+metadata name = 'Sentinel Module'
+metadata description = 'This module deploys Azure Sentinel'
+metadata owner = 'Arinco'
+
 @description('The geo-location where the resource lives.')
 param location string
 
@@ -181,46 +185,67 @@ resource sentinelSolution 'Microsoft.OperationsManagement/solutions@2015-11-01-p
   }
 }
 
-resource sentinelDataSources 'Microsoft.OperationalInsights/workspaces/dataSources@2020-08-01' = [for dataSource in dataSources: {
-  name: '${workspaceName}/${dataSource.name}'
-  kind: dataSource.kind
-  properties: dataSource.properties
-}]
+resource sentinelOnboarding 'Microsoft.SecurityInsights/onboardingStates@2024-03-01' = {
+  dependsOn: [sentinelSolution]
+  scope: logAnalytics
+  name: 'default'
+}
 
-resource sentinelDataSourceWinEvent 'Microsoft.OperationalInsights/workspaces/dataSources@2020-08-01' = [for provider in winEventProviders: {
-  name: '${workspaceName}/winEvent${replace(provider, '/', '')}'
-  kind: 'WindowsEvent'
-  properties: {
-    eventLogName: provider
-    eventTypes: winEventTypes
+resource sentinelDataSources 'Microsoft.OperationalInsights/workspaces/dataSources@2020-08-01' = [
+  for dataSource in dataSources: {
+    parent: logAnalytics
+    name: dataSource.name
+    kind: dataSource.kind
+    properties: dataSource.properties
   }
-}]
+]
 
-resource sentinelDataSourceSyslog 'Microsoft.OperationalInsights/workspaces/dataSources@2020-08-01' = [for facility in syslogFacilities: {
-  name: '${workspaceName}/syslog${replace(facility, '/', '')}'
-  kind: 'LinuxSyslog'
-  properties: {
-    sysLogName: facility
-    syslogSeverities: syslogSeverities
+resource sentinelDataSourceWinEvent 'Microsoft.OperationalInsights/workspaces/dataSources@2020-08-01' = [
+  for provider in winEventProviders: {
+    parent: logAnalytics
+    name: 'winEvent${replace(provider, '/', '')}'
+    kind: 'WindowsEvent'
+    properties: {
+      eventLogName: provider
+      eventTypes: winEventTypes
+    }
   }
-}]
+]
 
-resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' existing = {
+resource sentinelDataSourceSyslog 'Microsoft.OperationalInsights/workspaces/dataSources@2020-08-01' = [
+  for facility in syslogFacilities: {
+    parent: logAnalytics
+    name: 'syslog${replace(facility, '/', '')}'
+    kind: 'LinuxSyslog'
+    properties: {
+      sysLogName: facility
+      syslogSeverities: syslogSeverities
+    }
+  }
+]
+
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: workspaceName
 }
 
-resource sentinelConnectors 'Microsoft.SecurityInsights/dataConnectors@2022-10-01-preview' = [for connector in connectors: {
-  scope: logAnalytics
-  name: '${connector.kind}${uniqueString(resourceGroup().id)}'
-  location: location
-  kind: connector.kind
-  properties: connector.properties
-}]
+resource sentinelConnectors 'Microsoft.SecurityInsights/dataConnectors@2024-03-01' = [
+  for connector in connectors: {
+    dependsOn: [sentinelOnboarding]
+    scope: logAnalytics
+    name: '${connector.kind}${uniqueString(resourceGroup().id)}'
+    location: location
+    kind: connector.kind
+    properties: connector.properties
+  }
+]
 
-resource sentinelAlertRules 'Microsoft.SecurityInsights/alertRules@2022-10-01-preview' = [for rule in alertRules: {
-  scope: logAnalytics
-  name: guid(rule.name)
-  kind: rule.kind
-  location: location
-  properties: rule.properties
-}]
+resource sentinelAlertRules 'Microsoft.SecurityInsights/alertRules@2024-03-01' = [
+  for rule in alertRules: {
+    dependsOn: [sentinelOnboarding]
+    scope: logAnalytics
+    name: guid(rule.name)
+    kind: rule.kind
+    location: location
+    properties: rule.properties
+  }
+]

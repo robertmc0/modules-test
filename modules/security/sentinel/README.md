@@ -2,14 +2,9 @@
 
 This module deploys Azure Sentinel
 
-## Description
+## Details
 
-- Deploys Sentinel to an existing log analytics workspace.
-- Configures data sources on log analytics workspace.
-- Configures Sentinel data connectors.
-- Configures Sentinel incident alert rules.
-- Configures Windows Event provider data sources.
-- Configures syslog facility data sources.
+{{Add detailed information about the module}}
 
 ## Parameters
 
