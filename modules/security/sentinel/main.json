@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "6134446309333247438"
-    }
+      "version": "0.30.23.60470",
+      "templateHash": "5636441251429753367"
+    },
+    "name": "Sentinel Module",
+    "description": "This module deploys Azure Sentinel",
+    "owner": "Arinco"
   },
   "parameters": {
     "location": {
@@ -220,6 +223,15 @@
       }
     },
     {
+      "type": "Microsoft.SecurityInsights/onboardingStates",
+      "apiVersion": "2024-03-01",
+      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', variables('workspaceName'))]",
+      "name": "default",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationsManagement/solutions', format('SecurityInsights({0})', variables('workspaceName')))]"
+      ]
+    },
+    {
       "copy": {
         "name": "sentinelDataSources",
         "count": "[length(parameters('dataSources'))]"
@@ -237,7 +249,7 @@
       },
       "type": "Microsoft.OperationalInsights/workspaces/dataSources",
       "apiVersion": "2020-08-01",
-      "name": "[format('{0}/winEvent{1}', variables('workspaceName'), replace(parameters('winEventProviders')[copyIndex()], '/', ''))]",
+      "name": "[format('{0}/{1}', variables('workspaceName'), format('winEvent{0}', replace(parameters('winEventProviders')[copyIndex()], '/', '')))]",
       "kind": "WindowsEvent",
       "properties": {
         "eventLogName": "[parameters('winEventProviders')[copyIndex()]]",
@@ -251,7 +263,7 @@
       },
       "type": "Microsoft.OperationalInsights/workspaces/dataSources",
       "apiVersion": "2020-08-01",
-      "name": "[format('{0}/syslog{1}', variables('workspaceName'), replace(parameters('syslogFacilities')[copyIndex()], '/', ''))]",
+      "name": "[format('{0}/{1}', variables('workspaceName'), format('syslog{0}', replace(parameters('syslogFacilities')[copyIndex()], '/', '')))]",
       "kind": "LinuxSyslog",
       "properties": {
         "sysLogName": "[parameters('syslogFacilities')[copyIndex()]]",
@@ -264,12 +276,15 @@
         "count": "[length(parameters('connectors'))]"
       },
       "type": "Microsoft.SecurityInsights/dataConnectors",
-      "apiVersion": "2022-10-01-preview",
+      "apiVersion": "2024-03-01",
       "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', variables('workspaceName'))]",
       "name": "[format('{0}{1}', parameters('connectors')[copyIndex()].kind, uniqueString(resourceGroup().id))]",
       "location": "[parameters('location')]",
       "kind": "[parameters('connectors')[copyIndex()].kind]",
-      "properties": "[parameters('connectors')[copyIndex()].properties]"
+      "properties": "[parameters('connectors')[copyIndex()].properties]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), 'Microsoft.SecurityInsights/onboardingStates', 'default')]"
+      ]
     },
     {
       "copy": {
@@ -277,12 +292,15 @@
         "count": "[length(parameters('alertRules'))]"
       },
       "type": "Microsoft.SecurityInsights/alertRules",
-      "apiVersion": "2022-10-01-preview",
+      "apiVersion": "2024-03-01",
       "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', variables('workspaceName'))]",
       "name": "[guid(parameters('alertRules')[copyIndex()].name)]",
       "kind": "[parameters('alertRules')[copyIndex()].kind]",
       "location": "[parameters('location')]",
-      "properties": "[parameters('alertRules')[copyIndex()].properties]"
+      "properties": "[parameters('alertRules')[copyIndex()].properties]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), 'Microsoft.SecurityInsights/onboardingStates', 'default')]"
+      ]
     }
   ]
 }
