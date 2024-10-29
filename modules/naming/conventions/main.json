@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "2083799695178021891"
+      "templateHash": "12053883511661866203"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -270,6 +270,18 @@
             "description": "Route table name."
           }
         },
+        "privateEndpoint": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Private end point name."
+          }
+        },
+        "privateLink": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Private link name."
+          }
+        },
         "sqlDb": {
           "$ref": "#/definitions/nameType",
           "metadata": {
@@ -280,6 +292,18 @@
           "$ref": "#/definitions/nameType",
           "metadata": {
             "description": "SQL server name."
+          }
+        },
+        "dataBricks": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Data bricks workspace name."
+          }
+        },
+        "dataLakeStore": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Data lake store name."
           }
         },
         "storageAccount": {
@@ -548,6 +572,15 @@
         "slug": "lgw",
         "allowSeparator": true
       },
+      "dataBricks": {
+        "slug": "dbw",
+        "allowSeparator": true
+      },
+      "dataLakeStore": {
+        "slug": "dls",
+        "allowSeparator": false,
+        "maxLength": 24
+      },
       "devCentre": {
         "slug": "dc",
         "allowSeparator": true
@@ -606,6 +639,14 @@
       },
       "routeTable": {
         "slug": "rt",
+        "allowSeparator": true
+      },
+      "privateEndpoint": {
+        "slug": "pep",
+        "allowSeparator": true
+      },
+      "privateLink": {
+        "slug": "pl",
         "allowSeparator": true
       },
       "sqlDb": {

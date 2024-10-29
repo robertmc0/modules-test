@@ -175,10 +175,18 @@ type namingOutput = {
   resourceGroup: nameType
   @description('Route table name.')
   routeTable: nameType
+  @description('Private end point name.')
+  privateEndpoint: nameType
+  @description('Private link name.')
+  privateLink: nameType
   @description('SQL database name.')
   sqlDb: nameType
   @description('SQL server name.')
   sqlServer: nameType
+  @description('Data bricks workspace name.')
+  dataBricks: nameType
+  @description('Data lake store name.')
+  dataLakeStore: nameType
   @description('Storage account name.')
   storageAccount: nameType
   @description('Traffic Manager name.')
@@ -301,6 +309,15 @@ var typeMap = {
     slug: 'lgw'
     allowSeparator: true
   }
+  dataBricks: {
+    slug: 'dbw'
+    allowSeparator: true
+  }
+  dataLakeStore: {
+    slug: 'dls'
+    allowSeparator: false
+    maxLength: 24
+  }
   devCentre: {
     slug: 'dc'
     allowSeparator: true
@@ -359,6 +376,14 @@ var typeMap = {
   }
   routeTable: {
     slug: 'rt'
+    allowSeparator: true
+  }
+  privateEndpoint: {
+    slug: 'pep'
+    allowSeparator: true
+  }
+  privateLink: {
+    slug: 'pl'
     allowSeparator: true
   }
   sqlDb: {
