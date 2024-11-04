@@ -21,6 +21,7 @@ Required Parameters:
 - TargetTenantId
 - TargetSubscriptionName
 - TargetRegistryResourceGroupName i.e \<companyPrefix\>-\<locationIdentifier\>-bicep-registry-rg
+- SourceTenantId This is usually the Arinco Tenant Id.
 
 Optional Parameters:
 
@@ -46,7 +47,7 @@ Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 
 ```powershell
 Import-Module .\Build-Registry.ps1 -Force
-Build-Registry -AzureRegion <Region> -TargetRegistryName <Client registry name> -TargetTenantId <Client Tenant ID>  -TargetSubscriptionName <Client Subscription ID> -TargetRegistryResourceGroupName <Client registry resource group> -Tags <Tags>
+Build-Registry -AzureRegion <Region> -TargetRegistryName <Client registry name> -TargetTenantId <Client Tenant ID>  -TargetSubscriptionName <Client Subscription ID> -TargetRegistryResourceGroupName <Client registry resource group> -SourceTenantId <Source or Arinco Tenant ID> -Tags <Tags>
 ```
 
 4. In the 'Done Right' deployment repository modify the **bicepconfig.json** file to point to the clients bicep registry where the registry name is '\<companyPrefix\>\<locationIdentifier\>bicepmodulesacr'.
