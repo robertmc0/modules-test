@@ -39,7 +39,7 @@
 
 
   .NOTES
-    Version:	1.3
+    Version:	1.5
     Author:		Scott Wilkinson
 
     Creation Date:			24/03/2023
@@ -57,6 +57,7 @@
       [10/08/2023 - 1.2 - AJ Bajada]: Added check for existing Azure container registry
       [01/04/2024 - 1.3 - Ben Ranford]: Added support for parallel scanning/importing
       [13/08/2024 - 1.4 - Scott Wilkinson]: Removed tenant ids.
+      [01/11/2024 - 1.5 - Jesse Loudon]: Updated SourceTenantId to be mandatory.
 
 #>
 function Build-Registry {
@@ -66,7 +67,7 @@ function Build-Registry {
     [string] $AzureRegion,
     [Parameter(Mandatory = $false)]
     [string] $SourceRegistryName = "prdarincobicepmodulesacr",
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [string] $SourceTenantId,
     [Parameter(Mandatory = $true)]
     [string] $TargetRegistryName,
