@@ -42,6 +42,7 @@ param geoLocationCodes object = {
   japanwest: 'jpw'
   koreacentral: 'krc'
   koreasouth: 'krs'
+  newzealandnorth: 'nzn'
   northcentralus: 'ncus'
   northeurope: 'ne'
   norwayeast: 'nwe'
@@ -435,20 +436,17 @@ var typeMap = {
 
 @description('Resource names.')
 var namesOutput = reduce(
-  map(
-    items(typeMap),
-    type => {
-      '${type.key}': type.value.allowSeparator
-        ? {
-            name: '${baseName}${separator}${type.value.slug}'
-            slug: type.value.slug
-          }
-        : {
-            name: replace('${baseName}${type.value.slug}', separator, '')
-            slug: type.value.slug
-          }
-    }
-  ),
+  map(items(typeMap), type => {
+    '${type.key}': type.value.allowSeparator
+      ? {
+          name: '${baseName}${separator}${type.value.slug}'
+          slug: type.value.slug
+        }
+      : {
+          name: replace('${baseName}${type.value.slug}', separator, '')
+          slug: type.value.slug
+        }
+  }),
   {},
   (cur, next) => union(cur, next)
 )

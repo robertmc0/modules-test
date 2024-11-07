@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "12053883511661866203"
+      "templateHash": "3154256764066066670"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -419,6 +419,7 @@
         "japanwest": "jpw",
         "koreacentral": "krc",
         "koreasouth": "krs",
+        "newzealandnorth": "nzn",
         "northcentralus": "ncus",
         "northeurope": "ne",
         "norwayeast": "nwe",
