@@ -60,6 +60,12 @@
 
 9.  On line 12 of the publish-module.ps1 file, add the Subscription ID of the Azure Container Registry
 
+10.  Remove the Arinco repo from your local list of remotes as it's no longer needed.
+
+    ```
+    git remote remove arincoBicepModules
+    ```
+
 ---
 
 ## After We Update A Module
