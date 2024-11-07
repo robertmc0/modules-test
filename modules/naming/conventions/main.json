@@ -1,0 +1,711 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.30.23.60470",
+      "templateHash": "3154256764066066670"
+    },
+    "name": "Naming Conventions Module",
+    "description": "This module is used to create a naming convention for resources in Azure.",
+    "owner": "Arinco"
+  },
+  "definitions": {
+    "nameType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true
+      }
+    },
+    "namingOutput": {
+      "type": "object",
+      "properties": {
+        "acr": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Azure container registry (ACR) name."
+          }
+        },
+        "aci": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Azure Container Instance (ACI) name."
+          }
+        },
+        "alert": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Alert name."
+          }
+        },
+        "apim": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Azure API Management name."
+          }
+        },
+        "actionGroup": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Action group name."
+          }
+        },
+        "appGateway": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Application Gateway name."
+          }
+        },
+        "appGatewayPolicy": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Application Gateway WAF policy name."
+          }
+        },
+        "appInsights": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Application Insights name."
+          }
+        },
+        "appServicePlan": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "App Service plan name."
+          }
+        },
+        "aks": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Azure Kubernetes Service (AKS) name."
+          }
+        },
+        "automationAccount": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Automation account name."
+          }
+        },
+        "availabilitySet": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Availability set name."
+          }
+        },
+        "bastion": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Azure Bastion name."
+          }
+        },
+        "budget": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Budget name."
+          }
+        },
+        "cosmosDb": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Azure Cosmos DB name."
+          }
+        },
+        "ddosProtectionPlan": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "DDoS protection plan name."
+          }
+        },
+        "dnsResolver": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "DNS resolver name."
+          }
+        },
+        "expressRouteCircuit": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "ExpressRoute circuit name."
+          }
+        },
+        "externalLoadBalancer": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "External load balancer name."
+          }
+        },
+        "firewall": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Firewall name."
+          }
+        },
+        "firewallPolicy": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Firewall policy name."
+          }
+        },
+        "frontDoor": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Azure Front Door name."
+          }
+        },
+        "internalLoadBalancer": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Internal load balancer name."
+          }
+        },
+        "keyVault": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Key Vault name."
+          }
+        },
+        "localNetworkGateway": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Local network gateway name."
+          }
+        },
+        "devCentre": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Dev centre name."
+          }
+        },
+        "devCentreProject": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Dev centre project name."
+          }
+        },
+        "managedDevOpsPool": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Managed devops pool name."
+          }
+        },
+        "logAnalytics": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Log Analytics name."
+          }
+        },
+        "logicApp": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Logic App name."
+          }
+        },
+        "mlWorkspace": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Machine Learning workspace name."
+          }
+        },
+        "managedIdentity": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Managed identity name."
+          }
+        },
+        "networkInterface": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Network interface name."
+          }
+        },
+        "nsg": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Network security group name."
+          }
+        },
+        "nsgFlowLog": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Network security group flow log name."
+          }
+        },
+        "networkWatcher": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Network watcher name."
+          }
+        },
+        "publicIp": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Public IP address name."
+          }
+        },
+        "recoveryServicesVault": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Recovery Services vault name."
+          }
+        },
+        "resourceGroup": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Resource group name."
+          }
+        },
+        "routeTable": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Route table name."
+          }
+        },
+        "privateEndpoint": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Private end point name."
+          }
+        },
+        "privateLink": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Private link name."
+          }
+        },
+        "sqlDb": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "SQL database name."
+          }
+        },
+        "sqlServer": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "SQL server name."
+          }
+        },
+        "dataBricks": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Data bricks workspace name."
+          }
+        },
+        "dataLakeStore": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Data lake store name."
+          }
+        },
+        "storageAccount": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Storage account name."
+          }
+        },
+        "trafficManager": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Traffic Manager name."
+          }
+        },
+        "virtualMachine": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Virtual machine name."
+          }
+        },
+        "virtualMachineScaleSet": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Virtual machine scale set name."
+          }
+        },
+        "vnet": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Virtual network name."
+          }
+        },
+        "vnetGateway": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Virtual network gateway name."
+          }
+        },
+        "vwan": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Virtual WAN name."
+          }
+        },
+        "vwanHub": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Virtual WAN hub name."
+          }
+        },
+        "webApp": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Web App name."
+          }
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true
+      }
+    }
+  },
+  "parameters": {
+    "prefixes": {
+      "type": "array",
+      "metadata": {
+        "description": "Prefixes to set (in order) for the resource name."
+      }
+    },
+    "suffixes": {
+      "type": "array",
+      "metadata": {
+        "description": "Suffixes to set (in order) for the resource name."
+      }
+    },
+    "separator": {
+      "type": "string",
+      "defaultValue": "-",
+      "metadata": {
+        "description": "Optional. Separator to use for the resource name, e.g. '-' or '_'."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Deployment location."
+      }
+    },
+    "geoLocationCodes": {
+      "type": "object",
+      "defaultValue": {
+        "australiacentral": "acl",
+        "australiacentral2": "acl2",
+        "australiaeast": "ae",
+        "australiasoutheast": "ase",
+        "brazilsouth": "brs",
+        "centraluseuap": "ccy",
+        "canadacentral": "cnc",
+        "canadaeast": "cne",
+        "centralus": "cus",
+        "eastasia": "ea",
+        "eastus2euap": "ecy",
+        "eastus": "eus",
+        "eastus2": "eus2",
+        "francecentral": "frc",
+        "francesouth": "frs",
+        "germanynorth": "gn",
+        "germanywestcentral": "gwc",
+        "centralindia": "inc",
+        "southindia": "ins",
+        "westindia": "inw",
+        "japaneast": "jpe",
+        "japanwest": "jpw",
+        "koreacentral": "krc",
+        "koreasouth": "krs",
+        "newzealandnorth": "nzn",
+        "northcentralus": "ncus",
+        "northeurope": "ne",
+        "norwayeast": "nwe",
+        "norwaywest": "nww",
+        "southafricanorth": "san",
+        "southafricawest": "saw",
+        "southcentralus": "scus",
+        "swedencentral": "sdc",
+        "swedensouth": "sds",
+        "southeastasia": "sea",
+        "switzerlandnorth": "szn",
+        "switzerlandwest": "szw",
+        "uaecentral": "uac",
+        "uaenorth": "uan",
+        "uksouth": "uks",
+        "ukwest": "ukw",
+        "westcentralus": "wcus",
+        "westeurope": "we",
+        "westus": "wus",
+        "westus2": "wus2",
+        "usdodcentral": "udc",
+        "usdodeast": "ude",
+        "usgovarizona": "uga",
+        "usgoviowa": "ugi",
+        "usgovtexas": "ugt",
+        "usgovvirginia": "ugv",
+        "chinanorth": "bjb",
+        "chinanorth2": "bjb2",
+        "chinaeast": "sha",
+        "chinaeast2": "sha2",
+        "germanycentral": "gec",
+        "germanynortheast": "gne"
+      },
+      "metadata": {
+        "description": "Optional. Geo-location codes for resources."
+      }
+    },
+    "locationIdentifier": {
+      "type": "string",
+      "defaultValue": "[if(contains(parameters('geoLocationCodes'), parameters('location')), format('{0}', parameters('geoLocationCodes')[toLower(parameters('location'))]), parameters('location'))]",
+      "minLength": 2,
+      "maxLength": 4,
+      "metadata": {
+        "description": "Optional. The geo-location identifier used for all resources."
+      }
+    }
+  },
+  "variables": {
+    "prefix": "[join(parameters('prefixes'), parameters('separator'))]",
+    "suffix": "[join(parameters('suffixes'), parameters('separator'))]",
+    "baseName": "[toLower(replace(format('{0}{1}{2}', variables('prefix'), parameters('separator'), variables('suffix')), '**location**', parameters('locationIdentifier')))]",
+    "typeMap": {
+      "acr": {
+        "slug": "cr",
+        "allowSeparator": false,
+        "maxLength": 24
+      },
+      "aci": {
+        "slug": "ci",
+        "allowSeparator": true
+      },
+      "alert": {
+        "slug": "alert",
+        "allowSeparator": true
+      },
+      "apim": {
+        "slug": "apim",
+        "allowSeparator": true
+      },
+      "actionGroup": {
+        "slug": "ag",
+        "allowSeparator": true
+      },
+      "appGateway": {
+        "slug": "agw",
+        "allowSeparator": true
+      },
+      "appGatewayPolicy": {
+        "slug": "waf",
+        "allowSeparator": true
+      },
+      "appInsights": {
+        "slug": "appi",
+        "allowSeparator": true
+      },
+      "appServicePlan": {
+        "slug": "asp",
+        "allowSeparator": true
+      },
+      "aks": {
+        "slug": "aks",
+        "allowSeparator": true
+      },
+      "automationAccount": {
+        "slug": "aa",
+        "allowSeparator": true
+      },
+      "availabilitySet": {
+        "slug": "avail",
+        "allowSeparator": true
+      },
+      "bastion": {
+        "slug": "bas",
+        "allowSeparator": true
+      },
+      "budget": {
+        "slug": "bgt",
+        "allowSeparator": true
+      },
+      "cosmosDb": {
+        "slug": "cosmos",
+        "allowSeparator": true
+      },
+      "ddosProtectionPlan": {
+        "slug": "ddos",
+        "allowSeparator": true
+      },
+      "dnsResolver": {
+        "slug": "dnspr",
+        "allowSeparator": true
+      },
+      "expressRouteCircuit": {
+        "slug": "erc",
+        "allowSeparator": true
+      },
+      "externalLoadBalancer": {
+        "slug": "lbe",
+        "allowSeparator": true
+      },
+      "firewall": {
+        "slug": "afw",
+        "allowSeparator": true
+      },
+      "firewallPolicy": {
+        "slug": "afwp",
+        "allowSeparator": true
+      },
+      "frontDoor": {
+        "slug": "afd",
+        "allowSeparator": true
+      },
+      "internalLoadBalancer": {
+        "slug": "lbi",
+        "allowSeparator": true
+      },
+      "keyVault": {
+        "slug": "kv",
+        "allowSeparator": true
+      },
+      "localNetworkGateway": {
+        "slug": "lgw",
+        "allowSeparator": true
+      },
+      "dataBricks": {
+        "slug": "dbw",
+        "allowSeparator": true
+      },
+      "dataLakeStore": {
+        "slug": "dls",
+        "allowSeparator": false,
+        "maxLength": 24
+      },
+      "devCentre": {
+        "slug": "dc",
+        "allowSeparator": true
+      },
+      "devCentreProject": {
+        "slug": "dcp",
+        "allowSeparator": true
+      },
+      "managedDevOpsPool": {
+        "slug": "mdp",
+        "allowSeparator": true
+      },
+      "logAnalytics": {
+        "slug": "log",
+        "allowSeparator": true
+      },
+      "logicApp": {
+        "slug": "logic",
+        "allowSeparator": true
+      },
+      "mlWorkspace": {
+        "slug": "mlw",
+        "allowSeparator": true
+      },
+      "managedIdentity": {
+        "slug": "id",
+        "allowSeparator": true
+      },
+      "networkInterface": {
+        "slug": "nic",
+        "allowSeparator": true
+      },
+      "nsg": {
+        "slug": "nsg",
+        "allowSeparator": true
+      },
+      "nsgFlowLog": {
+        "slug": "flow",
+        "allowSeparator": true
+      },
+      "networkWatcher": {
+        "slug": "nw",
+        "allowSeparator": true
+      },
+      "publicIp": {
+        "slug": "pip",
+        "allowSeparator": true
+      },
+      "recoveryServicesVault": {
+        "slug": "rsv",
+        "allowSeparator": true
+      },
+      "resourceGroup": {
+        "slug": "rg",
+        "allowSeparator": true
+      },
+      "routeTable": {
+        "slug": "rt",
+        "allowSeparator": true
+      },
+      "privateEndpoint": {
+        "slug": "pep",
+        "allowSeparator": true
+      },
+      "privateLink": {
+        "slug": "pl",
+        "allowSeparator": true
+      },
+      "sqlDb": {
+        "slug": "sqldb",
+        "allowSeparator": true
+      },
+      "sqlServer": {
+        "slug": "sql",
+        "allowSeparator": true
+      },
+      "storageAccount": {
+        "slug": "st",
+        "allowSeparator": false,
+        "maxLength": 24
+      },
+      "trafficManager": {
+        "slug": "traf",
+        "allowSeparator": true
+      },
+      "virtualMachine": {
+        "slug": "vm",
+        "allowSeparator": false
+      },
+      "virtualMachineScaleSet": {
+        "slug": "vmss",
+        "allowSeparator": true
+      },
+      "vnet": {
+        "slug": "vnet",
+        "allowSeparator": true
+      },
+      "vnetGateway": {
+        "slug": "vgw",
+        "allowSeparator": true
+      },
+      "vwan": {
+        "slug": "vwan",
+        "allowSeparator": true
+      },
+      "vwanHub": {
+        "slug": "vhub",
+        "allowSeparator": true
+      },
+      "webApp": {
+        "slug": "app",
+        "allowSeparator": true
+      }
+    },
+    "namesOutput": "[reduce(map(items(variables('typeMap')), lambda('type', createObject(format('{0}', lambdaVariables('type').key), if(lambdaVariables('type').value.allowSeparator, createObject('name', format('{0}{1}{2}', variables('baseName'), parameters('separator'), lambdaVariables('type').value.slug), 'slug', lambdaVariables('type').value.slug), createObject('name', replace(format('{0}{1}', variables('baseName'), lambdaVariables('type').value.slug), parameters('separator'), ''), 'slug', lambdaVariables('type').value.slug))))), createObject(), lambda('cur', 'next', union(lambdaVariables('cur'), lambdaVariables('next'))))]"
+  },
+  "resources": {},
+  "outputs": {
+    "names": {
+      "$ref": "#/definitions/namingOutput",
+      "metadata": {
+        "description": "Resource names."
+      },
+      "value": "[variables('namesOutput')]"
+    }
+  }
+}
