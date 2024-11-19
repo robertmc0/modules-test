@@ -226,6 +226,14 @@ var typeMap = {
     slug: 'apim'
     allowSeparator: true
   }
+  apiCenter: {
+    slug: 'apic'
+    allowSeparator: true
+  }
+  appConfig: {
+    slug: 'appcs'
+    allowSeparator: true
+  }
   actionGroup: {
     slug: 'ag'
     allowSeparator: true
@@ -276,6 +284,14 @@ var typeMap = {
   }
   dnsResolver: {
     slug: 'dnspr'
+    allowSeparator: true
+  }
+  eventHubNamespace: {
+    slug: 'evhns'
+    allowSeparator: true
+  }
+  eventHubNamespaceEventHub: {
+    slug: 'evh'
     allowSeparator: true
   }
   expressRouteCircuit: {
@@ -385,6 +401,10 @@ var typeMap = {
   }
   privateLink: {
     slug: 'pl'
+    allowSeparator: true
+  }
+  serviceBusNamespace: {
+    slug: 'sbns'
     allowSeparator: true
   }
   sqlDb: {

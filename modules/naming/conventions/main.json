@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.31.34.60546",
-      "templateHash": "14502699447630120243"
+      "version": "0.31.92.45157",
+      "templateHash": "4877568297935554731"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -489,6 +489,14 @@
         "slug": "apim",
         "allowSeparator": true
       },
+      "apiCenter": {
+        "slug": "apic",
+        "allowSeparator": true
+      },
+      "appConfig": {
+        "slug": "appcs",
+        "allowSeparator": true
+      },
       "actionGroup": {
         "slug": "ag",
         "allowSeparator": true
@@ -539,6 +547,14 @@
       },
       "dnsResolver": {
         "slug": "dnspr",
+        "allowSeparator": true
+      },
+      "eventHubNamespace": {
+        "slug": "evhns",
+        "allowSeparator": true
+      },
+      "eventHubNamespaceEventHub": {
+        "slug": "evh",
         "allowSeparator": true
       },
       "expressRouteCircuit": {
@@ -648,6 +664,10 @@
       },
       "privateLink": {
         "slug": "pl",
+        "allowSeparator": true
+      },
+      "serviceBusNamespace": {
+        "slug": "sbns",
         "allowSeparator": true
       },
       "sqlDb": {
