@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.22.6.54827",
-      "templateHash": "10852973188054737977"
+      "version": "0.31.92.45157",
+      "templateHash": "17178199098684495025"
     },
     "name": "Application Insights Module",
     "description": "This module deploys Microsoft.Insights/components, aka Applications Insights.",
@@ -167,6 +167,20 @@
         "description": "The resource ID of the deployed applications insights resource."
       },
       "value": "[resourceId('Microsoft.Insights/components', parameters('name'))]"
+    },
+    "instrumentationKey": {
+      "type": "string",
+      "metadata": {
+        "description": "The instrumentation key of the deployed applications insights resource."
+      },
+      "value": "[reference(resourceId('Microsoft.Insights/components', parameters('name')), '2020-02-02').InstrumentationKey]"
+    },
+    "connectionString": {
+      "type": "string",
+      "metadata": {
+        "description": "The connection string of the deployed applications insights resource"
+      },
+      "value": "[reference(resourceId('Microsoft.Insights/components', parameters('name')), '2020-02-02').ConnectionString]"
     }
   }
 }

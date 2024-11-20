@@ -110,7 +110,9 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -123,3 +125,9 @@ output name string = appInsights.name
 
 @description('The resource ID of the deployed applications insights resource.')
 output resourceId string = appInsights.id
+
+@description('The instrumentation key of the deployed applications insights resource.')
+output instrumentationKey string = appInsights.properties.InstrumentationKey
+
+@description('The connection string of the deployed applications insights resource')
+output connectionString string = appInsights.properties.ConnectionString

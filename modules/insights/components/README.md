@@ -28,10 +28,12 @@ This module completes the following tasks:
 
 ## Outputs
 
-| Name         | Type     | Description                                                     |
-| :----------- | :------: | :-------------------------------------------------------------- |
-| `name`       | `string` | The name of the deployed applications insights resource.        |
-| `resourceId` | `string` | The resource ID of the deployed applications insights resource. |
+| Name                 | Type     | Description                                                             |
+| :------------------- | :------: | :---------------------------------------------------------------------- |
+| `name`               | `string` | The name of the deployed applications insights resource.                |
+| `resourceId`         | `string` | The resource ID of the deployed applications insights resource.         |
+| `instrumentationKey` | `string` | The instrumentation key of the deployed applications insights resource. |
+| `connectionString`   | `string` | The connection string of the deployed applications insights resource    |
 
 ## Examples
 
