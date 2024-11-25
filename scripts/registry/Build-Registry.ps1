@@ -102,7 +102,7 @@ function ConnectToSourceRegistry {
     [string] $SourceTenantId
   )
 
-  $account = az account show | ConvertFrom-Json
+  $account = az account show --output json | ConvertFrom-Json
   if ($account.tenantId -ne $SourceTenantId) {
     Read-Host -Prompt "Prepare to login to tenant ($SourceTenantId) where the source registry '$SourceRegistryName' is located. Press any key to continue"
     try {
@@ -114,7 +114,7 @@ function ConnectToSourceRegistry {
   }
   try {
     Write-Host "Connecting to source registry $SourceRegistryName"
-    $Token = az acr login -n $SourceRegistryName --expose-token 2>$null | ConvertFrom-Json
+    $Token = az acr login -n $SourceRegistryName --expose-token 2>$null --output json | ConvertFrom-Json
     return $Token
   }
   catch {
@@ -128,7 +128,7 @@ function GetSourceRegistryImages {
     [Parameter(Mandatory = $true)]
     [string] $SourceRegistryName
   )
-  $Repos = az acr repository list -n $SourceRegistryName | ConvertFrom-Json
+  $Repos = az acr repository list -n $SourceRegistryName --output json | ConvertFrom-Json
   Write-Host "Found $($($Repos).Count) modules in source registry"
   $Images = [System.Collections.ArrayList]@()
 
@@ -136,7 +136,7 @@ function GetSourceRegistryImages {
   $Images = $Repos | ForEach-Object -Parallel {
     $Repo = $_
     $SourceRegistryName = $using:SourceRegistryName
-    $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo | ConvertFrom-Json
+    $Tags = az acr repository show-tags -n $SourceRegistryName --repository $Repo --output json | ConvertFrom-Json
     foreach ($Tag in $Tags) {
       "${Repo}:${Tag}"
     }
@@ -161,7 +161,7 @@ function CreateRegistry() {
   )
   $ErrorActionPreference = "Stop"
 
-  $account = az account show | ConvertFrom-Json
+  $account = az account show --output json | ConvertFrom-Json
   if ($account.tenantId -ne $TargetTenantId) {
     Read-Host -Prompt "Prepare to login to tenant ($TargetTenantId) where the target registry '$TargetRegistryName' is located. Press any key to continue"
     try {
@@ -186,7 +186,7 @@ function CreateRegistry() {
       Write-Host "Skipping as registry already exists"
     }
     else {
-      $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags | ConvertFrom-Json
+      $output = az deployment sub create --template-file .\registry.bicep -l $AzureRegion --parameters location=$AzureRegion resourceGroupName=$TargetRegistryResourceGroupName containerRegistryName=$TargetRegistryName tags=$Tags --output json | ConvertFrom-Json
       if ($output.properties.provisioningState -eq "Succeeded") {
         Write-Host "Successfully provisioned target registry"
       }
@@ -217,7 +217,7 @@ function ImportImagesToTargetRegistry {
     [System.Collections.ArrayList] $Images
   )
 
-  $account = az account show | ConvertFrom-Json
+  $account = az account show --output json | ConvertFrom-Json
   if ($account.tenantId -ne $TargetTenantId) {
     Read-Host -Prompt "Prepare to login to tenant ($TargetTenantId) where target registry '$TargetRegistryName' is located. Press any key to continue"
     try {
@@ -236,7 +236,7 @@ function ImportImagesToTargetRegistry {
   }
 
   Write-Host "Connecting to target registry $TargetRegistryName"
-  $Repos = az acr repository list -n $TargetRegistryName | ConvertFrom-Json
+  $Repos = az acr repository list -n $TargetRegistryName --output json | ConvertFrom-Json
 
   if (($($Repos).Count) -ne 0) {
     Write-Host "Found $($($Repos).Count) modules in target registry"
@@ -244,7 +244,7 @@ function ImportImagesToTargetRegistry {
 
     Write-Host "Scanning modules for versions"
     foreach ($Repo in $Repos) {
-      $Tags = az acr repository show-tags -n $TargetRegistryName --repository $Repo | ConvertFrom-Json
+      $Tags = az acr repository show-tags -n $TargetRegistryName --repository $Repo --output json | ConvertFrom-Json
       foreach ($Tag in $Tags) {
         $TargetImages += "${Repo}:${Tag}"
       }
