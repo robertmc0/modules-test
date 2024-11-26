@@ -126,6 +126,27 @@ module webSitesMinimum '../main.bicep' = {
   }
 }
 
+var webSiteSlotsName = '${shortIdentifier}-tst-website-slots-${uniqueString(deployment().name, 'min', location)}'
+
+module webSiteSlots '../main.bicep' = {
+  name: webSiteSlotsName
+  params: {
+    name: webSiteSlotsName
+    location: location
+    serverFarmId: appServicePlanLinux.id
+    applicationInsightsId: appInsights.id
+    kind: 'app,linux'
+    runtime: 'NODE|20-lts'
+    appSettings: {
+      Test: 'Test1'
+    }
+    deploymentSlotNames:[
+     'Development'
+     'Test'
+    ]
+  }
+}
+
 var webSiteLinuxName = '${shortIdentifier}-tst-website-linux-${uniqueString(deployment().name, 'linux', location)}'
 
 module webSite '../main.bicep' = {

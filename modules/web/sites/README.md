@@ -53,6 +53,7 @@ This module completes the following tasks:
 | `diagnosticLogAnalyticsWorkspaceId`      | `string` | No       | Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.                                                                                 |
 | `diagnosticEventHubAuthorizationRuleId`  | `string` | No       | Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.                                                           |
 | `diagnosticEventHubName`                 | `string` | No       | Optional. Event hub name. Only required if enableDiagnostics is set to true.                                                                                                      |
+| `deploymentSlotNames`                    | `array`  | No       | Optional. Names of the deployment slots.                                                                                                                                          |
 
 ## Outputs
 

@@ -275,6 +275,9 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 @description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
 param diagnosticEventHubName string = ''
 
+@description('Optional. Names of the deployment slots.')
+param deploymentSlotNames array = []
+
 var diagnosticsName = toLower('${webSites.name}-dgs')
 
 var diagnosticsLogs = [
@@ -355,14 +358,14 @@ resource webSites 'Microsoft.Web/sites@2023-12-01' = {
   identity: identity
   tags: tags
   properties: {
-    serverFarmId: serverFarmId
-    httpsOnly: true
-    clientAffinityEnabled: clientAffinityEnabled
-    redundancyMode: redundancyMode
-    virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
-    reserved: isLinux
-    publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'
-  }
+      serverFarmId: serverFarmId
+      httpsOnly: true
+      clientAffinityEnabled: clientAffinityEnabled
+      redundancyMode: redundancyMode
+      virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
+      reserved: isLinux
+      publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'    
+    }
 
   // security requirements
   resource basicAuthFtp 'basicPublishingCredentialsPolicies' = {
@@ -372,7 +375,6 @@ resource webSites 'Microsoft.Web/sites@2023-12-01' = {
     }
   }
 
-  // security requirements
   resource basicAuthScm 'basicPublishingCredentialsPolicies' = {
     name: 'scm'
     properties: {
@@ -424,7 +426,7 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != '
     level: resourceLock
     notes: (resourceLock == 'CanNotDelete')
       ? 'Cannot delete resource or child resources.'
-      : 'Cannot modify the resource or child resources.'
+      : 'Cannot modify resource or child resources.'
   }
 }
 
@@ -442,6 +444,22 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
     metrics: diagnosticsMetrics
   }
 }
+
+#disable-next-line BCP081
+resource stagingSlots 'Microsoft.Web/sites/slots@2024-04-01' = [for slot in deploymentSlotNames: {
+  name: '${slot}'
+  parent: webSites
+  location: location
+  properties: {
+      serverFarmId: serverFarmId
+      httpsOnly: true
+      clientAffinityEnabled: clientAffinityEnabled
+      redundancyMode: redundancyMode
+      virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
+      reserved: isLinux
+      publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'  
+    }
+}]
 
 @description('The name of the web sites resource.')
 output name string = webSites.name
