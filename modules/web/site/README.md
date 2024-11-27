@@ -14,6 +14,8 @@ This module completes the following tasks:
 - Configures diagnostic settings if enabled.
 - Applies a lock to the component if specified.
 
+NOTE: The folder name is purposely web/site rather than web/sites due to the version.json file issue. See PR #685.
+
 ## Parameters
 
 | Name                                     | Type     | Required | Description                                                                                                                                                                       |
