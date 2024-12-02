@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.31.92.45157",
-      "templateHash": "4877568297935554731"
+      "templateHash": "17433754059274247957"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -58,6 +58,12 @@
           "$ref": "#/definitions/nameType",
           "metadata": {
             "description": "Action group name."
+          }
+        },
+        "appConfig": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "App Configuration name."
           }
         },
         "appGateway": {

@@ -106,6 +106,8 @@ type namingOutput = {
   apim: nameType
   @description('Action group name.')
   actionGroup: nameType
+  @description('App Configuration name.')
+  appConfig: nameType
   @description('Application Gateway name.')
   appGateway: nameType
   @description('Application Gateway WAF policy name.')
