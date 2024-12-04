@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.31.92.45157",
-      "templateHash": "17433754059274247957"
+      "templateHash": "13943310590618222894"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -46,6 +46,12 @@
           "$ref": "#/definitions/nameType",
           "metadata": {
             "description": "Alert name."
+          }
+        },
+        "apiCenter": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "API Center name."
           }
         },
         "apim": {
@@ -136,6 +142,18 @@
           "$ref": "#/definitions/nameType",
           "metadata": {
             "description": "DNS resolver name."
+          }
+        },
+        "eventHubNamespace": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Event Hub Namespace name."
+          }
+        },
+        "eventHubNamespaceEventHub": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Event Hub Namespace Event Hub name."
           }
         },
         "expressRouteCircuit": {
@@ -310,6 +328,18 @@
           "$ref": "#/definitions/nameType",
           "metadata": {
             "description": "Data lake store name."
+          }
+        },
+        "serviceBusNamespace": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Service Bus Namespace name."
+          }
+        },
+        "staticWebApp": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Static Web App name."
           }
         },
         "storageAccount": {
@@ -682,6 +712,10 @@
       },
       "sqlServer": {
         "slug": "sql",
+        "allowSeparator": true
+      },
+      "staticWebApp": {
+        "slug": "stapp",
         "allowSeparator": true
       },
       "storageAccount": {

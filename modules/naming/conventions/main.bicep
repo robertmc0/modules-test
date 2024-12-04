@@ -102,6 +102,8 @@ type namingOutput = {
   aci: nameType
   @description('Alert name.')
   alert: nameType
+  @description('API Center name.')
+  apiCenter: nameType
   @description('Azure API Management name.')
   apim: nameType
   @description('Action group name.')
@@ -132,6 +134,10 @@ type namingOutput = {
   ddosProtectionPlan: nameType
   @description('DNS resolver name.')
   dnsResolver: nameType
+  @description('Event Hub Namespace name.')
+  eventHubNamespace: nameType
+  @description('Event Hub Namespace Event Hub name.')
+  eventHubNamespaceEventHub: nameType
   @description('ExpressRoute circuit name.')
   expressRouteCircuit: nameType
   @description('External load balancer name.')
@@ -190,6 +196,10 @@ type namingOutput = {
   dataBricks: nameType
   @description('Data lake store name.')
   dataLakeStore: nameType
+  @description('Service Bus Namespace name.')
+  serviceBusNamespace: nameType
+  @description('Static Web App name.')
+  staticWebApp: nameType
   @description('Storage account name.')
   storageAccount: nameType
   @description('Traffic Manager name.')
@@ -415,6 +425,10 @@ var typeMap = {
   }
   sqlServer: {
     slug: 'sql'
+    allowSeparator: true
+  }
+  staticWebApp: {
+    slug: 'stapp'
     allowSeparator: true
   }
   storageAccount: {
