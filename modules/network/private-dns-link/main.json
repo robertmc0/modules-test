@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.19.5.34762",
-      "templateHash": "18013227312678304649"
+      "version": "0.32.4.45862",
+      "templateHash": "5146753820585162009"
     },
     "name": "Private DNS Zones VNET Link Module",
     "description": "This module deploys Microsoft.Network virtualNetworkLinks.",
@@ -23,6 +23,17 @@
       "defaultValue": false,
       "metadata": {
         "description": "Optional. VNET link Auto Registration."
+      }
+    },
+    "resolutionPolicy": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Default",
+        "NxDomainRedirect"
+      ],
+      "metadata": {
+        "description": "Optional. The resolution policy for the Private DNS Zone."
       }
     },
     "name": {
@@ -44,11 +55,12 @@
   "resources": [
     {
       "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2024-06-01",
       "name": "[format('{0}/{1}', parameters('name'), format('{0}{1}', last(split(parameters('virtualNetworkResourceId'), '/')), variables('vnetLinkSuffix')))]",
       "location": "[parameters('location')]",
       "properties": {
         "registrationEnabled": "[parameters('registrationEnabled')]",
+        "resolutionPolicy": "[parameters('resolutionPolicy')]",
         "virtualNetwork": {
           "id": "[parameters('virtualNetworkResourceId')]"
         }

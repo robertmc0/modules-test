@@ -15,6 +15,7 @@ This module performs the following
 | :------------------------- | :------: | :------: | :------------------------------------------------------------ |
 | `virtualNetworkResourceId` | `string` | Yes      | Existing virtual network resource ID(s).                      |
 | `registrationEnabled`      | `bool`   | No       | Optional. VNET link Auto Registration.                        |
+| `resolutionPolicy`         | `string` | No       | Optional. The resolution policy for the Private DNS Zone.     |
 | `name`                     | `string` | Yes      | The Private DNS Zone name.                                    |
 | `location`                 | `string` | Yes      | Optional. The location where the Private DNS Zone is deployed |
 
