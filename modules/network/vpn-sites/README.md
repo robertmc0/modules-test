@@ -1,8 +1,8 @@
 # VPN Sites Module
 
-This module deploys Microsoft.Network vpnSites.
+This module deploys Microsoft.Network vpnSites
 
-## Description
+## Details
 
 This module performs the following
 
@@ -25,10 +25,10 @@ This module performs the following
 
 ## Outputs
 
-| Name       | Type   | Description                               |
-| :--------- | :----: | :---------------------------------------- |
-| name       | string | The name of the deployed VPN site.        |
-| resourceId | string | The resource ID of the deployed VPN site. |
+| Name         | Type     | Description                               |
+| :----------- | :------: | :---------------------------------------- |
+| `name`       | `string` | The name of the deployed VPN site.        |
+| `resourceId` | `string` | The resource ID of the deployed VPN site. |
 
 ## Examples
 

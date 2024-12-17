@@ -1,3 +1,7 @@
+metadata name = 'VPN Sites Module'
+metadata description = 'This module deploys Microsoft.Network vpnSites'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -26,6 +30,7 @@ param virtualWanId string
 @metadata({
   name: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
   ipAddress: 'The ip-address for the vpn-site-link.'
+  fqdn: 'The fqdn for the vpn-site-link.'
   linkProviderName: 'Name of the link provider.'
   linkSpeedInMbps: 'Link speed.'
 
@@ -60,17 +65,20 @@ resource vpnSite 'Microsoft.Network/vpnSites@2022-05-01' = {
     virtualWan: {
       id: virtualWanId
     }
-    vpnSiteLinks: [for siteLink in vpnSiteLinks: {
-      name: siteLink.name
-      properties: {
-        ipAddress: siteLink.ipAddress
-        linkProperties: {
-          linkProviderName: siteLink.linkProviderName
-          linkSpeedInMbps: siteLink.linkSpeedInMbps
+    vpnSiteLinks: [
+      for siteLink in vpnSiteLinks: {
+        name: siteLink.name
+        properties: {
+          ipAddress: siteLink.?ipAddress ?? null
+          fqdn: siteLink.?fqdn ?? null
+          linkProperties: {
+            linkProviderName: siteLink.linkProviderName
+            linkSpeedInMbps: siteLink.linkSpeedInMbps
+          }
+          bgpProperties: siteLink.?bgpProperties ?? null
         }
-        bgpProperties: contains(siteLink, 'bgpProperties') ? siteLink.bgpProperties : null
       }
-    }]
+    ]
   }
 }
 
@@ -79,7 +87,9 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 

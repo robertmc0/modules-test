@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "12864378618007061624"
-    }
+      "version": "0.32.4.45862",
+      "templateHash": "5662165011061959808"
+    },
+    "name": "VPN Sites Module",
+    "description": "This module deploys Microsoft.Network vpnSites",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -55,6 +58,7 @@
       "metadata": {
         "name": "The name of the resource that is unique within a resource group. This name can be used to access the resource.",
         "ipAddress": "The ip-address for the vpn-site-link.",
+        "fqdn": "The fqdn for the vpn-site-link.",
         "linkProviderName": "Name of the link provider.",
         "linkSpeedInMbps": "Link speed.",
         "bgpProperties": {
@@ -95,12 +99,13 @@
             "input": {
               "name": "[parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')].name]",
               "properties": {
-                "ipAddress": "[parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')].ipAddress]",
+                "ipAddress": "[coalesce(tryGet(parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')], 'ipAddress'), null())]",
+                "fqdn": "[coalesce(tryGet(parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')], 'fqdn'), null())]",
                 "linkProperties": {
                   "linkProviderName": "[parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')].linkProviderName]",
                   "linkSpeedInMbps": "[parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')].linkSpeedInMbps]"
                 },
-                "bgpProperties": "[if(contains(parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')], 'bgpProperties'), parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')].bgpProperties, null())]"
+                "bgpProperties": "[coalesce(tryGet(parameters('vpnSiteLinks')[copyIndex('vpnSiteLinks')], 'bgpProperties'), null())]"
               }
             }
           }
@@ -134,17 +139,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed VPN site."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/vpnSites', parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed VPN site."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/vpnSites', parameters('name'))]"
     }
   }
 }
