@@ -244,6 +244,7 @@ resource diagnosticsFirewall 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
     eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
+    logAnalyticsDestinationType: 'Dedicated'
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
   }

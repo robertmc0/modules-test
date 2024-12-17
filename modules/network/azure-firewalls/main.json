@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.21.1.54444",
-      "templateHash": "15358924592602540406"
+      "version": "0.32.4.45862",
+      "templateHash": "7705461709164008881"
     },
     "name": "Azure Firewalls Module",
     "description": "This module deploys Microsoft.Network azureFirewalls",
@@ -309,6 +309,7 @@
         "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
         "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
         "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logAnalyticsDestinationType": "Dedicated",
         "logs": "[variables('diagnosticsLogs')]",
         "metrics": "[variables('diagnosticsMetrics')]"
       },
