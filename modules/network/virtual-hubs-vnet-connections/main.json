@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "3516045081244271676"
-    }
+      "version": "0.32.4.45862",
+      "templateHash": "5430832283984666205"
+    },
+    "name": "Route Tables Module",
+    "description": "This module deploys Microsoft.Network/virtualHubs hubVirtualNetworkConnections.",
+    "owner": "Arinco"
   },
   "parameters": {
     "name": {
@@ -23,7 +26,7 @@
     },
     "enableInternetSecurity": {
       "type": "bool",
-      "defaultValue": false,
+      "defaultValue": true,
       "metadata": {
         "description": "Optional. Enable internet security."
       }
@@ -77,17 +80,17 @@
   "outputs": {
     "name": {
       "type": "string",
-      "value": "[parameters('name')]",
       "metadata": {
         "description": "The name of the deployed virtual hub route."
-      }
+      },
+      "value": "[parameters('name')]"
     },
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualHubs/hubVirtualNetworkConnections', parameters('virtualHubName'), parameters('name'))]",
       "metadata": {
         "description": "The resource ID of the deployed virtual hub route."
-      }
+      },
+      "value": "[resourceId('Microsoft.Network/virtualHubs/hubVirtualNetworkConnections', parameters('virtualHubName'), parameters('name'))]"
     }
   }
 }

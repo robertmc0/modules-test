@@ -1,3 +1,7 @@
+metadata name = 'Route Tables Module'
+metadata description = 'This module deploys Microsoft.Network/virtualHubs hubVirtualNetworkConnections.'
+metadata owner = 'Arinco'
+
 @description('The resource name.')
 param name string
 
@@ -5,7 +9,7 @@ param name string
 param virtualHubName string
 
 @description('Optional. Enable internet security.')
-param enableInternetSecurity bool = false
+param enableInternetSecurity bool = true
 
 @description('Remote virtual network resource ID.')
 param remoteVirtualNetworkId string
@@ -39,9 +43,11 @@ resource virtualHubConnection 'Microsoft.Network/virtualHubs/hubVirtualNetworkCo
       id: remoteVirtualNetworkId
     }
     routingConfiguration: {
-      associatedRouteTable: associatedRouteTableId != '' ? {
-        id: associatedRouteTableId
-      } : null
+      associatedRouteTable: associatedRouteTableId != ''
+        ? {
+            id: associatedRouteTableId
+          }
+        : null
       propagatedRouteTables: propagatedRouteTables
     }
   }
