@@ -40,6 +40,7 @@ This module performs the following
 | `vpnClientProtocols`                    | `array`  | No       | Optional. The VPN protocol(s) to be used.                                                                                           |
 | `vpnClientRootCertificates`             | `array`  | No       | Optional. The VPN Client root certificates.                                                                                         |
 | `vpnClientRevokedCertificates`          | `array`  | No       | Optional. VPN revoked certificates.                                                                                                 |
+| `vpnAadAuthConfig`                      | `object` | No       | Optional. VPN AAD Auth Details                                                                                                      |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                                |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                                    |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                                |

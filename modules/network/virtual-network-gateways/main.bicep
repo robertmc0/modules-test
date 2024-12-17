@@ -181,6 +181,18 @@ param vpnClientRootCertificates array = []
 })
 param vpnClientRevokedCertificates array = []
 
+@description('Optional. VPN AAD Auth Details')
+@metadata({
+  doc: 'https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?pivots=deployment-language-bicep#vpnclientconfiguration'
+  examples: {
+    aadAudience: 'c632b3df-fb67-4d84-bdcf-b95ad541b5c8' // Azure Public - Microsoft-registered
+    aadIssuer: 'https://sts.windows.net/{Microsoft ID Entra Tenant ID}/'
+    #disable-next-line no-hardcoded-env-urls
+    aadTenant: 'https://login.microsoftonline.com/{Microsoft ID Entra Tenant ID}'
+  }
+})
+param vpnAadAuthConfig object = {}
+
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
@@ -368,6 +380,9 @@ resource virtualNetworkGateway 'Microsoft.Network/virtualNetworkGateways@2022-11
           vpnClientProtocols: vpnClientProtocols
           vpnClientRevokedCertificates: !empty(vpnClientRevokedCertificates) ? vpnClientRevokedCertificates : null
           vpnClientRootCertificates: !empty(vpnClientRootCertificates) ? vpnClientRootCertificates : null
+          aadAudience: !empty(vpnAadAuthConfig) ? vpnAadAuthConfig.aadAudience : null
+          aadIssuer: !empty(vpnAadAuthConfig) ? vpnAadAuthConfig.aadIssuer : null
+          aadTenant: !empty(vpnAadAuthConfig) ? vpnAadAuthConfig.aadTenant : null
         }
       : null
   }

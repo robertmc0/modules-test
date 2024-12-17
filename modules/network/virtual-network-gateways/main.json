@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.29.47.4906",
-      "templateHash": "12457268774215217124"
+      "version": "0.32.4.45862",
+      "templateHash": "10296230820062090282"
     },
     "name": "Virtual Network Gateway Module",
     "description": "This module deploys Microsoft.Network/virtualNetworkGateways",
@@ -253,6 +253,19 @@
         "description": "Optional. VPN revoked certificates."
       }
     },
+    "vpnAadAuthConfig": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?pivots=deployment-language-bicep#vpnclientconfiguration",
+        "examples": {
+          "aadAudience": "c632b3df-fb67-4d84-bdcf-b95ad541b5c8",
+          "aadIssuer": "https://sts.windows.net/{Microsoft ID Entra Tenant ID}/",
+          "aadTenant": "https://login.microsoftonline.com/{Microsoft ID Entra Tenant ID}"
+        },
+        "description": "Optional. VPN AAD Auth Details"
+      }
+    },
     "enableDiagnostics": {
       "type": "bool",
       "defaultValue": false,
@@ -433,7 +446,7 @@
         "activeActive": "[parameters('activeActive')]",
         "enableBgp": "[parameters('enableBgp')]",
         "customRoutes": "[if(not(empty(parameters('customRoutePrefixes'))), createObject('addressPrefixes', parameters('customRoutePrefixes')), null())]",
-        "vpnClientConfiguration": "[if(and(and(not(empty(parameters('vpnClientAddressPoolPrefixes'))), not(empty(parameters('vpnAuthenticationTypes')))), not(empty(parameters('vpnClientProtocols')))), createObject('vpnClientAddressPool', createObject('addressPrefixes', parameters('vpnClientAddressPoolPrefixes')), 'vpnAuthenticationTypes', parameters('vpnAuthenticationTypes'), 'vpnClientProtocols', parameters('vpnClientProtocols'), 'vpnClientRevokedCertificates', if(not(empty(parameters('vpnClientRevokedCertificates'))), parameters('vpnClientRevokedCertificates'), null()), 'vpnClientRootCertificates', if(not(empty(parameters('vpnClientRootCertificates'))), parameters('vpnClientRootCertificates'), null())), null())]"
+        "vpnClientConfiguration": "[if(and(and(not(empty(parameters('vpnClientAddressPoolPrefixes'))), not(empty(parameters('vpnAuthenticationTypes')))), not(empty(parameters('vpnClientProtocols')))), createObject('vpnClientAddressPool', createObject('addressPrefixes', parameters('vpnClientAddressPoolPrefixes')), 'vpnAuthenticationTypes', parameters('vpnAuthenticationTypes'), 'vpnClientProtocols', parameters('vpnClientProtocols'), 'vpnClientRevokedCertificates', if(not(empty(parameters('vpnClientRevokedCertificates'))), parameters('vpnClientRevokedCertificates'), null()), 'vpnClientRootCertificates', if(not(empty(parameters('vpnClientRootCertificates'))), parameters('vpnClientRootCertificates'), null()), 'aadAudience', if(not(empty(parameters('vpnAadAuthConfig'))), parameters('vpnAadAuthConfig').aadAudience, null()), 'aadIssuer', if(not(empty(parameters('vpnAadAuthConfig'))), parameters('vpnAadAuthConfig').aadIssuer, null()), 'aadTenant', if(not(empty(parameters('vpnAadAuthConfig'))), parameters('vpnAadAuthConfig').aadTenant, null())), null())]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName'))]",
