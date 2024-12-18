@@ -25,6 +25,7 @@ param tags object = {}
   'app,linux'
   'functionapp'
   'functionapp,linux'
+  'functionapp,workflowapp'
 ])
 param kind string
 
@@ -358,14 +359,14 @@ resource webSites 'Microsoft.Web/sites@2023-12-01' = {
   identity: identity
   tags: tags
   properties: {
-      serverFarmId: serverFarmId
-      httpsOnly: true
-      clientAffinityEnabled: clientAffinityEnabled
-      redundancyMode: redundancyMode
-      virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
-      reserved: isLinux
-      publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'    
-    }
+    serverFarmId: serverFarmId
+    httpsOnly: true
+    clientAffinityEnabled: clientAffinityEnabled
+    redundancyMode: redundancyMode
+    virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
+    reserved: isLinux
+    publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'
+  }
 
   // security requirements
   resource basicAuthFtp 'basicPublishingCredentialsPolicies' = {
@@ -446,20 +447,22 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
 }
 
 #disable-next-line BCP081
-resource stagingSlots 'Microsoft.Web/sites/slots@2024-04-01' = [for slot in deploymentSlotNames: {
-  name: '${slot}'
-  parent: webSites
-  location: location
-  properties: {
+resource stagingSlots 'Microsoft.Web/sites/slots@2024-04-01' = [
+  for slot in deploymentSlotNames: {
+    name: '${slot}'
+    parent: webSites
+    location: location
+    properties: {
       serverFarmId: serverFarmId
       httpsOnly: true
       clientAffinityEnabled: clientAffinityEnabled
       redundancyMode: redundancyMode
       virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
       reserved: isLinux
-      publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'  
+      publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'
     }
-}]
+  }
+]
 
 @description('The name of the web sites resource.')
 output name string = webSites.name

@@ -92,7 +92,7 @@ resource appServicePlanLinux 'Microsoft.Web/serverfarms@2023-12-01' = {
   location: location
   kind: 'app'
   sku: {
-    name: 'B1'
+    name: 'S1'
   }
   properties: {
     reserved: true
@@ -140,9 +140,9 @@ module webSiteSlots '../main.bicep' = {
     appSettings: {
       Test: 'Test1'
     }
-    deploymentSlotNames:[
-     'Development'
-     'Test'
+    deploymentSlotNames: [
+      'Development'
+      'Test'
     ]
   }
 }
@@ -211,5 +211,28 @@ module webSiteWin '../main.bicep' = {
       }
     ]
     vnetRouteAllEnabled: true
+  }
+}
+
+// Test for Logic App
+var appServicePlanLogicAppName = '${shortIdentifier}-tst-${uniqueString(deployment().name, 'logicapp', location)}'
+resource appServicePlanLogicApp 'Microsoft.Web/serverfarms@2023-12-01' = {
+  name: appServicePlanLogicAppName
+  location: location
+  kind: 'elastic'
+  sku: {
+    name: 'WS1'
+    tier: 'WorkflowStandard'
+  }
+}
+
+module logicApp '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-lapp'
+  params: {
+    name: '${shortIdentifier}-tst-logicapp-linux-${uniqueString(deployment().name, 'linux', location)}'
+    location: location
+    kind: 'functionapp,workflowapp'
+    applicationInsightsId: appInsights.id
+    serverFarmId: appServicePlanLogicApp.id
   }
 }
