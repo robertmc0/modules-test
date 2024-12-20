@@ -18,7 +18,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
 }
 
 resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
-  name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsStorageAccount', location)}'
+  name: '${shortIdentifier}tstdgs${uniqueString(deployment().name, 'diagnosticsStorageAccount', location)}'
   location: location
   kind: 'StorageV2'
   sku: {
@@ -71,6 +71,32 @@ module storageAccountMinimum '../main.bicep' = {
   }
 }
 
+module storageAccountWithImmutableContainer '../main.bicep' = {
+  name: '${uniqueString(deployment().name, location)}-immutable-storage-account'
+  params: {
+    name: '${uniqueString(deployment().name, location)}imsa'
+    location: location
+    publicNetworkAccess: 'Disabled'
+    systemAssignedIdentity: true
+    containers: [
+      {
+        name: 'standard-container'
+        publicAccess: 'None'
+      }
+      {
+        name: 'immutable-container'
+        publicAccess: 'None'
+        immutableContainerEnabled: true
+        immutableContainerPolicy: {
+          immutabilityPeriodSinceCreationInDays: 30
+          allowProtectedAppendWrites: false
+          allowProtectedAppendWritesAll: false
+        }
+      }
+    ]
+  }
+}
+
 module storageAccount '../main.bicep' = {
   name: '${uniqueString(deployment().name, location)}-storage-account'
   params: {
@@ -98,7 +124,6 @@ module storageAccount '../main.bicep' = {
           tenantId: subscription().tenantId
           resourceId: rsv.id
         }
-
       ]
     }
 

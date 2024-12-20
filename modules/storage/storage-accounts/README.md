@@ -59,10 +59,11 @@ Applies a lock to the storage account if the lock is specified.
 
 ## Outputs
 
-| Name         | Type     | Description                                      |
-| :----------- | :------: | :----------------------------------------------- |
-| `name`       | `string` | The name of the deployed storage account.        |
-| `resourceId` | `string` | The resource ID of the deployed storage account. |
+| Name                        | Type     | Description                                                |
+| :-------------------------- | :------: | :--------------------------------------------------------- |
+| `name`                      | `string` | The name of the deployed storage account.                  |
+| `resourceId`                | `string` | The resource ID of the deployed storage account.           |
+| `systemAssignedPrincipalId` | `string` | The principal ID for the system-assigned managed identity. |
 
 ## Examples
 

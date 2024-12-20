@@ -84,6 +84,12 @@ param requireInfrastructureEncryption bool = true
 @metadata({
   name: 'Container name.'
   publicAccess: 'Specifies whether data in the container may be accessed publicly and the level of access. Accepted values: None, Blob, Container.'
+  immutableContainerEnabled: 'Boolean. Enable Immutable storage'
+  immutableContainerPolicy: {
+    immutabilityPeriodSinceCreationInDays: 'Number of days to retain storage blob.'
+    allowProtectedAppendWrites: 'This property can only be changed for unlocked time-based retention policies. When enabled, new blocks can be written to an append blob while maintaining immutability protection and compliance. Only new blocks can be added and any existing blocks cannot be modified or deleted. This property cannot be changed with ExtendImmutabilityPolicy API.'
+    allowProtectedAppendWritesAll: 'This property can only be changed for unlocked time-based retention policies. When enabled, new blocks can be written to both `Append and Bock Blobs` while maintaining immutability protection and compliance. Only new blocks can be added and any existing blocks cannot be modified or deleted. This property cannot be changed with ExtendImmutabilityPolicy API. The `allowProtectedAppendWrites` and `allowProtectedAppendWritesAll` properties are mutually exclusive.'
+  }
 })
 param containers array = []
 
@@ -234,10 +240,10 @@ param enablerestorePolicy bool = false
 
 @description('Optional. Indicates the directory service used.')
 @allowed([
-'AADDS'
-'AADKERB'
-'AD'
-'None'
+  'AADDS'
+  'AADKERB'
+  'AD'
+  'None'
 ])
 param directoryServiceOptions string = 'None'
 
@@ -258,31 +264,39 @@ var supportsBlobService = kind == 'BlockBlobStorage' || kind == 'BlobStorage' ||
 
 var supportsFileService = kind == 'FileStorage' || kind == 'StorageV2' || kind == 'Storage'
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = systemAssignedIdentity
+  ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned')
+  : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
-var identity = identityType != 'None' ? {
-  type: identityType
-  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
-} : null
+var identity = identityType != 'None'
+  ? {
+      type: identityType
+      userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+    }
+  : null
 
 var lockName = toLower('${storage.name}-${resourcelock}-lck')
 
 var diagnosticsName = toLower('${storage.name}-dgs')
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
-  enabled: true
-}]
+var diagnosticsLogs = [
+  for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+    categoryGroup: categoryGroup
+    enabled: true
+  }
+]
 
-var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-}]
+var diagnosticsMetrics = [
+  for metric in diagnosticMetricsToEnable: {
+    category: metric
+    timeGrain: null
+    enabled: true
+  }
+]
 
 var restoreRetentionPolicy = max(deleteRetentionPolicy - 1, 1)
 
-resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: name
   location: location
   tags: tags
@@ -297,12 +311,16 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     encryption: {
       keySource: 'Microsoft.Storage'
       services: {
-        blob: supportsBlobService ? {
-          enabled: true
-        } : null
-        file: supportsFileService ? {
-          enabled: true
-        } : null
+        blob: supportsBlobService
+          ? {
+              enabled: true
+            }
+          : null
+        file: supportsFileService
+          ? {
+              enabled: true
+            }
+          : null
       }
       requireInfrastructureEncryption: kind != 'Storage' ? requireInfrastructureEncryption : null
     }
@@ -321,7 +339,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
 }
 
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = if (supportsBlobService) {
+resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = if (supportsBlobService) {
   parent: storage
   name: 'default'
   properties: {
@@ -329,29 +347,35 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01
       enabled: true
       days: deleteRetentionPolicy
     }
-    changeFeed: enablechangeFeed ? {
-      enabled: true
-      retentionInDays: changeFeedRetentionPolicy
-    } : {
-      enabled: false
-    }
+    changeFeed: enablechangeFeed
+      ? {
+          enabled: true
+          retentionInDays: changeFeedRetentionPolicy
+        }
+      : {
+          enabled: false
+        }
     isVersioningEnabled: enableblobVersioning
-    containerDeleteRetentionPolicy: enablecontainerDeleteRetentionPolicy ? {
-      enabled: true
-      days: containerDeleteRetentionPolicy
-    } : {
-      enabled: false
-    }
-    restorePolicy: enablerestorePolicy ? {
-      enabled: true
-      days: restoreRetentionPolicy
-    } : {
-      enabled: false
-    }
+    containerDeleteRetentionPolicy: enablecontainerDeleteRetentionPolicy
+      ? {
+          enabled: true
+          days: containerDeleteRetentionPolicy
+        }
+      : {
+          enabled: false
+        }
+    restorePolicy: enablerestorePolicy
+      ? {
+          enabled: true
+          days: restoreRetentionPolicy
+        }
+      : {
+          enabled: false
+        }
   }
 }
 
-resource managementPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-01-01' = if (!empty(managementPolicies)) {
+resource managementPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2023-05-01' = if (!empty(managementPolicies)) {
   parent: storage
   name: 'default'
   properties: {
@@ -361,15 +385,29 @@ resource managementPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@
   }
 }
 
-resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = [for container in containers: {
-  parent: blobServices
-  name: container.name
-  properties: {
-    publicAccess: container.publicAccess
+resource blobContainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [
+  for container in containers: {
+    parent: blobServices
+    name: container.name
+    properties: {
+      publicAccess: container.publicAccess
+    }
   }
-}]
+]
 
-resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' = if (supportsFileService) {
+resource immutabilityContainerPolicy 'Microsoft.Storage/storageAccounts/blobServices/containers/immutabilityPolicies@2023-05-01' = [
+  for container in range(0, length(containers)): if (containers[?container].?immutableContainerEnabled ?? false) {
+    parent: blobContainers[container]
+    name: 'default'
+    properties: {
+      allowProtectedAppendWrites: containers[container].immutableContainerPolicy.allowProtectedAppendWrites
+      allowProtectedAppendWritesAll: containers[container].immutableContainerPolicy.allowProtectedAppendWritesAll
+      immutabilityPeriodSinceCreationInDays: containers[container].immutableContainerPolicy.immutabilityPeriodSinceCreationInDays
+    }
+  }
+]
+
+resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-05-01' = if (supportsFileService) {
   parent: storage
   name: 'default'
   properties: {
@@ -380,46 +418,54 @@ resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01
   }
 }
 
-resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = [for fileShare in fileShares: {
-  parent: fileServices
-  name: fileShare.name
-  properties: {
-    accessTier: contains(fileShare, 'tier') ? fileShare.tier : null
-    enabledProtocols: contains(fileShare, 'protocol') ? fileShare.protocol : 'SMB'
-    shareQuota: contains(fileShare, 'quota') ? fileShare.quota : 5120
+resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-05-01' = [
+  for fileShare in fileShares: {
+    parent: fileServices
+    name: fileShare.name
+    properties: {
+      accessTier: fileShare.?tier ?? null
+      enabledProtocols: fileShare.?protocol ?? 'SMB'
+      shareQuota: fileShare.?quota ?? 5120
+    }
   }
-}]
+]
 
-resource queueServices 'Microsoft.Storage/storageAccounts/queueServices@2023-01-01' = if (!empty(queues)) {
+resource queueServices 'Microsoft.Storage/storageAccounts/queueServices@2023-05-01' = if (!empty(queues)) {
   parent: storage
   name: 'default'
   properties: {}
 }
 
-resource storageQueues 'Microsoft.Storage/storageAccounts/queueServices/queues@2023-01-01' = [for queue in queues: {
-  parent: queueServices
-  name: queue.name
-  properties: {}
-}]
+resource storageQueues 'Microsoft.Storage/storageAccounts/queueServices/queues@2023-05-01' = [
+  for queue in queues: {
+    parent: queueServices
+    name: queue.name
+    properties: {}
+  }
+]
 
-resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2023-01-01' = if (!empty(tables)) {
+resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2023-05-01' = if (!empty(tables)) {
   parent: storage
   name: 'default'
   properties: {}
 }
 
-resource storageTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = [for table in tables: {
-  parent: tableServices
-  name: table.name
-  properties: {}
-}]
+resource storageTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = [
+  for table in tables: {
+    parent: tableServices
+    name: table.name
+    properties: {}
+  }
+]
 
 resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != 'NotSpecified') {
   scope: storage
   name: lockName
   properties: {
     level: resourcelock
-    notes: (resourcelock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourcelock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -429,7 +475,9 @@ resource diagnosticsStorage 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     metrics: diagnosticsMetrics
   }
@@ -441,7 +489,9 @@ resource diagnosticsBlobServices 'Microsoft.Insights/diagnosticSettings@2021-05-
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -454,7 +504,9 @@ resource diagnosticsFileServices 'Microsoft.Insights/diagnosticSettings@2021-05-
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -467,7 +519,9 @@ resource diagnosticsQueueServices 'Microsoft.Insights/diagnosticSettings@2021-05
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -479,3 +533,6 @@ output name string = storage.name
 
 @description('The resource ID of the deployed storage account.')
 output resourceId string = storage.id
+
+@description('The principal ID for the system-assigned managed identity.')
+output systemAssignedPrincipalId string = storage.?identity.?principalId ?? ''
