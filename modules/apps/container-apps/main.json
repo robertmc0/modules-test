@@ -1,0 +1,268 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.32.4.45862",
+      "templateHash": "8683999839757749745"
+    },
+    "name": "Container App",
+    "description": "This module deploys Microsoft.App/containerApps",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "containerAppsEnvironmentId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the container app managed environment."
+      }
+    },
+    "containerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the container app."
+      }
+    },
+    "env": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.app/containerapps?pivots=deployment-language-bicep#environmentvar",
+        "example": {
+          "name": "string",
+          "secretRef": "string",
+          "value": "string"
+        },
+        "description": "Optional. Container environment variables."
+      }
+    },
+    "identityType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "SystemAssigned",
+        "UserAssigned"
+      ],
+      "metadata": {
+        "description": "Optional. The type of identity for the resource."
+      }
+    },
+    "imageName": {
+      "type": "string",
+      "metadata": {
+        "description": "Container image to deploy."
+      }
+    },
+    "ingressEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Specifies if Ingress is enabled for the container app."
+      }
+    },
+    "activeRevisionsMode": {
+      "type": "string",
+      "defaultValue": "Single",
+      "allowedValues": [
+        "Single",
+        "Multiple",
+        "Labels"
+      ],
+      "metadata": {
+        "description": "Optional. Active revisions for container apps."
+      }
+    },
+    "dapr": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.app/containerapps?pivots=deployment-language-bicep#dapr",
+        "example": {
+          "appId": "string",
+          "appPort": "int",
+          "appProtocol": "string",
+          "enableApiLogging": "bool",
+          "enabled": "bool",
+          "httpMaxRequestSize": "int",
+          "httpReadBufferSize": "int",
+          "logLevel": "string"
+        },
+        "description": "Optional. Dapr configuration for the Container App."
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.app/containerapps?pivots=deployment-language-bicep#ingress",
+        "example": {
+          "transport": "string",
+          "targetPort": "int",
+          "targetPortHttpScheme": "string",
+          "external": "bool",
+          "corsPolicy": {
+            "allowedOrigins": "array"
+          }
+        },
+        "description": "Optional. Ingress configurations for the Container App."
+      }
+    },
+    "scale": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.app/containerapps?pivots=deployment-language-bicep#scale",
+        "example": {
+          "pollingInterval": "int",
+          "cooldownPeriod": "int",
+          "maxReplicas": "int",
+          "minReplicas": "int",
+          "rules": []
+        },
+        "description": "Optional. Scaling properties for the Container App."
+      }
+    },
+    "secrets": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. Collection of secrets used by a Container app."
+      }
+    },
+    "serviceBinds": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "clientType": "string",
+        "name": "string",
+        "serviceId": "string",
+        "customizedKeys": "object",
+        "description": "Optional. List of container app services bound to the app."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi": {}
+        },
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "registries": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.app/containerapps?pivots=deployment-language-bicep#servicebind",
+        "example": {
+          "passwordSecretRef": "string",
+          "server": "string",
+          "identity": "string",
+          "username": "string"
+        },
+        "description": "Optional. Collection of private container registry credentials for containers used by the Container app."
+      }
+    },
+    "serviceType": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Service type for container apps, required only for dev container apps."
+      }
+    },
+    "containerResources": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.app/containerapps?pivots=deployment-language-bicep#containerresources",
+        "example": {
+          "cpu": "int",
+          "gpu": "int",
+          "memory": "string"
+        },
+        "description": "Optional. Container resource requirements."
+      }
+    }
+  },
+  "variables": {
+    "identity": "[if(not(equals(parameters('identityType'), 'None')), createObject('type', parameters('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.App/containerApps",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('containerName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "managedEnvironmentId": "[parameters('containerAppsEnvironmentId')]",
+        "configuration": {
+          "activeRevisionsMode": "[parameters('activeRevisionsMode')]",
+          "ingress": "[parameters('ingress')]",
+          "dapr": "[parameters('dapr')]",
+          "secrets": "[parameters('secrets')]",
+          "service": {
+            "type": "[parameters('serviceType')]"
+          },
+          "registries": "[parameters('registries')]"
+        },
+        "template": {
+          "serviceBinds": "[if(not(empty(parameters('serviceBinds'))), parameters('serviceBinds'), null())]",
+          "containers": [
+            {
+              "image": "[parameters('imageName')]",
+              "name": "[parameters('containerName')]",
+              "env": "[parameters('env')]",
+              "resources": "[parameters('containerResources')]"
+            }
+          ],
+          "scale": "[parameters('scale')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the image deployed to the container app."
+      },
+      "value": "[parameters('containerName')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource Id of the container app."
+      },
+      "value": "[resourceId('Microsoft.App/containerApps', parameters('containerName'))]"
+    },
+    "containerAppFQDN": {
+      "type": "string",
+      "metadata": {
+        "description": "Url of the deployed application as container app."
+      },
+      "value": "[if(parameters('ingressEnabled'), format('https://{0}', reference(resourceId('Microsoft.App/containerApps', parameters('containerName')), '2024-03-01').configuration.ingress.fqdn), '')]"
+    }
+  }
+}
