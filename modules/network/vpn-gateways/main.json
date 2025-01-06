@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "1827506597421310368"
+      "version": "0.32.4.45862",
+      "templateHash": "3663491556143248112"
     },
     "name": "Virtual Network VPN Gateways Module",
     "description": "This module deploys Microsoft.Network vpnGateways.",
@@ -74,6 +74,13 @@
       "defaultValue": 1,
       "metadata": {
         "description": "Optional. The scale unit for this vpn gateway."
+      }
+    },
+    "connections": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. A set of VPN connections."
       }
     },
     "enableDiagnostics": {
@@ -174,7 +181,7 @@
   "resources": [
     {
       "type": "Microsoft.Network/vpnGateways",
-      "apiVersion": "2022-05-01",
+      "apiVersion": "2024-05-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -185,7 +192,8 @@
         "virtualHub": {
           "id": "[parameters('virtualHubResourceId')]"
         },
-        "vpnGatewayScaleUnit": "[parameters('vpnGatewayScaleUnit')]"
+        "vpnGatewayScaleUnit": "[parameters('vpnGatewayScaleUnit')]",
+        "connections": "[if(not(empty(parameters('connections'))), parameters('connections'), null())]"
       }
     },
     {

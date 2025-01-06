@@ -25,6 +25,7 @@ This module performs the following
 | `isRoutingPreferenceInternet`           | `bool`   | No       | Optional. Enable Routing Preference property for the Public IP Interface of the VpnGateway.                             |
 | `virtualHubResourceId`                  | `string` | No       | Optional. Virtual Hub resource ID.                                                                                      |
 | `vpnGatewayScaleUnit`                   | `int`    | No       | Optional. The scale unit for this vpn gateway.                                                                          |
+| `connections`                           | `array`  | No       | Optional. A set of VPN connections.                                                                                     |
 | `enableDiagnostics`                     | `bool`   | No       | Optional. Enable diagnostic logging.                                                                                    |
 | `diagnosticLogCategoryGroupsToEnable`   | `array`  | No       | Optional. The name of log category groups that will be streamed.                                                        |
 | `diagnosticMetricsToEnable`             | `array`  | No       | Optional. The name of metrics that will be streamed.                                                                    |

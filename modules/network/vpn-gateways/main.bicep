@@ -40,6 +40,9 @@ param virtualHubResourceId string = ''
 @description('Optional. The scale unit for this vpn gateway.')
 param vpnGatewayScaleUnit int = 1
 
+@description('Optional. A set of VPN connections.')
+param connections array = []
+
 @description('Optional. Enable diagnostic logging.')
 param enableDiagnostics bool = false
 
@@ -83,18 +86,22 @@ var lockName = toLower('${vpnGateway.name}-${resourceLock}-lck')
 
 var vpnGatewayDiagnosticsName = toLower('${vpnGateway.name}-dgs')
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
-  enabled: true
-}]
+var diagnosticsLogs = [
+  for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+    categoryGroup: categoryGroup
+    enabled: true
+  }
+]
 
-var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-}]
+var diagnosticsMetrics = [
+  for metric in diagnosticMetricsToEnable: {
+    category: metric
+    timeGrain: null
+    enabled: true
+  }
+]
 
-resource vpnGateway 'Microsoft.Network/vpnGateways@2022-05-01' = {
+resource vpnGateway 'Microsoft.Network/vpnGateways@2024-05-01' = {
   name: name
   location: location
   tags: tags
@@ -106,6 +113,7 @@ resource vpnGateway 'Microsoft.Network/vpnGateways@2022-05-01' = {
       id: virtualHubResourceId
     }
     vpnGatewayScaleUnit: vpnGatewayScaleUnit
+    connections: !empty(connections) ? connections : null
   }
 }
 
@@ -114,7 +122,9 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -124,7 +134,9 @@ resource diagnosticsVnetGateway 'Microsoft.Insights/diagnosticSettings@2021-05-0
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
