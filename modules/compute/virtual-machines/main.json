@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.29.47.4906",
-      "templateHash": "6842463461487910815"
+      "version": "0.32.4.45862",
+      "templateHash": "6626381899556716341"
     },
     "name": "Virtual Machines Module",
     "description": "This module deploys Microsoft.Compute virtualMachines",
@@ -631,7 +631,7 @@
       "properties": {
         "publisher": "Microsoft.Azure.ActiveDirectory",
         "type": "AADLoginForWindows",
-        "typeHandlerVersion": "1.0",
+        "typeHandlerVersion": "2.0",
         "autoUpgradeMinorVersion": true
       },
       "dependsOn": [
@@ -651,7 +651,7 @@
       "properties": {
         "publisher": "Microsoft.Azure.ActiveDirectory",
         "type": "AADLoginForWindows",
-        "typeHandlerVersion": "1.0",
+        "typeHandlerVersion": "2.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
           "mdmId": "0000000a-0000-0000-c000-000000000000"

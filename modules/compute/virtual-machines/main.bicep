@@ -509,7 +509,7 @@ resource extension_aadLogin 'Microsoft.Compute/virtualMachines/extensions@2022-0
     properties: {
       publisher: 'Microsoft.Azure.ActiveDirectory'
       type: 'AADLoginForWindows'
-      typeHandlerVersion: '1.0'
+      typeHandlerVersion: '2.0'
       autoUpgradeMinorVersion: true
     }
   }
@@ -524,7 +524,7 @@ resource extension_aadLoginWithIntune 'Microsoft.Compute/virtualMachines/extensi
     properties: {
       publisher: 'Microsoft.Azure.ActiveDirectory'
       type: 'AADLoginForWindows'
-      typeHandlerVersion: '1.0'
+      typeHandlerVersion: '2.0'
       autoUpgradeMinorVersion: true
       settings: {
         mdmId: '0000000a-0000-0000-c000-000000000000'
