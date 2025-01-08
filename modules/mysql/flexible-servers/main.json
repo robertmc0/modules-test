@@ -1,0 +1,622 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.32.4.45862",
+      "templateHash": "11725714170193001498"
+    },
+    "name": "MySQL Flexible Servers",
+    "description": "Deploy Azure Database for MySQL Flexible Servers",
+    "owner": "Arinco"
+  },
+  "definitions": {
+    "_1.administratorType": {
+      "type": "object",
+      "properties": {
+        "identityResourceId": {
+          "type": "string"
+        },
+        "login": {
+          "type": "string"
+        },
+        "sid": {
+          "type": "string"
+        },
+        "tenantId": {
+          "type": "string"
+        }
+      },
+      "metadata": {
+        "description": "The type of Entra ID identity used for the MySQL Server.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Required. The name of the MySQL flexible server."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Optional. Location for all resources."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "administratorLogin": {
+      "type": "string",
+      "nullable": true,
+      "metadata": {
+        "description": "Optional. The administrator login name of a server. Can only be specified when the MySQL server is being created."
+      }
+    },
+    "administratorLoginPassword": {
+      "type": "securestring",
+      "nullable": true,
+      "metadata": {
+        "description": "Optional. The administrator login password."
+      }
+    },
+    "administrator": {
+      "$ref": "#/definitions/_1.administratorType",
+      "nullable": true,
+      "metadata": {
+        "exmaple": {
+          "identityResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myIdentity",
+          "login": "string",
+          "sid": "identity_object_id"
+        },
+        "description": "Optional. The Azure AD administrators when AAD authentication enabled."
+      }
+    },
+    "databases": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "example": [
+          {
+            "name": "string",
+            "charset": "string",
+            "collation": "string"
+          }
+        ],
+        "description": "Optional. The list of databases to be deploy to the MySQL flexible server."
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "metadata": {
+        "description": "Required. The name of the sku, typically, tier + family + cores, e.g. Standard_D4s_v3."
+      }
+    },
+    "tier": {
+      "type": "string",
+      "allowedValues": [
+        "GeneralPurpose",
+        "Burstable",
+        "MemoryOptimized"
+      ],
+      "metadata": {
+        "description": "Required. The tier of the particular SKU. Tier must align with the \"skuName\" property. Example, tier cannot be \"Burstable\" if skuName is \"Standard_D4s_v3\"."
+      }
+    },
+    "availabilityZone": {
+      "type": "string",
+      "defaultValue": "",
+      "allowedValues": [
+        "",
+        "1",
+        "2",
+        "3"
+      ],
+      "metadata": {
+        "description": "Optional. Availability zone information of the server. Default will have no preference set."
+      }
+    },
+    "highAvailabilityZone": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Standby availability zone information of the server. Default will have no preference set."
+      }
+    },
+    "backupRetentionDays": {
+      "type": "int",
+      "defaultValue": 7,
+      "minValue": 1,
+      "maxValue": 35,
+      "metadata": {
+        "description": "Optional. Backup retention days for the server."
+      }
+    },
+    "geoRedundantBackup": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
+      "metadata": {
+        "description": "Optional. A value indicating whether Geo-Redundant backup is enabled on the server."
+      }
+    },
+    "createMode": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": [
+        "Default",
+        "GeoRestore",
+        "PointInTimeRestore",
+        "Replica"
+      ],
+      "metadata": {
+        "description": "Optional. The mode to create a new MySQL server."
+      }
+    },
+    "highAvailability": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "SameZone",
+        "ZoneRedundant"
+      ],
+      "metadata": {
+        "description": "Optional. The mode for High Availability (HA). It is not supported for the Burstable pricing tier and Zone redundant HA can only be set during server provisioning."
+      }
+    },
+    "maintenanceWindow": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "customWindow": "string",
+          "dayOfWeek": 1,
+          "startHour": 1,
+          "startMinute": 1
+        },
+        "description": "Optional. Properties for the maintenence window. If provided, \"customWindow\" property must exist and set to \"Enabled\". Use the maintenanceWindow property only when updating an existing flexible server. When creating a new flexible servcer, don't specify values for this property."
+      }
+    },
+    "delegatedSubnetResourceId": {
+      "type": "string",
+      "nullable": true,
+      "metadata": {
+        "description": "Optional. Delegated subnet arm resource ID. Used when the desired connectivity mode is \"Private Access\" - virtual network integration. Delegation must be enabled on the subnet for MySQL Flexible Servers and subnet CIDR size is /29."
+      }
+    },
+    "privateDnsZoneResourceId": {
+      "type": "string",
+      "nullable": true,
+      "metadata": {
+        "description": "Conditional. Private dns zone arm resource ID. Used when the desired connectivity mode is \"Private Access\". Required if \"delegatedSubnetResourceId\" is used and the Private DNS Zone name must end with mysql.database.azure.com in order to be linked to the MySQL Flexible Server."
+      }
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies whether public network access is allowed for this server. Set to \"Enabled\" to allow public access, or \"Disabled\" (default) when the server has VNet integration."
+      }
+    },
+    "restorePointInTime": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Conditional. Restore point creation time (ISO8601 format), specifying the time to restore from. Required if \"createMode\" is set to \"PointInTimeRestore\"."
+      }
+    },
+    "replicationRole": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "Replica",
+        "Source"
+      ],
+      "metadata": {
+        "description": "Optional. The replication role."
+      }
+    },
+    "sourceServerResourceId": {
+      "type": "string",
+      "nullable": true,
+      "metadata": {
+        "description": "Conditional. The source MySQL server ID. Required if \"createMode\" is set to \"PointInTimeRestore\"."
+      }
+    },
+    "storageAutoGrow": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
+      "metadata": {
+        "description": "Conditional. Enable Storage Auto Grow or not. Storage auto-growth prevents a server from running out of storage and becoming read-only. Required if \"highAvailability\" is not \"Disabled\"."
+      }
+    },
+    "storageAutoIoScaling": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
+      "metadata": {
+        "description": "Optional. Enable IO Auto Scaling or not. The server scales IOPs up or down automatically depending on your workload needs."
+      }
+    },
+    "storageIOPS": {
+      "type": "int",
+      "defaultValue": 1000,
+      "minValue": 360,
+      "maxValue": 48000,
+      "metadata": {
+        "description": "Optional. Storage IOPS for a server. Max IOPS are determined by compute size."
+      }
+    },
+    "storageSizeGB": {
+      "type": "int",
+      "defaultValue": 64,
+      "allowedValues": [
+        20,
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384
+      ],
+      "metadata": {
+        "description": "Optional. Max storage allowed for a server. In all compute tiers, the minimum storage supported is 20 GiB and maximum is 16 TiB."
+      }
+    },
+    "version": {
+      "type": "string",
+      "defaultValue": "8.0.21",
+      "allowedValues": [
+        "5.7",
+        "8.0.21"
+      ],
+      "metadata": {
+        "description": "Optional. MySQL Server version."
+      }
+    },
+    "firewallRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "example": [
+          {
+            "name": "AllowAllWindowsAzureIps",
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          }
+        ],
+        "description": "Optional. The firewall rules to create in the MySQL flexible server."
+      }
+    },
+    "advancedThreatProtection": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Optional. Enable/Disable Advanced Threat Protection (Microsoft Defender) for the server."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Audit"
+      ],
+      "allowedValues": [
+        "Audit",
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi": {}
+        },
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "identityType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "UserAssigned"
+      ],
+      "metadata": {
+        "description": "Optional. The type of identity for the resource."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true
+        }
+      }
+    ],
+    "standByAvailabilityZoneTable": {
+      "Disabled": null,
+      "SameZone": "[parameters('availabilityZone')]",
+      "ZoneRedundant": "[parameters('highAvailabilityZone')]"
+    },
+    "standByAvailabilityZone": "[tryGet(variables('standByAvailabilityZoneTable'), parameters('highAvailability'))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "identity": "[if(not(equals(parameters('identityType'), 'None')), createObject('type', parameters('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]"
+  },
+  "resources": {
+    "flexibleServer": {
+      "type": "Microsoft.DBforMySQL/flexibleServers",
+      "apiVersion": "2023-12-30",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "tier": "[parameters('tier')]"
+      },
+      "identity": "[variables('identity')]",
+      "properties": {
+        "administratorLogin": "[parameters('administratorLogin')]",
+        "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+        "availabilityZone": "[parameters('availabilityZone')]",
+        "backup": {
+          "backupRetentionDays": "[parameters('backupRetentionDays')]",
+          "geoRedundantBackup": "[parameters('geoRedundantBackup')]"
+        },
+        "createMode": "[parameters('createMode')]",
+        "highAvailability": {
+          "mode": "[parameters('highAvailability')]",
+          "standbyAvailabilityZone": "[variables('standByAvailabilityZone')]"
+        },
+        "maintenanceWindow": "[if(not(empty(parameters('maintenanceWindow'))), createObject('customWindow', parameters('maintenanceWindow').customWindow, 'dayOfWeek', if(equals(parameters('maintenanceWindow').customWindow, 'Enabled'), parameters('maintenanceWindow').dayOfWeek, 0), 'startHour', if(equals(parameters('maintenanceWindow').customWindow, 'Enabled'), parameters('maintenanceWindow').startHour, 0), 'startMinute', if(equals(parameters('maintenanceWindow').customWindow, 'Enabled'), parameters('maintenanceWindow').startMinute, 0)), null())]",
+        "network": {
+          "delegatedSubnetResourceId": "[parameters('delegatedSubnetResourceId')]",
+          "privateDnsZoneResourceId": "[parameters('privateDnsZoneResourceId')]",
+          "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
+        },
+        "replicationRole": "[parameters('replicationRole')]",
+        "restorePointInTime": "[parameters('restorePointInTime')]",
+        "sourceServerResourceId": "[parameters('sourceServerResourceId')]",
+        "storage": {
+          "autoGrow": "[parameters('storageAutoGrow')]",
+          "autoIoScaling": "[parameters('storageAutoIoScaling')]",
+          "iops": "[parameters('storageIOPS')]",
+          "storageSizeGB": "[parameters('storageSizeGB')]"
+        },
+        "version": "[parameters('version')]"
+      }
+    },
+    "flexibleServer_databases": {
+      "copy": {
+        "name": "flexibleServer_databases",
+        "count": "[length(parameters('databases'))]"
+      },
+      "type": "Microsoft.DBforMySQL/flexibleServers/databases",
+      "apiVersion": "2023-12-30",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('databases')[copyIndex()].name)]",
+      "properties": {
+        "charset": "[parameters('databases')[copyIndex()].charset]",
+        "collation": "[parameters('databases')[copyIndex()].collation]"
+      },
+      "dependsOn": [
+        "flexibleServer"
+      ]
+    },
+    "firewallRule": {
+      "copy": {
+        "name": "firewallRule",
+        "count": "[length(parameters('firewallRules'))]"
+      },
+      "type": "Microsoft.DBforMySQL/flexibleServers/firewallRules",
+      "apiVersion": "2023-06-30",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('firewallRules')[copyIndex()].name)]",
+      "properties": {
+        "endIpAddress": "[parameters('firewallRules')[copyIndex()].startIpAddress]",
+        "startIpAddress": "[parameters('firewallRules')[copyIndex()].endIpAddress]"
+      },
+      "dependsOn": [
+        "flexibleServer"
+      ]
+    },
+    "flexibleServer_administrator": {
+      "condition": "[not(empty(parameters('administrator')))]",
+      "type": "Microsoft.DBforMySQL/flexibleServers/administrators",
+      "apiVersion": "2023-06-30",
+      "name": "[format('{0}/{1}', parameters('name'), 'ActiveDirectory')]",
+      "properties": {
+        "administratorType": "ActiveDirectory",
+        "identityResourceId": "[tryGet(parameters('administrator'), 'identityResourceId')]",
+        "login": "[tryGet(parameters('administrator'), 'login')]",
+        "sid": "[tryGet(parameters('administrator'), 'sid')]",
+        "tenantId": "[coalesce(tryGet(parameters('administrator'), 'tenantId'), tenant().tenantId)]"
+      },
+      "dependsOn": [
+        "flexibleServer"
+      ]
+    },
+    "advancedThreatProtectionSettings": {
+      "type": "Microsoft.DBforMySQL/flexibleServers/advancedThreatProtectionSettings",
+      "apiVersion": "2023-12-30",
+      "name": "[format('{0}/{1}', parameters('name'), 'Default')]",
+      "properties": {
+        "state": "[parameters('advancedThreatProtection')]"
+      },
+      "dependsOn": [
+        "flexibleServer"
+      ]
+    },
+    "lock": {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.DBforMySQL/flexibleServers/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "flexibleServer"
+      ]
+    },
+    "diagnostics": {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.DBforMySQL/flexibleServers/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "flexibleServer"
+      ]
+    }
+  },
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed MySQL Flexible server."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed MySQL Flexible server."
+      },
+      "value": "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('name'))]"
+    },
+    "fqdn": {
+      "type": "string",
+      "metadata": {
+        "description": "The FQDN of the MySQL Flexible server."
+      },
+      "value": "[reference('flexibleServer').fullyQualifiedDomainName]"
+    }
+  }
+}
