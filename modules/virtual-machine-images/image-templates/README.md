@@ -1,13 +1,15 @@
-# Image Templates Module
+# Image Templates
 
-This module deploys Microsoft.VirtualMachineImages imageTemplates
+This module deploys Microsoft.Compute/galleries/images AKA Image Templates
 
-## Description
+## Details
 
-- Creates Microsoft.Compute gallery resource.
-- Creates Microsoft.Compute galleries/images resource.
-- Creates Microsoft.VirtualMachineImages imageTemplates resource.
-- Applies a resource lock if specified.
+This module completes the following tasks:
+
+- Creates a Microsoft.Compute/galleries/images resource.
+- Creates a Microsoft.VirtualMachineImages/imageTemplates resource.
+- Provides options to deploy Windows or Linux.
+- Applies a lock to the component if specified.
 
 ## Parameters
 
@@ -35,10 +37,10 @@ This module deploys Microsoft.VirtualMachineImages imageTemplates
 
 ## Outputs
 
-| Name       | Type   | Description                                     |
-| :--------- | :----: | :---------------------------------------------- |
-| name       | string | The name of the deployed image template.        |
-| resourceId | string | The resource ID of the deployed image template. |
+| Name         | Type     | Description                                     |
+| :----------- | :------: | :---------------------------------------------- |
+| `name`       | `string` | The name of the deployed image template.        |
+| `resourceId` | `string` | The resource ID of the deployed image template. |
 
 ## Examples
 

@@ -1,3 +1,7 @@
+metadata name = 'Image Templates'
+metadata description = 'This module deploys Microsoft.Compute/galleries/images AKA Image Templates'
+metadata owner = 'Arinco'
+
 @description('Optional. The geo-location where the resource lives.')
 param location string
 
@@ -21,6 +25,7 @@ param imageGalleryName string
   publisher: 'Publisher name.'
   offer: 'Image offer name, e.g. microsoftwindowsdesktop.'
   sku: 'Image sku name, e.g. win11-22h2-avd.'
+  securityType: 'Security Type of the virtual machine.Allowed values are ConfidentialVMSupported, TrustedLaunchSupported, TrustedLaunch, Standard, ConfidentialVM'
 })
 param imageDefinitionProperties object
 
@@ -149,14 +154,14 @@ var defaultCustomiserSettings = [
 
 var customiserSettings = union(defaultCustomiserSettings, windowsUpdateConfiguration)
 
-resource imageGallery 'Microsoft.Compute/galleries@2022-03-03' = {
+resource imageGallery 'Microsoft.Compute/galleries@2024-03-03' = {
   name: imageGalleryName
   location: location
   tags: tags
   properties: {}
 }
 
-resource imageGalleryLock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+resource imageGalleryLock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != 'NotSpecified') {
   scope: imageGallery
   name: imageGalleryLockName
   properties: {
@@ -165,7 +170,7 @@ resource imageGalleryLock 'Microsoft.Authorization/locks@2017-04-01' = if (resou
   }
 }
 
-resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
+resource imageDefinition 'Microsoft.Compute/galleries/images@2024-03-03' = {
   parent: imageGallery
   name: imageDefinitionProperties.name
   location: location
@@ -177,12 +182,18 @@ resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
       offer: imageDefinitionProperties.offer
       sku: imageDefinitionProperties.sku
     }
+    features: [
+        {
+            name: 'securityType'
+            value: imageDefinitionProperties.? securityType ?? 'Standard'
+        }
+    ]
     recommended: imageRecommendedSettings
     hyperVGeneration: hyperVGeneration
   }
 }
 
-resource imageDefinitionLock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+resource imageDefinitionLock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != 'NotSpecified') {
   scope: imageDefinition
   name: imageDefinitionLockName
   properties: {
@@ -191,7 +202,7 @@ resource imageDefinitionLock 'Microsoft.Authorization/locks@2017-04-01' = if (re
   }
 }
 
-resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2022-02-14' = {
+resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2024-02-01' = {
   name: imageTemplateName
   location: location
   identity: {
@@ -226,7 +237,7 @@ resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2022-02-14
   }
 }
 
-resource imageTemplateLock 'Microsoft.Authorization/locks@2017-04-01' = if (resourcelock != 'NotSpecified') {
+resource imageTemplateLock 'Microsoft.Authorization/locks@2020-05-01' = if (resourcelock != 'NotSpecified') {
   scope: imageTemplate
   name: imageTemplateLockName
   properties: {

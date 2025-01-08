@@ -60,6 +60,7 @@ module minImageTemplate '../main.bicep' = {
       publisher: 'arinco'
       offer: 'microsoftwindowsdesktop'
       sku: 'win11-22h2-avd'
+      securityType: 'TrustedLaunch'
     }
     hyperVGeneration: 'V2'
     imageTemplateName: '${shortIdentifier}mintstimage${uniqueString(deployment().name, 'imageTemplate', location)}'
@@ -89,6 +90,7 @@ module imageTemplate '../main.bicep' = {
       publisher: 'arinco'
       offer: 'microsoftwindowsdesktop'
       sku: 'win11-22h2-avd'
+      securityType: 'TrustedLaunch'
     }
     imageRecommendedSettings: {
       vCPUs: {

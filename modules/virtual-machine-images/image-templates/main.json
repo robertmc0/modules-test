@@ -4,9 +4,12 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.16.2.56959",
-      "templateHash": "12567404169209703814"
-    }
+      "version": "0.32.4.45862",
+      "templateHash": "4361312783905014668"
+    },
+    "name": "Image Templates",
+    "description": "This module deploys Microsoft.Compute/galleries/images AKA Image Templates",
+    "owner": "Arinco"
   },
   "parameters": {
     "location": {
@@ -28,8 +31,8 @@
     },
     "imageGalleryName": {
       "type": "string",
-      "maxLength": 80,
       "minLength": 3,
+      "maxLength": 80,
       "metadata": {
         "description": "Azure Image Gallery name."
       }
@@ -41,6 +44,7 @@
         "publisher": "Publisher name.",
         "offer": "Image offer name, e.g. microsoftwindowsdesktop.",
         "sku": "Image sku name, e.g. win11-22h2-avd.",
+        "securityType": "Security Type of the virtual machine.Allowed values are ConfidentialVMSupported, TrustedLaunchSupported, TrustedLaunch, Standard, ConfidentialVM",
         "description": "Image definition to set for the custom image produced by the Azure Image Builder build."
       }
     },
@@ -183,14 +187,14 @@
     "resourcelock": {
       "type": "string",
       "defaultValue": "NotSpecified",
-      "metadata": {
-        "description": "Optional. Specify the type of resource lock."
-      },
       "allowedValues": [
         "CanNotDelete",
         "NotSpecified",
         "ReadOnly"
-      ]
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
     }
   },
   "variables": {
@@ -217,7 +221,7 @@
   "resources": [
     {
       "type": "Microsoft.Compute/galleries",
-      "apiVersion": "2022-03-03",
+      "apiVersion": "2024-03-03",
       "name": "[parameters('imageGalleryName')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -226,7 +230,7 @@
     {
       "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.Compute/galleries/{0}', parameters('imageGalleryName'))]",
       "name": "[variables('imageGalleryLockName')]",
       "properties": {
@@ -239,7 +243,7 @@
     },
     {
       "type": "Microsoft.Compute/galleries/images",
-      "apiVersion": "2022-03-03",
+      "apiVersion": "2024-03-03",
       "name": "[format('{0}/{1}', parameters('imageGalleryName'), parameters('imageDefinitionProperties').name)]",
       "location": "[parameters('location')]",
       "properties": {
@@ -250,6 +254,12 @@
           "offer": "[parameters('imageDefinitionProperties').offer]",
           "sku": "[parameters('imageDefinitionProperties').sku]"
         },
+        "features": [
+          {
+            "name": "securityType",
+            "value": "[coalesce(tryGet(parameters('imageDefinitionProperties'), 'securityType'), 'Standard')]"
+          }
+        ],
         "recommended": "[parameters('imageRecommendedSettings')]",
         "hyperVGeneration": "[parameters('hyperVGeneration')]"
       },
@@ -260,7 +270,7 @@
     {
       "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.Compute/galleries/{0}/images/{1}', parameters('imageGalleryName'), parameters('imageDefinitionProperties').name)]",
       "name": "[variables('imageDefinitionLockName')]",
       "properties": {
@@ -273,7 +283,7 @@
     },
     {
       "type": "Microsoft.VirtualMachineImages/imageTemplates",
-      "apiVersion": "2022-02-14",
+      "apiVersion": "2024-02-01",
       "name": "[parameters('imageTemplateName')]",
       "location": "[parameters('location')]",
       "identity": {
@@ -313,7 +323,7 @@
     {
       "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
       "type": "Microsoft.Authorization/locks",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "2020-05-01",
       "scope": "[format('Microsoft.VirtualMachineImages/imageTemplates/{0}', parameters('imageTemplateName'))]",
       "name": "[variables('imageTemplateLockName')]",
       "properties": {
