@@ -121,9 +121,36 @@ param skuCapacity int = 0
   'S1'
   'S2'
   'S3'
+  'WS1'
+  'WS2'
+  'WS3'
 ])
 // default to smallest commonly available plan which supports deployment/staging slots
 param skuName string = 'S1'
+
+@description('Optional. Name of the resource SKU Tier.')
+@allowed([
+  'Shared'
+  'Free'
+  'Basic'
+  'Basic'
+  'Basic'
+  'Standard'
+  'Standard'
+  'Standard'
+  'Premium'
+  'Premium'
+  'Premium'
+  'PremiumV2'
+  'PremiumV2'
+  'PremiumV2'
+  'Isolated'
+  'Isolated'
+  'Isolated'
+  'Dynamic '
+  'WorkflowStandard'
+])
+param skuTier string = 'Shared'
 
 @description('Optional. If this App Service Plan will perform availability zone balancing.')
 param zoneRedundant bool = false
@@ -138,15 +165,17 @@ var reserved = operatingSystem == 'linux'
 ** 'Boiler-plate' Variables
 */
 
-var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-  retentionPolicy: {
+var diagnosticsMetrics = [
+  for metric in diagnosticMetricsToEnable: {
+    category: metric
+    timeGrain: null
     enabled: true
-    days: diagnosticLogsRetentionInDays
+    retentionPolicy: {
+      enabled: true
+      days: diagnosticLogsRetentionInDays
+    }
   }
-}]
+]
 
 var diagnosticsName = toLower('${appServicePlan.name}-dgs')
 
@@ -166,13 +195,17 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   properties: {
     elasticScaleEnabled: elasticScaleEnabled ? elasticScaleEnabled : null
 
-    hostingEnvironmentProfile: empty(hostingEnvironmentProfileId) ? null : {
-      id: hostingEnvironmentProfileId
-    }
+    hostingEnvironmentProfile: empty(hostingEnvironmentProfileId)
+      ? null
+      : {
+          id: hostingEnvironmentProfileId
+        }
 
-    kubeEnvironmentProfile: empty(kubeEnvironmentProfileId) ? null : {
-      id: kubeEnvironmentProfileId
-    }
+    kubeEnvironmentProfile: empty(kubeEnvironmentProfileId)
+      ? null
+      : {
+          id: kubeEnvironmentProfileId
+        }
 
     perSiteScaling: perSiteScaling ? perSiteScaling : null
     reserved: reserved
@@ -180,11 +213,17 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
     zoneRedundant: zoneRedundant ? zoneRedundant : null
   }
 
-  sku: union({
+  sku: union(
+    {
       name: skuName
-    }, skuCapacity == 0 ? {} : {
-      skuCapacity: skuCapacity
-    })
+      tier: skuTier
+    },
+    skuCapacity == 0
+      ? {}
+      : {
+          skuCapacity: skuCapacity
+        }
+  )
 }
 
 resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
@@ -192,7 +231,9 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -204,7 +245,9 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     metrics: diagnosticsMetrics
   }

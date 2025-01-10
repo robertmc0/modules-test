@@ -33,6 +33,7 @@ This module completes the following tasks:
 | `perSiteScaling`                        | `bool`   | No       | Optional. If true, apps assigned to this App Service plan can be scaled independently. If false, apps assigned to this App Service plan will scale to all instances of the plan. |
 | `skuCapacity`                           | `int`    | No       | Optional. Number of instances needed for the app service plan. 0 means not specified (allows for control ouside IaC).                                                            |
 | `skuName`                               | `string` | No       | Optional. Name of the resource SKU.                                                                                                                                              |
+| `skuTier`                               | `string` | No       | Optional. Name of the resource SKU Tier.                                                                                                                                         |
 | `zoneRedundant`                         | `bool`   | No       | Optional. If this App Service Plan will perform availability zone balancing.                                                                                                     |
 
 ## Outputs

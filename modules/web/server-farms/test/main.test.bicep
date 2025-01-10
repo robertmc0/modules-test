@@ -5,9 +5,7 @@
 @description('Optional. The geo-location where the resource lives.')
 param location string = resourceGroup().location
 
-@description(
-  'Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.'
-)
+@description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 @minLength(1)
 @maxLength(4)
 param shortIdentifier string = 'arn'
@@ -70,5 +68,32 @@ module linux '../main.bicep' = {
     resourceLock: 'CanNotDelete'
     skuName: 'P3v3'
     zoneRedundant: true
+  }
+}
+
+module names '../../../naming/conventions/main.bicep' = {
+  scope: subscription()
+  name: '${uniqueString(deployment().name, location)}-names'
+  params: {
+    location: location
+    prefixes: [
+      'ar'
+      '**location**'
+      'tst'
+    ]
+    suffixes: [
+      'adr'
+    ]
+  }
+}
+
+module appServicePlanLogicApp '../main.bicep' = {
+  name: 'appServicePlanLogicApp-${deploymentStartTime}'
+  params: {
+    location: location
+    name: names.outputs.names.appServicePlan.name
+    kind: 'elastic'
+    skuName: 'WS1'
+    skuTier: 'WorkflowStandard'
   }
 }

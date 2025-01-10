@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.22.6.54827",
-      "templateHash": "18201457033469821381"
+      "version": "0.32.4.45862",
+      "templateHash": "10801864769973873734"
     },
     "name": "App Service Plans",
     "description": "This module deploys Microsoft.web/severFarms aka App Service Plans",
@@ -188,10 +188,41 @@
         "P3v3",
         "S1",
         "S2",
-        "S3"
+        "S3",
+        "WS1",
+        "WS2",
+        "WS3"
       ],
       "metadata": {
         "description": "Optional. Name of the resource SKU."
+      }
+    },
+    "skuTier": {
+      "type": "string",
+      "defaultValue": "Shared",
+      "allowedValues": [
+        "Shared",
+        "Free",
+        "Basic",
+        "Basic",
+        "Basic",
+        "Standard",
+        "Standard",
+        "Standard",
+        "Premium",
+        "Premium",
+        "Premium",
+        "PremiumV2",
+        "PremiumV2",
+        "PremiumV2",
+        "Isolated",
+        "Isolated",
+        "Isolated",
+        "Dynamic ",
+        "WorkflowStandard"
+      ],
+      "metadata": {
+        "description": "Optional. Name of the resource SKU Tier."
       }
     },
     "zoneRedundant": {
@@ -238,7 +269,7 @@
         "reserved": "[variables('reserved')]",
         "zoneRedundant": "[if(parameters('zoneRedundant'), parameters('zoneRedundant'), null())]"
       },
-      "sku": "[union(createObject('name', parameters('skuName')), if(equals(parameters('skuCapacity'), 0), createObject(), createObject('skuCapacity', parameters('skuCapacity'))))]"
+      "sku": "[union(createObject('name', parameters('skuName'), 'tier', parameters('skuTier')), if(equals(parameters('skuCapacity'), 0), createObject(), createObject('skuCapacity', parameters('skuCapacity'))))]"
     },
     {
       "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
