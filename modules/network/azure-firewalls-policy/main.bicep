@@ -42,6 +42,9 @@ param threatIntelMode string = 'Alert'
 })
 param threatIntelAllowlist object = {}
 
+@description('Optional. The ID of the Log Analytics workspace to send diagnostic logs to.')
+param diagnosticLogAnalyticsWorkspaceId string = ''
+
 @description('Optional. Enables system assigned managed identity on the resource.')
 param systemAssignedIdentity bool = false
 
@@ -120,7 +123,7 @@ param resourceLock string = 'NotSpecified'
 var lockName = toLower('${firewallPolicy.name}-${resourceLock}-lck')
 
 var identityType = systemAssignedIdentity
-  ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned')
+  ? (!empty(userAssignedIdentities) ? 'SystemAssigned, UserAssigned' : 'SystemAssigned')
   : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
 var identity = identityType != 'None'
@@ -144,20 +147,37 @@ resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01' = {
     threatIntelWhitelist: threatIntelAllowlist
     intrusionDetection: !empty(intrusionDetection) ? intrusionDetection : null
     transportSecurity: !empty(transportSecurity) ? transportSecurity : null
+    insights: empty(diagnosticLogAnalyticsWorkspaceId)
+      ? null
+      : {
+          isEnabled: true
+          logAnalyticsResources: {
+            defaultWorkspaceId: {
+              id: diagnosticLogAnalyticsWorkspaceId
+            }
+            workspaces: [
+              {
+                region: location
+                workspaceId: {
+                  id: diagnosticLogAnalyticsWorkspaceId
+                }
+              }
+            ]
+          }
+        }
   }
 }
 
-resource lock 'Microsoft.Authorization/locks@2020-05-01' =
-  if (resourceLock != 'NotSpecified') {
-    scope: firewallPolicy
-    name: lockName
-    properties: {
-      level: resourceLock
-      notes: (resourceLock == 'CanNotDelete')
-        ? 'Cannot delete resource or child resources.'
-        : 'Cannot modify the resource or child resources.'
-    }
+resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != 'NotSpecified') {
+  scope: firewallPolicy
+  name: lockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
+}
 
 @description('The name of the deployed Azure firewall policy.')
 output name string = firewallPolicy.name

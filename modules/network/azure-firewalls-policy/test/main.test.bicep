@@ -70,11 +70,16 @@ module createFirewallCACert 'main.test.prereqs.bicep' = {
   }
 }
 
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
+  name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location)}'
+  location: location
+}
+
 /*======================================================================
 TEST EXECUTION
 ======================================================================*/
 module firewallPolicyBasic '../main.bicep' = {
-  name: '${uniqueString(deployment().name, location)}-min-firewall-pol'
+  name: '${uniqueString(deployment().name, location)}-bsc-firewall-pol'
   params: {
     name: '${shortIdentifier}-tst-bsc-fwl-pol-${uniqueString(deployment().name, 'azureFirewallPolicy', location)}'
     location: location
@@ -83,7 +88,7 @@ module firewallPolicyBasic '../main.bicep' = {
 }
 
 module firewallPolicyStandard '../main.bicep' = {
-  name: '${uniqueString(deployment().name, location)}-min-firewall-pol'
+  name: '${uniqueString(deployment().name, location)}-std-firewall-pol'
   params: {
     name: '${shortIdentifier}-tst-std-fwl-pol-${uniqueString(deployment().name, 'azureFirewallPolicy', location)}'
     location: location
@@ -145,6 +150,7 @@ module firewallPolicy '../main.bicep' = {
         keyVaultSecretId: createFirewallCACert.outputs.certSecretId
       }
     }
+    diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
     resourceLock: 'CanNotDelete'
   }
 }

@@ -20,21 +20,22 @@ This module performs the following
 
 ## Parameters
 
-| Name                     | Type     | Required | Description                                                                          |
-| :----------------------- | :------: | :------: | :----------------------------------------------------------------------------------- |
-| `name`                   | `string` | Yes      | The resource name.                                                                   |
-| `location`               | `string` | Yes      | The geo-location where the resource lives.                                           |
-| `tags`                   | `object` | No       | Optional. Resource tags.                                                             |
-| `tier`                   | `string` | Yes      | Tier of the Azure Firewall Policy.                                                   |
-| `threatIntelMode`        | `string` | No       | Optional. The operation mode for Threat Intelligence.                                |
-| `threatIntelAllowlist`   | `object` | No       | Optional. Threat Intelligence Allowlist.                                             |
-| `systemAssignedIdentity` | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                  |
-| `userAssignedIdentities` | `object` | No       | Optional. The ID(s) to assign to the resource.                                       |
-| `enableDnsProxy`         | `bool`   | No       | Optional. Enable DNS Proxy on Firewalls attached to the Firewall Policy.             |
-| `customDnsServers`       | `array`  | No       | Optional. List of Custom DNS Servers. Only required when enableDnsProxy set to true. |
-| `intrusionDetection`     | `object` | No       | Optional. Intrusion Detection Configuration. Requires Premium SKU.                   |
-| `transportSecurity`      | `object` | No       | Optional. TLS Configuration definition. Requires Premium SKU.                        |
-| `resourceLock`           | `string` | No       | Optional. Specify the type of resource lock.                                         |
+| Name                                | Type     | Required | Description                                                                          |
+| :---------------------------------- | :------: | :------: | :----------------------------------------------------------------------------------- |
+| `name`                              | `string` | Yes      | The resource name.                                                                   |
+| `location`                          | `string` | Yes      | The geo-location where the resource lives.                                           |
+| `tags`                              | `object` | No       | Optional. Resource tags.                                                             |
+| `tier`                              | `string` | Yes      | Tier of the Azure Firewall Policy.                                                   |
+| `threatIntelMode`                   | `string` | No       | Optional. The operation mode for Threat Intelligence.                                |
+| `threatIntelAllowlist`              | `object` | No       | Optional. Threat Intelligence Allowlist.                                             |
+| `diagnosticLogAnalyticsWorkspaceId` | `string` | No       | Optional. The ID of the Log Analytics workspace to send diagnostic logs to.          |
+| `systemAssignedIdentity`            | `bool`   | No       | Optional. Enables system assigned managed identity on the resource.                  |
+| `userAssignedIdentities`            | `object` | No       | Optional. The ID(s) to assign to the resource.                                       |
+| `enableDnsProxy`                    | `bool`   | No       | Optional. Enable DNS Proxy on Firewalls attached to the Firewall Policy.             |
+| `customDnsServers`                  | `array`  | No       | Optional. List of Custom DNS Servers. Only required when enableDnsProxy set to true. |
+| `intrusionDetection`                | `object` | No       | Optional. Intrusion Detection Configuration. Requires Premium SKU.                   |
+| `transportSecurity`                 | `object` | No       | Optional. TLS Configuration definition. Requires Premium SKU.                        |
+| `resourceLock`                      | `string` | No       | Optional. Specify the type of resource lock.                                         |
 
 ## Outputs
 

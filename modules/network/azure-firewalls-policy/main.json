@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "10976342885680919338"
+      "version": "0.32.4.45862",
+      "templateHash": "4656321550906834935"
     },
     "name": "Azure Firewall Policy Module",
     "description": "This module deploys Microsoft.Network firewallPolicies",
@@ -71,6 +71,13 @@
           ]
         },
         "description": "Optional. Threat Intelligence Allowlist."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The ID of the Log Analytics workspace to send diagnostic logs to."
       }
     },
     "systemAssignedIdentity": {
@@ -173,7 +180,7 @@
   "variables": {
     "dnsProperties": "[if(equals(parameters('tier'), 'Basic'), null(), createObject('enableProxy', parameters('enableDnsProxy'), 'servers', parameters('customDnsServers')))]",
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
-    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned, UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
   },
   "resources": [
@@ -192,7 +199,8 @@
         "threatIntelMode": "[parameters('threatIntelMode')]",
         "threatIntelWhitelist": "[parameters('threatIntelAllowlist')]",
         "intrusionDetection": "[if(not(empty(parameters('intrusionDetection'))), parameters('intrusionDetection'), null())]",
-        "transportSecurity": "[if(not(empty(parameters('transportSecurity'))), parameters('transportSecurity'), null())]"
+        "transportSecurity": "[if(not(empty(parameters('transportSecurity'))), parameters('transportSecurity'), null())]",
+        "insights": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), createObject('isEnabled', true(), 'logAnalyticsResources', createObject('defaultWorkspaceId', createObject('id', parameters('diagnosticLogAnalyticsWorkspaceId')), 'workspaces', createArray(createObject('region', parameters('location'), 'workspaceId', createObject('id', parameters('diagnosticLogAnalyticsWorkspaceId')))))))]"
       }
     },
     {
