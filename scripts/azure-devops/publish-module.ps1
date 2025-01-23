@@ -39,7 +39,7 @@ Write-Host "URL: $moduleUrl"
 
 bicep --version
 az bicep upgrade
-bicep publish $modulePath --target $moduleUrl
+bicep publish $modulePath --target $moduleUrl --with-source
 
 Write-Host "Successfully published module: $moduleUrl"
 
