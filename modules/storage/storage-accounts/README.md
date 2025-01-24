@@ -7,6 +7,7 @@ This module deploys Microsoft.StorageAccounts and child resources
 This module performs the following
 
 Creates Microsoft.StorageAccount resource.
+Disables public access to storage account resource.
 Creates blob containers if provided.
 Creates file shares if provided.
 Creates Storage queues if provided.

@@ -58,7 +58,7 @@ param userAssignedIdentities object = {}
   'Enabled'
   'Disabled'
 ])
-param publicNetworkAccess string = 'Enabled'
+param publicNetworkAccess string = 'Disabled'
 
 @description('Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key.')
 param allowSharedKeyAccess bool = false

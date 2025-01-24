@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.32.4.45862",
-      "templateHash": "1542698339677289047"
+      "templateHash": "14881801301176461263"
     },
     "name": "Storage Accounts",
     "description": "This module deploys Microsoft.StorageAccounts and child resources",
@@ -93,7 +93,7 @@
     },
     "publicNetworkAccess": {
       "type": "string",
-      "defaultValue": "Enabled",
+      "defaultValue": "Disabled",
       "allowedValues": [
         "Enabled",
         "Disabled"
