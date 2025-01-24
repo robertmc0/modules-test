@@ -1,8 +1,19 @@
 name: Refresh module table
-
+# The sections commented out below are only required when using a GH App to create pull requests instead of the default GITHUB_TOKEN
 on:
   workflow_dispatch:
   workflow_call:
+    # secrets:
+    #   # Secrets must be passed from the caller workflow explicitly.
+    #   APP_ID:
+    #     required: true
+    #   APP_PRIVATE_KEY:
+    #     required: true
+
+permissions:
+  pull-requests: write
+  contents: write
+  actions: write
 
 jobs:
   main:
@@ -16,10 +27,18 @@ jobs:
       - name: Install packages
         run: npm ci
 
+      # - name: Generate a token
+      #   id: generate-token
+      #   uses: actions/create-github-app-token@v1.11.1
+      #   with:
+      #     app-id: ${{ secrets.APP_ID }}
+      #     private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Refresh modules table
         uses: actions/github-script@v7
         with:
           result-encoding: string
+          # github-token: ${{ steps.generate-token.outputs.token }}
           script: |
             const script = require("./scripts/github-actions/refresh-module-table.js")
             await script({ require, github, context, core })

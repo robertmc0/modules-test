@@ -5,6 +5,12 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+  actions: write
+
 jobs:
   get-module-to-publish:
     uses: ./.github/workflows/get-changed-module.yml
@@ -66,3 +72,6 @@ jobs:
     needs: create-tag
     if: needs.create-tag.outputs.tag
     uses: ./.github/workflows/refresh-module-table.yml
+    # secrets: # this is only required when using a GH App to create pull requests instead of the default GITHUB_TOKEN
+    #   APP_ID: ${{ secrets.APP_ID }}
+    #   APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
