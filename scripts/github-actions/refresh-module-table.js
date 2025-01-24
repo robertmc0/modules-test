@@ -120,7 +120,7 @@ async function generateModulesTable(github, context, fs, path) {
  * @param {string} newReadme
  */
 async function createPullRequestToUpdateReadme(github, context, newReadme) {
-  const branch = `refresh-module-table-${getTimestamp()}`;
+  const branch = `feature/refresh-module-table-${getTimestamp()}`;
 
   // Create a new branch.
   await github.rest.git.createRef({
