@@ -28,7 +28,7 @@ git checkout $ModuleTag
 $moduleTagParts = $ModuleTag -split '/'
 $moduleId = ($moduleTagParts | Select-Object -SkipLast 1) -join '/'
 $moduleVersion = $moduleTagParts | Select-Object -Last 1
-$modulePath = "modules/$moduleId/main.json"
+$modulePath = "modules/$moduleId/main.bicep"
 $moduleUrl = "br:$RegistryServer/bicep/$($moduleId):$($moduleVersion)"
 
 Write-Host "Tag: $ModuleTag"
