@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.32.4.45862",
-      "templateHash": "7317123553054815556"
+      "version": "0.33.13.18514",
+      "templateHash": "14624692318029477791"
     },
     "name": "EventHub Module",
     "description": "This module deploys an EventHub (Microsoft.EventHub/namespaces/EventHubs) resource.",
@@ -36,17 +36,6 @@
         "description": "Resource ID of the EventHub namespace to associate Event Hub to."
       }
     },
-    "tags": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
-        "example": {
-          "tagKey": "string"
-        },
-        "description": "Optional. Resource tags."
-      }
-    },
     "resourceLock": {
       "type": "string",
       "defaultValue": "NotSpecified",
@@ -58,90 +47,10 @@
       "metadata": {
         "description": "Optional. Specify the type of resource lock."
       }
-    },
-    "enableDiagnostics": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Optional. Enable diagnostic logging."
-      }
-    },
-    "diagnosticLogCategoryGroupsToEnable": {
-      "type": "array",
-      "defaultValue": [
-        "Audit"
-      ],
-      "allowedValues": [
-        "Audit",
-        "AllLogs"
-      ],
-      "metadata": {
-        "description": "Optional. The name of log category groups that will be streamed."
-      }
-    },
-    "diagnosticMetricsToEnable": {
-      "type": "array",
-      "defaultValue": [
-        "AllMetrics"
-      ],
-      "allowedValues": [
-        "AllMetrics"
-      ],
-      "metadata": {
-        "description": "Optional. The name of metrics that will be streamed."
-      }
-    },
-    "diagnosticStorageAccountId": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
-      }
-    },
-    "diagnosticLogAnalyticsWorkspaceId": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
-      }
-    },
-    "diagnosticEventHubAuthorizationRuleId": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
-      }
-    },
-    "diagnosticEventHubName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
-      }
     }
   },
   "variables": {
-    "copy": [
-      {
-        "name": "diagnosticsLogs",
-        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
-        "input": {
-          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
-          "enabled": true
-        }
-      },
-      {
-        "name": "diagnosticsMetrics",
-        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
-        "input": {
-          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
-          "timeGrain": null,
-          "enabled": true
-        }
-      }
-    ],
-    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
-    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
   },
   "resources": [
     {
@@ -162,24 +71,6 @@
       "properties": {
         "level": "[parameters('resourceLock')]",
         "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('scope'), parameters('name'))]"
-      ]
-    },
-    {
-      "condition": "[parameters('enableDiagnostics')]",
-      "type": "Microsoft.Insights/diagnosticSettings",
-      "apiVersion": "2021-05-01-preview",
-      "scope": "[format('Microsoft.EventHub/namespaces/{0}/eventhubs/{1}', parameters('scope'), parameters('name'))]",
-      "name": "[variables('diagnosticsName')]",
-      "properties": {
-        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
-        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
-        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
-        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
-        "logs": "[variables('diagnosticsLogs')]",
-        "metrics": "[variables('diagnosticsMetrics')]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('scope'), parameters('name'))]"
