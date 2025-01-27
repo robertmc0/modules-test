@@ -2,6 +2,8 @@ metadata name = 'Managed Clusters Module'
 metadata description = 'This module deploys Microsoft.ContainerService managedClusters'
 metadata owner = 'Arinco'
 
+import * as Types from './types.bicep'
+
 @description('The resource name.')
 @maxLength(63)
 param name string
@@ -46,72 +48,17 @@ param enablePrivateCluster bool = false
 @description('Optional. Specify profile of managed cluster add-on.')
 param addonProfiles object = {}
 
-@description('Optional. Agent Pool name.')
-param agentPoolName string = 'agentpool'
+@description('Required. Properties of the primary agent pool.')
+param agentPoolProfiles Types.agentPoolType[]
 
-@description('Optional. OS Disk Size in GB to be used to specify the disk size for every machine in the master/agent pool.')
-param agentPoolOsDiskSizeGB int = 128
-
-@description('Existing VNET resourceid dedicated for use with a Managed Cluster.')
-param agentPoolVnetSubnetId string
-
-@description('Optional. The maximum number of pods that can run on a node.')
-param agentPoolMaxPods int = 30
+@description('A CIDR notation IP range from which to assign pod IPs when kubenet is used. It must not overlap with any Subnet IP ranges.')
+param networkPodCidr string = ''
 
 @description('A CIDR notation IP range from which to assign service cluster IPs. It must not overlap with any Subnet IP ranges.')
 param networkServiceCidr string
 
 @description('An IP address assigned to the Kubernetes DNS service. It must be within the Kubernetes service address range specified in serviceCidr.')
 param networkDnsServiceIp string
-
-@description('Optional. A CIDR notation IP range assigned to the Docker bridge network. It must not overlap with any Subnet IP ranges or the Kubernetes service address range. Default 172.17.0.1.')
-param networkDockerBridgeCidr string = '172.17.0.1/16'
-
-@description('Optional. A cluster must have at least one "System" Agent Pool at all times. For additional information on agent pool restrictions and best practices.')
-@allowed([
-  'User'
-  'System'
-])
-param agentPoolMode string = 'System'
-
-@description('Optional. The type of Agent Pool.')
-@allowed([
-  'AvailabilitySet'
-  'VirtualMachineScaleSets'
-])
-param agentPoolType string = 'VirtualMachineScaleSets'
-
-@description('Optional. Enable Availability zones for the agentpool nodes. This can only be specified if the AgentPoolType property is VirtualMachineScaleSets.')
-param enableAvailabilityZones bool = false
-
-@description('Optional. Set availability zone to deploy the managed cluster into.')
-@metadata({
-  doc: 'https://learn.microsoft.com/en-us/azure/aks/availability-zones'
-})
-param availabilityZones array = [
-  '1'
-  '2'
-  '3'
-]
-
-@description('Optional. Number of agents (VMs) to host docker containers. Allowed values must be in the range of 0 to 1000 (inclusive) for user pools and in the range of 1 to 1000 (inclusive) for system pools.')
-@minValue(1)
-param agentPoolCount int = 1
-
-@description('Optional. Enables the Managed Cluster auto-scaler.')
-@metadata({
-  doc: 'https://learn.microsoft.com/en-us/azure/aks/cluster-autoscaler'
-})
-param enableAutoScaling bool = false
-
-@description('Optional. When enabling autoscaler a minimum node count must be set for the autoscaler to function. Defaults to 1.')
-param agentPoolMinCount int = 1
-
-@description('Optional. When enabling autoscaler a maximum node count must be set for the autoscaler to function. Defaults to 1.')
-param agentPoolMaxCount int = 1
-
-@description('Optional. Virtual Machine size of the nodes in the Managed Cluster.')
-param agentPoolVMSize string = 'Standard_B2s'
 
 @description('Optional. Network plugin used for building the Kubernetes network.')
 @allowed([
@@ -121,21 +68,40 @@ param agentPoolVMSize string = 'Standard_B2s'
 ])
 param networkNetworkPlugin string = 'azure'
 
-@description('Optional. Specify the type of resource lock.')
+@description('Optional. Network plugin mode used for building the Kubernetes network.')
 @allowed([
-  'NotSpecified'
-  'ReadOnly'
-  'CanNotDelete'
+  'overlay'
+  ''
 ])
-param resourceLock string = 'NotSpecified'
+param networkNetworkPluginMode string = ''
 
-@description('Optional. The ID(s) to assign to the resource.')
-@metadata({
-  example: {
-    '/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi': {}
-  }
-})
-param userAssignedIdentities object = {}
+@description('Optional. Network dataplane used in the Kubernetes cluster.')
+@allowed([
+  'azure'
+  'cilium'
+])
+param networkNetworkDataplane string = 'azure'
+
+@description('Optional. Network dataplane used in the Kubernetes cluster.')
+@allowed([
+  'loadBalancer'
+  'managedNATGateway'
+  'userAssignedNATGateway'
+  'userDefinedRouting'
+])
+param networkOutboundType string = 'loadBalancer'
+
+@description('Optional. Enable Istio Service Mesh.')
+param istioServiceMeshEnabled bool = false
+
+@description('Optional. Enable Istio Service Mesh Internal Ingress Gateway.')
+param istioServiceMeshInternalIngressGatewayEnabled bool = false
+
+@description('Optional. Enable Istio Service Mesh External Ingress Gateway.')
+param istioServiceMeshExternalIngressGatewayEnabled bool = false
+
+@description('Optional. Istio Service Mesh Control Plane Revision.')
+param istioServiceMeshRevision string = ''
 
 @description('Optional. Enable Azure Active Directory configuration.')
 param enableAad bool = false
@@ -146,19 +112,7 @@ param enableAzureRbac bool = false
 @description('Optional. Enable the Azure Policy profile of managed cluster add-on.')
 param enableAddonAzurePolicy bool = false
 
-@description('Optional. Enable Defender for Cloud.')
-param enableDefenderForCloud bool = false
-
-@description('Optional. Enable App Insights Monitoring. Specify App Insights Log Analytics Workspace resourceId.')
-param logAnalyticsWorkspaceResourceId string = ''
-
-@description('Optional. Enable diagnostic logging.')
-param enableDiagnostics bool = false
-
 @description('optional. Enable auto upgrade on the AKS cluster to perform periodic upgrades to the latest Kubernetes version.')
-@metadata({
-  doc: 'https://learn.microsoft.com/en-us/azure/aks/upgrade-cluster?tabs=azure-cli#set-auto-upgrade-channel'
-})
 @allowed([
   'none'
   'node-image'
@@ -167,6 +121,31 @@ param enableDiagnostics bool = false
   'rapid'
 ])
 param upgradeChannel string = 'patch'
+
+@description('Optional. The ID(s) to assign to the resource.')
+@metadata({
+  example: {
+    '/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi': {}
+  }
+})
+param userAssignedIdentities object = {}
+
+@description('Optional. Enable Defender for Cloud.')
+param enableDefenderForCloud bool = false
+
+@description('Optional. Specify the type of resource lock.')
+@allowed([
+  'NotSpecified'
+  'ReadOnly'
+  'CanNotDelete'
+])
+param resourceLock string = 'NotSpecified'
+
+@description('Optional. Enable App Insights Monitoring. Specify App Insights Log Analytics Workspace resourceId.')
+param logAnalyticsWorkspaceResourceId string = ''
+
+@description('Optional. Enable diagnostic logging.')
+param enableDiagnostics bool = false
 
 @description('Optional. The name of log category groups that will be streamed.')
 @allowed([
@@ -199,7 +178,7 @@ param diagnosticEventHubAuthorizationRuleId string = ''
 param diagnosticEventHubName string = ''
 
 var sku = {
-  name: 'Basic'
+  name: 'Base'
   tier: managedClusterSku
 }
 
@@ -207,42 +186,54 @@ var lockName = toLower('${aks.name}-${resourceLock}-lck')
 
 var diagnosticsName = toLower('${aks.name}-dgs')
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
-  enabled: true
-}]
-
-var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-}]
-
-var addonAzurePolicy = enableAddonAzurePolicy ? {
-  azurePolicy: {
-    enabled: enableAddonAzurePolicy
-  }
-} : {}
-
-var addonOmsAgent = !empty(logAnalyticsWorkspaceResourceId) ? {
-  omsagent: {
+var diagnosticsLogs = [
+  for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+    categoryGroup: categoryGroup
     enabled: true
-    config: {
-      logAnalyticsWorkspaceResourceId: !empty(logAnalyticsWorkspaceResourceId) ? logAnalyticsWorkspaceResourceId : null
-    }
   }
-} : {}
+]
+
+var diagnosticsMetrics = [
+  for metric in diagnosticMetricsToEnable: {
+    category: metric
+    timeGrain: null
+    enabled: true
+  }
+]
+
+var addonAzurePolicy = enableAddonAzurePolicy
+  ? {
+      azurePolicy: {
+        enabled: enableAddonAzurePolicy
+      }
+    }
+  : {}
+
+var addonOmsAgent = !empty(logAnalyticsWorkspaceResourceId)
+  ? {
+      omsagent: {
+        enabled: true
+        config: {
+          logAnalyticsWorkspaceResourceId: !empty(logAnalyticsWorkspaceResourceId)
+            ? logAnalyticsWorkspaceResourceId
+            : null
+        }
+      }
+    }
+  : {}
 
 var clusterAddons = union(addonAzurePolicy, addonOmsAgent, addonProfiles)
 
 var identityType = !empty(userAssignedIdentities) ? 'UserAssigned' : 'SystemAssigned'
 
-var identity = identityType != 'None' ? {
-  type: identityType
-  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
-} : null
+var identity = identityType != 'None'
+  ? {
+      type: identityType
+      userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+    }
+  : null
 
-resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2024-09-01' = {
   name: name
   sku: sku
   location: location
@@ -254,49 +245,92 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-09-01' = {
     dnsPrefix: !empty(dnsPrefix) ? dnsPrefix : name
     enableRBAC: enableRbac
     kubernetesVersion: kubernetesVersion != 'latest' ? kubernetesVersion : null
-    agentPoolProfiles: [ {
-        name: agentPoolName
-        availabilityZones: enableAvailabilityZones ? availabilityZones : null
-        count: agentPoolCount
-        enableAutoScaling: enableAutoScaling
-        vmSize: agentPoolVMSize
-        osDiskSizeGB: agentPoolOsDiskSizeGB
-        vnetSubnetID: agentPoolVnetSubnetId
-        minCount: enableAutoScaling ? agentPoolMinCount : null
-        maxCount: enableAutoScaling ? agentPoolMaxCount : null
-        maxPods: agentPoolMaxPods
-        mode: agentPoolMode
-        type: agentPoolType
-      } ]
+    agentPoolProfiles: map(agentPoolProfiles, profile => {
+      name: profile.name
+      count: profile.count ?? 1
+      availabilityZones: map(profile.?availabilityZones ?? [1, 2, 3], zone => '${zone}')
+      enableAutoScaling: profile.?enableAutoScaling ?? false
+      maxCount: profile.?maxCount
+      maxPods: profile.?maxPods
+      minCount: profile.?minCount
+      mode: profile.?mode
+      nodeLabels: profile.?nodeLabels
+      nodeTaints: profile.?nodeTaints
+      osDiskSizeGB: profile.?osDiskSizeGB
+      osDiskType: profile.?osDiskType
+      osSKU: profile.?osSku
+      osType: profile.?osType ?? 'Linux'
+      tags: profile.?tags
+      type: profile.?type ?? 'VirtualMachineScaleSets'
+      vmSize: profile.?vmSize
+      #disable-next-line use-resource-id-functions
+      vnetSubnetID: profile.?vnetSubnetResourceId
+      workloadRuntime: profile.?workloadRuntime
+    })
+
     networkProfile: {
+      networkDataplane: networkNetworkDataplane
       networkPlugin: networkNetworkPlugin
+      networkPluginMode: networkNetworkPluginMode
+      outboundType: networkOutboundType
+      podCidr: !empty(networkPodCidr) ? networkPodCidr : null
       serviceCidr: networkServiceCidr
       dnsServiceIP: networkDnsServiceIp
-      dockerBridgeCidr: networkDockerBridgeCidr
     }
     addonProfiles: clusterAddons
-    aadProfile: enableAad ? {
-      managed: true
-      enableAzureRbac: enableAzureRbac
-      tenantID: tenant().tenantId
-    } : null
+    aadProfile: enableAad
+      ? {
+          managed: true
+          enableAzureRBAC: enableAzureRbac
+          tenantID: tenant().tenantId
+        }
+      : null
+    #disable-next-line use-resource-id-functions BCP321 // default to default istio revision if not set
+    serviceMeshProfile: istioServiceMeshEnabled
+      ? {
+          istio: {
+            revisions: !empty(istioServiceMeshRevision)
+              ? [
+                  istioServiceMeshRevision
+                ]
+              : null
+            components: {
+              ingressGateways: [
+                {
+                  enabled: istioServiceMeshInternalIngressGatewayEnabled
+                  mode: 'Internal'
+                }
+                {
+                  enabled: istioServiceMeshExternalIngressGatewayEnabled
+                  mode: 'External'
+                }
+              ]
+            }
+          }
+          mode: 'Istio'
+        }
+      : null
     apiServerAccessProfile: {
       enablePrivateCluster: enablePrivateCluster
     }
-    securityProfile: enableDefenderForCloud ? {
+    securityProfile: {
       defender: {
-        logAnalyticsWorkspaceResourceId: diagnosticLogAnalyticsWorkspaceId
+        logAnalyticsWorkspaceResourceId: enableDefenderForCloud ? diagnosticLogAnalyticsWorkspaceId : null
         securityMonitoring: {
           enabled: enableDefenderForCloud
         }
       }
-    } : null
-    autoUpgradeProfile: upgradeChannel != 'none' ? {
-      upgradeChannel: upgradeChannel
-    } : null
-    servicePrincipalProfile: identityType == 'SystemAssigned' ? {
-      clientId: 'msi'
-    } : null
+    }
+    autoUpgradeProfile: upgradeChannel != 'none'
+      ? {
+          upgradeChannel: upgradeChannel
+        }
+      : null
+    servicePrincipalProfile: identityType == 'SystemAssigned'
+      ? {
+          clientId: 'msi'
+        }
+      : null
   }
 }
 
@@ -305,7 +339,9 @@ resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
@@ -315,7 +351,9 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -329,4 +367,13 @@ output name string = aks.name
 output resourceId string = aks.id
 
 @description('The principal ID of the system assigned identity.')
-output systemAssignedPrincipalId string = contains(aks.identity, 'principalId') ? aks.identity.principalId : ''
+output systemAssignedPrincipalId string = aks.identity.?principalId ?? ''
+
+@description('The name of the deployed managed cluster.')
+output nodeResourceGroupName string = aks.properties.nodeResourceGroup
+
+@description('The Object ID of the Key Vault Secrets Provider identity.')
+output secretProviderPrincipalId string = aks.properties.?addonProfiles.?azureKeyvaultSecretsProvider.?identity.?objectId ?? ''
+
+@description('The Object ID of the AKS kubelet identity.')
+output kubeletIdentityObjectId string = aks.properties.?identityProfile.?kubeletidentity.?objectId ?? ''

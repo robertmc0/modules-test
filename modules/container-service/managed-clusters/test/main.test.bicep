@@ -21,25 +21,32 @@ param uniqueId string = ''
 /*======================================================================
 TEST PREREQUISITES
 ======================================================================*/
-var rbacAssignments = [for roleDefinitionId in roleDefinitionIds: {
-  name: guid(managedIdentity.id, resourceGroup().id, roleDefinitionId, uniqueId)
-  roleDefinitionId: roleDefinitionId
-}]
+var rbacAssignments = [
+  for roleDefinitionId in roleDefinitionIds: {
+    name: guid(managedIdentity.id, resourceGroup().id, roleDefinitionId, uniqueId)
+    roleDefinitionId: roleDefinitionId
+  }
+]
 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
   name: '${shortIdentifier}-tst-uai-${uniqueString(deployment().name, 'userAssignedManagedIdentity', location, uniqueId)}'
   location: location
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for rbacAssignment in rbacAssignments: {
-  name: rbacAssignment.name
-  scope: resourceGroup()
-  properties: {
-    principalId: managedIdentity.properties.principalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', rbacAssignment.roleDefinitionId)
-    principalType: 'ServicePrincipal'
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for rbacAssignment in rbacAssignments: {
+    name: rbacAssignment.name
+    scope: resourceGroup()
+    properties: {
+      principalId: managedIdentity.properties.principalId
+      roleDefinitionId: subscriptionResourceId(
+        'Microsoft.Authorization/roleDefinitions',
+        rbacAssignment.roleDefinitionId
+      )
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${shortIdentifier}-tst-law-${uniqueString(deployment().name, 'logAnalyticsWorkspace', location, uniqueId)}'
@@ -47,7 +54,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
 }
 
 resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
-  name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsStorageAccount', location, uniqueId)}'
+  name: '${shortIdentifier}tstdg${uniqueString(deployment().name, 'diagnosticsStorageAccount', location, uniqueId)}'
   location: location
   kind: 'StorageV2'
   sku: {
@@ -147,9 +154,22 @@ module aksMin '../main.bicep' = {
   params: {
     name: '${shortIdentifier}-aks-min-${uniqueString(deployment().name, 'min', location, uniqueId)}'
     location: location
-    agentPoolVnetSubnetId: first(filter(vnetMin.properties.subnets, subnet => toLower(subnet.name) == toLower(subnetName))).id
-    networkServiceCidr: '10.1.0.0/16'
-    networkDnsServiceIp: '10.1.0.10'
+    agentPoolProfiles: [
+      {
+        name: 'systempool'
+        count: 2
+        availabilityZones: [1, 2, 3]
+        enableAutoScaling: false
+        maxPods: 30
+        osSku: 'AzureLinux'
+        #disable-next-line BCP318
+        vnetSubnetResourceId: '${vnetMin.id}/subnets/${subnetName}'
+        mode: 'System'
+        vmSize: 'Standard_E2_v5'
+      }
+    ]
+    networkServiceCidr: '172.16.0.0/16'
+    networkDnsServiceIp: '172.16.0.10'
   }
 }
 
@@ -159,15 +179,44 @@ module aksMax '../main.bicep' = {
     name: '${shortIdentifier}-aks-max-${uniqueString(deployment().name, 'max', location, uniqueId)}'
     location: location
     nodeResourceGroup: '${resourceGroup().name}-nodepool'
-    agentPoolCount: 2
-    kubernetesVersion: '1.26.6'
-    enableAvailabilityZones: true
-    enableAutoScaling: true
-    agentPoolMinCount: 1
-    agentPoolMaxCount: 2
-    agentPoolVnetSubnetId: first(filter(vnetMax.properties.subnets, subnet => toLower(subnet.name) == toLower(subnetName))).id
-    networkServiceCidr: '10.1.0.0/16'
-    networkDnsServiceIp: '10.1.0.10'
+    kubernetesVersion: '1.30.6'
+    agentPoolProfiles: [
+      {
+        name: 'systempool'
+        count: 2
+        availabilityZones: [1, 2, 3]
+        enableAutoScaling: false
+        maxPods: 30
+        osSku: 'AzureLinux'
+        type: 'VirtualMachineScaleSets'
+        vnetSubnetResourceId: '${vnetMax.id}/subnets/${subnetName}'
+        mode: 'System'
+        vmSize: 'Standard_E2_v5'
+      }
+      {
+        name: 'userpool1'
+        count: 2
+        availabilityZones: [1, 2, 3]
+        enableAutoScaling: true
+        maxPods: 30
+        osSku: 'AzureLinux'
+        maxCount: 4
+        minCount: 2
+        vnetSubnetResourceId: '${vnetMax.id}/subnets/${subnetName}'
+        mode: 'User'
+        vmSize: 'Standard_E2_v5'
+      }
+    ]
+    networkPodCidr: '172.17.0.0/16'
+    networkServiceCidr: '172.16.0.0/16'
+    networkDnsServiceIp: '172.16.0.10'
+    networkNetworkPlugin: 'azure'
+    networkNetworkPluginMode: 'overlay'
+    networkNetworkDataplane: 'cilium'
+    networkOutboundType: 'loadBalancer'
+    istioServiceMeshEnabled: true
+    istioServiceMeshInternalIngressGatewayEnabled: true
+    istioServiceMeshExternalIngressGatewayEnabled: true
     userAssignedIdentities: { '${managedIdentity.id}': {} }
     dnsPrefix: '${shortIdentifier}-aks-max-${uniqueString(deployment().name, 'max', location)}'
     enableAad: true
