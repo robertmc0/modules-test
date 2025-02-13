@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "11590933187541350539"
+      "version": "0.33.93.31351",
+      "templateHash": "11612658464875876203"
     },
     "name": "DataFactory Module",
     "description": "This module deploys Microsoft.DataFactory",
@@ -47,6 +47,15 @@
       "defaultValue": false,
       "metadata": {
         "description": "Optional. Enable the integration runtime inside the managed virtual network. Only required if enableManagedVirtualNetwork is true."
+      }
+    },
+    "managedIntegrationRuntimeCopyComputeScale": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "dataIntegrationUnit": 4,
+        "timeToLive": 15,
+        "description": "Optional. CopyComputeScale properties for managed Vnet integration runtime. Only required if enableManagedVnetIntegrationRuntime is true."
       }
     },
     "publicNetworkAccess": {
@@ -259,7 +268,8 @@
         },
         "typeProperties": {
           "computeProperties": {
-            "location": "AutoResolve"
+            "location": "AutoResolve",
+            "copyComputeScaleProperties": "[if(empty(parameters('managedIntegrationRuntimeCopyComputeScale')), null(), parameters('managedIntegrationRuntimeCopyComputeScale'))]"
           }
         }
       },

@@ -91,6 +91,10 @@ module dataFactory '../main.bicep' = {
     enableManagedVirtualNetwork: true
     location: location
     enableManagedVnetIntegrationRuntime: true
+    managedIntegrationRuntimeCopyComputeScale: {
+      dataIntegrationUnit: 4
+      timeToLive: 15
+    }
     publicNetworkAccess: false
     userAssignedIdentities: {
       '${userIdentity.id}': {}

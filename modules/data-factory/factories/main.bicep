@@ -23,6 +23,13 @@ param enableManagedVirtualNetwork bool = false
 @description('Optional. Enable the integration runtime inside the managed virtual network. Only required if enableManagedVirtualNetwork is true.')
 param enableManagedVnetIntegrationRuntime bool = false
 
+@description('Optional. CopyComputeScale properties for managed Vnet integration runtime. Only required if enableManagedVnetIntegrationRuntime is true.')
+@metadata({
+  dataIntegrationUnit: 4
+  timeToLive: 15
+})
+param managedIntegrationRuntimeCopyComputeScale object = {}
+
 @description('Optional. Enable or disable public network access.')
 param publicNetworkAccess bool = true
 
@@ -166,6 +173,7 @@ resource managedIntegrationRuntime 'Microsoft.DataFactory/factories/integrationR
     typeProperties: {
       computeProperties: {
         location: 'AutoResolve'
+        copyComputeScaleProperties: empty(managedIntegrationRuntimeCopyComputeScale) ? null : managedIntegrationRuntimeCopyComputeScale
       }
     }
   }
