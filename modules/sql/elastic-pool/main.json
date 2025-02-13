@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "15997691094707487200"
+      "version": "0.33.93.31351",
+      "templateHash": "17755707512444621869"
     },
     "name": "Sql Elastic Pool",
     "description": "This module deploys Microsoft.Sql.Server Elastic Pool",
@@ -178,25 +178,25 @@
       "BasicPool": {
         "name": "BasicPool",
         "tier": "Basic",
-        "family": "[json('null')]"
+        "family": null
       },
       "StandardPool": {
         "name": "StandardPool",
         "tier": "Standard",
-        "family": "[json('null')]"
+        "family": null
       },
       "PremiumPool": {
         "name": "PremiumPool",
         "tier": "Premium",
-        "family": "[json('null')]"
+        "family": null
       },
       "GP_Gen5": {
-        "name": "GP_S_Gen5",
+        "name": "GP_Gen5",
         "tier": "GeneralPurpose",
         "family": "Gen5"
       },
       "GP_Fsv2": {
-        "name": "GP_S_Fsv2",
+        "name": "GP_Fsv2",
         "tier": "GeneralPurpose",
         "family": "Fsv2"
       }

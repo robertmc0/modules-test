@@ -100,25 +100,25 @@ var skuMap = {
   BasicPool: {
     name: 'BasicPool'
     tier: 'Basic'
-    family: json('null')
+    family: null
   }
   StandardPool: {
     name: 'StandardPool'
     tier: 'Standard'
-    family: json('null')
+    family: null
   }
   PremiumPool: {
     name: 'PremiumPool'
     tier: 'Premium'
-    family: json('null')
+    family: null
   }
   GP_Gen5: {
-    name: 'GP_S_Gen5'
+    name: 'GP_Gen5'
     tier: 'GeneralPurpose'
     family: 'Gen5'
   }
   GP_Fsv2: {
-    name: 'GP_S_Fsv2'
+    name: 'GP_Fsv2'
     tier: 'GeneralPurpose'
     family: 'Fsv2'
   }

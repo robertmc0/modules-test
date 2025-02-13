@@ -120,7 +120,7 @@ module elasticPool '../main.bicep' = {
     location: location
     sqlServerName: sqlServer.name
     name: 'example-elastic-pool'
-    skuType: 'StandardPool'
+    skuType: 'GP_Gen5'
     skuCapacity: 50
     enableDiagnostics: true
     diagnosticLogAnalyticsWorkspaceId: logAnalyticsWorkspace.id
