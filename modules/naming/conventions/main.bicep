@@ -192,6 +192,8 @@ type namingOutput = {
   sqlDb: nameType
   @description('SQL server name.')
   sqlServer: nameType
+  @description('SQL elastic pool name.')
+  sqlElasticPool: nameType
   @description('Data bricks workspace name.')
   dataBricks: nameType
   @description('Data lake store name.')
@@ -218,6 +220,14 @@ type namingOutput = {
   vwanHub: nameType
   @description('Web App name.')
   webApp: nameType
+  @description('Function App name.')
+  functionApp: nameType
+  @description('MySQL flexible server name.')
+  mysqlServer: nameType
+  @description('Container App name.')
+  containerApp: nameType
+  @description('Container App Environment name.')
+  containerAppEnvironment: nameType
 }
 
 var typeMap = {
@@ -427,6 +437,10 @@ var typeMap = {
     slug: 'sql'
     allowSeparator: true
   }
+  sqlElasticPool: {
+    slug: 'sqlep'
+    allowSeparator: true
+  }
   staticWebApp: {
     slug: 'stapp'
     allowSeparator: true
@@ -466,6 +480,22 @@ var typeMap = {
   }
   webApp: {
     slug: 'app'
+    allowSeparator: true
+  }
+  functionApp: {
+    slug: 'func'
+    allowSeparator: true
+  }
+  mysqlServer: {
+    slug: 'mysql'
+    allowSeparator: true
+  }
+  containerApp: {
+    slug: 'ca'
+    allowSeparator: true
+  }
+  containerAppEnvironment: {
+    slug: 'cae'
     allowSeparator: true
   }
 }

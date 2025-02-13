@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.31.92.45157",
-      "templateHash": "13943310590618222894"
+      "version": "0.33.93.31351",
+      "templateHash": "6474394424573566494"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -318,6 +318,12 @@
             "description": "SQL server name."
           }
         },
+        "sqlElasticPool": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "SQL elastic pool name."
+          }
+        },
         "dataBricks": {
           "$ref": "#/definitions/nameType",
           "metadata": {
@@ -394,6 +400,30 @@
           "$ref": "#/definitions/nameType",
           "metadata": {
             "description": "Web App name."
+          }
+        },
+        "functionApp": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Function App name."
+          }
+        },
+        "mysqlServer": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "MySQL flexible server name."
+          }
+        },
+        "containerApp": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Container App name."
+          }
+        },
+        "containerAppEnvironment": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Container App Environment name."
           }
         }
       },
@@ -714,6 +744,10 @@
         "slug": "sql",
         "allowSeparator": true
       },
+      "sqlElasticPool": {
+        "slug": "sqlep",
+        "allowSeparator": true
+      },
       "staticWebApp": {
         "slug": "stapp",
         "allowSeparator": true
@@ -753,6 +787,22 @@
       },
       "webApp": {
         "slug": "app",
+        "allowSeparator": true
+      },
+      "functionApp": {
+        "slug": "func",
+        "allowSeparator": true
+      },
+      "mysqlServer": {
+        "slug": "mysql",
+        "allowSeparator": true
+      },
+      "containerApp": {
+        "slug": "ca",
+        "allowSeparator": true
+      },
+      "containerAppEnvironment": {
+        "slug": "cae",
         "allowSeparator": true
       }
     },
