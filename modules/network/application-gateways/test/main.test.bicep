@@ -97,15 +97,17 @@ var roleDefinitionIds = [
   'a4417e6f-fecd-4de8-b567-7b0420556985' // Key Vault Certificate Officer
 ]
 
-resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [for roleDefintionId in roleDefinitionIds: {
-  name: guid(roleDefintionId, userIdentity.id, keyVault.id)
-  scope: keyVault
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefintionId)
-    principalId: userIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
+resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [
+  for roleDefintionId in roleDefinitionIds: {
+    name: guid(roleDefintionId, userIdentity.id, keyVault.id)
+    scope: keyVault
+    properties: {
+      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefintionId)
+      principalId: userIdentity.properties.principalId
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
 var environmentHostingDomain = 'deploy.arinco.local'
 
@@ -135,7 +137,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
 }
 
 resource diagnosticsStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
-  name: '${shortIdentifier}tstdiag${uniqueString(deployment().name, 'diagnosticsStorageAccount', location)}'
+  name: '${shortIdentifier}tstdgs${uniqueString(deployment().name, 'diagnosticsStorageAccount', location)}'
   location: location
   kind: 'StorageV2'
   sku: {
@@ -241,7 +243,6 @@ module appGatewayMin '../main.bicep' = {
     ]
     requestRoutingRules: [
       {
-
         name: 'myapp-http-80-rule'
         ruleType: 'Basic'
         httpListener: 'http-80-listener'

@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "12180287011881570247"
+      "version": "0.33.93.31351",
+      "templateHash": "13505955849215007287"
     },
     "name": "Application Gateways Module",
     "description": "This module deploys Microsoft.Network applicationGateways",
@@ -74,7 +74,7 @@
     "autoScaleMaxCapacity": {
       "type": "int",
       "defaultValue": 10,
-      "minValue": 1,
+      "minValue": 2,
       "maxValue": 32,
       "metadata": {
         "description": "Optional. Autoscale maximum capacity on application gateway resource."
@@ -380,7 +380,7 @@
     "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
     "publicIpDiagnosticsName": "[toLower(format('{0}-dgs', parameters('publicIpAddressName')))]",
     "applicationGatewayDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
-    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned, UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
     "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
     "gatewayIpConfigurationName": "appGatewayIpConfig",
     "frontendPublicIpConfigurationName": "appGwPublicFrontendIp",
@@ -464,14 +464,15 @@
               "name": "[parameters('probes')[copyIndex('probes')].name]",
               "properties": {
                 "protocol": "[parameters('probes')[copyIndex('probes')].protocol]",
-                "host": "[if(contains(parameters('probes')[copyIndex('probes')], 'host'), parameters('probes')[copyIndex('probes')].host, null())]",
+                "host": "[coalesce(tryGet(parameters('probes')[copyIndex('probes')], 'host'), null())]",
                 "path": "[parameters('probes')[copyIndex('probes')].path]",
                 "interval": "[parameters('probes')[copyIndex('probes')].interval]",
                 "timeout": "[parameters('probes')[copyIndex('probes')].timeout]",
                 "unhealthyThreshold": "[parameters('probes')[copyIndex('probes')].unhealthyThreshold]",
-                "pickHostNameFromBackendHttpSettings": "[parameters('probes')[copyIndex('probes')].pickHostNameFromBackendHttpSettings]",
-                "minServers": "[if(contains(parameters('probes')[copyIndex('probes')], 'minServers'), parameters('probes')[copyIndex('probes')].minServers, 0)]",
-                "match": "[parameters('probes')[copyIndex('probes')].match]"
+                "pickHostNameFromBackendHttpSettings": "[coalesce(tryGet(parameters('probes')[copyIndex('probes')], 'pickHostNameFromBackendHttpSettings'), false())]",
+                "minServers": "[coalesce(tryGet(parameters('probes')[copyIndex('probes')], 'minServers'), 0)]",
+                "match": "[parameters('probes')[copyIndex('probes')].match]",
+                "pickHostNameFromBackendSettings": "[coalesce(tryGet(parameters('probes')[copyIndex('probes')], 'pickHostNameFromBackendSettings'), false())]"
               }
             }
           },
@@ -514,13 +515,13 @@
                 "port": "[parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].port]",
                 "protocol": "[parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].protocol]",
                 "cookieBasedAffinity": "[parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].cookieBasedAffinity]",
-                "affinityCookieName": "[if(contains(parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')], 'affinityCookieName'), parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].affinityCookieName, null())]",
+                "affinityCookieName": "[coalesce(tryGet(parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')], 'affinityCookieName'), null())]",
                 "requestTimeout": "[parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].requestTimeout]",
                 "connectionDraining": "[parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].connectionDraining]",
                 "probe": "[if(contains(parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')], 'probeName'), createObject('id', resourceId('Microsoft.Network/applicationGateways/probes', parameters('name'), parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].probeName)), null())]",
                 "trustedRootCertificates": "[if(contains(parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')], 'trustedRootCertificate'), createArray(createObject('id', resourceId('Microsoft.Network/applicationGateways/trustedRootCertificates', parameters('name'), parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].trustedRootCertificate))), createArray())]",
-                "hostName": "[if(contains(parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')], 'hostName'), parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].hostName, null())]",
-                "pickHostNameFromBackendAddress": "[if(contains(parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')], 'pickHostNameFromBackendAddress'), parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')].pickHostNameFromBackendAddress, false())]"
+                "hostName": "[coalesce(tryGet(parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')], 'hostName'), null())]",
+                "pickHostNameFromBackendAddress": "[coalesce(tryGet(parameters('backendHttpSettings')[copyIndex('backendHttpSettingsCollection')], 'pickHostNameFromBackendAddress'), false())]"
               }
             }
           },
@@ -538,9 +539,9 @@
                 },
                 "protocol": "[parameters('httpListeners')[copyIndex('httpListeners')].protocol]",
                 "sslCertificate": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'sslCertificate'), createObject('id', resourceId('Microsoft.Network/applicationGateways/sslCertificates', parameters('name'), parameters('httpListeners')[copyIndex('httpListeners')].sslCertificate)), null())]",
-                "hostNames": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'hostNames'), parameters('httpListeners')[copyIndex('httpListeners')].hostNames, null())]",
-                "hostName": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'hostName'), parameters('httpListeners')[copyIndex('httpListeners')].hostName, null())]",
-                "requireServerNameIndication": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'requireServerNameIndication'), parameters('httpListeners')[copyIndex('httpListeners')].requireServerNameIndication, false())]",
+                "hostNames": "[coalesce(tryGet(parameters('httpListeners')[copyIndex('httpListeners')], 'hostNames'), null())]",
+                "hostName": "[coalesce(tryGet(parameters('httpListeners')[copyIndex('httpListeners')], 'hostName'), null())]",
+                "requireServerNameIndication": "[coalesce(tryGet(parameters('httpListeners')[copyIndex('httpListeners')], 'requireServerNameIndication'), false())]",
                 "firewallPolicy": "[if(contains(parameters('httpListeners')[copyIndex('httpListeners')], 'firewallPolicyId'), createObject('id', parameters('httpListeners')[copyIndex('httpListeners')].firewallPolicyId), if(not(empty(parameters('firewallPolicyId'))), createObject('id', parameters('firewallPolicyId')), null()))]"
               }
             }

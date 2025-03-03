@@ -44,7 +44,7 @@ param sku string
 param autoScaleMinCapacity int = 2
 
 @description('Optional. Autoscale maximum capacity on application gateway resource.')
-@minValue(1)
+@minValue(2)
 @maxValue(32)
 param autoScaleMaxCapacity int = 10
 
@@ -79,7 +79,6 @@ param sslCertificates array = []
     policyName: 'string'
     policyType: 'string'
   }
-
 })
 param sslPolicy object = {
   policyName: 'AppGwSslPolicy20170401S'
@@ -252,23 +251,31 @@ var publicIpDiagnosticsName = toLower('${publicIpAddress.name}-dgs')
 
 var applicationGatewayDiagnosticsName = toLower('${applicationGateway.name}-dgs')
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+var identityType = systemAssignedIdentity
+  ? (!empty(userAssignedIdentities) ? 'SystemAssigned, UserAssigned' : 'SystemAssigned')
+  : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
-var identity = identityType != 'None' ? {
-  type: identityType
-  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
-} : null
+var identity = identityType != 'None'
+  ? {
+      type: identityType
+      userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+    }
+  : null
 
-var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
-  categoryGroup: categoryGroup
-  enabled: true
-}]
+var diagnosticsLogs = [
+  for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+    categoryGroup: categoryGroup
+    enabled: true
+  }
+]
 
-var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
-  category: metric
-  timeGrain: null
-  enabled: true
-}]
+var diagnosticsMetrics = [
+  for metric in diagnosticMetricsToEnable: {
+    category: metric
+    timeGrain: null
+    enabled: true
+  }
+]
 
 var gatewayIpConfigurationName = 'appGatewayIpConfig'
 
@@ -295,7 +302,9 @@ var frontendPrivateIpConfiguration = {
   }
 }
 
-var frontendIPConfigurations = empty(frontEndPrivateIpAddress) ? [ frontendPublicIpConfiguration ] : [ frontendPublicIpConfiguration, frontendPrivateIpConfiguration ]
+var frontendIPConfigurations = empty(frontEndPrivateIpAddress)
+  ? [frontendPublicIpConfiguration]
+  : [frontendPublicIpConfiguration, frontendPrivateIpConfiguration]
 
 resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-11-01' = {
   name: publicIpAddressName
@@ -316,7 +325,9 @@ resource diagnosticsPublicIp 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -349,139 +360,216 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-11-01' =
       }
     ]
     frontendIPConfigurations: frontendIPConfigurations
-    frontendPorts: [for frontEndPort in frontEndPorts: {
-      name: frontEndPort.name
-      properties: {
-        port: frontEndPort.port
-      }
-    }]
-    probes: [for probe in probes: {
-      name: probe.name
-      properties: {
-        protocol: probe.protocol
-        host: contains(probe, 'host') ? probe.host : null
-        path: probe.path
-        interval: probe.interval
-        timeout: probe.timeout
-        unhealthyThreshold: probe.unhealthyThreshold
-        pickHostNameFromBackendHttpSettings: probe.pickHostNameFromBackendHttpSettings
-        minServers: contains(probe, 'minServers') ? probe.minServers : 0
-        match: probe.match
-      }
-    }]
-    backendAddressPools: [for backendAddressPool in backendAddressPools: {
-      name: backendAddressPool.name
-      properties: {
-        backendAddresses: backendAddressPool.backendAddresses
-      }
-    }]
-    firewallPolicy: !empty(firewallPolicyId) ? {
-      id: firewallPolicyId
-    } : null
-    trustedRootCertificates: [for trustedRootCertificate in trustedRootCertificates: {
-      name: trustedRootCertificate.name
-      properties: {
-        keyVaultSecretId: '${reference(trustedRootCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${trustedRootCertificate.secretName}'
-      }
-    }]
-    sslCertificates: [for sslCertificate in sslCertificates: {
-      name: sslCertificate.name
-      properties: {
-        keyVaultSecretId: '${reference(sslCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${sslCertificate.secretName}'
-      }
-    }]
-    sslPolicy: sslPolicy
-    backendHttpSettingsCollection: [for backendHttpSetting in backendHttpSettings: {
-      name: backendHttpSetting.name
-      properties: {
-        port: backendHttpSetting.port
-        protocol: backendHttpSetting.protocol
-        cookieBasedAffinity: backendHttpSetting.cookieBasedAffinity
-        affinityCookieName: contains(backendHttpSetting, 'affinityCookieName') ? backendHttpSetting.affinityCookieName : null
-        requestTimeout: backendHttpSetting.requestTimeout
-        connectionDraining: backendHttpSetting.connectionDraining
-        probe: contains(backendHttpSetting, 'probeName') ? {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/probes', name, backendHttpSetting.probeName)
-        } : null
-        trustedRootCertificates: contains(backendHttpSetting, 'trustedRootCertificate') ? [
-          {
-            #disable-next-line use-resource-id-functions
-            id: az.resourceId('Microsoft.Network/applicationGateways/trustedRootCertificates', name, backendHttpSetting.trustedRootCertificate)
-          }
-        ] : []
-        hostName: contains(backendHttpSetting, 'hostName') ? backendHttpSetting.hostName : null
-        pickHostNameFromBackendAddress: contains(backendHttpSetting, 'pickHostNameFromBackendAddress') ? backendHttpSetting.pickHostNameFromBackendAddress : false
-      }
-    }]
-    httpListeners: [for httpListener in httpListeners: {
-      name: httpListener.name
-      properties: {
-        frontendIPConfiguration: {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', name, contains(httpListener, 'frontEndType') ? toLower(httpListener.frontEndType) == 'private' ? frontendPrivateIpConfigurationName : frontendPublicIpConfigurationName : frontendPublicIpConfigurationName)
+    frontendPorts: [
+      for frontEndPort in frontEndPorts: {
+        name: frontEndPort.name
+        properties: {
+          port: frontEndPort.port
         }
-        frontendPort: {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/frontendPorts', name, httpListener.frontEndPort)
+      }
+    ]
+    probes: [
+      for probe in probes: {
+        name: probe.name
+        properties: {
+          protocol: probe.protocol
+          host: probe.?host ?? null
+          path: probe.path
+          interval: probe.interval
+          timeout: probe.timeout
+          unhealthyThreshold: probe.unhealthyThreshold
+          pickHostNameFromBackendHttpSettings: probe.?pickHostNameFromBackendHttpSettings ?? false
+          minServers: probe.?minServers ?? 0
+          match: probe.match
+          pickHostNameFromBackendSettings: probe.?pickHostNameFromBackendSettings ?? false
         }
-        protocol: httpListener.protocol
-        sslCertificate: contains(httpListener, 'sslCertificate') ? {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/sslCertificates', name, httpListener.sslCertificate)
-        } : null
-        hostNames: contains(httpListener, 'hostNames') ? httpListener.hostNames : null
-        hostName: contains(httpListener, 'hostName') ? httpListener.hostName : null
-        requireServerNameIndication: contains(httpListener, 'requireServerNameIndication') ? httpListener.requireServerNameIndication : false
-        firewallPolicy: contains(httpListener, 'firewallPolicyId') ? {
-          id: httpListener.firewallPolicyId
-        } : !empty(firewallPolicyId) ? {
+      }
+    ]
+    backendAddressPools: [
+      for backendAddressPool in backendAddressPools: {
+        name: backendAddressPool.name
+        properties: {
+          backendAddresses: backendAddressPool.backendAddresses
+        }
+      }
+    ]
+    firewallPolicy: !empty(firewallPolicyId)
+      ? {
           id: firewallPolicyId
-        } : null
+        }
+      : null
+    trustedRootCertificates: [
+      for trustedRootCertificate in trustedRootCertificates: {
+        name: trustedRootCertificate.name
+        properties: {
+          keyVaultSecretId: '${reference(trustedRootCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${trustedRootCertificate.secretName}'
+        }
       }
-    }]
-    requestRoutingRules: [for rule in requestRoutingRules: {
-      name: rule.name
-      properties: {
-        ruleType: rule.ruleType
-        priority: rule.priority
-        httpListener: contains(rule, 'httpListener') ? {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, rule.httpListener)
-        } : null
-        backendAddressPool: contains(rule, 'backendAddressPool') ? {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/backendAddressPools', name, rule.backendAddressPool)
-        } : null
-        backendHttpSettings: contains(rule, 'backendHttpSettings') ? {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', name, rule.backendHttpSettings)
-        } : null
-        redirectConfiguration: contains(rule, 'redirectConfiguration') ? {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/redirectConfigurations', name, rule.redirectConfiguration)
-        } : null
+    ]
+    sslCertificates: [
+      for sslCertificate in sslCertificates: {
+        name: sslCertificate.name
+        properties: {
+          keyVaultSecretId: '${reference(sslCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${sslCertificate.secretName}'
+        }
       }
-    }]
-    redirectConfigurations: [for redirectConfiguration in redirectConfigurations: {
-      name: redirectConfiguration.name
-      properties: {
-        redirectType: redirectConfiguration.redirectType
-        targetUrl: redirectConfiguration.targetUrl
-        targetListener: contains(redirectConfiguration, 'targetListener') ? {
-          #disable-next-line use-resource-id-functions
-          id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, redirectConfiguration.targetListener)
-        } : null
-        includePath: redirectConfiguration.includePath
-        includeQueryString: redirectConfiguration.includeQueryString
-        requestRoutingRules: [
-          {
+    ]
+    sslPolicy: sslPolicy
+    backendHttpSettingsCollection: [
+      for backendHttpSetting in backendHttpSettings: {
+        name: backendHttpSetting.name
+        properties: {
+          port: backendHttpSetting.port
+          protocol: backendHttpSetting.protocol
+          cookieBasedAffinity: backendHttpSetting.cookieBasedAffinity
+          affinityCookieName: backendHttpSetting.?affinityCookieName ?? null
+          requestTimeout: backendHttpSetting.requestTimeout
+          connectionDraining: backendHttpSetting.connectionDraining
+          probe: contains(backendHttpSetting, 'probeName')
+            ? {
+                #disable-next-line use-resource-id-functions
+                id: az.resourceId('Microsoft.Network/applicationGateways/probes', name, backendHttpSetting.probeName)
+              }
+            : null
+          trustedRootCertificates: contains(backendHttpSetting, 'trustedRootCertificate')
+            ? [
+                {
+                  #disable-next-line use-resource-id-functions
+                  id: az.resourceId(
+                    'Microsoft.Network/applicationGateways/trustedRootCertificates',
+                    name,
+                    backendHttpSetting.trustedRootCertificate
+                  )
+                }
+              ]
+            : []
+          hostName: backendHttpSetting.?hostName ?? null
+          pickHostNameFromBackendAddress: backendHttpSetting.?pickHostNameFromBackendAddress ?? false
+        }
+      }
+    ]
+    httpListeners: [
+      for httpListener in httpListeners: {
+        name: httpListener.name
+        properties: {
+          frontendIPConfiguration: {
             #disable-next-line use-resource-id-functions
-            id: az.resourceId('Microsoft.Network/applicationGateways/requestRoutingRules', name, redirectConfiguration.requestRoutingRule)
+            id: az.resourceId(
+              'Microsoft.Network/applicationGateways/frontendIPConfigurations',
+              name,
+              contains(httpListener, 'frontEndType')
+                ? toLower(httpListener.frontEndType) == 'private'
+                    ? frontendPrivateIpConfigurationName
+                    : frontendPublicIpConfigurationName
+                : frontendPublicIpConfigurationName
+            )
           }
-        ]
+          frontendPort: {
+            #disable-next-line use-resource-id-functions
+            id: az.resourceId('Microsoft.Network/applicationGateways/frontendPorts', name, httpListener.frontEndPort)
+          }
+          protocol: httpListener.protocol
+          sslCertificate: contains(httpListener, 'sslCertificate')
+            ? {
+                #disable-next-line use-resource-id-functions
+                id: az.resourceId(
+                  'Microsoft.Network/applicationGateways/sslCertificates',
+                  name,
+                  httpListener.sslCertificate
+                )
+              }
+            : null
+          hostNames: httpListener.?hostNames ?? null
+          hostName: httpListener.?hostName ?? null
+          requireServerNameIndication: httpListener.?requireServerNameIndication ?? false
+          firewallPolicy: contains(httpListener, 'firewallPolicyId')
+            ? {
+                id: httpListener.firewallPolicyId
+              }
+            : !empty(firewallPolicyId)
+                ? {
+                    id: firewallPolicyId
+                  }
+                : null
+        }
       }
-    }]
+    ]
+    requestRoutingRules: [
+      for rule in requestRoutingRules: {
+        name: rule.name
+        properties: {
+          ruleType: rule.ruleType
+          priority: rule.priority
+          httpListener: contains(rule, 'httpListener')
+            ? {
+                #disable-next-line use-resource-id-functions
+                id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, rule.httpListener)
+              }
+            : null
+          backendAddressPool: contains(rule, 'backendAddressPool')
+            ? {
+                #disable-next-line use-resource-id-functions
+                id: az.resourceId(
+                  'Microsoft.Network/applicationGateways/backendAddressPools',
+                  name,
+                  rule.backendAddressPool
+                )
+              }
+            : null
+          backendHttpSettings: contains(rule, 'backendHttpSettings')
+            ? {
+                #disable-next-line use-resource-id-functions
+                id: az.resourceId(
+                  'Microsoft.Network/applicationGateways/backendHttpSettingsCollection',
+                  name,
+                  rule.backendHttpSettings
+                )
+              }
+            : null
+          redirectConfiguration: contains(rule, 'redirectConfiguration')
+            ? {
+                #disable-next-line use-resource-id-functions
+                id: az.resourceId(
+                  'Microsoft.Network/applicationGateways/redirectConfigurations',
+                  name,
+                  rule.redirectConfiguration
+                )
+              }
+            : null
+        }
+      }
+    ]
+    redirectConfigurations: [
+      for redirectConfiguration in redirectConfigurations: {
+        name: redirectConfiguration.name
+        properties: {
+          redirectType: redirectConfiguration.redirectType
+          targetUrl: redirectConfiguration.targetUrl
+          targetListener: contains(redirectConfiguration, 'targetListener')
+            ? {
+                #disable-next-line use-resource-id-functions
+                id: az.resourceId(
+                  'Microsoft.Network/applicationGateways/httpListeners',
+                  name,
+                  redirectConfiguration.targetListener
+                )
+              }
+            : null
+          includePath: redirectConfiguration.includePath
+          includeQueryString: redirectConfiguration.includeQueryString
+          requestRoutingRules: [
+            {
+              #disable-next-line use-resource-id-functions
+              id: az.resourceId(
+                'Microsoft.Network/applicationGateways/requestRoutingRules',
+                name,
+                redirectConfiguration.requestRoutingRule
+              )
+            }
+          ]
+        }
+      }
+    ]
   }
 }
 
@@ -491,7 +579,9 @@ resource diagnosticsApplicationGateway 'Microsoft.Insights/diagnosticSettings@20
   properties: {
     workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
-    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId)
+      ? null
+      : diagnosticEventHubAuthorizationRuleId
     eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
     logs: diagnosticsLogs
     metrics: diagnosticsMetrics
@@ -503,7 +593,9 @@ resource lock 'Microsoft.Authorization/locks@2020-05-01' = if (resourceLock != '
   name: lockName
   properties: {
     level: resourceLock
-    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+    notes: (resourceLock == 'CanNotDelete')
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot modify the resource or child resources.'
   }
 }
 
