@@ -196,6 +196,8 @@ type namingOutput = {
   sqlElasticPool: nameType
   @description('Data bricks workspace name.')
   dataBricks: nameType
+  @description('Data Collection Rules name.')
+  dataCollectionRules: nameType
   @description('Data lake store name.')
   dataLakeStore: nameType
   @description('Service Bus Namespace name.')
@@ -350,6 +352,10 @@ var typeMap = {
   }
   dataBricks: {
     slug: 'dbw'
+    allowSeparator: true
+  }
+  dataCollectionRules: {
+    slug: 'dcr'
     allowSeparator: true
   }
   dataLakeStore: {

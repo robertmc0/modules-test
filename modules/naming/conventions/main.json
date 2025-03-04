@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.33.93.31351",
-      "templateHash": "6474394424573566494"
+      "templateHash": "10565945166648569332"
     },
     "name": "Naming Conventions Module",
     "description": "This module is used to create a naming convention for resources in Azure.",
@@ -328,6 +328,12 @@
           "$ref": "#/definitions/nameType",
           "metadata": {
             "description": "Data bricks workspace name."
+          }
+        },
+        "dataCollectionRules": {
+          "$ref": "#/definitions/nameType",
+          "metadata": {
+            "description": "Data Collection Rules name."
           }
         },
         "dataLakeStore": {
@@ -657,6 +663,10 @@
       },
       "dataBricks": {
         "slug": "dbw",
+        "allowSeparator": true
+      },
+      "dataCollectionRules": {
+        "slug": "dcr",
         "allowSeparator": true
       },
       "dataLakeStore": {
