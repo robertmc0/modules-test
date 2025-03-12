@@ -1,0 +1,121 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.30.23.60470",
+      "templateHash": "13893024915527529515"
+    },
+    "name": "Azure Budget",
+    "description": "Deploys budget.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "amount": {
+      "type": "int",
+      "metadata": {
+        "description": "The total amount of cost to track with the budget."
+      }
+    },
+    "category": {
+      "type": "string",
+      "defaultValue": "Cost",
+      "allowedValues": [
+        "Cost",
+        "Usage"
+      ],
+      "metadata": {
+        "description": "Optional. The category of the budget, whether the budget tracks cost or usage."
+      }
+    },
+    "filter": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.costmanagement/budgets?pivots=deployment-language-bicep#reportconfigfilter",
+        "example": {
+          "dimensions": {
+            "name": "string",
+            "operator": "string",
+            "values": [
+              "string"
+            ]
+          }
+        },
+        "description": "Optional. Filters to have your budget monitor with more granularity as needed."
+      }
+    },
+    "notifications": {
+      "type": "object",
+      "metadata": {
+        "NotificationForExceededBudget1": {
+          "enabled": true,
+          "operator": "GreaterThan",
+          "threshold": 50,
+          "contactEmails": [
+            "contactEmails"
+          ]
+        },
+        "description": "Notifications associated with the budget. Budget can have up to five notifications."
+      }
+    },
+    "timeGrain": {
+      "type": "string",
+      "defaultValue": "Monthly",
+      "allowedValues": [
+        "Annually",
+        "Monthly",
+        "Quarterly"
+      ],
+      "metadata": {
+        "description": "Optional. The time covered by a budget. Tracking of the amount will be reset based on the time grain."
+      }
+    },
+    "timePeriod": {
+      "type": "object",
+      "metadata": {
+        "startDate": "The start date for the budget in YYYY-MM-DD format.",
+        "endDate": "The end date for the budget in YYYY-MM-DD format. If not provided, will default to 10 years from the start date.",
+        "description": "Start and end date of the budget. The start date must be first of the month and should be less than the end date. Future start date should not be more than three months."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.CostManagement/budgets",
+      "apiVersion": "2023-11-01",
+      "name": "[parameters('name')]",
+      "properties": {
+        "amount": "[parameters('amount')]",
+        "category": "[parameters('category')]",
+        "filter": "[parameters('filter')]",
+        "notifications": "[parameters('notifications')]",
+        "timeGrain": "[parameters('timeGrain')]",
+        "timePeriod": "[parameters('timePeriod')]"
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed budget."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed budget."
+      },
+      "value": "[subscriptionResourceId('Microsoft.CostManagement/budgets', parameters('name'))]"
+    }
+  }
+}

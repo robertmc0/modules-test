@@ -1,0 +1,278 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.26.170.59819",
+      "templateHash": "15769222914267370124"
+    },
+    "name": "Private Endpoints Module",
+    "description": "This module deploys Microsoft.Network privateEndpoints.",
+    "details": "This module performs the following\n\n- Creates Microsoft.Network privateEndpoints resource.\n- Associates the private endpoint with the given single Private DNS Zone. **\n- Applies a lock to the private endpoint if the lock is specified.\n\n**NOTE:** ** Registering the resource with multiple private DNS zones should be done by creating multiple private-endpoints per DNS zone to be registered. This will also allow the segregation of traffic via firewall or nsg.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "targetResourceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the target resource for which to create the Private Endpoint."
+      }
+    },
+    "targetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource Id of the target resource for which to create the Private Endpoint."
+      }
+    },
+    "targetSubResourceType": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "examples": [
+          "blob",
+          "table",
+          "queue",
+          "file",
+          "web",
+          "dfs",
+          "vault",
+          "sqlServer",
+          "searchService",
+          "gateway",
+          "namespace",
+          "managedInstance",
+          "databricks_ui_api",
+          "tenant",
+          "mongoCluster"
+        ],
+        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access.  Overridden if targetSubResourceTypes is set."
+      }
+    },
+    "targetSubResourceTypes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "examples": [
+          "blob",
+          "table",
+          "queue",
+          "file",
+          "web",
+          "dfs",
+          "vault",
+          "sqlServer",
+          "searchService",
+          "gateway",
+          "namespace",
+          "managedInstance",
+          "databricks_ui_api",
+          "tenant"
+        ],
+        "description": "The type of sub-resource for the target resource that the private endpoint will be able to access.  Must be provided if targetSubResourceType is not set."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location of the resource."
+      }
+    },
+    "subnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the subnet that will host the Private Endpoint."
+      }
+    },
+    "privateDnsZoneId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the Private DNS Zone to host the Private Endpoint. Overridden if privateDnsZoneIds array value is set."
+      }
+    },
+    "privateDnsZoneIds": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "example": [
+          "/subscriptions/subscription-id/resourceGroups/resource-group-name/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net",
+          "/subscriptions/subscription-id/resourceGroups/resource-group-name/providers/Microsoft.Network/privateDnsZones/privatelink.blob.storage.azure.net"
+        ],
+        "description": "Optional. Array of Resource IDs of the Private DNS Zones to host the Private Endpoint."
+      }
+    },
+    "privateDNSZoneGroupName": {
+      "type": "string",
+      "defaultValue": "default",
+      "metadata": {
+        "description": "Optional. Private endpoint DNS Group Name. Defaults to default."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "lockName": "[toLower(format('{0}-{1}-lck', variables('privateEndpointName'), parameters('resourcelock')))]",
+    "privateEndpointName": "[toLower(format('{0}-{1}-pe', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
+    "privateLinkServiceName": "[toLower(format('{0}-{1}-plink', parameters('targetResourceName'), toLower(parameters('targetSubResourceType'))))]",
+    "networkInterfaceName": "[format('{0}-nic', variables('privateEndpointName'))]",
+    "privateDnsZoneIdsArray": "[if(not(empty(parameters('privateDnsZoneIds'))), parameters('privateDnsZoneIds'), if(not(empty(parameters('privateDnsZoneId'))), createArray(parameters('privateDnsZoneId')), createArray()))]",
+    "targetSubResourceTypesArray": "[if(not(empty(parameters('targetSubResourceTypes'))), parameters('targetSubResourceTypes'), if(not(empty(parameters('targetSubResourceType'))), createArray(parameters('targetSubResourceType')), createArray()))]"
+  },
+  "resources": [
+    {
+      "condition": "[not(empty(variables('privateDnsZoneIdsArray')))]",
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2022-01-01",
+      "name": "[format('{0}/{1}', variables('privateEndpointName'), parameters('privateDNSZoneGroupName'))]",
+      "properties": {
+        "copy": [
+          {
+            "name": "privateDnsZoneConfigs",
+            "count": "[length(variables('privateDnsZoneIdsArray'))]",
+            "input": {
+              "name": "[replace(replace(last(split(variables('privateDnsZoneIdsArray')[copyIndex('privateDnsZoneConfigs')], '/')), '.', '_'), '/', '')]",
+              "properties": {
+                "privateDnsZoneId": "[variables('privateDnsZoneIdsArray')[copyIndex('privateDnsZoneConfigs')]]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2021-08-01",
+      "name": "[variables('privateEndpointName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "subnet": {
+          "id": "[parameters('subnetId')]"
+        },
+        "customNetworkInterfaceName": "[variables('networkInterfaceName')]",
+        "privateLinkServiceConnections": [
+          {
+            "name": "[variables('privateLinkServiceName')]",
+            "properties": {
+              "privateLinkServiceId": "[parameters('targetResourceId')]",
+              "groupIds": "[variables('targetSubResourceTypesArray')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Network/privateEndpoints/{0}', variables('privateEndpointName'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('nicInfo-pe-{0}', uniqueString(deployment().name, variables('privateEndpointName'), resourceGroup().name))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "nicId": {
+            "value": "[reference(resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName')), '2021-08-01').networkInterfaces[0].id]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.26.170.59819",
+              "templateHash": "15446794015521757541"
+            }
+          },
+          "parameters": {
+            "nicId": {
+              "type": "string",
+              "metadata": {
+                "description": "Network Interface Id."
+              }
+            }
+          },
+          "resources": [],
+          "outputs": {
+            "privateIPAddress": {
+              "type": "string",
+              "metadata": {
+                "description": "Network Interface Private IP Address."
+              },
+              "value": "[reference(parameters('nicId'), '2021-08-01', 'Full').properties.ipConfigurations[0].properties.privateIPAddress]"
+            },
+            "privateIPAllocationMethod": {
+              "type": "string",
+              "metadata": {
+                "description": "Network Interface Private IP Allocation Method."
+              },
+              "value": "[reference(parameters('nicId'), '2021-08-01', 'Full').properties.ipConfigurations[0].properties.privateIPAllocationMethod]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the private endpoint."
+      },
+      "value": "[variables('privateEndpointName')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the private endpoint."
+      },
+      "value": "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+    },
+    "ipAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The private endpoint IP address."
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('nicInfo-pe-{0}', uniqueString(deployment().name, variables('privateEndpointName'), resourceGroup().name))), '2022-09-01').outputs.privateIPAddress.value]"
+    },
+    "ipAllocationMethod": {
+      "type": "string",
+      "metadata": {
+        "description": "The private endpoint IP allocation method."
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('nicInfo-pe-{0}', uniqueString(deployment().name, variables('privateEndpointName'), resourceGroup().name))), '2022-09-01').outputs.privateIPAllocationMethod.value]"
+    }
+  }
+}

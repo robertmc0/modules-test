@@ -1,0 +1,199 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.31.92.45157",
+      "templateHash": "16902895309186927121"
+    },
+    "name": "Connection Monitors Module",
+    "description": "This module deploys Microsoft.Network/networkWatchers connectionMonitors.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "networkWatcherName": {
+      "type": "string",
+      "defaultValue": "[format('NetworkWatcher_{0}', resourceGroup().location)]",
+      "metadata": {
+        "description": "Optional. Network Watcher name. Default is NetworkWatcher_<location>."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "nullable": true,
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/networkwatchers/connectionmonitors?pivots=deployment-language-bicep#connectionmonitorendpoint",
+        "example": [
+          {
+            "address": "string",
+            "coverageLevel": "AboveAverage | Average | BelowAverage | Default | Full | Low",
+            "filter": {
+              "items": [
+                {
+                  "address": "string",
+                  "type": "string"
+                }
+              ],
+              "type": "string"
+            },
+            "locationDetails": {
+              "region": "string"
+            },
+            "name": "string",
+            "resourceId": "string",
+            "scope": {
+              "exclude": [
+                {
+                  "address": "string"
+                }
+              ],
+              "include": [
+                {
+                  "address": "string"
+                }
+              ]
+            },
+            "subscriptionId": "string",
+            "type": "AzureArcNetwork | AzureArcVM | AzureSubnet | AzureVM | AzureVMSS | AzureVNet | ExternalAddress | MMAWorkspaceMachine | MMAWorkspaceNetwork"
+          }
+        ],
+        "description": "List of connection monitor endpoints. At least one source and one destination must be specified."
+      }
+    },
+    "testConfigurations": {
+      "type": "array",
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/networkwatchers/connectionmonitors?pivots=deployment-language-bicep#connectionmonitortestconfiguration",
+        "example": [
+          {
+            "httpConfiguration": {
+              "method": "string",
+              "path": "string",
+              "port": "int",
+              "preferHTTPS": "true | false",
+              "requestHeaders": [
+                {
+                  "name": "string",
+                  "value": "string"
+                }
+              ],
+              "validStatusCodeRanges": [
+                "string"
+              ]
+            },
+            "icmpConfiguration": {
+              "disableTraceRoute": "true | false"
+            },
+            "name": "string",
+            "preferredIPVersion": "string",
+            "protocol": "string",
+            "successThreshold": {
+              "checksFailedPercent": "int",
+              "roundTripTimeMs": "int"
+            },
+            "tcpConfiguration": {
+              "destinationPortBehavior": "string",
+              "disableTraceRoute": "true | false",
+              "port": "int"
+            },
+            "testFrequencySec": "int"
+          }
+        ],
+        "description": "List of connection monitor test configurations. At least one test configuration must be specified."
+      }
+    },
+    "testGroups": {
+      "type": "array",
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/networkwatchers/connectionmonitors?pivots=deployment-language-bicep#connectionmonitortestgroup",
+        "example": [
+          {
+            "destinations": [
+              "string"
+            ],
+            "disable": "true | false",
+            "name": "string",
+            "sources": [
+              "string"
+            ],
+            "testConfigurations": [
+              "string"
+            ]
+          }
+        ],
+        "description": "List of connection monitor test groups. At least one test group must be specified."
+      }
+    },
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "nullable": true,
+      "metadata": {
+        "description": "Optional. Specify the Log Analytics Workspace Resource ID."
+      }
+    }
+  },
+  "resources": {
+    "networkWatcher": {
+      "existing": true,
+      "type": "Microsoft.Network/networkWatchers",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('networkWatcherName')]"
+    },
+    "connectionMonitor": {
+      "type": "Microsoft.Network/networkWatchers/connectionMonitors",
+      "apiVersion": "2024-03-01",
+      "name": "[format('{0}/{1}', parameters('networkWatcherName'), parameters('name'))]",
+      "tags": "[parameters('tags')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "endpoints": "[parameters('endpoints')]",
+        "testConfigurations": "[parameters('testConfigurations')]",
+        "testGroups": "[parameters('testGroups')]",
+        "outputs": "[if(not(empty(parameters('logAnalyticsWorkspaceId'))), createArray(createObject('type', 'Workspace', 'workspaceSettings', createObject('workspaceResourceId', parameters('logAnalyticsWorkspaceId')))), null())]"
+      },
+      "dependsOn": [
+        "networkWatcher"
+      ]
+    }
+  },
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed connection monitor."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed connection monitor."
+      },
+      "value": "[resourceId('Microsoft.Network/networkWatchers/connectionMonitors', parameters('networkWatcherName'), parameters('name'))]"
+    }
+  }
+}

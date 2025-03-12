@@ -1,0 +1,729 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.33.13.18514",
+      "templateHash": "12663710783650572249"
+    },
+    "name": "Storage Accounts",
+    "description": "This module deploys Microsoft.StorageAccounts and child resources",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Standard_GRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Standard_ZRS",
+        "Premium_LRS",
+        "Premium_ZRS",
+        "Standard_GZRS",
+        "Standard_RAGZRS"
+      ],
+      "metadata": {
+        "description": "Optional. The sku of the Storage Account."
+      }
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "StorageV2",
+      "allowedValues": [
+        "Storage",
+        "StorageV2",
+        "BlobStorage",
+        "FileStorage",
+        "BlockBlobStorage"
+      ],
+      "metadata": {
+        "description": "Optional. The kind of Storage Account."
+      }
+    },
+    "accessTier": {
+      "type": "string",
+      "defaultValue": "Hot",
+      "allowedValues": [
+        "Hot",
+        "Cool"
+      ],
+      "metadata": {
+        "description": "Optional. Storage Account access tier, Hot for frequently accessed data or Cool for infrequently accessed data."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Optional. Allow or disallow public network access to Storage Account."
+      }
+    },
+    "allowSharedKeyAccess": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key."
+      }
+    },
+    "allowBlobPublicAccess": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Allow or disallow public access to all blobs or containers in the storage account."
+      }
+    },
+    "defaultToOAuthAuthentication": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Indicates whether the default authentication is OAuth (AD Authentication) or not."
+      }
+    },
+    "deleteRetentionPolicy": {
+      "type": "int",
+      "defaultValue": 7,
+      "minValue": 1,
+      "maxValue": 365,
+      "metadata": {
+        "description": "Optional. Amount of days the soft deleted data is stored and available for recovery."
+      }
+    },
+    "enableHierarchicalNamespace": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. If true, enables Hierarchical Namespace for the Storage Account."
+      }
+    },
+    "requireInfrastructureEncryption": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. A boolean indicating whether or not the service applies a secondary layer of encryption with platform managed keys for data at rest. For security reasons, it is recommended to set it to true."
+      }
+    },
+    "containers": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Container name.",
+        "publicAccess": "Specifies whether data in the container may be accessed publicly and the level of access. Accepted values: None, Blob, Container.",
+        "immutableContainerEnabled": "Boolean. Enable Immutable storage",
+        "immutableContainerPolicy": {
+          "immutabilityPeriodSinceCreationInDays": "Number of days to retain storage blob.",
+          "allowProtectedAppendWrites": "This property can only be changed for unlocked time-based retention policies. When enabled, new blocks can be written to an append blob while maintaining immutability protection and compliance. Only new blocks can be added and any existing blocks cannot be modified or deleted. This property cannot be changed with ExtendImmutabilityPolicy API.",
+          "allowProtectedAppendWritesAll": "This property can only be changed for unlocked time-based retention policies. When enabled, new blocks can be written to both `Append and Bock Blobs` while maintaining immutability protection and compliance. Only new blocks can be added and any existing blocks cannot be modified or deleted. This property cannot be changed with ExtendImmutabilityPolicy API. The `allowProtectedAppendWrites` and `allowProtectedAppendWritesAll` properties are mutually exclusive."
+        },
+        "description": "Optional. Containers to create in the Storage Account."
+      }
+    },
+    "fileShares": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "File share name.",
+        "tier": "File share tier. Accepted values are Hot, Cool, TransactionOptimized or Premium.",
+        "protocol": "The authentication protocol that is used for the file share. Accepted values are SMB and NFS.",
+        "quota": "The maximum size of the share, in gigabytes.",
+        "description": "Optional. Files shares to create in the Storage Account."
+      }
+    },
+    "queues": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Queue name.",
+        "description": "Optional. Queue to create in the Storage Account."
+      }
+    },
+    "tables": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Table name.",
+        "description": "Optional. Tables to create in the Storage Account."
+      }
+    },
+    "networkAcls": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "bypass": "Specifies whether traffic is bypassed for Logging/Metrics/AzureServices. Possible values are any combination of Logging, Metrics, AzureServices.",
+        "defaultAction": "Specifies the default action of allow or deny when no other rules match. Accepted values: \"Allow\" or \"Deny\".",
+        "ipRules": [
+          {
+            "action": "Allow",
+            "value": "IPv4 address or CIDR range."
+          }
+        ],
+        "virtualNetworkRules": [
+          {
+            "action": "The action of virtual network rule.",
+            "id": "Full resource id of a vnet subnet."
+          }
+        ],
+        "resourceAccessRules": [
+          {
+            "resourceId": "\tResource Id.",
+            "tenantId": "Tenant Id."
+          }
+        ],
+        "description": "Optional. Rule definitions governing the Storage network access."
+      }
+    },
+    "largeFileSharesState": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Optional. Allow large file shares if set to Enabled. It cannot be disabled once it is enabled."
+      }
+    },
+    "managementPolicies": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts/managementpolicies?pivots=deployment-language-bicep",
+        "example": [
+          {
+            "name": "blob-lifecycle",
+            "type": "Lifecycle",
+            "definition": {
+              "actions": {
+                "baseBlob": {
+                  "tierToCool": {
+                    "daysAfterModificationGreaterThan": 30
+                  },
+                  "delete": {
+                    "daysAfterModificationGreaterThan": 365
+                  }
+                },
+                "snapshot": {
+                  "delete": {
+                    "daysAfterCreationGreaterThan": 365
+                  }
+                }
+              },
+              "filters": {
+                "blobTypes": [
+                  "blockBlob"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Optional. Lifecycle management policies."
+      }
+    },
+    "resourcelock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "CanNotDelete",
+        "NotSpecified",
+        "ReadOnly"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Audit"
+      ],
+      "allowedValues": [
+        "Audit",
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Transaction"
+      ],
+      "allowedValues": [
+        "Transaction"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "enablechangeFeed": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional.  If true, enable change feed."
+      }
+    },
+    "changeFeedRetentionPolicy": {
+      "type": "int",
+      "defaultValue": 7,
+      "minValue": 1,
+      "maxValue": 365,
+      "metadata": {
+        "description": "Optional. Amount of days the change feed data is stored and available for recovery."
+      }
+    },
+    "enableblobVersioning": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional.  If true, enable versioning for blobs."
+      }
+    },
+    "enablecontainerDeleteRetentionPolicy": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional.  If true, enable container delete retention policy."
+      }
+    },
+    "containerDeleteRetentionPolicy": {
+      "type": "int",
+      "defaultValue": 7,
+      "minValue": 1,
+      "maxValue": 365,
+      "metadata": {
+        "description": "Optional. Amount of days the deleted container is available for recovery."
+      }
+    },
+    "enablerestorePolicy": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional.  If true, enable point-in-time restore for containers policy."
+      }
+    },
+    "directoryServiceOptions": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "AADDS",
+        "AADKERB",
+        "AD",
+        "None"
+      ],
+      "metadata": {
+        "description": "Optional. Indicates the directory service used."
+      }
+    },
+    "activeDirectoryProperties": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "domainName": "Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.",
+        "domainGUID": "Domain GUID for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB.",
+        "domainSid": "Specifies the security identifier (SID).",
+        "forestName": "\tSpecifies the Active Directory forest to get.",
+        "netBiosDomainName": "Specifies the NetBIOS domain name.",
+        "samAccountName": "Specifies the Active Directory SAMAccountName for Azure Storage.",
+        "accountType": "Specifies the Active Directory account type for Azure Storage.",
+        "azureStorageSid": "Specifies the security identifier (SID) for Azure Storage.",
+        "description": "Optional. Domain name for your on-premises AD. Required if directoryServiceOptions are AD, optional if they are AADKERB."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true
+        }
+      }
+    ],
+    "supportsBlobService": "[or(or(or(equals(parameters('kind'), 'BlockBlobStorage'), equals(parameters('kind'), 'BlobStorage')), equals(parameters('kind'), 'StorageV2')), equals(parameters('kind'), 'Storage'))]",
+    "supportsFileService": "[or(or(equals(parameters('kind'), 'FileStorage'), equals(parameters('kind'), 'StorageV2')), equals(parameters('kind'), 'Storage'))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourcelock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "restoreRetentionPolicy": "[max(sub(parameters('deleteRetentionPolicy'), 1), 1)]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "kind": "[parameters('kind')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "accessTier": "[parameters('accessTier')]",
+        "isHnsEnabled": "[if(parameters('enableHierarchicalNamespace'), parameters('enableHierarchicalNamespace'), null())]",
+        "encryption": {
+          "keySource": "Microsoft.Storage",
+          "services": {
+            "blob": "[if(variables('supportsBlobService'), createObject('enabled', true()), null())]",
+            "file": "[if(variables('supportsFileService'), createObject('enabled', true()), null())]"
+          },
+          "requireInfrastructureEncryption": "[if(not(equals(parameters('kind'), 'Storage')), parameters('requireInfrastructureEncryption'), null())]"
+        },
+        "networkAcls": "[parameters('networkAcls')]",
+        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+        "minimumTlsVersion": "TLS1_2",
+        "supportsHttpsTrafficOnly": true,
+        "largeFileSharesState": "[parameters('largeFileSharesState')]",
+        "allowSharedKeyAccess": "[parameters('allowSharedKeyAccess')]",
+        "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
+        "defaultToOAuthAuthentication": "[parameters('defaultToOAuthAuthentication')]",
+        "azureFilesIdentityBasedAuthentication": {
+          "activeDirectoryProperties": "[parameters('activeDirectoryProperties')]",
+          "directoryServiceOptions": "[parameters('directoryServiceOptions')]"
+        }
+      }
+    },
+    {
+      "condition": "[variables('supportsBlobService')]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "deleteRetentionPolicy": {
+          "enabled": true,
+          "days": "[parameters('deleteRetentionPolicy')]"
+        },
+        "changeFeed": "[if(parameters('enablechangeFeed'), createObject('enabled', true(), 'retentionInDays', parameters('changeFeedRetentionPolicy')), createObject('enabled', false()))]",
+        "isVersioningEnabled": "[parameters('enableblobVersioning')]",
+        "containerDeleteRetentionPolicy": "[if(parameters('enablecontainerDeleteRetentionPolicy'), createObject('enabled', true(), 'days', parameters('containerDeleteRetentionPolicy')), createObject('enabled', false()))]",
+        "restorePolicy": "[if(parameters('enablerestorePolicy'), createObject('enabled', true(), 'days', variables('restoreRetentionPolicy')), createObject('enabled', false()))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('managementPolicies')))]",
+      "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "policy": {
+          "rules": "[parameters('managementPolicies')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "blobContainers",
+        "count": "[length(parameters('containers'))]"
+      },
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('containers')[copyIndex()].name)]",
+      "properties": {
+        "publicAccess": "[parameters('containers')[copyIndex()].publicAccess]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('name'), 'default')]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "immutabilityContainerPolicy",
+        "count": "[length(range(0, length(parameters('containers'))))]"
+      },
+      "condition": "[coalesce(tryGet(tryGet(parameters('containers'), range(0, length(parameters('containers')))[copyIndex()]), 'immutableContainerEnabled'), false())]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers/immutabilityPolicies",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}/{2}/{3}', parameters('name'), 'default', parameters('containers')[range(0, length(parameters('containers')))[copyIndex()]].name, 'default')]",
+      "properties": {
+        "allowProtectedAppendWrites": "[parameters('containers')[range(0, length(parameters('containers')))[copyIndex()]].immutableContainerPolicy.allowProtectedAppendWrites]",
+        "allowProtectedAppendWritesAll": "[parameters('containers')[range(0, length(parameters('containers')))[copyIndex()]].immutableContainerPolicy.allowProtectedAppendWritesAll]",
+        "immutabilityPeriodSinceCreationInDays": "[parameters('containers')[range(0, length(parameters('containers')))[copyIndex()]].immutableContainerPolicy.immutabilityPeriodSinceCreationInDays]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', parameters('name'), 'default', parameters('containers')[range(0, length(parameters('containers')))[copyIndex()]].name)]"
+      ]
+    },
+    {
+      "condition": "[variables('supportsFileService')]",
+      "type": "Microsoft.Storage/storageAccounts/fileServices",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {
+        "shareDeleteRetentionPolicy": {
+          "days": "[parameters('deleteRetentionPolicy')]",
+          "enabled": true
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "fileShare",
+        "count": "[length(parameters('fileShares'))]"
+      },
+      "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('fileShares')[copyIndex()].name)]",
+      "properties": {
+        "accessTier": "[coalesce(tryGet(parameters('fileShares')[copyIndex()], 'tier'), null())]",
+        "enabledProtocols": "[coalesce(tryGet(parameters('fileShares')[copyIndex()], 'protocol'), 'SMB')]",
+        "shareQuota": "[coalesce(tryGet(parameters('fileShares')[copyIndex()], 'quota'), 5120)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('name'), 'default')]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('queues')))]",
+      "type": "Microsoft.Storage/storageAccounts/queueServices",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "storageQueues",
+        "count": "[length(parameters('queues'))]"
+      },
+      "type": "Microsoft.Storage/storageAccounts/queueServices/queues",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('queues')[copyIndex()].name)]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/queueServices', parameters('name'), 'default')]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('tables')))]",
+      "type": "Microsoft.Storage/storageAccounts/tableServices",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "storageTables",
+        "count": "[length(parameters('tables'))]"
+      },
+      "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('tables')[copyIndex()].name)]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/tableServices', parameters('name'), 'default')]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourcelock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourcelock')]",
+        "notes": "[if(equals(parameters('resourcelock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}/blobServices/{1}', parameters('name'), 'default')]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('name'), 'default')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[and(parameters('enableDiagnostics'), not(empty(parameters('fileShares'))))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}/fileServices/{1}', parameters('name'), 'default')]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('name'), 'default')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[and(parameters('enableDiagnostics'), not(empty(parameters('queues'))))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}/queueServices/{1}', parameters('name'), 'default')]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/queueServices', parameters('name'), 'default')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed storage account."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed storage account."
+      },
+      "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+    },
+    "systemAssignedPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "The principal ID for the system-assigned managed identity."
+      },
+      "value": "[coalesce(tryGet(tryGet(reference(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2023-05-01', 'full'), 'identity'), 'principalId'), '')]"
+    }
+  }
+}

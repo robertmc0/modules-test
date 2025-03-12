@@ -1,0 +1,251 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.20.4.51522",
+      "templateHash": "11429734793292784262"
+    },
+    "name": "Desktop Virtualization Application Group Module",
+    "description": "This module deploys Microsoft.DesktopVirtualization Application Groups",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "friendlyName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Friendly name of ApplicationGroup."
+      }
+    },
+    "applicationGroupDescription": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Description for ApplicationGroup."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "applicationGroupType": {
+      "type": "string",
+      "allowedValues": [
+        "Desktop",
+        "RemoteApp"
+      ],
+      "metadata": {
+        "description": "Resource Type of ApplicationGroup."
+      }
+    },
+    "hostPoolArmPath": {
+      "type": "string",
+      "metadata": {
+        "description": "HostPool arm path of ApplicationGroup."
+      }
+    },
+    "remoteApps": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.desktopvirtualization/applicationgroups/applications?pivots=deployment-language-bicep#applicationproperties",
+        "example": {
+          "name": "string",
+          "applicationType": "string",
+          "commandLineArguments": "string",
+          "commandLineSetting": "string",
+          "description": "string",
+          "filePath": "string",
+          "friendlyName": "string",
+          "iconIndex": "int",
+          "iconPath": "string",
+          "msixPackageApplicationId": "string",
+          "msixPackageFamilyName": "string",
+          "showInPortal": "bool"
+        },
+        "description": "Optional. RemoteApps to add to ApplicationGroup."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllLogs"
+      ],
+      "allowedValues": [
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.DesktopVirtualization/applicationGroups",
+      "apiVersion": "2022-04-01-preview",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "friendlyName": "[parameters('friendlyName')]",
+        "description": "[parameters('applicationGroupDescription')]",
+        "applicationGroupType": "[parameters('applicationGroupType')]",
+        "hostPoolArmPath": "[parameters('hostPoolArmPath')]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.DesktopVirtualization/applicationGroups/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DesktopVirtualization/applicationGroups', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.DesktopVirtualization/applicationGroups/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DesktopVirtualization/applicationGroups', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "remoteApplications",
+        "count": "[length(parameters('remoteApps'))]"
+      },
+      "type": "Microsoft.DesktopVirtualization/applicationGroups/applications",
+      "apiVersion": "2022-04-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('remoteApps')[copyIndex()].name)]",
+      "properties": {
+        "applicationType": "[if(contains(parameters('remoteApps')[copyIndex()], 'applicationType'), parameters('remoteApps')[copyIndex()].applicationType, '')]",
+        "commandLineArguments": "[if(contains(parameters('remoteApps')[copyIndex()], 'commandLineArguments'), parameters('remoteApps')[copyIndex()].commandLineArguments, '')]",
+        "commandLineSetting": "[if(contains(parameters('remoteApps')[copyIndex()], 'commandLineSetting'), parameters('remoteApps')[copyIndex()].commandLineSetting, '')]",
+        "description": "[if(contains(parameters('remoteApps')[copyIndex()], 'description'), parameters('remoteApps')[copyIndex()].description, '')]",
+        "filePath": "[if(contains(parameters('remoteApps')[copyIndex()], 'filePath'), parameters('remoteApps')[copyIndex()].filePath, '')]",
+        "friendlyName": "[if(contains(parameters('remoteApps')[copyIndex()], 'friendlyName'), parameters('remoteApps')[copyIndex()].friendlyName, '')]",
+        "iconIndex": "[if(contains(parameters('remoteApps')[copyIndex()], 'iconIndex'), parameters('remoteApps')[copyIndex()].iconIndex, 0)]",
+        "iconPath": "[if(contains(parameters('remoteApps')[copyIndex()], 'iconPath'), parameters('remoteApps')[copyIndex()].iconPath, null())]",
+        "msixPackageApplicationId": "[if(contains(parameters('remoteApps')[copyIndex()], 'msixPackageApplicationId'), parameters('remoteApps')[copyIndex()].msixPackageApplicationId, null())]",
+        "msixPackageFamilyName": "[if(contains(parameters('remoteApps')[copyIndex()], 'msixPackageFamilyName'), parameters('remoteApps')[copyIndex()].msixPackageFamilyName, null())]",
+        "showInPortal": "[if(contains(parameters('remoteApps')[copyIndex()], 'showInPortal'), parameters('remoteApps')[copyIndex()].showInPortal, true())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DesktopVirtualization/applicationGroups', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed application group."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed application group."
+      },
+      "value": "[resourceId('Microsoft.DesktopVirtualization/applicationGroups', parameters('name'))]"
+    }
+  }
+}

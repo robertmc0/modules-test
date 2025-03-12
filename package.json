@@ -1,0 +1,28 @@
+{
+  "name": "arinco-bicep-modules",
+  "version": "1.0.0",
+  "description": "Bicep registry modules",
+  "private": true,
+  "repository": "arincoau/arinco-bicep-modules",
+  "keywords": [
+    "Bicep"
+  ],
+  "author": "Arinco Bicep Registry Module Authors",
+  "license": "MIT",
+  "bugs": "https://github.com/arincoau/arinco-bicep-modules/issues",
+  "homepage": "https://github.com/arincoau/arinco-bicep-modules#readme",
+  "scripts": {
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "prettier:check": "prettier --check .",
+    "prettier": "prettier --write ."
+  },
+  "devDependencies": {
+    "@actions/core": "^1.9.1",
+    "@actions/github": "^5.0.0",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.3.0",
+    "markdown-table": "^3.0.2",
+    "prettier": "^2.5.1"
+  }
+}

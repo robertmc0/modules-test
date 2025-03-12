@@ -1,0 +1,672 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.33.13.18514",
+      "templateHash": "17340708006402808"
+    },
+    "name": "Managed Clusters Module",
+    "description": "This module deploys Microsoft.ContainerService managedClusters",
+    "owner": "Arinco"
+  },
+  "definitions": {
+    "_1.agentPoolType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The name of the agent pool."
+          }
+        },
+        "availabilityZones": {
+          "type": "array",
+          "items": {
+            "type": "int"
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The availability zones of the agent pool."
+          }
+        },
+        "count": {
+          "type": "int",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The number of agents (VMs) to host docker containers. Allowed values must be in the range of 1 to 100 (inclusive)."
+          }
+        },
+        "enableAutoScaling": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Whether to enable auto-scaling for the agent pool."
+          }
+        },
+        "enableEncryptionAtHost": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Whether to enable encryption at host for the agent pool."
+          }
+        },
+        "maxCount": {
+          "type": "int",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The maximum number of agents (VMs) to host docker containers. Allowed values must be in the range of 1 to 100 (inclusive)."
+          }
+        },
+        "minCount": {
+          "type": "int",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The minimum number of agents (VMs) to host docker containers. Allowed values must be in the range of 1 to 100 (inclusive)."
+          }
+        },
+        "maxPods": {
+          "type": "int",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The maximum number of pods that can run on a node."
+          }
+        },
+        "minPods": {
+          "type": "int",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The minimum number of pods that can run on a node."
+          }
+        },
+        "mode": {
+          "type": "string",
+          "allowedValues": [
+            "System",
+            "User"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The mode of the agent pool."
+          }
+        },
+        "nodeLabels": {
+          "type": "object",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The node labels of the agent pool."
+          }
+        },
+        "nodeTaints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The node taints of the agent pool."
+          }
+        },
+        "osDiskSizeGB": {
+          "type": "int",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The OS disk size in GB of the agent pool."
+          }
+        },
+        "osDiskType": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The OS disk type of the agent pool."
+          }
+        },
+        "osSku": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The OS SKU of the agent pool."
+          }
+        },
+        "osType": {
+          "type": "string",
+          "allowedValues": [
+            "Linux",
+            "Windows"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The OS type of the agent pool."
+          }
+        },
+        "podSubnetResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The pod subnet ID of the agent pool."
+          }
+        },
+        "tags": {
+          "type": "object",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The tags of the agent pool."
+          }
+        },
+        "type": {
+          "type": "string",
+          "allowedValues": [
+            "AvailabilitySet",
+            "VirtualMachineScaleSets"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The type of the agent pool."
+          }
+        },
+        "vmSize": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The VM size of the agent pool."
+          }
+        },
+        "vnetSubnetResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The VNet subnet ID of the agent pool."
+          }
+        },
+        "workloadRuntime": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The workload runtime of the agent pool."
+          }
+        }
+      },
+      "metadata": {
+        "description": "The type for an agent pool.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "types.bicep"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 63,
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "managedClusterSku": {
+      "type": "string",
+      "defaultValue": "Free",
+      "allowedValues": [
+        "Free",
+        "Paid"
+      ],
+      "metadata": {
+        "description": "Optional. Sets the uptime SLA tier to enable a financially backed, higher SLA for an AKS cluster."
+      }
+    },
+    "nodeResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Node resource group name."
+      }
+    },
+    "disableLocalAccounts": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Disable static credentials for this cluster. This must only be used on Managed Clusters that are AAD enabled."
+      }
+    },
+    "dnsPrefix": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Custom DNS name prefix. This cannot be updated once the Managed Cluster has been created."
+      }
+    },
+    "enableRbac": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable Kubernetes Role-Based Access Control."
+      }
+    },
+    "kubernetesVersion": {
+      "type": "string",
+      "defaultValue": "latest",
+      "metadata": {
+        "description": "Optional. Specify kubernetes version to deploy."
+      }
+    },
+    "enablePrivateCluster": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Create a private Managed Cluster."
+      }
+    },
+    "addonProfiles": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. Specify profile of managed cluster add-on."
+      }
+    },
+    "agentPoolProfiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/_1.agentPoolType"
+      },
+      "metadata": {
+        "description": "Required. Properties of the primary agent pool."
+      }
+    },
+    "networkPodCidr": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "A CIDR notation IP range from which to assign pod IPs when kubenet is used. It must not overlap with any Subnet IP ranges."
+      }
+    },
+    "networkServiceCidr": {
+      "type": "string",
+      "metadata": {
+        "description": "A CIDR notation IP range from which to assign service cluster IPs. It must not overlap with any Subnet IP ranges."
+      }
+    },
+    "networkDnsServiceIp": {
+      "type": "string",
+      "metadata": {
+        "description": "An IP address assigned to the Kubernetes DNS service. It must be within the Kubernetes service address range specified in serviceCidr."
+      }
+    },
+    "networkNetworkPlugin": {
+      "type": "string",
+      "defaultValue": "azure",
+      "allowedValues": [
+        "azure",
+        "kubenet",
+        "none"
+      ],
+      "metadata": {
+        "description": "Optional. Network plugin used for building the Kubernetes network."
+      }
+    },
+    "networkNetworkPluginMode": {
+      "type": "string",
+      "defaultValue": "",
+      "allowedValues": [
+        "overlay",
+        ""
+      ],
+      "metadata": {
+        "description": "Optional. Network plugin mode used for building the Kubernetes network."
+      }
+    },
+    "networkNetworkDataplane": {
+      "type": "string",
+      "defaultValue": "azure",
+      "allowedValues": [
+        "azure",
+        "cilium"
+      ],
+      "metadata": {
+        "description": "Optional. Network dataplane used in the Kubernetes cluster."
+      }
+    },
+    "networkOutboundType": {
+      "type": "string",
+      "defaultValue": "loadBalancer",
+      "allowedValues": [
+        "loadBalancer",
+        "managedNATGateway",
+        "userAssignedNATGateway",
+        "userDefinedRouting"
+      ],
+      "metadata": {
+        "description": "Optional. Network dataplane used in the Kubernetes cluster."
+      }
+    },
+    "istioServiceMeshEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Istio Service Mesh."
+      }
+    },
+    "istioServiceMeshInternalIngressGatewayEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Istio Service Mesh Internal Ingress Gateway."
+      }
+    },
+    "istioServiceMeshExternalIngressGatewayEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Istio Service Mesh External Ingress Gateway."
+      }
+    },
+    "istioServiceMeshRevision": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Istio Service Mesh Control Plane Revision."
+      }
+    },
+    "enableAad": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Azure Active Directory configuration."
+      }
+    },
+    "enableAzureRbac": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Azure RBAC for Kubernetes authorization."
+      }
+    },
+    "enableAddonAzurePolicy": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable the Azure Policy profile of managed cluster add-on."
+      }
+    },
+    "upgradeChannel": {
+      "type": "string",
+      "defaultValue": "patch",
+      "allowedValues": [
+        "none",
+        "node-image",
+        "patch",
+        "stable",
+        "rapid"
+      ],
+      "metadata": {
+        "description": "optional. Enable auto upgrade on the AKS cluster to perform periodic upgrades to the latest Kubernetes version."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "/subscriptions/<subscription>/resourceGroups/<rgp>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dev-umi": {}
+        },
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "enableDefenderForCloud": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable Defender for Cloud."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Enable App Insights Monitoring. Specify App Insights Log Analytics Workspace resourceId."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "allLogs",
+        "audit"
+      ],
+      "allowedValues": [
+        "allLogs",
+        "audit"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true
+        }
+      }
+    ],
+    "sku": {
+      "name": "Base",
+      "tier": "[parameters('managedClusterSku')]"
+    },
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "addonAzurePolicy": "[if(parameters('enableAddonAzurePolicy'), createObject('azurePolicy', createObject('enabled', parameters('enableAddonAzurePolicy'))), createObject())]",
+    "addonOmsAgent": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('omsagent', createObject('enabled', true(), 'config', createObject('logAnalyticsWorkspaceResourceId', if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), parameters('logAnalyticsWorkspaceResourceId'), null())))), createObject())]",
+    "clusterAddons": "[union(variables('addonAzurePolicy'), variables('addonOmsAgent'), parameters('addonProfiles'))]",
+    "identityType": "[if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'SystemAssigned')]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+  },
+  "resources": {
+    "aks": {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2024-09-01",
+      "name": "[parameters('name')]",
+      "sku": "[variables('sku')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "nodeResourceGroup": "[parameters('nodeResourceGroup')]",
+        "disableLocalAccounts": "[parameters('disableLocalAccounts')]",
+        "dnsPrefix": "[if(not(empty(parameters('dnsPrefix'))), parameters('dnsPrefix'), parameters('name'))]",
+        "enableRBAC": "[parameters('enableRbac')]",
+        "kubernetesVersion": "[if(not(equals(parameters('kubernetesVersion'), 'latest')), parameters('kubernetesVersion'), null())]",
+        "agentPoolProfiles": "[map(parameters('agentPoolProfiles'), lambda('profile', createObject('name', lambdaVariables('profile').name, 'count', coalesce(lambdaVariables('profile').count, 1), 'availabilityZones', map(coalesce(tryGet(lambdaVariables('profile'), 'availabilityZones'), createArray(1, 2, 3)), lambda('zone', format('{0}', lambdaVariables('zone')))), 'enableAutoScaling', coalesce(tryGet(lambdaVariables('profile'), 'enableAutoScaling'), false()), 'maxCount', tryGet(lambdaVariables('profile'), 'maxCount'), 'maxPods', tryGet(lambdaVariables('profile'), 'maxPods'), 'minCount', tryGet(lambdaVariables('profile'), 'minCount'), 'mode', tryGet(lambdaVariables('profile'), 'mode'), 'nodeLabels', tryGet(lambdaVariables('profile'), 'nodeLabels'), 'nodeTaints', tryGet(lambdaVariables('profile'), 'nodeTaints'), 'osDiskSizeGB', tryGet(lambdaVariables('profile'), 'osDiskSizeGB'), 'osDiskType', tryGet(lambdaVariables('profile'), 'osDiskType'), 'osSKU', tryGet(lambdaVariables('profile'), 'osSku'), 'osType', coalesce(tryGet(lambdaVariables('profile'), 'osType'), 'Linux'), 'tags', tryGet(lambdaVariables('profile'), 'tags'), 'type', coalesce(tryGet(lambdaVariables('profile'), 'type'), 'VirtualMachineScaleSets'), 'vmSize', tryGet(lambdaVariables('profile'), 'vmSize'), 'vnetSubnetID', tryGet(lambdaVariables('profile'), 'vnetSubnetResourceId'), 'workloadRuntime', tryGet(lambdaVariables('profile'), 'workloadRuntime'))))]",
+        "networkProfile": {
+          "networkDataplane": "[parameters('networkNetworkDataplane')]",
+          "networkPlugin": "[parameters('networkNetworkPlugin')]",
+          "networkPluginMode": "[parameters('networkNetworkPluginMode')]",
+          "outboundType": "[parameters('networkOutboundType')]",
+          "podCidr": "[if(not(empty(parameters('networkPodCidr'))), parameters('networkPodCidr'), null())]",
+          "serviceCidr": "[parameters('networkServiceCidr')]",
+          "dnsServiceIP": "[parameters('networkDnsServiceIp')]"
+        },
+        "addonProfiles": "[variables('clusterAddons')]",
+        "aadProfile": "[if(parameters('enableAad'), createObject('managed', true(), 'enableAzureRBAC', parameters('enableAzureRbac'), 'tenantID', tenant().tenantId), null())]",
+        "serviceMeshProfile": "[if(parameters('istioServiceMeshEnabled'), createObject('istio', createObject('revisions', if(not(empty(parameters('istioServiceMeshRevision'))), createArray(parameters('istioServiceMeshRevision')), null()), 'components', createObject('ingressGateways', createArray(createObject('enabled', parameters('istioServiceMeshInternalIngressGatewayEnabled'), 'mode', 'Internal'), createObject('enabled', parameters('istioServiceMeshExternalIngressGatewayEnabled'), 'mode', 'External')))), 'mode', 'Istio'), null())]",
+        "apiServerAccessProfile": {
+          "enablePrivateCluster": "[parameters('enablePrivateCluster')]"
+        },
+        "securityProfile": {
+          "defender": {
+            "logAnalyticsWorkspaceResourceId": "[if(parameters('enableDefenderForCloud'), parameters('diagnosticLogAnalyticsWorkspaceId'), null())]",
+            "securityMonitoring": {
+              "enabled": "[parameters('enableDefenderForCloud')]"
+            }
+          }
+        },
+        "autoUpgradeProfile": "[if(not(equals(parameters('upgradeChannel'), 'none')), createObject('upgradeChannel', parameters('upgradeChannel')), null())]",
+        "servicePrincipalProfile": "[if(equals(variables('identityType'), 'SystemAssigned'), createObject('clientId', 'msi'), null())]"
+      }
+    },
+    "lock": {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "aks"
+      ]
+    },
+    "diagnostics": {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "aks"
+      ]
+    }
+  },
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed managed cluster."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed managed cluster."
+      },
+      "value": "[resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))]"
+    },
+    "systemAssignedPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "The principal ID of the system assigned identity."
+      },
+      "value": "[coalesce(tryGet(reference('aks', '2024-09-01', 'full').identity, 'principalId'), '')]"
+    },
+    "nodeResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed managed cluster."
+      },
+      "value": "[reference('aks').nodeResourceGroup]"
+    },
+    "secretProviderPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "The Object ID of the Key Vault Secrets Provider identity."
+      },
+      "value": "[coalesce(tryGet(tryGet(tryGet(tryGet(reference('aks'), 'addonProfiles'), 'azureKeyvaultSecretsProvider'), 'identity'), 'objectId'), '')]"
+    },
+    "kubeletIdentityObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "The Object ID of the AKS kubelet identity."
+      },
+      "value": "[coalesce(tryGet(tryGet(tryGet(reference('aks'), 'identityProfile'), 'kubeletidentity'), 'objectId'), '')]"
+    }
+  }
+}

@@ -1,0 +1,547 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.32.4.45862",
+      "templateHash": "10296230820062090282"
+    },
+    "name": "Virtual Network Gateway Module",
+    "description": "This module deploys Microsoft.Network/virtualNetworkGateways",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "allowedValues": [
+        "Basic",
+        "ErGw1AZ",
+        "ErGw2AZ",
+        "ErGw3AZ",
+        "HighPerformance",
+        "Standard",
+        "UltraPerformance",
+        "VpnGw1",
+        "VpnGw1AZ",
+        "VpnGw2",
+        "VpnGw2AZ",
+        "VpnGw3",
+        "VpnGw3AZ",
+        "VpnGw4",
+        "VpnGw4AZ",
+        "VpnGw5",
+        "VpnGw5AZ"
+      ],
+      "metadata": {
+        "description": "The sku of this virtual network gateway."
+      }
+    },
+    "gatewayType": {
+      "type": "string",
+      "allowedValues": [
+        "ExpressRoute",
+        "LocalGateway",
+        "Vpn"
+      ],
+      "metadata": {
+        "description": "The type of this virtual network gateway."
+      }
+    },
+    "vpnType": {
+      "type": "string",
+      "defaultValue": "RouteBased",
+      "allowedValues": [
+        "PolicyBased",
+        "RouteBased"
+      ],
+      "metadata": {
+        "description": "Optional. The type of this virtual network gateway."
+      }
+    },
+    "primaryPublicIpAddressName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the primary virtual network gateway public IP address."
+      }
+    },
+    "availabilityZones": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "metadata": {
+        "description": "Optional. A list of availability zones denoting the zone in which the virtual network gateway public IP address should be deployed."
+      }
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the virtual network gateway subnet."
+      }
+    },
+    "activeActive": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable active-active mode."
+      }
+    },
+    "secondaryPublicIpAddressName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Name of the secondary virtual network gateway public IP address. Only required when activeActive is set to true."
+      }
+    },
+    "enableBgp": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#enablebgp",
+        "examples": [
+          true,
+          false
+        ],
+        "description": "Optional. Enable or disable BGP on the virtual network gateway."
+      }
+    },
+    "customRoutePrefixes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#customroutes",
+        "examples": [
+          [
+            "10.20.30.0/24"
+          ],
+          [
+            "10.20.30.0/24",
+            "172.16.0.0/16"
+          ]
+        ],
+        "description": "Optional. The additional routes to advertise to VPN clients connecting to the gateway."
+      }
+    },
+    "vpnClientAddressPoolPrefixes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientaddresspool",
+        "examples": [
+          [
+            "10.10.201.0/24"
+          ],
+          [
+            "10.10.201.0/24",
+            "10.10.202.0/24"
+          ]
+        ],
+        "description": "Optional. The address prefixes for VPN clients connecting to the gateway."
+      }
+    },
+    "vpnAuthenticationTypes": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "AAD",
+        "Certificate",
+        "Radius"
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnauthenticationtypes",
+        "examples": [
+          [
+            "AAD"
+          ],
+          [
+            "Certificate"
+          ],
+          [
+            "Radius"
+          ],
+          [
+            "AAD",
+            "Certificate"
+          ]
+        ],
+        "description": "Optional. The VPN Authentication type(s) to be used."
+      }
+    },
+    "vpnClientProtocols": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "IKEv2",
+        "SSTP",
+        "OpenVPN"
+      ],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientprotocol",
+        "examples": [
+          [
+            "IKEv2"
+          ],
+          [
+            "OpenVPN"
+          ],
+          [
+            "IKEv2",
+            "OpenVPN"
+          ]
+        ],
+        "description": "Optional. The VPN protocol(s) to be used."
+      }
+    },
+    "vpnClientRootCertificates": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientrootcertificatepropertiesformat",
+        "examples": [
+          {
+            "id": "rootCert1Id",
+            "name": "Root Certificate 1",
+            "properties": {
+              "publicCertData": "base64EncodedCertData1"
+            }
+          }
+        ],
+        "description": "Optional. The VPN Client root certificates."
+      }
+    },
+    "vpnClientRevokedCertificates": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?tabs=bicep#vpnclientrevokedcertificatepropertiesformat",
+        "examples": [
+          {
+            "id": "revokedCert1Id",
+            "name": "Revoked Certificate 1",
+            "properties": {
+              "thumbprint": "revokedCert1Thumbprint"
+            }
+          }
+        ],
+        "description": "Optional. VPN revoked certificates."
+      }
+    },
+    "vpnAadAuthConfig": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworkgateways?pivots=deployment-language-bicep#vpnclientconfiguration",
+        "examples": {
+          "aadAudience": "c632b3df-fb67-4d84-bdcf-b95ad541b5c8",
+          "aadIssuer": "https://sts.windows.net/{Microsoft ID Entra Tenant ID}/",
+          "aadTenant": "https://login.microsoftonline.com/{Microsoft ID Entra Tenant ID}"
+        },
+        "description": "Optional. VPN AAD Auth Details"
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "Audit"
+      ],
+      "allowedValues": [
+        "Audit",
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "vnetGatewayDiagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]",
+    "primaryPublicIpDiagnosticsName": "[toLower(format('{0}-dgs', parameters('primaryPublicIpAddressName')))]",
+    "secondaryPublicIpDiagnosticsName": "[if(parameters('activeActive'), toLower(format('{0}-dgs', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')))), 'placeholder')]",
+    "ipConfigurations": "[if(parameters('activeActive'), createArray(createObject('name', 'default', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName'))))), createObject('name', 'activeActive', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName'))))))), createArray(createObject('name', 'default', 'properties', createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', parameters('subnetResourceId')), 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName')))))))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-04-01",
+      "name": "[parameters('primaryPublicIpAddressName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      },
+      "zones": "[parameters('availabilityZones')]"
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', parameters('primaryPublicIpAddressName'))]",
+      "name": "[variables('primaryPublicIpDiagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('activeActive')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-04-01",
+      "name": "[if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName'))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      },
+      "zones": "[parameters('availabilityZones')]"
+    },
+    {
+      "condition": "[and(parameters('enableDiagnostics'), parameters('activeActive'))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')))]",
+      "name": "[variables('secondaryPublicIpDiagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworkGateways",
+      "apiVersion": "2022-11-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "ipConfigurations": "[variables('ipConfigurations')]",
+        "sku": {
+          "name": "[parameters('sku')]",
+          "tier": "[parameters('sku')]"
+        },
+        "gatewayType": "[parameters('gatewayType')]",
+        "vpnType": "[parameters('vpnType')]",
+        "activeActive": "[parameters('activeActive')]",
+        "enableBgp": "[parameters('enableBgp')]",
+        "customRoutes": "[if(not(empty(parameters('customRoutePrefixes'))), createObject('addressPrefixes', parameters('customRoutePrefixes')), null())]",
+        "vpnClientConfiguration": "[if(and(and(not(empty(parameters('vpnClientAddressPoolPrefixes'))), not(empty(parameters('vpnAuthenticationTypes')))), not(empty(parameters('vpnClientProtocols')))), createObject('vpnClientAddressPool', createObject('addressPrefixes', parameters('vpnClientAddressPoolPrefixes')), 'vpnAuthenticationTypes', parameters('vpnAuthenticationTypes'), 'vpnClientProtocols', parameters('vpnClientProtocols'), 'vpnClientRevokedCertificates', if(not(empty(parameters('vpnClientRevokedCertificates'))), parameters('vpnClientRevokedCertificates'), null()), 'vpnClientRootCertificates', if(not(empty(parameters('vpnClientRootCertificates'))), parameters('vpnClientRootCertificates'), null()), 'aadAudience', if(not(empty(parameters('vpnAadAuthConfig'))), parameters('vpnAadAuthConfig').aadAudience, null()), 'aadIssuer', if(not(empty(parameters('vpnAadAuthConfig'))), parameters('vpnAadAuthConfig').aadIssuer, null()), 'aadTenant', if(not(empty(parameters('vpnAadAuthConfig'))), parameters('vpnAadAuthConfig').aadTenant, null())), null())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Network/virtualNetworkGateways/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/virtualNetworkGateways/{0}', parameters('name'))]",
+      "name": "[variables('vnetGatewayDiagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed virtual network gateway."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed virtual network gateway."
+      },
+      "value": "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('name'))]"
+    },
+    "primaryPublicIpName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed virtual network gateway primary public IP."
+      },
+      "value": "[parameters('primaryPublicIpAddressName')]"
+    },
+    "primaryPublicIpAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The IP address of the deployed virtual network gateway primary public IP."
+      },
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('primaryPublicIpAddressName')), '2023-04-01').ipAddress]"
+    },
+    "primaryPublicIpId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed virtual network gateway primary public IP address."
+      },
+      "value": "[reference(resourceId('Microsoft.Network/virtualNetworkGateways', parameters('name')), '2022-11-01').ipConfigurations[0].properties.publicIPAddress.id]"
+    },
+    "secondaryPublicIpName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed virtual network gateway secondary public IP."
+      },
+      "value": "[if(parameters('activeActive'), if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName')), '')]"
+    },
+    "secondaryPublicIpAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The IP address of the deployed virtual network gateway secondary public IP."
+      },
+      "value": "[if(parameters('activeActive'), reference(resourceId('Microsoft.Network/publicIPAddresses', if(empty(parameters('secondaryPublicIpAddressName')), 'placeholder', parameters('secondaryPublicIpAddressName'))), '2023-04-01').ipAddress, '')]"
+    },
+    "secondaryPublicIpId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed virtual network gateway secondary public IP address."
+      },
+      "value": "[if(parameters('activeActive'), reference(resourceId('Microsoft.Network/virtualNetworkGateways', parameters('name')), '2022-11-01').ipConfigurations[1].properties.publicIPAddress.id, '')]"
+    }
+  }
+}

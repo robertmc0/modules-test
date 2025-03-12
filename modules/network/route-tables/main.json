@@ -1,0 +1,134 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.14.6.61914",
+      "templateHash": "11415755236761988131"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "disableBgpRoutePropagation": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Whether to disable the routes learned by BGP on that route table. True means disable."
+      }
+    },
+    "routes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Route name.",
+        "addressPrefix": "The destination CIDR to which the route applies.",
+        "hasBgpOverride": "A value indicating whether this route overrides overlapping BGP routes regardless of LPM.",
+        "nextHopIpAddress": "The IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is \"VirtualAppliance\".",
+        "nextHopType": "The type of Azure hop the packet should be sent to. Allowed values:  \"Internet\", \"None\", \"VirtualAppliance\", \"VirtualNetworkGateway\" or \"VnetLocal\".",
+        "description": "Collection of routes contained within a route table."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2022-01-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "copy": [
+          {
+            "name": "routes",
+            "count": "[length(parameters('routes'))]",
+            "input": {
+              "name": "[parameters('routes')[copyIndex('routes')].name]",
+              "properties": {
+                "addressPrefix": "[parameters('routes')[copyIndex('routes')].addressPrefix]",
+                "hasBgpOverride": "[if(contains(parameters('routes')[copyIndex('routes')], 'hasBgpOverride'), parameters('routes')[copyIndex('routes')].hasBgpOverride, false())]",
+                "nextHopIpAddress": "[if(contains(parameters('routes')[copyIndex('routes')], 'nextHopIpAddress'), parameters('routes')[copyIndex('routes')].nextHopIpAddress, null())]",
+                "nextHopType": "[parameters('routes')[copyIndex('routes')].nextHopType]"
+              }
+            }
+          }
+        ],
+        "disableBgpRoutePropagation": "[parameters('disableBgpRoutePropagation')]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Network/routeTables/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]",
+      "metadata": {
+        "description": "The name of the deployed route table."
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/routeTables', parameters('name'))]",
+      "metadata": {
+        "description": "The resource ID of the deployed route table."
+      }
+    },
+    "disableBgpRoutePropagation": {
+      "type": "bool",
+      "value": "[parameters('disableBgpRoutePropagation')]",
+      "metadata": {
+        "description": "Whether BGP route propogation is disabled. True means disable."
+      }
+    }
+  }
+}

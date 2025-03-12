@@ -1,0 +1,427 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.20.4.51522",
+      "templateHash": "1458001084694305058"
+    },
+    "name": "Automation Accounts Module",
+    "description": "This module deploys Microsoft.Automation automationAccounts",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Free",
+        "Basic"
+      ],
+      "metadata": {
+        "description": "Optional. SKU name of the account."
+      }
+    },
+    "modules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Module name.",
+        "version": "Module version or specify latest to get the latest version.",
+        "uri": "Module package uri, e.g. https://www.powershellgallery.com/api/v2/package.",
+        "description": "Optional. Modules to import into automation account."
+      }
+    },
+    "variables": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "name": "Variable name.",
+        "description": "Optional. Variables to import into automation account.",
+        "isEncrypted": "Variable is encypted.",
+        "value": "Variable value."
+      }
+    },
+    "runbooks": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "runbookName": "Runbook name.",
+        "runbookUri": "Runbook URI.",
+        "runbookType": "Runbook type: Graph, Graph PowerShell, Graph PowerShellWorkflow, PowerShell, PowerShell Workflow, Script.",
+        "logProgress": "Enable progress logs.",
+        "logVerbose": "Enable verbose logs.",
+        "description": "Optional. Runbooks to import into automation account."
+      }
+    },
+    "schedules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "example": {
+          "name": "auto-shutdown-1",
+          "description": "Auto shutdown schedule",
+          "startTime": "2023-03-30T19:00:00+00:00",
+          "interval": 1,
+          "frequency": "Hour",
+          "timeZone": "Australia/Canberra, Melbourne, Sydney"
+        },
+        "description": "Optional. Schedules to import into automation account."
+      }
+    },
+    "systemAssignedIdentity": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enables system assigned managed identity on the resource."
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Optional. The ID(s) to assign to the resource."
+      }
+    },
+    "updateScheduleConfig": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/templates/microsoft.automation/automationaccounts/softwareupdateconfigurations?pivots=deployment-language-bicep#property-values",
+        "example": {
+          "name": "string",
+          "scheduleInfo": {
+            "startTime": "string",
+            "frequency": "string",
+            "timeZone": "string",
+            "interval": "int"
+          },
+          "updateConfiguration": {
+            "operatingSystem": "string",
+            "duration": "string",
+            "targets": {
+              "azureQueries": [
+                {
+                  "locations": [
+                    "string"
+                  ],
+                  "scope": [
+                    "string"
+                  ]
+                }
+              ]
+            },
+            "windows": {
+              "includedUpdateClassifications": "string, string"
+            }
+          }
+        },
+        "description": "Optional. Update schedule configuration."
+      }
+    },
+    "enableDiagnostics": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable diagnostic logging."
+      }
+    },
+    "diagnosticLogCategoryGroupsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllLogs"
+      ],
+      "allowedValues": [
+        "AllLogs"
+      ],
+      "metadata": {
+        "description": "Optional. The name of log category groups that will be streamed."
+      }
+    },
+    "diagnosticMetricsToEnable": {
+      "type": "array",
+      "defaultValue": [
+        "AllMetrics"
+      ],
+      "allowedValues": [
+        "AllMetrics"
+      ],
+      "metadata": {
+        "description": "Optional. The name of metrics that will be streamed."
+      }
+    },
+    "diagnosticStorageAccountId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Storage account resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubAuthorizationRuleId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "diagnosticEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Event hub name. Only required if enableDiagnostics is set to true."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "diagnosticsLogs",
+        "count": "[length(parameters('diagnosticLogCategoryGroupsToEnable'))]",
+        "input": {
+          "categoryGroup": "[parameters('diagnosticLogCategoryGroupsToEnable')[copyIndex('diagnosticsLogs')]]",
+          "enabled": true
+        }
+      },
+      {
+        "name": "diagnosticsMetrics",
+        "count": "[length(parameters('diagnosticMetricsToEnable'))]",
+        "input": {
+          "category": "[parameters('diagnosticMetricsToEnable')[copyIndex('diagnosticsMetrics')]]",
+          "timeGrain": null,
+          "enabled": true
+        }
+      }
+    ],
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]",
+    "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
+    "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+    "diagnosticsName": "[toLower(format('{0}-dgs', parameters('name')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Automation/automationAccounts",
+      "apiVersion": "2022-08-08",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": "[variables('identity')]",
+      "properties": {
+        "sku": {
+          "name": "[parameters('sku')]"
+        }
+      }
+    },
+    {
+      "copy": {
+        "name": "automationAccountModules",
+        "count": "[length(parameters('modules'))]",
+        "mode": "serial",
+        "batchSize": 1
+      },
+      "type": "Microsoft.Automation/automationAccounts/modules",
+      "apiVersion": "2022-08-08",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('modules')[copyIndex()].name)]",
+      "properties": {
+        "contentLink": {
+          "uri": "[if(equals(parameters('modules')[copyIndex()].version, 'latest'), format('{0}/{1}', parameters('modules')[copyIndex()].uri, parameters('modules')[copyIndex()].name), format('{0}/{1}/{2}', parameters('modules')[copyIndex()].uri, parameters('modules')[copyIndex()].name, parameters('modules')[copyIndex()].version))]",
+          "version": "[if(equals(parameters('modules')[copyIndex()].version, 'latest'), null(), parameters('modules')[copyIndex()].version)]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "automationAccountVariables",
+        "count": "[length(parameters('variables'))]"
+      },
+      "type": "Microsoft.Automation/automationAccounts/variables",
+      "apiVersion": "2022-08-08",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('variables')[copyIndex()].name)]",
+      "properties": {
+        "description": "[parameters('variables')[copyIndex()].description]",
+        "isEncrypted": "[parameters('variables')[copyIndex()].isEncrypted]",
+        "value": "[parameters('variables')[copyIndex()].value]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "runbook",
+        "count": "[length(parameters('runbooks'))]"
+      },
+      "type": "Microsoft.Automation/automationAccounts/runbooks",
+      "apiVersion": "2022-08-08",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('runbooks')[copyIndex()].runbookName)]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "runbookType": "[parameters('runbooks')[copyIndex()].runbookType]",
+        "logProgress": "[parameters('runbooks')[copyIndex()].logProgress]",
+        "logVerbose": "[parameters('runbooks')[copyIndex()].logVerbose]",
+        "publishContentLink": {
+          "uri": "[parameters('runbooks')[copyIndex()].runbookUri]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "schedule",
+        "count": "[length(parameters('schedules'))]"
+      },
+      "type": "Microsoft.Automation/automationAccounts/schedules",
+      "apiVersion": "2022-08-08",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('schedules')[copyIndex()].name)]",
+      "properties": {
+        "description": "[parameters('schedules')[copyIndex()].description]",
+        "startTime": "[parameters('schedules')[copyIndex()].startTime]",
+        "frequency": "[parameters('schedules')[copyIndex()].frequency]",
+        "interval": "[parameters('schedules')[copyIndex()].interval]",
+        "timeZone": "[parameters('schedules')[copyIndex()].timeZone]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]",
+        "runbook"
+      ]
+    },
+    {
+      "copy": {
+        "name": "jobSchedule",
+        "count": "[length(range(0, length(parameters('runbooks'))))]"
+      },
+      "condition": "[contains(parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]], 'linkSchedule')]",
+      "type": "Microsoft.Automation/automationAccounts/jobSchedules",
+      "apiVersion": "2022-08-08",
+      "name": "[format('{0}/{1}', parameters('name'), guid(parameters('name'), parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]].runbookName))]",
+      "properties": {
+        "parameters": {},
+        "runbook": {
+          "name": "[parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]].runbookName]"
+        },
+        "schedule": {
+          "name": "[if(contains(parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]], 'linkSchedule'), parameters('runbooks')[range(0, length(parameters('runbooks')))[copyIndex()]].linkSchedule, '')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]",
+        "schedule"
+      ]
+    },
+    {
+      "copy": {
+        "name": "updateConfiguration",
+        "count": "[length(parameters('updateScheduleConfig'))]"
+      },
+      "type": "Microsoft.Automation/automationAccounts/softwareUpdateConfigurations",
+      "apiVersion": "2019-06-01",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('updateScheduleConfig')[copyIndex()].name)]",
+      "properties": "[parameters('updateScheduleConfig')[copyIndex()]]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDiagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Automation/automationAccounts/{0}', parameters('name'))]",
+      "name": "[variables('diagnosticsName')]",
+      "properties": {
+        "workspaceId": "[if(empty(parameters('diagnosticLogAnalyticsWorkspaceId')), null(), parameters('diagnosticLogAnalyticsWorkspaceId'))]",
+        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), null(), parameters('diagnosticStorageAccountId'))]",
+        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), null(), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), null(), parameters('diagnosticEventHubName'))]",
+        "logs": "[variables('diagnosticsLogs')]",
+        "metrics": "[variables('diagnosticsMetrics')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.Automation/automationAccounts/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed automation account."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed automation account."
+      },
+      "value": "[resourceId('Microsoft.Automation/automationAccounts', parameters('name'))]"
+    },
+    "systemAssignedPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "The principal ID of the system assigned identity."
+      },
+      "value": "[if(and(parameters('systemAssignedIdentity'), contains(reference(resourceId('Microsoft.Automation/automationAccounts', parameters('name')), '2022-08-08', 'full').identity, 'principalId')), reference(resourceId('Microsoft.Automation/automationAccounts', parameters('name')), '2022-08-08', 'full').identity.principalId, '')]"
+    }
+  }
+}

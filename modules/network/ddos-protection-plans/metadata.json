@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aka.ms/bicep-registry-module-metadata-file-schema-v2#",
+  "name": "DDOS Protection Plan Module",
+  "summary": "This module deploys Microsoft.Network ddosProtectionPlans",
+  "owner": "Arinco"
+}

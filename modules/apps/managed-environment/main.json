@@ -1,0 +1,202 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.32.4.45862",
+      "templateHash": "8647899396658839383"
+    },
+    "name": "Container Apps Managed environment",
+    "description": "This module deploys Microsoft App Managed Environments",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 63,
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The geo-location where the resource lives."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    },
+    "mtlsEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable mutual TLS."
+      }
+    },
+    "peerEncryptionEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable peer traffic encryption."
+      }
+    },
+    "isZoneRedundant": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable zone redundancy."
+      }
+    },
+    "vnetConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://learn.microsoft.com/en-us/azure/templates/microsoft.app/managedenvironments?pivots=deployment-language-bicep#vnetconfiguration",
+        "example": {
+          "infrastructureSubnetId": "string",
+          "internal": "bool",
+          "platformReservedCidr": "string",
+          "platformReservedDnsIP": "string",
+          "dockerBridgeCidr": "string"
+        },
+        "description": "Optional. Name of the Application Insights resource."
+      }
+    },
+    "applicationInsights": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "ConnectionString": "string",
+          "InstrumentationKey": "string"
+        },
+        "description": "Optional. Application Insights resource for DAPR logs."
+      }
+    },
+    "logAnalyticsConfiguration": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "example": {
+          "customerId": "string",
+          "sharedKey": "string"
+        },
+        "description": "Optional. Log analytics resource for DAPR logs."
+      }
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Optional. Allow or block all public traffic. "
+      }
+    },
+    "infrastructureResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Name of the platform-managed resource group created for the Managed Environment to host infrastructure resources.If a subnet ID is provided, this resource group will be created in the same subscription as the subnet."
+      }
+    },
+    "dnsSuffix": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. DNS suffix for the environment domain."
+      }
+    },
+    "resourceLock": {
+      "type": "string",
+      "defaultValue": "NotSpecified",
+      "allowedValues": [
+        "NotSpecified",
+        "ReadOnly",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Optional. Specify the type of resource lock."
+      }
+    }
+  },
+  "variables": {
+    "lockName": "[toLower(format('{0}-{1}-lck', parameters('name'), parameters('resourceLock')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.App/managedEnvironments",
+      "apiVersion": "2024-10-02-preview",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "appLogsConfiguration": {
+          "destination": "log-analytics",
+          "logAnalyticsConfiguration": "[parameters('logAnalyticsConfiguration')]"
+        },
+        "daprAIConnectionString": "[parameters('applicationInsights').ConnectionString]",
+        "daprAIInstrumentationKey": "[parameters('applicationInsights').InstrumentationKey]",
+        "infrastructureResourceGroup": "[parameters('infrastructureResourceGroup')]",
+        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+        "vnetConfiguration": "[parameters('vnetConfiguration')]",
+        "customDomainConfiguration": {
+          "dnsSuffix": "[parameters('dnsSuffix')]"
+        },
+        "peerAuthentication": {
+          "mtls": {
+            "enabled": "[parameters('mtlsEnabled')]"
+          }
+        },
+        "peerTrafficConfiguration": {
+          "encryption": {
+            "enabled": "[parameters('peerEncryptionEnabled')]"
+          }
+        },
+        "zoneRedundant": "[parameters('isZoneRedundant')]"
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('resourceLock'), 'NotSpecified'))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2017-04-01",
+      "scope": "[format('Microsoft.App/managedEnvironments/{0}', parameters('name'))]",
+      "name": "[variables('lockName')]",
+      "properties": {
+        "level": "[parameters('resourceLock')]",
+        "notes": "[if(equals(parameters('resourceLock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.App/managedEnvironments', parameters('name'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "managedEnvironmentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the the deployed managed environment."
+      },
+      "value": "[parameters('name')]"
+    },
+    "managedEnvironmentId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed managed environment."
+      },
+      "value": "[resourceId('Microsoft.App/managedEnvironments', parameters('name'))]"
+    }
+  }
+}

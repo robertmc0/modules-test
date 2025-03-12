@@ -1,0 +1,208 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.32.4.45862",
+      "templateHash": "13955543970814421522"
+    },
+    "name": "Entra B2C Module",
+    "description": "This module deploys an Entra B2C (Microsoft.AzureActiveDirectory/b2cDirectories) resource.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "tenantName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 37,
+      "metadata": {
+        "description": "Name of the B2C Tenant"
+      }
+    },
+    "displayName": {
+      "type": "string",
+      "metadata": {
+        "description": "The display name for the Entra B2C Directory."
+      }
+    },
+    "location": {
+      "type": "string",
+      "allowedValues": [
+        "global",
+        "unitedstates",
+        "europe",
+        "asiapacific",
+        "australia",
+        "japan"
+      ],
+      "metadata": {
+        "description": "The location where the Entra B2C Directory will be deployed."
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "PremiumP1",
+        "PremiumP2",
+        "Standard"
+      ],
+      "metadata": {
+        "description": "Optional. The name of the SKU for the Entra B2C Directory."
+      }
+    },
+    "skuTier": {
+      "type": "string",
+      "defaultValue": "A0",
+      "metadata": {
+        "description": "Optional. The tier of the SKU for the Entra B2C Directory."
+      }
+    },
+    "countryCode": {
+      "type": "string",
+      "allowedValues": [
+        "AF",
+        "AE",
+        "AT",
+        "AU",
+        "AZ",
+        "BE",
+        "BG",
+        "BH",
+        "BY",
+        "CA",
+        "CH",
+        "CR",
+        "CY",
+        "CZ",
+        "DE",
+        "DK",
+        "DO",
+        "DZ",
+        "EE",
+        "EG",
+        "ES",
+        "FI",
+        "FR",
+        "GB",
+        "GR",
+        "GT",
+        "HK",
+        "HR",
+        "HU",
+        "ID",
+        "IE",
+        "IL",
+        "IN",
+        "IS",
+        "IT",
+        "JO",
+        "JP",
+        "KE",
+        "KR",
+        "KW",
+        "KZ",
+        "LB",
+        "LI",
+        "LK",
+        "LT",
+        "LU",
+        "LV",
+        "MA",
+        "ME",
+        "ML",
+        "MT",
+        "MX",
+        "MY",
+        "NG",
+        "NL",
+        "NO",
+        "NZ",
+        "OM",
+        "PA",
+        "PH",
+        "PK",
+        "PL",
+        "PR",
+        "PT",
+        "QA",
+        "RO",
+        "RS",
+        "RU",
+        "SA",
+        "SE",
+        "SG",
+        "SK",
+        "ST",
+        "SV",
+        "TN",
+        "TR",
+        "TT",
+        "TW",
+        "UA",
+        "US",
+        "ZA"
+      ],
+      "metadata": {
+        "description": "The country code for the tenant. See https://learn.microsoft.com/en-us/azure/active-directory-b2c/data-residency for more details."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "doc": "https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates",
+        "example": {
+          "tagKey": "string"
+        },
+        "description": "Optional. Resource tags."
+      }
+    }
+  },
+  "variables": {
+    "directoryName": "[toLower(format('{0}.onmicrosoft.com', parameters('tenantName')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.AzureActiveDirectory/b2cDirectories",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('directoryName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "tier": "[parameters('skuTier')]"
+      },
+      "properties": {
+        "createTenantProperties": {
+          "countryCode": "[parameters('countryCode')]",
+          "displayName": "[parameters('displayName')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "directoryId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the created Entra B2C Tenant."
+      },
+      "value": "[resourceId('Microsoft.AzureActiveDirectory/b2cDirectories', variables('directoryName'))]"
+    },
+    "directoryLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The location of the created Entra B2C Tenant."
+      },
+      "value": "[reference(resourceId('Microsoft.AzureActiveDirectory/b2cDirectories', variables('directoryName')), '2021-04-01', 'full').location]"
+    },
+    "tenantId": {
+      "type": "string",
+      "metadata": {
+        "description": "The tenant ID of the created Entra B2C Tenant."
+      },
+      "value": "[reference(resourceId('Microsoft.AzureActiveDirectory/b2cDirectories', variables('directoryName')), '2021-04-01').tenantId]"
+    }
+  }
+}

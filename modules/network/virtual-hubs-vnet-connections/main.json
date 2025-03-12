@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.32.4.45862",
+      "templateHash": "5430832283984666205"
+    },
+    "name": "Route Tables Module",
+    "description": "This module deploys Microsoft.Network/virtualHubs hubVirtualNetworkConnections.",
+    "owner": "Arinco"
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource name."
+      }
+    },
+    "virtualHubName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Hub name."
+      }
+    },
+    "enableInternetSecurity": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable internet security."
+      }
+    },
+    "remoteVirtualNetworkId": {
+      "type": "string",
+      "metadata": {
+        "description": "Remote virtual network resource ID."
+      }
+    },
+    "associatedRouteTableId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. The resource ID of the RouteTable associated with this RoutingConfiguration."
+      }
+    },
+    "propagatedRouteTables": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "labels": [
+          "The list of labels."
+        ],
+        "ids": [
+          {
+            "id": "Resource ID of the RouteTable."
+          }
+        ],
+        "description": "Optional. The list of RouteTables to advertise the routes to."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', parameters('virtualHubName'), parameters('name'))]",
+      "properties": {
+        "enableInternetSecurity": "[parameters('enableInternetSecurity')]",
+        "remoteVirtualNetwork": {
+          "id": "[parameters('remoteVirtualNetworkId')]"
+        },
+        "routingConfiguration": {
+          "associatedRouteTable": "[if(not(equals(parameters('associatedRouteTableId'), '')), createObject('id', parameters('associatedRouteTableId')), null())]",
+          "propagatedRouteTables": "[parameters('propagatedRouteTables')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the deployed virtual hub route."
+      },
+      "value": "[parameters('name')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the deployed virtual hub route."
+      },
+      "value": "[resourceId('Microsoft.Network/virtualHubs/hubVirtualNetworkConnections', parameters('virtualHubName'), parameters('name'))]"
+    }
+  }
+}
