@@ -2,6 +2,7 @@ metadata name = 'Application Gateways Module'
 metadata description = 'This module deploys Microsoft.Network applicationGateways'
 metadata owner = 'Arinco'
 
+
 @description('The resource name.')
 param name string
 
