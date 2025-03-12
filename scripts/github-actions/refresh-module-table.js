@@ -100,7 +100,7 @@ async function generateModulesTable(github, context, fs, path) {
       const module = `\`${modulePath}\``;
       const versionBadge = `<image src="${badgeUrl.href}">`;
 
-      const moduleRootUrl = `https://github.com/arincoau/arinco-bicep-modules/tree/main/modules/${modulePath}`;
+      const moduleRootUrl = `https://github.com/robertmc0/modules-test/tree/main/modules/${modulePath}`;
       const codeLink = `[🦾 Code](${moduleRootUrl}/main.bicep)`;
       const readmeLink = `[📃 Readme](${moduleRootUrl}/README.md)`;
       const docs = `${codeLink} ｜ ${readmeLink}`;
